@@ -9,19 +9,19 @@ namespace SunFlower.Pe;
 /// </summary>
 public class PortableExecutableSeed : IFlowerSeed
 {
-    public string Seed => "PE Image Windows NT x86-64";
-    public FlowerSeedResult Result { get; set; } = new FlowerSeedResult();
+    public string Seed => "PE IMAGE Windows NT x86-64";
+    public FlowerSeedStatus Status { get; set; } = new FlowerSeedStatus();
 
     /// <summary>
     /// Second important functional
-    /// Finds and fills <see cref="Result"/>
+    /// Finds and fills <see cref="Status"/>
     /// </summary>
     /// <param name="path"></param>
     public void Analyse(string path)
     {
         try
         {
-            Result.IsEnabled = true;
+            Status.IsEnabled = true;
             
             using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             using BinaryReader reader = new BinaryReader(stream);
@@ -34,7 +34,7 @@ public class PortableExecutableSeed : IFlowerSeed
             
             if (head != 0x00004550) // "PE\0\0" little-endian
             {
-                Result.IsEnabled = false;
+                Status.IsEnabled = false;
                 
                 return;
             }
@@ -46,18 +46,18 @@ public class PortableExecutableSeed : IFlowerSeed
             metaTable.Rows.Add("Signature", "PE");
             metaTable.Rows.Add("HeaderOffset", peHeader.ToString("X"));
             
-            // Дополнительный разбор PE-заголовка
+            //
             stream.Position = peHeader + 4;
             ushort machineType = reader.ReadUInt16();
             metaTable.Rows.Add("Machine", $"0x{machineType:X4}");
 
-            Result.Result = new[] { metaTable };
-            Result.IsEnabled = true;
+            Status.Result = new[] { metaTable };
+            Status.IsEnabled = true;
         }
         catch (Exception ex)
         {
             Debug.Write($"Plugin: {ex}");
-            Result.IsEnabled = false;
+            Status.IsEnabled = false;
         }
     }
     
@@ -70,7 +70,7 @@ public class PortableExecutableSeed : IFlowerSeed
         try
         {
             Analyse(path);
-            return Result.IsEnabled ? 0 : 1;
+            return Status.IsEnabled ? 0 : 1;
         }
         catch
         {

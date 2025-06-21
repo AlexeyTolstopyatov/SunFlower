@@ -27,7 +27,7 @@ public class Tests
         PortableExecutableSeed seed = new();
         seed.Analyse(@"D:\Анализ файлов\inst\PE\acpi.sys");
         
-        DataTable table = seed.Result.Result[0];
+        DataTable table = seed.Status.Result[0];
         
         Assert.Pass();
     }

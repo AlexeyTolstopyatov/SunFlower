@@ -2,6 +2,10 @@
 
 namespace SunFlower.Abstractions;
 
+/// <summary>
+/// Main interface of all next following external DLLs
+/// You must implement it if you want your plugins will work.
+/// </summary>
 public interface IFlowerSeed
 {
     /// <summary>
@@ -11,7 +15,7 @@ public interface IFlowerSeed
     /// <summary>
     /// Expected result from image diagnostics
     /// </summary>
-    FlowerSeedResult Result { get; set; }
+    FlowerSeedStatus Status { get; set; }
     /// <summary>
     /// EntryPoint of SunFlower Plugin
     /// Must return the status <see cref="DataTable"/>

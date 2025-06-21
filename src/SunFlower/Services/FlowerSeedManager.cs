@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Reflection;
 using SunFlower.Abstractions;
-using FlowerSeedResult = SunFlower.Abstractions.FlowerSeedResult;
 
 namespace SunFlower.Services;
 
@@ -93,9 +92,9 @@ public class FlowerSeedManager : IFlowerSeedManager
     /// <param name="path">file target</param>
     /// <param name="seed">targeting seed</param>
     /// <returns>Action result</returns>
-    public FlowerSeedResult GetInvokedFlowerSeedResult(IFlowerSeed seed, string path)
+    public FlowerSeedStatus GetInvokedFlowerSeedResult(IFlowerSeed seed, string path)
     {
         seed.Main(path);
-        return seed.Result;
+        return seed.Status;
     }
 }

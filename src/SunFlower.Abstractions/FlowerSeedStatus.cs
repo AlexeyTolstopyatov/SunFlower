@@ -1,9 +1,19 @@
 ﻿using System.Data;
+//
+// CoffeeLake (C) 2025
+// 
 
 namespace SunFlower.Abstractions;
 
+/// <summary>
+/// Status entity. All operations result
+/// contains here in <see cref="DataTable"/> array.
+///
+/// Special flags i.e. <c>IsEnabled</c> switch
+/// in plugin's body for next usage (or not).
+/// </summary>
 [Serializable]
-public sealed class FlowerSeedResult : MarshalByRefObject
+public sealed class FlowerSeedStatus : MarshalByRefObject
 {
     /// <summary>
     /// Holds on state of seed's usage.

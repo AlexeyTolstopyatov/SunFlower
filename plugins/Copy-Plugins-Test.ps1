@@ -1,12 +1,14 @@
-﻿# Copy-Plugins.ps1
+﻿# Copy-Plugins-Test.ps1
 # CoffeeLake (C) 2025
 #
-# Copies SunFlower plugins into .../test/.../bin/Debug/net8.0/Plugins
+# Copies SunFlower plugins into Connection directory
 # 
 
 # Define paths
+Write-Host "--- Importing to Tests ---" --ForegroundColor Yellow
+
 $solutionRoot = "D:\GitHub\SunFlower"
-$mainAppPath = "$solutionRoot\src\SunFlower\bin\Debug\net8.0"
+$mainAppPath = "$solutionRoot\test\SunFlower.Connection\bin\Debug\net8.0"
 $pluginsOutputPath = "$mainAppPath\Plugins"
 
 # Cleaning target directory

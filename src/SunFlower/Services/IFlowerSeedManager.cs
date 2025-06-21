@@ -2,7 +2,7 @@
 
 namespace SunFlower.Services;
 
-public interface IFlowerSeedConnect
+public interface IFlowerSeedManager
 {
     /// <summary>
     /// Set of SunFlower external DLLs.
@@ -11,5 +11,5 @@ public interface IFlowerSeedConnect
     /// <summary>
     /// Checks and collects all Flower seeds to HashSet
     /// </summary>
-    void Initialize();
+    void LoadAllFlowerSeeds();
 }

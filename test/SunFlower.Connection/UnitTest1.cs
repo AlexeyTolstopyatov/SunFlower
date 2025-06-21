@@ -16,9 +16,9 @@ public class Tests
     [Test]
     public void ConnectPlugin()
     {
-        FlowerSeedConnect bridge = new();
-        bridge.Initialize();
-        bridge.GetEntryPointTables(@"D:\Анализ файлов\inst\PE\acpi.sys");
+        FlowerSeedManager bridge = new();
+        bridge.LoadAllFlowerSeeds();
+        bridge.GetAllInvokedSeedResults(@"D:\Анализ файлов\inst\PE\acpi.sys");
         Assert.Pass();
     }
     [Test]

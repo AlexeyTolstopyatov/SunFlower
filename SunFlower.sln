@@ -12,7 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunFlower.Connection", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{BC82B4CF-0080-4C65-9A37-C68105B08548}"
 	ProjectSection(SolutionItems) = preProject
-		plugins\MoveToTest.ps1 = plugins\MoveToTest.ps1
+		plugins\Copy-Plugins.ps1 = plugins\Copy-Plugins.ps1
+		plugins\Copy-Plugins-Test.ps1 = plugins\Copy-Plugins-Test.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunFlower.Pe", "plugins\SunFlower.Pe\SunFlower.Pe.csproj", "{DB3C52D3-0258-4AEE-82AA-030F7F1A43D4}"

@@ -6,11 +6,25 @@ using FlowerSeedResult = SunFlower.Abstractions.FlowerSeedResult;
 
 namespace SunFlower.Services;
 
-public class FlowerSeedConnect : IFlowerSeedConnect
+public class FlowerSeedManager : IFlowerSeedManager
 {
+    /// <summary>
+    /// Singleton instance of plugins manager
+    /// </summary>
+    /// <returns></returns>
+    public static FlowerSeedManager CreateInstance()
+    {
+        return new FlowerSeedManager();
+    }
+    /// <summary>
+    /// Loaded plugin interfaces
+    /// </summary>
     public HashSet<IFlowerSeed> Seeds { get; set; } = [];
-
-    public void Initialize()
+    /// <summary>
+    /// Loads sunflower plugins from filesystem
+    /// (needed directory: .../Plugins)
+    /// </summary>
+    public void LoadAllFlowerSeeds()
     {
         Seeds = []; // again!
         string seedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
@@ -49,12 +63,11 @@ public class FlowerSeedConnect : IFlowerSeedConnect
             }
         }
     }
-    
     /// <summary>
     /// Executes all seeds and returns status table
     /// for every seed.
     /// </summary>
-    public Dictionary<string, int> GetEntryPointTables(string targetingFile)
+    public Dictionary<string, int> GetAllInvokedSeedResults(string targetingFile)
     {
         var results = new Dictionary<string, int>();
         
@@ -80,7 +93,7 @@ public class FlowerSeedConnect : IFlowerSeedConnect
     /// <param name="path">file target</param>
     /// <param name="seed">targeting seed</param>
     /// <returns>Action result</returns>
-    public FlowerSeedResult InvokeFlowerSeed(IFlowerSeed seed, string path)
+    public FlowerSeedResult GetInvokedFlowerSeedResult(IFlowerSeed seed, string path)
     {
         seed.Main(path);
         return seed.Result;

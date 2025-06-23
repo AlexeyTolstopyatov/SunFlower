@@ -7,7 +7,7 @@ public interface IFlowerSeedManager
     /// <summary>
     /// Set of SunFlower external DLLs.
     /// </summary>
-    HashSet<IFlowerSeed> Seeds { get; set; }
+    List<IFlowerSeed> Seeds { get; set; }
     /// <summary>
     /// Checks and collects all Flower seeds to HashSet
     /// </summary>

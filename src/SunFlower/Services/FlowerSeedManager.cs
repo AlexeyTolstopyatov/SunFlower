@@ -18,7 +18,7 @@ public class FlowerSeedManager : IFlowerSeedManager
     /// <summary>
     /// Loaded plugin interfaces
     /// </summary>
-    public HashSet<IFlowerSeed> Seeds { get; set; } = [];
+    public List<IFlowerSeed> Seeds { get; set; } = [];
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)

@@ -4,6 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>1.2.0</Version>
+        <Title>Portable Executable IA-32 static analysis</Title>
+        <Description>Makes dump of all registered data structures in Windows PE file</Description>
+        <Copyright>CoffeeLake 2024-2025</Copyright>
+        <AssemblyVersion>1.2.0.0</AssemblyVersion>
+        <FileVersion>1.2.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

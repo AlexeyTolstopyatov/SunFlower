@@ -2,7 +2,9 @@
 
 open System
 open System.Data
+open System.Diagnostics
 open System.IO
+open System.Reflection
 open SunFlower.Abstractions
 
 ///
@@ -27,6 +29,12 @@ module UserInterface =
     let showMainMenu state =
         Console.Clear()
         let opt = Option.defaultValue "NONE" state.CurrentFile
+        
+        Console.ForegroundColor <- ConsoleColor.Yellow
+        printfn $"--- Required foundation build: %s{FileVersionInfo.GetVersionInfo(Assembly.GetCallingAssembly().Location).FileVersion}"
+        Console.ResetColor()
+        
+        
         printfn "=== SunFlower Firmware Analyzer ==="
         printfn $"File: %s{opt}" // !!!
         printfn $"Active plugins: {state.ActivePlugins.Length}"
@@ -41,7 +49,8 @@ module UserInterface =
     
     let showPluginSelection (plugins: IFlowerSeed list) (activePlugins: IFlowerSeed list) =
         Console.Clear()
-        printfn "=== Plugin Selection ==="
+        printfn "=== Seeds ==="
+        
         printfn "0. Select all"
         
         plugins
@@ -55,16 +64,14 @@ module UserInterface =
     
     let showAnalysisResults (results: (string * FlowerSeedStatus) list) =
         Console.Clear()
-        printfn "=== Analysis Results ==="
         
         results
         |> List.iter (fun (name, result) ->
             Console.ForegroundColor <- 
                 if result.IsEnabled then ConsoleColor.Green 
                 else ConsoleColor.Yellow
-                
-            printfn $"=== Calling [{name}]"
-            Console.ResetColor()
+            
+            printfn $"--- {name}"
             
             if not result.IsEnabled then
                 printfn "\tSunflower seed load failed"
@@ -98,7 +105,6 @@ module UserInterface =
         Console.ReadKey() |> ignore
 
 open UserInterface
-
 module AnalysisEngine =
     let analyzeFile (plugins: IFlowerSeed list) filePath =
         printfn $"Starting analysis of %s{ FileInfo(filePath).Name }"
@@ -132,11 +138,11 @@ module AnalysisEngine =
                 showAnalysisResults results
                 mainLoop state
             | None, _ ->
-                printfn "No file selected! Press any key..."
+                printfn "No file selected! \nPress any key..."
                 Console.ReadKey() |> ignore
                 mainLoop state
             | _, _ ->
-                printfn "SunFlower seeds selected \n Press any key..."
+                printfn "SunFlower seeds selected \nPress any key..."
                 Console.ReadKey() |> ignore
                 mainLoop state
                 
@@ -167,7 +173,7 @@ module AnalysisEngine =
             if File.Exists path then
                 mainLoop { state with CurrentFile = Some path }
             else
-                printfn "File not found! Press any key..."
+                printfn "File not found! \nPress any key..."
                 Console.ReadKey() |> ignore
                 mainLoop state
         
@@ -186,6 +192,7 @@ module AnalysisEngine =
 module App =
     [<EntryPoint>]
     let main (args: string[]):int =
+        printfn "--- Collecting seeds"
         let manager = SunFlower.Services.FlowerSeedManager()
         manager.LoadAllFlowerSeeds()
         
@@ -201,6 +208,7 @@ module App =
                 then Some args[0] 
                 else None
         }
+        printfn $"--- Works {initialState.ActivePlugins.Length}"
         
         AnalysisEngine.mainLoop initialState
         0

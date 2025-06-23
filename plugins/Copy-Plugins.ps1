@@ -1,12 +1,13 @@
 ﻿# Copy-Plugins.ps1
 # CoffeeLake (C) 2025
 #
+# Updates plugins platform (SunFlower.Abstractions.dll)
 # Copies SunFlower plugins into sources nested catalogs
 # nested catalogs: 
 #   GUI-less application root
 #   GUI application root
 
-Write-Host "--- Importing to Sources ---" --ForegroundColor Blue
+Write-Host "--- Importing to Sources ---" -ForegroundColor Blue
 
 # Define paths
 $solutionRoot = "D:\GitHub\SunFlower"
@@ -20,6 +21,17 @@ if (Test-Path $pluginsOutputPath) {
 }
 else {
     New-Item -ItemType Directory -Path $pluginsOutputPath | Out-Null
+}
+# Updating plugins foundation
+$abstractBase = "$(mainAppPath)\SunFlower.Abstractions.dll"
+$abstractTo = "$(mainAppPath)\Plugins"
+
+if (Test-Path $abstractBase) {
+    Write-Host "Copying $projectName.dll" -ForegroundColor Blue
+    Copy-Item -Path $abstractBase -Destination $abstractTo -Force
+}
+else {
+    Write-Warning "abstractions not found: $abstractBase"
 }
 
 # Define all nested plugins

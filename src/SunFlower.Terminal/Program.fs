@@ -1,7 +1,6 @@
 ﻿namespace SunFlower.Terminal
 
 open System
-open System.Collections.Generic
 open System.Data
 open System.IO
 open SunFlower.Abstractions
@@ -123,14 +122,14 @@ module AnalysisEngine =
         |> Array.toList
 
     let rec mainLoop (state: AppState) =
-        UserInterface.showMainMenu state
+        showMainMenu state
         
         match Console.ReadKey(true).KeyChar with
         | 'a' | 'A' -> 
             match state.CurrentFile, state.ActivePlugins with
             | Some file, plugins when not (List.isEmpty plugins) ->
                 let results = analyzeFile plugins file
-                UserInterface.showAnalysisResults results
+                showAnalysisResults results
                 mainLoop state
             | None, _ ->
                 printfn "No file selected! Press any key..."
@@ -176,7 +175,7 @@ module AnalysisEngine =
             match state.CurrentFile, state.ActivePlugins with
             | Some file, plugins when not (List.isEmpty plugins) ->
                 let results = analyzeFile plugins file
-                UserInterface.showAnalysisResults results
+                showAnalysisResults results
                 mainLoop state
             | _ -> mainLoop state
         

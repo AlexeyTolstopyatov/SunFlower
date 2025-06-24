@@ -2,33 +2,6 @@
 
 namespace SunFlower.Pe.Headers;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PeHeader
-{
-    public UInt32 Signature;
-    [MarshalAs(UnmanagedType.Struct)] public PeFileHeader PeFileHeader;
-    [MarshalAs(UnmanagedType.Struct)] public PeOptionalHeader PeOptionalHeader;
-    [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)] 
-    public PeDirectory[] Directories;
-}
-
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PeHeader32
-{
-    public UInt32 Signature;
-    [MarshalAs(UnmanagedType.Struct)] public PeFileHeader PeFileHeader;
-    [MarshalAs(UnmanagedType.Struct)] public PeOptionalHeader32 PeOptionalHeader;
-    [MarshalAs(UnmanagedType.LPArray, SizeConst = 16)] 
-    public PeDirectory[] Directories;
-}
-
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct PeHeaderRom
-{
-    public UInt32 Signature;
-    [MarshalAs(UnmanagedType.Struct)] public PeFileHeader PeFileHeader;
-    [MarshalAs(UnmanagedType.Struct)] public PeOptionalHeaderRom HeaderRom;
-}
 /* ROM Header taken from Ghidra
  *     WORD   Magic;
  *     BYTE   MajorLinkerVersion;

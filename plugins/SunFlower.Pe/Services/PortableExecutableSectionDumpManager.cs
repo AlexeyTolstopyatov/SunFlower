@@ -10,8 +10,12 @@ namespace SunFlower.Pe.Services;
 /// <param name="info"></param>
 public class PortableExecutableSectionDumpManager(FileSectionsInfo info, string path) : IManager
 {
-    // Declare Imports Exports CRT BaseRelocs (and other) sections here.
+    public static PortableExecutableSectionDumpManager CreateInstance(FileSectionsInfo info, string path)
+    {
+        return new(info, path);
+    }
     
+    // Declare Imports Exports CRT BaseRelocs (and other) sections here.
     public void Initialize()
     {
         Task.Run(async() =>

@@ -1,12 +1,13 @@
-﻿using System.Globalization;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using SunFlower.Pe.Headers;
+using SunFlower.Pe.Models;
 using FileStream = System.IO.FileStream;
 
 namespace SunFlower.Pe.Services;
 
 public class PortableExecutableDumpManager(string path) : IManager
 {
+    public static PortableExecutableDumpManager CreateInstance(string path) => new(path);
     public MzHeader Dos2Header { get; set; }
     public PeFileHeader FileHeader { get; set; }
     public PeOptionalHeader32 OptionalHeader32 { get; set; }
@@ -14,6 +15,7 @@ public class PortableExecutableDumpManager(string path) : IManager
     public PeDirectory[] PeDirectories { get; set; } = [];
     public PeSection[] PeSections { get; set; } = [];
     public PeImageExportDirectory ExportDirectory { get; set; }
+    public FileSectionsInfo FileSectionsInfo { get; set; } = new();
     public bool Is64Bit { get; set; }
 
     /// <summary>
@@ -21,50 +23,72 @@ public class PortableExecutableDumpManager(string path) : IManager
     /// </summary>
     public void Initialize()
     {
-        Task.Run(async() =>
-        {
-            FileStream stream = new(path, FileMode.Open, FileAccess.Read);
-            BinaryReader reader = new(stream);
+        FileStream stream = new(path, FileMode.Open, FileAccess.Read);
+        BinaryReader reader = new(stream);
 
-            await FindHeaders(reader);
-            await FindSectionsTable(reader);
+        FindHeaders(reader);
+        FindSectionsTable(reader);
             
-        });
+        reader.Close();
+        
+        FileSectionsInfo info = new()
+        {
+            FileAlignment = Is64Bit ? OptionalHeader.SectionAlignment : OptionalHeader32.SectionAlignment,
+            SectionAlignment = Is64Bit ? OptionalHeader.SectionAlignment : OptionalHeader32.SectionAlignment,
+            ImageBase = Is64Bit ? OptionalHeader.ImageBase : OptionalHeader32.ImageBase,
+            BaseOfCode = Is64Bit ? OptionalHeader.BaseOfCode : OptionalHeader32.BaseOfCode,
+            BaseOfData = Is64Bit ? OptionalHeader.BaseOfData : OptionalHeader32.BaseOfData,
+            Sections = PeSections,
+            Directories = PeDirectories,
+            NumberOfSections = FileHeader.NumberOfSections,
+            NumberOfRva = Is64Bit ? OptionalHeader.NumberOfRvaAndSizes : OptionalHeader32.NumberOfRvaAndSizes,
+        };
+        
+        FileSectionsInfo = info;
     }
-
-    private Task FindHeaders(BinaryReader reader)
+    private void FindHeaders(BinaryReader reader)
     {
         UInt16 dos2 = reader.ReadUInt16();
-
         if (dos2 != 0x5A4D && dos2 != 0x4D5A)
         {
-            return Task.FromException(new InvalidOperationException());
+            throw new InvalidOperationException("Not a DOS/2 signature");
         }
-        
+    
         reader.BaseStream.Position = 0;
         MzHeader dos2Hdr = Fill<MzHeader>(reader);
         Dos2Header = dos2Hdr;
 
-        reader.ReadUInt32();
+        reader.BaseStream.Position = dos2Hdr.e_lfanew;
+
+        uint peSignature = reader.ReadUInt32();
+        if (peSignature != 0x00004550)
+        {
+            throw new InvalidOperationException("Not a PE signature");
+        }
+
         PeFileHeader fileHdr = Fill<PeFileHeader>(reader);
         FileHeader = fileHdr;
 
-        // simple way to define required CPU word size
-        Is64Bit = (FileHeader.Machine & 0x0100) == 0;
+        Is64Bit = fileHdr.Machine switch
+        {
+            0x8664 => true,
+            0x0200 => true,
+            _ => false 
+        };
 
         if (Is64Bit)
         {
             OptionalHeader = Fill<PeOptionalHeader>(reader);
+            PeDirectories = OptionalHeader.Directories;
         }
         else
         {
             OptionalHeader32 = Fill<PeOptionalHeader32>(reader);
+            PeDirectories = OptionalHeader32.Directories;
         }
-
-        return Task.CompletedTask;
     }
 
-    private Task FindSectionsTable(BinaryReader reader)
+    private void FindSectionsTable(BinaryReader reader)
     {
         List<PeSection> sections = [];
         for (UInt32 i = 0; i < FileHeader.NumberOfSections; ++i)
@@ -73,7 +97,6 @@ public class PortableExecutableDumpManager(string path) : IManager
         }
 
         PeSections = sections.ToArray();
-        return Task.CompletedTask;
     }
     /// <param name="reader"><see cref="BinaryReader"/> instance</param>
     /// <typeparam name="TStruct">structure</typeparam>

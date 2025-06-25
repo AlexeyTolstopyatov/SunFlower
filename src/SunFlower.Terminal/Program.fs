@@ -114,7 +114,7 @@ module AnalysisEngine =
             async {
                 try
                     printfn $"Starting plugin: {plugin.Seed}"
-                    plugin.Analyse(filePath)
+                    plugin.Main(filePath) |> ignore // just call it 
                     return (plugin.Seed, plugin.Status)
                 with ex ->
                     return (plugin.Seed, FlowerSeedStatus(
@@ -193,12 +193,12 @@ module App =
     [<EntryPoint>]
     let main (args: string[]):int =
         printfn "--- Collecting seeds"
-        let manager = SunFlower.Services.FlowerSeedManager()
-        manager.LoadAllFlowerSeeds()
         
-        // cast to F# generic
-        let plugins = manager.Seeds
-                      |> Seq.toList
+        let plugins = SunFlower.Services.FlowerSeedManager
+                              .CreateInstance()
+                              .LoadAllFlowerSeeds()
+                              .Seeds
+                              |> Seq.toList
         
         let initialState = {
             Plugins = plugins

@@ -5,7 +5,7 @@ namespace SunFlower.Pe.Models;
 
 /// <summary>
 /// Important details about PE32/+
-/// for <see cref="PortableExecutableExportsManager"/>
+/// for <see cref="PeExportsManager"/>
 /// </summary>
 public class FileSectionsInfo
 {

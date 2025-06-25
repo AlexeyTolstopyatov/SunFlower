@@ -13,14 +13,14 @@ namespace SunFlower.Pe.Services;
 /// Licensed under MIT
 /// 
 
-public class PortableExecutableImportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
+public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
     private readonly FileSectionsInfo _info = info;
-
+    public PeImportTableModel ImportTableModel { get; private set; }
     /// <summary> Deserializes bytes segment to import entries table </summary>
     /// <param name="reader">your content reader instance</param>
     /// <returns> Done <see cref="PeImportTableModel"/> structure </returns>
-    public PeImportTableModel ImportTableModel(BinaryReader reader)
+    private PeImportTableModel FillImportTableModel(BinaryReader reader)
     {
         PeImportTableModel dump = new();
         
@@ -75,7 +75,7 @@ public class PortableExecutableImportsManager(FileSectionsInfo info, string path
     }
     /// <param name="reader"> Current instance of <see cref="BinaryReader"/> </param>
     /// <param name="descriptor"> Seeking <see cref="PeImportDescriptor"/> table </param>
-    /// <returns> Filled <see cref="ImportDll"/> instance full of module information </returns>
+    /// <returns> Filled <see cref="ImportModule"/> instance full of module information </returns>
     private ImportModule ReadImportDll(BinaryReader reader, PeImportDescriptor descriptor)
     {
         Int64 nameOffset = Offset(descriptor.Name);
@@ -170,6 +170,11 @@ public class PortableExecutableImportsManager(FileSectionsInfo info, string path
     /// </summary>
     public void Initialize()
     {
+        FileStream stream = new(path, FileMode.Open, FileAccess.Read);
+        BinaryReader reader = new(stream);
+
+        ImportTableModel = FillImportTableModel(reader);
         
+        reader.Close();
     }
 }

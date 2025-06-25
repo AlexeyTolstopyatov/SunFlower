@@ -12,9 +12,9 @@ namespace SunFlower.Pe.Services;
 /// Licensed under MIT
 ///
 
-public class PortableExecutableDumpManager(string path) : UnsafeManager, IManager
+public class PeDumpManager(string path) : UnsafeManager, IManager
 {
-    public static PortableExecutableDumpManager CreateInstance(string path) => new(path);
+    public static PeDumpManager CreateInstance(string path) => new(path);
     public MzHeader Dos2Header { get; set; }
     public PeFileHeader FileHeader { get; set; }
     public PeOptionalHeader32 OptionalHeader32 { get; set; }

@@ -18,13 +18,13 @@ namespace SunFlower.Pe.Services;
 /// in PE32/+ required image
 /// </summary>
 /// <param name="info"></param>
-public class PortableExecutableExportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
+public class PeExportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
     private readonly FileSectionsInfo _info = info;
     public PeExportTableModel ExportTableModel { get; private set; }
 
-    public static PortableExecutableExportsManager CreateInstance(FileSectionsInfo info, string path)
-    {
+    public static PeExportsManager CreateInstance(FileSectionsInfo info, string path)
+    { 
         return new(info, path);
     }
     

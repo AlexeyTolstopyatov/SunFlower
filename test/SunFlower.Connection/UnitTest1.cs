@@ -1,5 +1,6 @@
 using System.Data;
 using SunFlower.Pe;
+using SunFlower.Pe.Models;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
 
@@ -27,16 +28,23 @@ public class Tests
     [Test]
     public void CheckoutPeImage()
     {
+        string path = @"D:\GitHub\Esox-math\Esox\bin\Debug\net6.0-windows\Esox.dll";
         PortableExecutableSeed seed = new();
-        seed.Main(@"D:\Анализ файлов\inst\PE\acpi.sys");
+        seed.Main(path);
         
         //DataTable table = seed.Status.Result[0];
-        PortableExecutableDumpManager manager = new(@"D:\Анализ файлов\inst\PE\acpi.sys");
+        PeDumpManager manager = new(path);
         manager.Initialize();
 
-        PortableExecutableExportsManager exportsManager =
-            PortableExecutableExportsManager.CreateInstance(manager.FileSectionsInfo, @"D:\Анализ файлов\inst\PE\acpi.sys");
+        PeExportsManager exportsManager =
+            PeExportsManager.CreateInstance(manager.FileSectionsInfo, path);
+        PeImportsManager importsManager =
+            new(manager.FileSectionsInfo, path);
+        PeClrManager corManager = new(manager.FileSectionsInfo, path);
+        
+        importsManager.Initialize();
         exportsManager.Initialize();
+        corManager.Initialize();
         
         Assert.Pass();
     }

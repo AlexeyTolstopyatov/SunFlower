@@ -4,11 +4,12 @@ public class PeImportTableModel
 {
     // other need fields here . (structure like PeExportTableModel)
     public List<ImportModule> Modules { get; set; }
+    
 }
 
 public class ImportModule
 {
-    public string DllName { get; set; }
+    public string DllName { get; set; } = String.Empty;
     public List<ImportedFunction> Functions { get; set; } = [];
 }
 

@@ -14,20 +14,17 @@ $solutionRoot = "D:\GitHub\SunFlower"
 $mainAppPath = "$solutionRoot\src\SunFlower.Terminal\bin\Debug\net8.0"
 $pluginsOutputPath = "$mainAppPath\Plugins"
 
-# Cleaning target directory
-Write-Host "Cleaning plugins directory: $pluginsOutputPath"
 if (Test-Path $pluginsOutputPath) {
-    Remove-Item "$pluginsOutputPath\*" -Recurse -Force
+    
 }
 else {
     New-Item -ItemType Directory -Path $pluginsOutputPath | Out-Null
 }
 # Updating plugins foundation
-$abstractBase = "$(mainAppPath)\SunFlower.Abstractions.dll"
-$abstractTo = "$(mainAppPath)\Plugins"
+$abstractBase = "$mainAppPath\SunFlower.Abstractions.dll"
+$abstractTo = "$mainAppPath\Plugins"
 
 if (Test-Path $abstractBase) {
-    Write-Host "Copying $projectName.dll" -ForegroundColor Blue
     Copy-Item -Path $abstractBase -Destination $abstractTo -Force
 }
 else {

@@ -4,7 +4,6 @@ using SunFlower.Pe.Headers;
 using SunFlower.Pe.Models;
 
 namespace SunFlower.Pe.Services;
-
 ///
 /// CoffeeLake 2024-2025
 /// This code is JellyBins part for dumping
@@ -12,11 +11,11 @@ namespace SunFlower.Pe.Services;
 ///
 /// Licensed under MIT
 /// 
-
 public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
     private readonly FileSectionsInfo _info = info;
-    public PeImportTableModel ImportTableModel { get; private set; }
+    public PeImportTableModel ImportTableModel { get; private set; } = new();
+
     /// <summary> Deserializes bytes segment to import entries table </summary>
     /// <param name="reader">your content reader instance</param>
     /// <returns> Done <see cref="PeImportTableModel"/> structure </returns>
@@ -73,6 +72,48 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
         
         return dump;
     }
+
+    /// <summary> Deserializes bytes segment into IAT entries </summary>
+    /// <param name="reader"></param>
+    /// <returns> IAT model for current image </returns>
+    private PeImportTableModel FillImportAddressesTableModel(BinaryReader reader)
+    {
+        UInt32 iatRva = _info.Directories[12].VirtualAddress;
+        UInt32 iatSize = _info.Directories[12].Size;
+
+        if (IsDirectoryExists(info.Directories[12])) 
+            return new();
+
+        Int64 iatOffset = Offset(iatRva);
+        
+        reader.BaseStream.Position = iatOffset;
+        Int32 entrySize = _info.Is64Bit ? 8 : 4;
+        List<UInt64> iatEntries = [];
+
+        for (Int32 i = 0; i < iatSize / entrySize; i++)
+        {
+            UInt64 entry = _info.Is64Bit 
+                ? reader.ReadUInt64() 
+                : reader.ReadUInt32();
+    
+            if (entry == 0) 
+                break;
+            
+            iatEntries.Add(entry);
+        }
+
+        // IAT records starts now
+        foreach (UInt64 entry in iatEntries)
+        {
+            bool isOrdinal = (entry & (_info.Is64Bit 
+                ? 0x8000000000000000 
+                : 0x80000000)) != 0;
+    
+            // ... next logic ...
+        }
+    
+        return new();
+    }
     /// <param name="reader"> Current instance of <see cref="BinaryReader"/> </param>
     /// <param name="descriptor"> Seeking <see cref="PeImportDescriptor"/> table </param>
     /// <returns> Filled <see cref="ImportModule"/> instance full of module information </returns>
@@ -104,21 +145,21 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
     private List<ImportedFunction> ReadThunk(BinaryReader reader, UInt32 thunkRva, String tag)
     {
         int sizeOfThunk = _info.Is64Bit ? 8 : 4;
-        ulong ordinalBit = _info.Is64Bit ? 0x8000000000000000 : 0x80000000;
-        ulong ordinalMask = _info.Is64Bit ? 0x7FFFFFFFFFFFFFFFu : 0x7FFFFFFFu;
+        UInt64 ordinalBit = _info.Is64Bit ? 0x8000000000000000 : 0x80000000;
+        UInt64 ordinalMask = _info.Is64Bit ? 0x7FFFFFFFFFFFFFFFu : 0x7FFFFFFFu;
     
-        List<ImportedFunction> result = new List<ImportedFunction>();
+        List<ImportedFunction> result = [];
         if (thunkRva == 0) 
             return result;
     
         try
         {
-            long thunkOffset = Offset(thunkRva);
+            Int64 thunkOffset = Offset(thunkRva);
             while (true)
             {
                 reader.BaseStream.Position = thunkOffset;
             
-                ulong thunkValue = _info.Is64Bit 
+                UInt64 thunkValue = _info.Is64Bit 
                     ? reader.ReadUInt64() 
                     : reader.ReadUInt32();
             
@@ -139,10 +180,10 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
                 // IMPORT by name
                 else
                 {
-                    long nameAddr = Offset((uint)thunkValue);
+                    Int64 nameAddr = Offset((UInt32)thunkValue);
                     reader.BaseStream.Position = nameAddr;
                 
-                    ushort hint = reader.ReadUInt16();
+                    UInt16 hint = reader.ReadUInt16();
                     string name = ReadImportString(reader);
                 
                     result.Add(new ImportedFunction
@@ -164,7 +205,8 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
         return result;
     }
     /// <param name="reader"> <see cref="BinaryReader"/> instance </param>
-    /// <returns> ASCIIZ typed string <c>TSTR</c> </returns>
+    /// <returns> ASCII terminated string <c>TSTR</c> </returns>
+    /// <remarks>terminated means zeroed (has <c>\0</c> at the end) </remarks>
     private static String ReadImportString(BinaryReader reader)
     {
         List<Byte> bytes = [];

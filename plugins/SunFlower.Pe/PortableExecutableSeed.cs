@@ -1,5 +1,8 @@
-﻿using SunFlower.Abstractions;
+﻿using System.Reflection.PortableExecutable;
+using SunFlower.Abstractions;
 using SunFlower.Abstractions.Attributes;
+using SunFlower.Pe.Models;
+using SunFlower.Pe.Services;
 
 namespace SunFlower.Pe;
 
@@ -20,6 +23,34 @@ public class PortableExecutableSeed : IFlowerSeed
     {
         try
         {
+            PeDumpManager dumpManager = new(path);
+            dumpManager.Initialize();
+            
+            PeExportsManager exportsManager = new(dumpManager.FileSectionsInfo, path);
+            PeImportsManager importsManager = new(dumpManager.FileSectionsInfo, path);
+            PeClrManager clrManager = new(dumpManager.FileSectionsInfo, path);
+            
+            exportsManager.Initialize();
+            importsManager.Initialize();
+            clrManager.Initialize();
+
+            PeImageModel image = new()
+            {
+                Sections = dumpManager.PeSections,
+                OptionalHeader = dumpManager.OptionalHeader,
+                OptionalHeader32 = dumpManager.OptionalHeader32,
+                FileHeader = dumpManager.FileHeader,
+                MzHeader = dumpManager.Dos2Header,
+                ExportTableModel = exportsManager.ExportTableModel,
+                ImportTableModel = importsManager.ImportTableModel,
+                CorHeader = clrManager.Cor20Header
+            };
+
+            PeTableManager manager = new(image);
+            manager.Initialize();
+            Status.Result = manager.Results.ToArray();
+            Status.IsEnabled = true;
+            
             return 0;
         }
         catch

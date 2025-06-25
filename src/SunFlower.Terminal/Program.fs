@@ -74,9 +74,9 @@ module UserInterface =
             printfn $"--- {name}"
             
             if not result.IsEnabled then
-                printfn "\tSunflower seed load failed"
+                printfn "load failed"
             elif result.Result = null || result.Result.Length = 0 then
-                printfn "\tSunflower seed has no result"
+                printfn "no result"
             else
                 result.Result
                 |> Array.iter (fun table ->
@@ -209,6 +209,8 @@ module App =
                 else None
         }
         printfn $"--- Works {initialState.ActivePlugins.Length}"
+        Console.Write("Press any key to continue . . .")
+        Console.ReadKey() |> ignore
         
         AnalysisEngine.mainLoop initialState
         0

@@ -1,6 +1,4 @@
-using System.Data;
 using SunFlower.Pe;
-using SunFlower.Pe.Models;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
 
@@ -21,7 +19,6 @@ public class Tests
         var results = FlowerSeedManager
             .CreateInstance()
             .LoadAllFlowerSeeds()
-            .UnloadUnusedSeeds()
             .Seeds;
         Assert.Pass();
     }

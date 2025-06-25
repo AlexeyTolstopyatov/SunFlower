@@ -17,24 +17,26 @@ public class Tests
     [Test]
     public void ConnectPlugin()
     {
-        FlowerSeedManager bridge = new();
-        bridge.LoadAllFlowerSeeds();
-        bridge.GetAllInvokedSeedResults(@"D:\Анализ файлов\inst\PE\acpi.sys");
+        var results = FlowerSeedManager
+            .CreateInstance()
+            .LoadAllFlowerSeeds()
+            .UnloadUnusedSeeds()
+            .Seeds;
         Assert.Pass();
     }
     [Test]
     public void CheckoutPeImage()
     {
         PortableExecutableSeed seed = new();
-        seed.Analyse(@"D:\Анализ файлов\inst\PE\acpi.sys");
+        seed.Main(@"D:\Анализ файлов\inst\PE\acpi.sys");
         
         //DataTable table = seed.Status.Result[0];
         PortableExecutableDumpManager manager = new(@"D:\Анализ файлов\inst\PE\acpi.sys");
         manager.Initialize();
 
-        PortableExecutableSectionDumpManager sectionDumpManager =
-            PortableExecutableSectionDumpManager.CreateInstance(manager.FileSectionsInfo, @"D:\Анализ файлов\inst\PE\acpi.sys");
-        sectionDumpManager.Initialize();
+        PortableExecutableExportsManager exportsManager =
+            PortableExecutableExportsManager.CreateInstance(manager.FileSectionsInfo, @"D:\Анализ файлов\inst\PE\acpi.sys");
+        exportsManager.Initialize();
         
         Assert.Pass();
     }

@@ -16,6 +16,7 @@ public interface IFlowerSeed
     /// Expected result from image diagnostics
     /// </summary>
     FlowerSeedStatus Status { get; set; }
+
     /// <summary>
     /// EntryPoint of SunFlower Plugin
     /// Must return the status <see cref="DataTable"/>
@@ -23,9 +24,4 @@ public interface IFlowerSeed
     /// <param name="path"></param>
     /// <returns></returns>
     int Main(string path);
-    /// <summary>
-    /// Finds result of analysing target binary
-    /// </summary>
-    /// <param name="path"></param>
-    void Analyse(string path);
 }

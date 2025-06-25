@@ -11,5 +11,17 @@ public interface IFlowerSeedManager
     /// <summary>
     /// Checks and collects all Flower seeds to HashSet
     /// </summary>
-    void LoadAllFlowerSeeds();
+    IFlowerSeedManager LoadAllFlowerSeeds();
+    /// <summary>
+    /// If loaded plugin has zero result -> removes it from list
+    /// </summary>
+    /// <returns></returns>
+    IFlowerSeedManager UnloadUnusedSeeds();
+    /// <summary>
+    /// Returns entry table (status of all Main prcedures)
+    /// </summary>
+    /// <param name="targetingFile"></param>
+    /// <returns></returns>
+    Dictionary<string, int> GetAllInvokedSeedResults(string targetingFile);
+
 }

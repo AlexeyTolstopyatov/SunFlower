@@ -2,9 +2,9 @@
 
 namespace SunFlower.Pe.Headers;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct PeDirectory
 {
-    [FieldOffset(0x0)] public UInt32 VirtualAddress;
-    [FieldOffset(0x4)] public UInt32 Size;
+    public UInt32 VirtualAddress;
+    public UInt32 Size;
 }

@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using SunFlower.Abstractions;
 
@@ -23,7 +22,7 @@ public class FlowerSeedManager : IFlowerSeedManager
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
-    public void LoadAllFlowerSeeds()
+    public IFlowerSeedManager LoadAllFlowerSeeds()
     {
         Seeds = []; // again!
         string seedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
@@ -31,7 +30,7 @@ public class FlowerSeedManager : IFlowerSeedManager
         if (!Directory.Exists(seedPath))
         {
             Debug.WriteLine("Plugins directory not found");
-            return;
+            return this;
         }
 
         foreach (string dllPath in Directory.EnumerateFiles(seedPath, "*.dll", SearchOption.AllDirectories))
@@ -61,6 +60,8 @@ public class FlowerSeedManager : IFlowerSeedManager
                 Debug.WriteLine($"Error loading {dllPath}: {ex.Message}");
             }
         }
+
+        return this;
     }
     /// <summary>
     /// Executes all seeds and returns status table
@@ -87,14 +88,16 @@ public class FlowerSeedManager : IFlowerSeedManager
         return results;
     }
     /// <summary>
-    /// Invoke sunflower seed "by hand" for targeting file
+    /// All plugins having 0 result <c>IsResultExists</c> not true
+    /// will be removed from list
     /// </summary>
-    /// <param name="path">file target</param>
-    /// <param name="seed">targeting seed</param>
     /// <returns>Action result</returns>
-    public FlowerSeedStatus GetInvokedFlowerSeedResult(IFlowerSeed seed, string path)
+    public IFlowerSeedManager UnloadUnusedSeeds()
     {
-        seed.Main(path);
-        return seed.Status;
+        Seeds = Seeds
+            .Where(s => s.Status.IsResultExists)
+            .Distinct()
+            .ToList();
+        return this;
     }
 }

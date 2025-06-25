@@ -1,6 +1,6 @@
 ﻿namespace SunFlower.Pe.Headers;
 
-public struct PeImportDescriptor32
+public struct PeImportDescriptor
 {
     public UInt32 OriginalFirstThunk;
     public UInt32 TimeDateStamp;

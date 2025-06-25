@@ -1,11 +1,18 @@
-﻿using System.Runtime.InteropServices;
-using SunFlower.Pe.Headers;
+﻿using SunFlower.Pe.Headers;
 using SunFlower.Pe.Models;
 using FileStream = System.IO.FileStream;
 
 namespace SunFlower.Pe.Services;
 
-public class PortableExecutableDumpManager(string path) : IManager
+///
+/// CoffeeLake 2024-2025
+/// This code is JellyBins part for dumping
+/// Windows PE32/+ images.
+///
+/// Licensed under MIT
+///
+
+public class PortableExecutableDumpManager(string path) : UnsafeManager, IManager
 {
     public static PortableExecutableDumpManager CreateInstance(string path) => new(path);
     public MzHeader Dos2Header { get; set; }
@@ -14,7 +21,6 @@ public class PortableExecutableDumpManager(string path) : IManager
     public PeOptionalHeader OptionalHeader { get; set; }
     public PeDirectory[] PeDirectories { get; set; } = [];
     public PeSection[] PeSections { get; set; } = [];
-    public PeImageExportDirectory ExportDirectory { get; set; }
     public FileSectionsInfo FileSectionsInfo { get; set; } = new();
     public bool Is64Bit { get; set; }
 
@@ -42,6 +48,7 @@ public class PortableExecutableDumpManager(string path) : IManager
             Directories = PeDirectories,
             NumberOfSections = FileHeader.NumberOfSections,
             NumberOfRva = Is64Bit ? OptionalHeader.NumberOfRvaAndSizes : OptionalHeader32.NumberOfRvaAndSizes,
+            Is64Bit = Is64Bit
         };
         
         FileSectionsInfo = info;
@@ -97,17 +104,5 @@ public class PortableExecutableDumpManager(string path) : IManager
         }
 
         PeSections = sections.ToArray();
-    }
-    /// <param name="reader"><see cref="BinaryReader"/> instance</param>
-    /// <typeparam name="TStruct">structure</typeparam>
-    /// <returns></returns>
-    private TStruct Fill<TStruct>(BinaryReader reader) where TStruct : struct
-    {
-        Byte[] bytes = reader.ReadBytes(Marshal.SizeOf(typeof(TStruct)));
-        GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-        TStruct result = Marshal.PtrToStructure<TStruct>(handle.AddrOfPinnedObject());
-        handle.Free();
-        
-        return result;
     }
 }

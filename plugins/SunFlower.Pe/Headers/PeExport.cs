@@ -17,10 +17,3 @@ public struct PeImageExportDirectory
     public UInt32 AddressOfNames;     // RVA массива имен функций
     public UInt32 AddressOfNameOrdinals; // RVA массива ординалов
 }
-
-public class ExportFunction
-{
-    public String Name { get; set; } = String.Empty;
-    public UInt32 Ordinal { get; set; }
-    public UInt64 Address { get; set; }
-}

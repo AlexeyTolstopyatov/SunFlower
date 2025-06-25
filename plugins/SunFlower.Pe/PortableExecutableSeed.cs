@@ -1,34 +1,16 @@
-﻿using System.Data;
-using System.Diagnostics;
-using SunFlower.Abstractions;
+﻿using SunFlower.Abstractions;
+using SunFlower.Abstractions.Attributes;
 
 namespace SunFlower.Pe;
 
 /// <summary>
 /// Template of IFlowerSeed implementation.
 /// </summary>
+[FlowerSeedContract(Version = "1.2")] // <-- important flags
 public class PortableExecutableSeed : IFlowerSeed
 {
     public string Seed => "Sunflower seed Windows PE IA-32(e)";
     public FlowerSeedStatus Status { get; set; } = new FlowerSeedStatus();
-
-    /// <summary>
-    /// Second important functional
-    /// Finds and fills <see cref="Status"/>
-    /// </summary>
-    /// <param name="path"></param>
-    public void Analyse(string path)
-    {
-        try
-        {
-            
-        }
-        catch (Exception ex)
-        {
-            Debug.Write($"Plugin: {ex}");
-            Status.IsEnabled = false;
-        }
-    }
     
     /// <summary>
     /// EntryPoint returns Status Table 
@@ -38,8 +20,7 @@ public class PortableExecutableSeed : IFlowerSeed
     {
         try
         {
-            Analyse(path);
-            return Status.IsEnabled ? 0 : 1;
+            return 0;
         }
         catch
         {

@@ -5,10 +5,11 @@ namespace SunFlower.Pe.Models;
 
 /// <summary>
 /// Important details about PE32/+
-/// for <see cref="PortableExecutableSectionDumpManager"/>
+/// for <see cref="PortableExecutableExportsManager"/>
 /// </summary>
 public class FileSectionsInfo
 {
+    public bool Is64Bit { get; set; }
     public UInt32 NumberOfSections { get; set; }
     public UInt32 NumberOfRva { get; set; }
     

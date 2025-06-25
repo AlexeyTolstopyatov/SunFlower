@@ -92,7 +92,7 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
 
         List<ImportedFunction> functions = [];
         functions.AddRange(oft);
-        functions.AddRange(ft);
+        // functions.AddRange(ft); // <-- may contains duplicates of imported entries
 
         return new ImportModule { DllName = dllName, Functions = functions };
     }
@@ -103,47 +103,56 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
     /// <returns>List of imported functions</returns>
     private List<ImportedFunction> ReadThunk(BinaryReader reader, UInt32 thunkRva, String tag)
     {
-        UInt32 sizeOfThunk = (UInt32) (_info.Is64Bit ? 0x8 : 0x4); // Size of ImageThunkData
-        UInt64 ordinalBit = _info.Is64Bit ? 0x8000000000000000 : 0x80000000;
-        UInt64 ordinalMask = (UInt64) (_info.Is64Bit ? 0x7FFFFFFFFFFFFFFF : 0x7FFFFFFF);
-        
-        List<ImportedFunction> result = [];
+        int sizeOfThunk = _info.Is64Bit ? 8 : 4;
+        ulong ordinalBit = _info.Is64Bit ? 0x8000000000000000 : 0x80000000;
+        ulong ordinalMask = _info.Is64Bit ? 0x7FFFFFFFFFFFFFFFu : 0x7FFFFFFFu;
+    
+        List<ImportedFunction> result = new List<ImportedFunction>();
         if (thunkRva == 0) 
             return result;
+    
         try
         {
-            Int64 thunkOffset = Offset(thunkRva);
+            long thunkOffset = Offset(thunkRva);
             while (true)
             {
                 reader.BaseStream.Position = thunkOffset;
-                UInt32 thunkData = reader.ReadUInt32();
-                if (thunkData == 0) 
+            
+                ulong thunkValue = _info.Is64Bit 
+                    ? reader.ReadUInt64() 
+                    : reader.ReadUInt32();
+            
+                if (thunkValue == 0) 
                     break;
-
-                Int64 nameAddr = Offset(thunkData);
-                reader.BaseStream.Position = nameAddr;
                 
-                UInt16 hint = reader.ReadUInt16();
-
-                if ((thunkData & ordinalBit) != 0)
+                // IMPORT by @ordinal
+                if ((thunkValue & ordinalBit) != 0)
                 {
                     result.Add(new ImportedFunction
                     {
-                        Name = $"@{thunkData & ordinalMask}",
-                        Ordinal = (uint)(thunkData & ordinalMask),
-                        Hint = hint,
-                        Address = nameAddr
+                        Name = $"@{thunkValue & ordinalMask}",
+                        Ordinal = (uint)(thunkValue & ordinalMask),
+                        Hint = 0,
+                        Address = thunkValue
                     });
                 }
+                // IMPORT by name
                 else
                 {
+                    long nameAddr = Offset((uint)thunkValue);
+                    reader.BaseStream.Position = nameAddr;
+                
+                    ushort hint = reader.ReadUInt16();
+                    string name = ReadImportString(reader);
+                
                     result.Add(new ImportedFunction
                     {
-                        Name = ReadImportString(reader),
+                        Name = name,
                         Hint = hint,
-                        Address = nameAddr
+                        Address = thunkValue
                     });
                 }
+            
                 thunkOffset += sizeOfThunk;
             }
         }

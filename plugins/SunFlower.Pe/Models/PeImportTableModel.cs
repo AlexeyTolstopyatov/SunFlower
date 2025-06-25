@@ -18,5 +18,5 @@ public class ImportedFunction
     public String Name { get; set; } = string.Empty;
     public UInt32 Ordinal { get; set; } // Changed u64 -> u32
     public UInt16 Hint { get; set; }
-    public Int64 Address { get; set; }
+    public UInt64 Address { get; set; }
 }

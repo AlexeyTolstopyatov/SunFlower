@@ -28,7 +28,7 @@ public class Tests
     [Test]
     public void CheckoutPeImage()
     {
-        string path = @"D:\GitHub\Esox-math\Esox\bin\Debug\net6.0-windows\Esox.dll";
+        string path = @"D:\Projects\vb\Semi VB Decompiler\ApiLoader.exe";
         PortableExecutableSeed seed = new();
         seed.Main(path);
         

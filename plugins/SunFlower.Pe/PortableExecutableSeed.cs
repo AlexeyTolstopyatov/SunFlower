@@ -12,7 +12,7 @@ namespace SunFlower.Pe;
 [FlowerSeedContract(Version = "1.2")] // <-- important flags
 public class PortableExecutableSeed : IFlowerSeed
 {
-    public string Seed => "Sunflower seed Windows PE IA-32(e)";
+    public string Seed => "Sunflower Windows PE32/+ IA-32(e)";
     public FlowerSeedStatus Status { get; set; } = new FlowerSeedStatus();
     
     /// <summary>
@@ -53,8 +53,9 @@ public class PortableExecutableSeed : IFlowerSeed
             
             return 0;
         }
-        catch
+        catch (Exception e)
         {
+            Status.LastError = e;
             return -1;
         }
     }

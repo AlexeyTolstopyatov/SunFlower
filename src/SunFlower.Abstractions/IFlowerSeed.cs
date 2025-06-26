@@ -16,7 +16,6 @@ public interface IFlowerSeed
     /// Expected result from image diagnostics
     /// </summary>
     FlowerSeedStatus Status { get; set; }
-
     /// <summary>
     /// EntryPoint of SunFlower Plugin
     /// Must return the status <see cref="DataTable"/>

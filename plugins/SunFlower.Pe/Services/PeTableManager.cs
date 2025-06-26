@@ -6,7 +6,7 @@ namespace SunFlower.Pe.Services;
 
 public class PeTableManager(PeImageModel model) : IManager
 {
-    public List<DataTable> Results { get; set; }
+    public List<DataTable> Results { get; set; } = [];
     public bool Is64Bit { get; } = (model.FileHeader.Characteristics & 0x100) == 0;
 
     public void Initialize()
@@ -19,7 +19,8 @@ public class PeTableManager(PeImageModel model) : IManager
             MakeCor20Header();
         
     }
-    public void MakeHeadersTables()
+
+    private void MakeHeadersTables()
     {
         DataTable meta = new()
         {

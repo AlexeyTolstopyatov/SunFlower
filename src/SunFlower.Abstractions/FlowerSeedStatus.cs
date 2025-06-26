@@ -31,4 +31,8 @@ public sealed class FlowerSeedStatus : MarshalByRefObject
     /// Results array of external DLL
     /// </summary>
     public DataTable[] Result { get; set; } = [];
+    /// <summary>
+    /// Stores last exception or exceptions chain
+    /// </summary>
+    public Exception? LastError { get; set; }
 }

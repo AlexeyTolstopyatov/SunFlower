@@ -1,12 +1,91 @@
 ﻿namespace SunFlower.Terminal
 
 open System
+open System.Collections.Generic
 open System.Data
 open System.Diagnostics
 open System.IO
 open System.Reflection
 open SunFlower.Abstractions
 
+///
+/// CoffeeLake (C) 2024-2025
+/// This module belongs JellyBins
+/// Licensed under MIT
+///
+/// Module represents functional for printing
+/// <see cref="DataTable"/>s, <see cref="Dictionary"/>
+/// structures and will be extended later
+/// 
+module DataView =
+    /// <summary>
+    /// Prints dictionary as table without delimeters
+    /// </summary>
+    /// <param name="d"></param>
+    let printDictionary (d: Dictionary<string, string>) : unit =
+        for KeyValue(k, v) in d do
+            printfn $"{k}\t{v}"
+    /// Prepares and prints <see cref="DataTable"/> instance
+    /// as Markdown Table
+    /// </summary>
+    /// <param name="table"></param>
+    let printDataTable (table: DataTable) =
+        let safeToString (value: obj) =
+            if Convert.IsDBNull(value) then
+                " " // Empty cell (<null> dont need anymore)
+            else
+                $"%O{value}"
+
+        let rows = table.Rows
+                    |> Seq.cast<DataRow>
+        let columns = table.Columns
+                    |> Seq.cast<DataColumn>
+
+        let columnWidths =
+            columns
+            |> Seq.map (fun col ->
+                let headerWidth = col.ColumnName.Length
+                let contentWidth = 
+                    rows
+                    |> Seq.map (fun row -> safeToString row[col] |> String.length)
+                    |> Seq.append [headerWidth]
+                    |> Seq.max
+                (col.Ordinal, (contentWidth + 2))
+            )
+            |> Map.ofSeq
+
+        let _formatString =
+            columns
+            |> Seq.map (fun col -> 
+                let width = columnWidths[col.Ordinal] - 4
+                sprintf "| %%-%ds " width 
+            )
+            |> String.concat ""
+            |> fun s -> s + "|"
+            
+        columns
+            |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
+            |> String.concat " | "
+            |> printfn "| %s |"
+
+        columns
+            |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
+            |> String.concat "-|-"
+            |> printfn "|-%s-|"
+
+        rows
+            |> Seq.iter (fun row ->
+                columns
+                |> Seq.map (fun col ->
+                    row[col]
+                    |> safeToString
+                    |> _.PadRight(columnWidths[col.Ordinal] - 2)
+                )
+                |> String.concat " | "
+                |> printfn "| %s |"
+            )
+        printfn ""
+    ()
 ///
 /// CoffeeLake (C) 2025
 ///
@@ -17,7 +96,6 @@ open SunFlower.Abstractions
 /// libraries compatible with the IFlowerSeed
 /// interface for further user intentions.
 ///
-
 module UserInterface =
     
     type AppState = {
@@ -71,33 +149,20 @@ module UserInterface =
                 if result.IsEnabled then ConsoleColor.Green 
                 else ConsoleColor.Yellow
             
-            printfn $"--- {name}"
+            printfn $"-> {name}"
             
             if not result.IsEnabled then
                 printfn "load failed"
+                printfn "\n---Seed Exceptions chain starts---"
+                printfn $"{result.LastError}"
+                printfn "---Seed Exception chains ends---"
             elif result.Result = null || result.Result.Length = 0 then
                 printfn "no result"
-            else
+            else // <-- plugin has results
                 result.Result
                 |> Array.iter (fun table ->
                     printfn $"\n{table.TableName.ToUpper()}"
-                    
-                    // Headers
-                    table.Columns
-                    |> Seq.cast<DataColumn>
-                    |> Seq.iter (fun col -> printf $"{col.ColumnName, -15}")
-                    
-                    let del = "-" |> String.replicate (15 * table.Columns.Count)
-                    printfn $"\n %s{del}"
-                    
-                    // Rows
-                    table.Rows
-                    |> Seq.cast<DataRow>
-                    |> Seq.iter (fun row ->
-                        row.ItemArray
-                        |> Array.iter (fun item -> printf $"{item, -15}")
-                        printfn ""
-                    )
+                    DataView.printDataTable table
                 )
         )
         
@@ -107,19 +172,20 @@ module UserInterface =
 open UserInterface
 module AnalysisEngine =
     let analyzeFile (plugins: IFlowerSeed list) filePath =
-        printfn $"Starting analysis of %s{ FileInfo(filePath).Name }"
+        printfn $"Processing %s{ FileInfo(filePath).Name }"
         
         plugins
         |> List.map (fun plugin ->
             async {
                 try
-                    printfn $"Starting plugin: {plugin.Seed}"
+                    printfn $"Calling plugin: {plugin.Seed}"
                     plugin.Main(filePath) |> ignore // just call it 
                     return (plugin.Seed, plugin.Status)
                 with ex ->
                     return (plugin.Seed, FlowerSeedStatus(
                         IsEnabled = false,
-                        Result = [||]
+                        Result = [||],
+                        LastError = ex
                     ))
             }
         )
@@ -208,9 +274,13 @@ module App =
                 then Some args[0] 
                 else None
         }
-        printfn $"--- Works {initialState.ActivePlugins.Length}"
+        printfn $"--- Initial Tracing"
+        printfn $"{initialState}"
+        
+        #if DEBUG
         Console.Write("Press any key to continue . . .")
         Console.ReadKey() |> ignore
+        #endif
         
         AnalysisEngine.mainLoop initialState
         0

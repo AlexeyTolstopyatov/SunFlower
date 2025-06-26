@@ -1,0 +1,4 @@
+#
+# Semi VB Decompiler CSV data
+#   
+*.csv linguist-detectable=true

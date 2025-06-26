@@ -10,7 +10,7 @@ open SunFlower.Abstractions
 
 ///
 /// CoffeeLake (C) 2024-2025
-/// This module belongs JellyBins
+/// This module partical belongs JellyBins
 /// Licensed under MIT
 ///
 /// Module represents functional for printing
@@ -19,7 +19,7 @@ open SunFlower.Abstractions
 /// 
 module DataView =
     /// <summary>
-    /// Prints dictionary as table without delimeters
+    /// Prints dictionary as table without delimiters
     /// </summary>
     /// <param name="d"></param>
     let printDictionary (d: Dictionary<string, string>) : unit =
@@ -109,11 +109,11 @@ module UserInterface =
         let opt = Option.defaultValue "NONE" state.CurrentFile
         
         Console.ForegroundColor <- ConsoleColor.Yellow
-        printfn $"--- Required foundation build: %s{FileVersionInfo.GetVersionInfo(Assembly.GetCallingAssembly().Location).FileVersion}"
+        printfn $"--- Required Abstractions.dll build: %s{FileVersionInfo.GetVersionInfo(Assembly.GetCallingAssembly().Location).FileVersion}"
         Console.ResetColor()
         
         
-        printfn "=== SunFlower Firmware Analyzer ==="
+        printfn "=== SunFlower main menu ==="
         printfn $"File: %s{opt}" // !!!
         printfn $"Active plugins: {state.ActivePlugins.Length}"
         printfn "----------------------------------------"

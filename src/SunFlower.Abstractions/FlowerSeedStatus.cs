@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using SunFlower.Abstractions.Types;
+
 //
 // CoffeeLake (C) 2025
 // 
@@ -26,11 +28,11 @@ public sealed class FlowerSeedStatus : MarshalByRefObject
     /// Count of results is zero -> connection failed
     /// returns false. 
     /// </summary>
-    public bool IsResultExists => Result.Length != 0;
+    public bool IsResultExists => Results.Count != 0;
     /// <summary>
     /// Results array of external DLL
     /// </summary>
-    public DataTable[] Result { get; set; } = [];
+    public List<FlowerSeedResult> Results { get; set; } = [];
     /// <summary>
     /// Stores last exception or exceptions chain
     /// </summary>

@@ -7,10 +7,11 @@ open System.Diagnostics
 open System.IO
 open System.Reflection
 open SunFlower.Abstractions
+open SunFlower.Abstractions.Types
 
 ///
 /// CoffeeLake (C) 2024-2025
-/// This module partical belongs JellyBins
+/// This module particular belongs JellyBins
 /// Licensed under MIT
 ///
 /// Module represents functional for printing
@@ -98,6 +99,7 @@ module DataView =
 ///
 module UserInterface =
     
+    
     type AppState = {
         Plugins: IFlowerSeed list
         ActivePlugins: IFlowerSeed list
@@ -120,7 +122,7 @@ module UserInterface =
         printfn "[A] Analyze file"
         printfn "[P] Select plugins"
         printfn "[F] Select file"
-        printfn "[R] Show results"
+        printfn "[W] Write results"
         printfn "[Q] Quit"
         printfn "----------------------------------------"
         printf "Select option: "
@@ -144,28 +146,34 @@ module UserInterface =
         Console.Clear()
         
         results
-        |> List.iter (fun (name, result) ->
+        |> List.iter (fun (name, status) ->
             Console.ForegroundColor <- 
-                if result.IsEnabled then ConsoleColor.Green 
+                if status.IsEnabled then ConsoleColor.Green 
                 else ConsoleColor.Yellow
             
             printfn $"-> {name}"
+            Console.ResetColor()
             
-            if not result.IsEnabled then
-                printfn "load failed"
-                printfn "\n---Seed Exceptions chain starts---"
-                printfn $"{result.LastError}"
+            if not status.IsEnabled then
+                printfn "---Seed Exceptions chain starts---"
+                printfn $"{status.LastError}"
                 printfn "---Seed Exception chains ends---"
-            elif result.Result = null || result.Result.Length = 0 then
-                printfn "no result"
-            else // <-- plugin has results
-                result.Result
-                |> Array.iter (fun table ->
-                    printfn $"\n{table.TableName.ToUpper()}"
-                    DataView.printDataTable table
+            else
+                status.Results
+                |> Seq.toArray
+                |> Seq.iter (fun result ->
+                    match result.Type with
+                    | FlowerSeedEntryType.Text ->
+                        let textResult = result.BoxedResult :?> string[]
+                        textResult |> Array.iter (printfn "%s")
+                    
+                    | FlowerSeedEntryType.DataTables ->
+                        let tables = result.BoxedResult :?> List<DataTable> // <-- evil F# list casting hack
+                        tables |> Seq.iter DataView.printDataTable
+                    | _ -> 
+                        printfn $"Unsupported type: {result.Type}"
                 )
-        )
-        
+            )
         printfn "\nPress any key to continue..."
         Console.ReadKey() |> ignore
 
@@ -179,12 +187,12 @@ module AnalysisEngine =
             async {
                 try
                     printfn $"Calling plugin: {plugin.Seed}"
-                    plugin.Main(filePath) |> ignore // just call it 
+                    plugin.Main(filePath) |> ignore 
                     return (plugin.Seed, plugin.Status)
                 with ex ->
                     return (plugin.Seed, FlowerSeedStatus(
                         IsEnabled = false,
-                        Result = [||],
+                        Results = List<FlowerSeedResult>(),
                         LastError = ex
                     ))
             }
@@ -243,9 +251,12 @@ module AnalysisEngine =
                 Console.ReadKey() |> ignore
                 mainLoop state
         
-        | 'r' | 'R' ->
+        | 'w' | 'W' ->
             match state.CurrentFile, state.ActivePlugins with
             | Some file, plugins when not (List.isEmpty plugins) ->
+                printf "Enter file path: "
+                let path = Console.ReadLine()
+                
                 let results = analyzeFile plugins file
                 showAnalysisResults results
                 mainLoop state

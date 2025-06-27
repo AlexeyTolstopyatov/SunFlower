@@ -7,6 +7,10 @@ using System.Data;
 public enum FlowerSeedEntryType
 {
     /// <summary>
+    /// Specifies the unknown or null result of operation
+    /// </summary>
+    Empty,
+    /// <summary>
     /// If one of results has this type,
     /// it must be unboxed to <see cref="DataTable"/>[]
     /// </summary>
@@ -16,4 +20,8 @@ public enum FlowerSeedEntryType
     /// be unboxed to <see cref="byte"/>[]
     /// </summary>
     RawBytes,
+    /// <summary>
+    /// Just string
+    /// </summary>
+    Text,
 }

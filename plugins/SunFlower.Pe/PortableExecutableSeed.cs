@@ -1,6 +1,6 @@
-﻿using System.Reflection.PortableExecutable;
-using SunFlower.Abstractions;
+﻿using SunFlower.Abstractions;
 using SunFlower.Abstractions.Attributes;
+using SunFlower.Abstractions.Types;
 using SunFlower.Pe.Models;
 using SunFlower.Pe.Services;
 
@@ -48,7 +48,25 @@ public class PortableExecutableSeed : IFlowerSeed
 
             PeTableManager manager = new(image);
             manager.Initialize();
-            Status.Result = manager.Results.ToArray();
+            
+            FlowerSeedResult start = new()
+            {
+                Type = FlowerSeedEntryType.Text,
+                BoxedResult = new string[]
+                {
+                    "### Image structure details", 
+                    $"Target: `{new FileInfo(path).Name}`", 
+                    $"Target size: `{new FileInfo(path).Length / 1024}K`"
+                }
+            };
+            FlowerSeedResult tables = new()
+            {
+                Type = FlowerSeedEntryType.DataTables,
+                BoxedResult = manager.Results
+            };
+            Status.Results.Add(start);
+            Status.Results.Add(tables);
+            
             Status.IsEnabled = true;
             
             return 0;

@@ -22,19 +22,13 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeHeadersTables()
     {
-        DataTable meta = new()
-        {
-            TableName = "Dumper Metadata",
-            Columns = { "Name", "Address", "Size" }
-        };
-        
         DataTable dosHeader = MakeDosHeader();
         DataTable fileHeader = MakeFileHeader();
         DataTable optionalHeader = Is64Bit
             ? MakeOptionalHeader()
             : MakeOptional32Header();
         
-        List<DataTable> dts = [meta, dosHeader, fileHeader, optionalHeader];
+        List<DataTable> dts = [dosHeader, fileHeader, optionalHeader];
         
         if (model.CorHeader.SizeOfHead == 0x48) // <-- always true if .NET
         {
@@ -245,6 +239,10 @@ public class PeTableManager(PeImageModel model) : IManager
     
     private void MakeExports()
     {
+        if (model.ExportTableModel.Functions.Count == 0)
+            return;
+        
+        
         DataTable exports = new()
         {
             TableName = "Export Directory",
@@ -282,6 +280,9 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeImports()
     {
+        if (model.ImportTableModel.Modules.Count == 0)
+            return;
+        
         DataTable imports = new()
         {
             TableName = "Import Names Summary",

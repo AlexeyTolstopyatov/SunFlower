@@ -22,6 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\plugins\SunFlower.Ne\SunFlower.Ne.csproj" />
       <ProjectReference Include="..\..\plugins\SunFlower.Pe\SunFlower.Pe.csproj" />
       <ProjectReference Include="..\..\src\SunFlower\SunFlower.csproj" />
     </ItemGroup>

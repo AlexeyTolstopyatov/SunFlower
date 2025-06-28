@@ -45,4 +45,12 @@ public class Tests
         
         Assert.Pass();
     }
+    [Test]
+    public void CheckoutNeImage()
+    {
+        string path = @"D:\Анализ файлов\inst\NE\CLOCK.EXE";
+        SunFlower.Ne.Services.NeDumpManager manager = new(path);
+        
+        Assert.Pass();
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Text;
 using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
@@ -10,14 +11,11 @@ public class NeDumpManager : UnsafeManager
     public MzHeader MzHeader { get; set; }
     public NeHeader NeHeader { get; set; }
     public NeSegmentInfo[] Segments { get; set; } = [];
-    public NeImport[] ImportingModules { get; set; } = [];
-    public NeImport[] ImportingFunctions { get; set; } = [];
+    
+    public NeImportModel[] ImportModels { get; set; } = [];
     public NeExport[] ExportingFunctions { get; set; } = [];
     public NeModule[] ModuleReferences { get; set; } = [];
     public List<NeSegmentModel> SegmentModels { get; set; } = [];
-
-    public List<NeEntriesTableFixedItem> FixedItems { get; set; } = [];
-    public List<NeEntriesTableMovableItem> MovableItems { get; set; } = [];
     public List<NeEntryTableModel> EntryTableItems { get; set; } = [];
 
     private UInt32 _offset = 0;
@@ -55,7 +53,7 @@ public class NeDumpManager : UnsafeManager
         FillModuleReferences(reader);
         FillEntries(reader);
         FillNonResidentNames(reader);
-        
+        FillImports(reader);
     }
 
     private void FillSegments(BinaryReader reader)
@@ -102,40 +100,55 @@ public class NeDumpManager : UnsafeManager
 
     private void FillEntries(BinaryReader reader)
     {
+        reader.BaseStream.Position = Offset(NeHeader.enttab);
+        
         List<NeEntryTableModel> entries = [];
-        List<NeEntriesTableItem> items = [];
-        List<NeEntriesTableFixedItem> fixedItems = [];
-        List<NeEntriesTableMovableItem> movableItems = [];
+        long startPos = reader.BaseStream.Position;
+        long endPos = startPos + NeHeader.cbenttab; // debug
 
-        // Seek Items in EntryTable
-        for (Int32 i = 0; i < NeHeader.cbenttab; i++)
+        while (reader.BaseStream.Position < endPos)
         {
-            NeEntriesTableItem item = Fill<NeEntriesTableItem>(reader);
+            byte entryCount = reader.ReadByte();
+            if (entryCount == 0) break; // <-- entry count = 0;
 
-            items.Add(item);
-            switch (item.SegmentIndicator)
+            byte segmentIndicator = reader.ReadByte();
+
+            for (int i = 0; i < entryCount; i++)
             {
-                case 0:
-                    break;
-                case > 0x001 and <= 0x0FE:
-                    NeEntriesTableFixedItem fitem = Fill<NeEntriesTableFixedItem>(reader);
-                    fixedItems.Add(fitem);
-                    entries.Add(new(false, fitem.FlagWord)
-                    {
-                        Offset = fitem.Offset,
-                        Segment = 0
-                    });
-                    break;
-                default:
-                    NeEntriesTableMovableItem mitem = Fill<NeEntriesTableMovableItem>(reader);
-                    movableItems.Add(mitem);
-                    entries.Add(new(true, mitem.FlagWord)
-                    {
-                        Offset = mitem.Offset,
-                        Segment = mitem.SegmentNumber,
-                        //MovableInstruction = mitem.Instruction
-                    });
-                    break;
+                switch (segmentIndicator)
+                {
+                    case 0: // Unused entry
+                        entries.Add(new NeEntryTableModel(isUnused: true, isMovable: false, 0));
+                        break;
+
+                    case < 0xFE: // Fixed segment
+                        Byte flags = reader.ReadByte();
+                        UInt16 offset = reader.ReadUInt16();
+                    
+                        entries.Add(new NeEntryTableModel(isUnused: false, isMovable: false, flags)
+                        {
+                            Segment = segmentIndicator,
+                            Offset = offset
+                        });
+                        break;
+                    case 0xFF: // Movable segment
+                        Byte moveableFlags = reader.ReadByte();
+                        Byte int3F = reader.ReadByte();
+                        UInt32 addr = reader.ReadUInt16(); // must be 0x3F
+                        Byte segment = reader.ReadByte();
+                        UInt16 moveableOffset = reader.ReadUInt16();
+    
+                        // check
+                        if(int3F != 0xCD && addr != 0x3F) // INT 
+                            Debug.Write($"Invalid marker: 0x{int3F:X} 0x{addr:X}");
+    
+                        entries.Add(new NeEntryTableModel(isUnused: false, isMovable: true, moveableFlags)
+                        {
+                            Segment = segment,
+                            Offset = moveableOffset,
+                        });
+                        break;
+                }
             }
         }
 
@@ -144,7 +157,7 @@ public class NeDumpManager : UnsafeManager
 
     private void FillNonResidentNames(BinaryReader reader)
     {
-        List<NeExport> exports = new();
+        List<NeExport> exports = [];
 
         if (NeHeader.cbnrestab == 0)
             return;
@@ -163,26 +176,77 @@ public class NeDumpManager : UnsafeManager
                 Ordinal = ordinal
             });
         }
-    }
 
-    private void FillImportingModules(BinaryReader reader)
+        ExportingFunctions = exports.ToArray();
+    }
+    
+    private void FillImports(BinaryReader reader)
     {
-        List<NeImport> imports = [];
+        List<NeImportModel> imports = new List<NeImportModel>();
+        UInt32 importTableOffset = Offset(NeHeader.imptab);
+        
         foreach (NeModule neModule in ModuleReferences)
         {
-            reader.BaseStream.Position = Offset(NeHeader.imptab) + neModule.ImportOffset;
-            Byte nameLength = reader.ReadByte();
-            String moduleName = new(reader.ReadChars(nameLength));
-
-            NeImport module = new()
-            {
-                Name = moduleName,
-                NameLength = nameLength
-            };
+            reader.BaseStream.Position = importTableOffset + neModule.ImportOffset;
             
-            imports.Add(module);
-        }
+            byte nameLen = reader.ReadByte();
+            string moduleName = new(reader.ReadChars(nameLen));
+            
+            NeImportModel moduleImport = new()
+            {
+                DllName = moduleName,
+                Functions = []
+            };
 
-        ImportingModules = imports.ToArray();
+            while (true)
+            {
+                byte funcLen = reader.ReadByte();
+                if (funcLen == 0) break;
+                
+                bool isOrdinal = (funcLen & 0x80) != 0;
+                Byte realLength = (Byte)(funcLen & 0x7F);
+                
+                if (isOrdinal)
+                {
+                    ushort ordinal = reader.ReadUInt16();
+                    moduleImport.Functions.Add(new ImportingFunction
+                    {
+                        Name = $"@{ordinal}",
+                        Ordinal = ordinal
+                    });
+                }
+                else
+                {
+                    string funcName = Encoding.ASCII.GetString(reader.ReadBytes(realLength));
+                    moduleImport.Functions.Add(new ImportingFunction
+                    {
+                        Name = funcName,
+                        Ordinal = 0
+                    });
+                }
+            }
+            
+            imports.Add(moduleImport);
+        }
+        
+        ImportModels = imports.ToArray();
+        ResolveImports();
+    }
+    private void ResolveImports()
+    {
+        foreach (NeImportModel module in ImportModels)
+        {
+            foreach (ImportingFunction func in module.Functions.Where(f => f.Ordinal > 0))
+            {
+                int entryIndex = func.Ordinal - 1; // @ordinals starts from 1 _(not 0)
+            
+                if (entryIndex < EntryTableItems.Count)
+                {
+                    NeEntryTableModel entry = EntryTableItems[entryIndex];
+                    func.Segment = entry.Segment;
+                    func.Offset = entry.Offset;
+                }
+            }
+        }
     }
 }

@@ -1,10 +1,12 @@
 ﻿namespace SunFlower.Ne.Models;
 
-public class NeEntryTableModel(bool isMovable, Byte flags)
+public class NeEntryTableModel(bool isUnused, bool isMovable, Byte flags)
 {
-    public String Type { get; set; } = !isMovable
-        ? "Fixed"
-        : "Movable";
+    public String Type { get; set; } = !isUnused
+        ? isMovable 
+            ? "Movable" 
+            : "Fixed"
+        : "Unused";
     public String Data { get; set; } = (flags & 0x02) != 0
         ? "Shared"
         : "Single";

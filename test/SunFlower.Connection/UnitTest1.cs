@@ -48,7 +48,8 @@ public class Tests
     [Test]
     public void CheckoutNeImage()
     {
-        string path = @"D:\Анализ файлов\inst\NE\CLOCK.EXE";
+        string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
+        //string path = @"D:\Projects\WINFO\VB3PRJ.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
         
         Assert.Pass();

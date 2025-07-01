@@ -140,7 +140,7 @@ public class NeDumpManager : UnsafeManager
     
                         // check
                         if(int3F != 0xCD && addr != 0x3F) // INT 
-                            Debug.Write($"Invalid marker: 0x{int3F:X} 0x{addr:X}");
+                            Debug.Print($"Invalid marker: 0x{int3F:X} 0x{addr:X}");
     
                         entries.Add(new NeEntryTableModel(isUnused: false, isMovable: true, moveableFlags)
                         {

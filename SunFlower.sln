@@ -22,6 +22,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Terminal", "src\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunFlower.Ne", "plugins\SunFlower.Ne\SunFlower.Ne.csproj", "{4EEE3AF7-1DD7-479F-BD37-B89C0B877C0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunFlower.Windows", "src\SunFlower.Windows\SunFlower.Windows.csproj", "{E973C340-3C8B-471D-A6B9-CE76C151D738}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,7 @@ Global
 		{DB3C52D3-0258-4AEE-82AA-030F7F1A43D4} = {BC82B4CF-0080-4C65-9A37-C68105B08548}
 		{D7AEA4AB-5BBA-41A4-AADF-5CAA71341B96} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
 		{4EEE3AF7-1DD7-479F-BD37-B89C0B877C0F} = {BC82B4CF-0080-4C65-9A37-C68105B08548}
+		{E973C340-3C8B-471D-A6B9-CE76C151D738} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B67E2CF9-292D-41EB-862B-E407F0C27AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -60,5 +63,9 @@ Global
 		{4EEE3AF7-1DD7-479F-BD37-B89C0B877C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EEE3AF7-1DD7-479F-BD37-B89C0B877C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EEE3AF7-1DD7-479F-BD37-B89C0B877C0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E973C340-3C8B-471D-A6B9-CE76C151D738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E973C340-3C8B-471D-A6B9-CE76C151D738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E973C340-3C8B-471D-A6B9-CE76C151D738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E973C340-3C8B-471D-A6B9-CE76C151D738}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

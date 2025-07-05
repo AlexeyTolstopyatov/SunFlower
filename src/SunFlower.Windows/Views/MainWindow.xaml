@@ -1,0 +1,81 @@
+﻿<hc:Window x:Class="SunFlower.Windows.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:views="clr-namespace:SunFlower.Windows.Views"
+        xmlns:ico="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+        mc:Ignorable="d"
+        Title="Sunflower Workspace" 
+        Height="600" 
+        Width="900">
+    <hc:Window.DataContext>
+        <local:MainWindowViewModel/>
+    </hc:Window.DataContext>
+    <hc:Window.NonClientAreaContent>
+        <Menu
+            HorizontalAlignment="Center"
+            Width="150">
+            <MenuItem
+                HorizontalAlignment="Right"
+                HorizontalContentAlignment="Right"
+                Header="File">
+                <MenuItem
+                    Header="Load executable"/>
+                <MenuItem
+                    Header="Catch Win32 process"/>
+            </MenuItem>
+            <MenuItem
+                Header="Application">
+                
+            </MenuItem>
+        </Menu>
+    </hc:Window.NonClientAreaContent>
+    <Grid>
+        <hc:Card
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Margin="20">
+            <StackPanel>
+                <TextBlock
+                    Margin="10"
+                    FontWeight="Medium"
+                    FontSize="24"
+                    Text="Recent"/>
+                <ToggleButton 
+                    Width="190"
+                    Content="Show Status side menu"
+                    Style="{StaticResource ToggleButtonSwitch}"
+                    IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/>
+                <DataGrid
+                    Margin="10"
+                    ItemsSource="{Binding RecentTable}">
+                    
+                </DataGrid>
+                
+            </StackPanel>
+        </hc:Card>
+        <!--DropDown menu/status bar-->
+        <hc:Drawer 
+            Name="DrawerBottom" 
+            Dock="Bottom"
+            ShowMask="False">
+            <Border
+                Background="{DynamicResource RegionBrush}" 
+                Height="300" 
+                BorderThickness="0,1,0,0" 
+                BorderBrush="{DynamicResource BorderBrush}">
+                <Grid>
+                    <TextBox
+                        FontSize="16"
+                        FontFamily="Consolas"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
+                        Text="{Binding StatusText}"/>
+                </Grid>
+            </Border>
+        </hc:Drawer>
+    </Grid>
+</hc:Window>

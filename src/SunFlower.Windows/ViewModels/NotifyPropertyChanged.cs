@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace SunFlower.Windows.ViewModels;
 
-public class ViewModel : INotifyPropertyChanged
+public class NotifyPropertyChanged : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

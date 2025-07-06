@@ -18,7 +18,13 @@ public interface IFlowerSeedManager
     /// <returns></returns>
     IFlowerSeedManager UnloadUnusedSeeds();
     /// <summary>
-    /// Returns entry table (status of all Main prcedures)
+    /// Call every loaded plugins EntryPoint for current file
+    /// </summary>
+    /// <param name="path">Targeting file</param>
+    /// <returns></returns>
+    public FlowerSeedManager UpdateAllInvokedFlowerSeeds(string path);
+    /// <summary>
+    /// Returns entry table (status of all Main procedures)
     /// </summary>
     /// <param name="targetingFile"></param>
     /// <returns></returns>

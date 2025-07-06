@@ -14,11 +14,14 @@
       <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3351.48" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
-
+    
+    <!-- Copies when csProject builds -->
     <ItemGroup>
-      <Folder Include="Models\" />
       <Content Include="Monaco\**">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Registry\**">
+         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
@@ -32,6 +35,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SunFlower\SunFlower.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>

@@ -88,6 +88,27 @@ public class FlowerSeedManager : IFlowerSeedManager
         return results;
     }
     /// <summary>
+    /// Updates <see cref="Seeds"/> collection
+    /// by targeting file
+    /// </summary>
+    /// <param name="path">targeting file</param>
+    public FlowerSeedManager UpdateAllInvokedFlowerSeeds(string path)
+    {
+        foreach (IFlowerSeed seed in Seeds)
+        {
+            try
+            {
+                seed.Main(path);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Plugin {seed.Seed}\r\nSunFlower chain: {e}");
+            }
+        }
+
+        return this;
+    }
+    /// <summary>
     /// All plugins having 0 result <c>IsResultExists</c> not true
     /// will be removed from list
     /// </summary>

@@ -23,13 +23,28 @@
                 HorizontalContentAlignment="Right"
                 Header="File">
                 <MenuItem
-                    Header="Load executable"/>
+                    Command="{Binding GetFileCommand}"
+                    Header="Read executable"/>
                 <MenuItem
+                    Command="{Binding GetProcessCommand}"
                     Header="Catch Win32 process"/>
             </MenuItem>
+            
+            <!--Independent tools/windows-->
             <MenuItem
                 Header="Application">
-                
+                <MenuItem
+                    Command="{Binding GetMachineWordsCommand}"
+                    Header="Machine words window"/>
+                <MenuItem
+                    Command="{Binding GetNotImplementedGrowlCommand}"
+                    Header="File images support"/>
+                <MenuItem
+                    Command="{Binding GetNotImplementedGrowlCommand}"
+                    Header="Quit"/>
+                <MenuItem
+                    Command="{Binding GetNotImplementedGrowlCommand}"
+                    Header="About"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>

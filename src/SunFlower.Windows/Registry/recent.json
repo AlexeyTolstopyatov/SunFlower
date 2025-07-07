@@ -1,3 +1,32 @@
 ﻿[
-  
+  {
+    "Name": "CLOCK.EXE",
+    "Path": "D:\\Анализ файлов\\inst\\NE\\CLOCK.EXE",
+    "Signature": "New Executable (NE16)",
+    "CpuArchitecture": "IA-32"
+  },
+  {
+    "Name": "PROGMAN.EXe",
+    "Path": "D:\\Анализ файлов\\inst\\NE\\PROGMAN.EXe",
+    "Signature": "New Executable (NE16)",
+    "CpuArchitecture": "IA-32"
+  },
+  {
+    "Name": "VDDCGA.386",
+    "Path": "D:\\Анализ файлов\\inst\\LE\\VDDCGA.386",
+    "Signature": "Linear Executable (LE16/32)",
+    "CpuArchitecture": "IA-32"
+  },
+  {
+    "Name": "explorer.exe",
+    "Path": "D:\\Анализ файлов\\inst\\PE\\explorer.exe",
+    "Signature": "Portable Executable (PE32+)",
+    "CpuArchitecture": "IA-32e"
+  },
+  {
+    "Name": "CMD.EXE",
+    "Path": "D:\\Os2-2\\CMD.EXE",
+    "Signature": "Linear Executable (LX32)",
+    "CpuArchitecture": "?"
+  }
 ]

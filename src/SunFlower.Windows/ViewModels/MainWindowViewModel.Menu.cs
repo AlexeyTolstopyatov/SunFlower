@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Data;
+using System.IO;
 using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Win32;
@@ -54,10 +55,30 @@ public partial class MainWindowViewModel
     /// <summary>
     /// Starts PropertiesWindow for recent file
     /// </summary>
-    /// <param name="index"></param>
-    private void GetRecentFile(object index)
+    /// <param name="selectedRowView"></param>
+    private void GetRecentFile(object selectedRowView)
     {
-        MessageBox.Info(index.ToString(), "Selected item");
+        DataRowView unboxed = (DataRowView)selectedRowView;
+        FileName = unboxed.Row["Name"].ToString() ?? "Unknown file";
+        FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
+        Signature = unboxed.Row["Signature"].ToString() ?? string.Empty;
+        Cpu = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
+        
+        if (FilePath == string.Empty)
+            return; // disable "Call Editor"
+
+        Seeds = FlowerSeedManager
+            .CreateInstance()
+            .LoadAllFlowerSeeds()
+            .UpdateAllInvokedFlowerSeeds(FilePath)
+            .Seeds;
+        
+        new PropertiesWindow()
+        {
+            Title = FilePath,
+            DataContext = this
+        }.Show(); // <-- ViewModel doesn't know about Views!!!
+        
     }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
@@ -123,7 +144,11 @@ public partial class MainWindowViewModel
         }
         
         // Call plugins Window/Main Workspace
-        new PropertiesWindow().Show();
+        new PropertiesWindow()
+        {
+            Title = FilePath,
+            DataContext = this
+        }.Show();
     }
     /// <summary>
     /// Experimental feature (try to catch process by ID/Name)

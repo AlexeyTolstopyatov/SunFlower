@@ -20,6 +20,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
         _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
+        
         Tell($"Recent files found: {_recentTable.Rows.Count}");
         Tell($"Seeds loaded: {_loadedSeeds.Count}");
 

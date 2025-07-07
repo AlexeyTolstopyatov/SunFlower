@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using SunFlower.Windows.ViewModels;
+﻿using SunFlower.Windows.ViewModels;
 using SunFlower.Windows.Views;
 using Window = HandyControl.Controls.Window;
 
@@ -30,7 +29,7 @@ public class WindowsService : NotifyPropertyChanged, IWindowsService
             openWindow.Activate();
             return;
         }
-        // be carefully...
+        
         DataGridWindow window = new()
         {
             DataContext = viewModel
@@ -72,10 +71,10 @@ public class WindowsService : NotifyPropertyChanged, IWindowsService
     /// <param name="viewModel"></param>
     public void CloseWindow(object viewModel)
     {
-        if (OpenedWindowsDictionary.TryGetValue(viewModel, out Window? window))
-        {
-            window.Close();
-            OpenedWindowsDictionary.Remove(viewModel);
-        }
+        if (!OpenedWindowsDictionary.TryGetValue(viewModel, out Window? window)) 
+            return;
+        
+        window.Close();
+        OpenedWindowsDictionary.Remove(viewModel);
     }
 }

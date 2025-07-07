@@ -13,6 +13,7 @@
     </hc:Window.DataContext>
     <Grid>
         <DataGrid
+            Style="{StaticResource DataGrid.Small}"
             FontSize="16"
             FontFamily="Consolas"
             ItemsSource="{Binding MachineWordsTable}">

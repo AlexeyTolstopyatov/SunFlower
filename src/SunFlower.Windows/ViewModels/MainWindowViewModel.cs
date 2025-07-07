@@ -16,6 +16,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _statusText = string.Empty;
         
         _getFileCommand = new Command(GetFile);
+        _getRecentFileCommand = new Command(GetRecentFile);
         _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
         _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
@@ -23,6 +24,11 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         Tell($"Seeds loaded: {_loadedSeeds.Count}");
 
         _windowsService = new WindowsService();
+        _fileName = string.Empty;
+        _filePath = string.Empty;
+        _cpu = string.Empty;
+        _signature = string.Empty;
+        
         Tell("Windows service registered");
     }
 

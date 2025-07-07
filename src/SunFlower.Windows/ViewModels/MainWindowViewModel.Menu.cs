@@ -15,6 +15,11 @@ namespace SunFlower.Windows.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel
 {
+    public ICommand GetRecentFileCommand
+    {
+        get => _getRecentFileCommand;
+        set => SetField(ref _getRecentFileCommand, value);
+    }
     public ICommand GetFileCommand
     {
         get => _getFileCommand;
@@ -28,6 +33,7 @@ public partial class MainWindowViewModel
     }
 
     private ICommand _getFileCommand;
+    private ICommand _getRecentFileCommand;
     private ICommand _getProcessCommand;
     private ICommand _getNotImplementedGrowlCommand;
     private ICommand _getMachineWordsCommand;
@@ -45,6 +51,14 @@ public partial class MainWindowViewModel
     }
 
     #region Menu Callbacks
+    /// <summary>
+    /// Starts PropertiesWindow for recent file
+    /// </summary>
+    /// <param name="index"></param>
+    private void GetRecentFile(object index)
+    {
+        MessageBox.Info(index.ToString(), "Selected item");
+    }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
     /// Starts common reader (remembers general characteristics)
@@ -65,6 +79,10 @@ public partial class MainWindowViewModel
             return;
 
         ImageReaderResult result = ImageReader.GetImageResults(dialog.FileName);
+        FileName = result.Name;
+        FilePath = result.Path;
+        Signature = result.Signature;
+        Cpu = result.CpuArchitecture;
         
         // Write to recent table
         JArray resultList;
@@ -105,7 +123,7 @@ public partial class MainWindowViewModel
         }
         
         // Call plugins Window/Main Workspace
-        
+        new PropertiesWindow().Show();
     }
     /// <summary>
     /// Experimental feature (try to catch process by ID/Name)
@@ -123,6 +141,5 @@ public partial class MainWindowViewModel
     {
         Growl.InfoGlobal("Not implemented yet");
     }
-    
     #endregion
 }

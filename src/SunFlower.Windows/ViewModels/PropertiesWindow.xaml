@@ -1,0 +1,91 @@
+﻿<hc:Window x:Class="SunFlower.Windows.ViewModels.PropertiesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
+        mc:Ignorable="d"
+        Title="PropertiesWindow" 
+        SizeToContent="WidthAndHeight">
+    <hc:Window.DataContext>
+        <local:MainWindowViewModel/>
+    </hc:Window.DataContext>
+    <Grid
+        Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock
+            FontSize="16"
+            FontWeight="Medium"
+            Text="{Binding FileName}"/>
+        <TextBlock
+            VerticalAlignment="Top"
+            FontSize="16"
+            Grid.Row="1"
+            Text="{Binding FilePath}"
+            />
+        <hc:Card
+            Margin="10"
+            Grid.Row="2">
+            <Grid
+                Margin="5"
+                Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="CPU "/>
+                    <TextBlock Text="Signature"/>
+                    <TextBlock Text="Signature (raw)"/>
+                </StackPanel>
+                <StackPanel
+                    Grid.Column="1">
+                    <TextBlock Text="{Binding Cpu}"/>
+                    <TextBlock Text="{Binding Signature}"/>
+                    <TextBlock Text="Signature (hex)"/>
+                </StackPanel>
+            </Grid>
+        </hc:Card>
+        <StackPanel
+            Grid.Row="3">
+            <TextBlock
+                FontSize="16"
+                FontWeight="Medium"
+                Text="Prepared extensions"/>
+            <hc:Card
+                Margin="10">
+                <ItemsControl
+                    Margin="5"
+                    ItemsSource="{Binding Seeds}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                Content="{Binding Seed}"
+                                IsChecked="{Binding Status.IsEnabled}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </hc:Card>
+        </StackPanel>
+        
+        <!-- Ready / Steady / GO -->
+        <Button
+            Grid.Row="4"
+            HorizontalAlignment="Right"
+            Style="{StaticResource ButtonPrimary}"
+            Content="Call Editor"/>
+    </Grid>
+</hc:Window>

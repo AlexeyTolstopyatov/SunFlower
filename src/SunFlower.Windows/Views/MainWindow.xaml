@@ -7,6 +7,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:views="clr-namespace:SunFlower.Windows.Views"
         xmlns:ico="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+        xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
         mc:Ignorable="d"
         Title="Sunflower Workspace" 
         Height="600" 
@@ -65,9 +66,10 @@
                     Style="{StaticResource ToggleButtonSwitch}"
                     IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/>
                 <DataGrid
+                    IsReadOnly="True"
+                    x:Name="RecentDataGrid"
                     Margin="10"
                     ItemsSource="{Binding RecentTable}">
-                    
                 </DataGrid>
                 
             </StackPanel>

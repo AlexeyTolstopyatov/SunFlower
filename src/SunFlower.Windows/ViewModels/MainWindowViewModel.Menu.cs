@@ -134,7 +134,7 @@ public partial class MainWindowViewModel
         // Extensions recall
         Seeds = FlowerSeedManager
             .CreateInstance() 
-          //.LoadAllFlowerSeeds()
+            .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
           //.UnloadUnusedSeeds()
             .Seeds;
@@ -142,7 +142,7 @@ public partial class MainWindowViewModel
         // information about external Exceptions
         foreach (IFlowerSeed plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
         {
-            Tell(plugin.Status.LastError!.ToString());
+            Tell(plugin.Status.LastError is null ? $"[{plugin.Seed}] LastError null" : plugin.Status.LastError.ToString());
         }
         
         // Call plugins Window/Main Workspace

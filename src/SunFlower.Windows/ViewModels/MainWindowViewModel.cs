@@ -1,5 +1,8 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.IO;
+using System.Windows.Input;
+using HandyControl.Controls;
 using Microsoft.Xaml.Behaviors.Core;
 using Newtonsoft.Json;
 using SunFlower.Abstractions;
@@ -21,10 +24,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
         _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
         _callEditorCommand = new ActionCommand(CallEditor);
+        _clearCacheCommand = new ActionCommand(ClearCache);
         
         Tell($"Recent files found: {_recentTable.Rows.Count}");
-        Tell($"Seeds loaded: {_loadedSeeds.Count}");
-
+        
         _windowsService = new WindowsService();
         _fileName = string.Empty;
         _filePath = string.Empty;
@@ -32,13 +35,15 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _signature = string.Empty;
         
         Tell("Windows service registered");
+        TellCurrentAbstractionsVersion();
     }
-
+    
     private readonly IWindowsService _windowsService;
     private DataTable _recentTable;
     private List<IFlowerSeed> _loadedSeeds;
     private string _statusText;
-    
+    private ICommand _clearCacheCommand;
+
     public DataTable RecentTable
     {
         get => _recentTable;
@@ -50,6 +55,11 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         set => SetField(ref _statusText, value);
     }
 
+    public ICommand ClearCacheCommand
+    {
+        get => _clearCacheCommand;
+        set => SetField(ref _clearCacheCommand, value);
+    }
     public List<IFlowerSeed> Seeds
     {
         get => _loadedSeeds;
@@ -66,5 +76,39 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     {
         string text = "-> " + phrase + "\r\n";
         StatusText += text;
+    }
+
+    private void ClearCache()
+    {
+        string target = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Sunflower.Windows",
+            "WebView2Cache");
+
+        try
+        {
+            if (Directory.Exists(target))
+                Directory.Delete(target);
+        }
+        catch (Exception e)
+        {
+            Growl.ErrorGlobal(e.Message);
+            Process.Start("explorer.exe", target);
+        }
+    }
+
+    /// <summary>
+    /// Plugins have specified interface which helps to communicate
+    /// with main loader module.
+    /// This method shows information about installed
+    /// foundation DLL version.
+    /// </summary>
+    private void TellCurrentAbstractionsVersion()
+    {
+        string abstractionsVer =
+            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
+                .FileVersion ?? "NOT FOUND";
+        
+        Tell("Installed abstractions: " + abstractionsVer);
     }
 }

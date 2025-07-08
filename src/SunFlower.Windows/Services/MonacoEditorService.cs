@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using HandyControl.Data;
-using HandyControl.Themes;
 using SunFlower.Abstractions.Types;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
@@ -64,7 +62,6 @@ public class MonacoEditorService
             if (File.Exists(htmlPath))
             {
                 _webView.CoreWebView2.Navigate(htmlPath);
-                SetTheme();
             }
             else
             {
@@ -122,15 +119,15 @@ public class MonacoEditorService
         {
             _webView.CoreWebView2.PostWebMessageAsString("showLoadingIndicator(false);");
         }
-        
     }
 
-    private void SetTheme()
+    public async void SwitchDarkTheme()
     {
-        string themeName = (Theme.GetSkin(App.Current.MainWindow) == SkinType.Dark) ? "vs-dark" : "vs-light";
-        Console.Error.WriteLine(themeName);
-        
-        _webView.CoreWebView2.ExecuteScriptAsync($"editor.updateOptions({{ theme: '{themeName}' }});");
+        await _webView.CoreWebView2.ExecuteScriptAsync($"editor.updateOptions({{theme:'vs-dark'}})");
     }
-    
+
+    public async void SwitchLightTheme()
+    {
+        await _webView.CoreWebView2.ExecuteScriptAsync("editor.updateOptions({theme:'vs-light'})");
+    }
 }

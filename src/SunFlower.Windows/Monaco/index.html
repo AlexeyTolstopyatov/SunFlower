@@ -42,12 +42,14 @@
 
     function initMonaco() {
         if (isInitialized) return;
-
+        
         require(['vs/editor/editor.main'], function() {
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'vs-dark' : 'vs-light';
+            
             editor = monaco.editor.create(document.getElementById('editor'), {
                 value: '// Fetching results...\n',
                 language: 'markdown',
-                theme: 'vs-light',
+                theme: systemTheme,
                 automaticLayout: true,
                 minimap: { enabled: true },
                 scrollBeyondLastLine: false

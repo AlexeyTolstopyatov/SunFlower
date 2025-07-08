@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:views="clr-namespace:SunFlower.Windows.Views"
-        xmlns:ico="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="{StaticResource RegionBrush}"
@@ -39,14 +37,8 @@
                     Command="{Binding GetMachineWordsCommand}"
                     Header="Machine words window"/>
                 <MenuItem
-                    Command="{Binding GetNotImplementedGrowlCommand}"
-                    Header="File images support"/>
-                <MenuItem
-                    Command="{Binding GetNotImplementedGrowlCommand}"
-                    Header="Quit"/>
-                <MenuItem
-                    Command="{Binding GetNotImplementedGrowlCommand}"
-                    Header="About"/>
+                    Command="{Binding ClearCacheCommand}"
+                    Header="Clear Editor cache"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>

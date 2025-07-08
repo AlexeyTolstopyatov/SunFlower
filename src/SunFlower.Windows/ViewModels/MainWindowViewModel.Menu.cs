@@ -71,6 +71,7 @@ public partial class MainWindowViewModel
             .CreateInstance()
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(FilePath)
+            .UnloadUnusedSeeds()
             .Seeds;
         
         new PropertiesWindow()
@@ -135,6 +136,7 @@ public partial class MainWindowViewModel
             .CreateInstance() 
           //.LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
+            .UnloadUnusedSeeds()
             .Seeds;
         
         // information about external Exceptions

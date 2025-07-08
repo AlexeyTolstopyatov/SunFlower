@@ -1,14 +1,15 @@
-﻿<Window x:Class="SunFlower.Windows.Views.MonacoWindow"
+﻿<hc:Window x:Class="SunFlower.Windows.Views.MonacoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:SunFlower.Windows.Views"
+        xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:web="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="Common Assembly" Height="900" Width="600">
+        Title="CommonAssembly" Height="900" Width="600">
     <Grid>
         <web:WebView2
             x:Name="View2"/>
     </Grid>
-</Window>
+</hc:Window>

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Window = HandyControl.Controls.Window;
+﻿using Window = HandyControl.Controls.Window;
 
 namespace SunFlower.Windows.Services;
 /// <summary>

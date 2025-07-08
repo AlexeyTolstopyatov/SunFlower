@@ -1,4 +1,7 @@
-﻿namespace SunFlower.Windows.ViewModels;
+﻿using System.Windows.Input;
+using SunFlower.Windows.Views;
+
+namespace SunFlower.Windows.ViewModels;
 
 public partial class MainWindowViewModel
 {
@@ -30,10 +33,20 @@ public partial class MainWindowViewModel
     private string _filePath;
     private string _signature;
     private string _cpu;
+
+    public ICommand CallEditorCommand
+    {
+        get => _callEditorCommand;
+        set => SetField(ref _callEditorCommand, value);
+    }
+
+    private ICommand _callEditorCommand;
     
     private void CallEditor()
     {
-        
+        new MonacoWindow(Seeds)
+        {
+            Title = FilePath,
+        }.Show();
     }
-    
 }

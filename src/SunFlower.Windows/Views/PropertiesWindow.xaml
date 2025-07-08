@@ -84,6 +84,7 @@
         <Button
             Grid.Row="4"
             HorizontalAlignment="Right"
+            Command="{Binding CallEditorCommand}"
             Style="{StaticResource ButtonPrimary}"
             Content="Call Editor"/>
     </Grid>

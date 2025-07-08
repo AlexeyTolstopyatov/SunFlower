@@ -9,6 +9,7 @@
         xmlns:ico="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        Background="{StaticResource RegionBrush}"
         Title="Sunflower Workspace" 
         Height="600" 
         Width="900">
@@ -61,6 +62,7 @@
                     FontSize="24"
                     Text="Recent"/>
                 <ToggleButton 
+                    Margin="5"
                     Width="190"
                     Content="Show Status side menu"
                     Style="{StaticResource ToggleButtonSwitch}"
@@ -78,7 +80,6 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </DataGrid>
-                
             </StackPanel>
         </hc:Card>
         <!--DropDown menu/status bar-->

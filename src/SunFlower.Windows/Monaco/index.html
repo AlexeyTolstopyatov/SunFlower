@@ -1,29 +1,135 @@
-<!DOCTYPE html> 
-<html lang="ru"> 
-<head> 
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
-    <link rel="stylesheet" 
-          data-name="vs/editor/editor.main" 
-          href="./min/vs/editor/editor.main.css" /> 
-    <style> 
-        html, body { height: 100%; margin: 0; } 
-        #container { height: 100%; } 
+<!DOCTYPE html >
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href="./min/vs/editor/editor.main.css" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+        #container {
+            display: flex;
+            height: 100%;
+        }
+        #editor {
+            flex: 1;
+            height: 100%;
+        }
+        #preview {
+            flex: 1;
+            height: 100%;
+            padding: 15px;
+            overflow: auto;
+            border-left: 1px solid #ddd;
+            box-sizing: border-box;
+            background: #f8f8f8;
+        }
     </style>
-    <title>Monaco</title>
-</head> 
-<body> 
-    <div id="container"></div> 
-    <script src="./min/vs/loader.js"></script> 
-    <script> 
-        require.config({ paths: { 'vs': './min/vs', "cas": "cas" } });
-    </script> 
-    <script src="./min/vs/editor/editor.main.nls.js"></script> 
-    <script src="./min/vs/editor/editor.main.js"></script> 
-    <script src="./cas/syntax.js"/> <!-- Connect CAS plugin -->
-    <script> 
-        var editor = monaco.editor.create(document.getElementById('container'), { 
-            language: 'cas' 
-        }); 
-    </script> 
-</body> 
-</html> 
+    <title>Monaco Editor</title>
+</head>
+<body>
+<div id="container">
+    <div id="editor"></div>
+    <div id="preview"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+<script src="./min/vs/loader.js"></script>
+
+<!--<script src="./min/vs/basic-languages/markdown/markdown.js"></script>-->
+
+<script>
+    require.config({
+        paths: {
+            'vs': new URL('./min/vs', window.location).href
+        }
+    });
+
+    let editor;
+    let isInitialized = false;
+
+    function initMonaco() {
+        if (isInitialized) return;
+
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '// Загрузка данных...\n',
+                language: 'markdown',
+                theme: 'vs-light',
+                automaticLayout: true,
+                minimap: { enabled: true },
+                scrollBeyondLastLine: false
+            });
+
+            editor.onDidChangeModelContent(updatePreview);
+            updatePreview();
+
+            isInitialized = true;
+            console.log('Monaco initialized');
+        });
+    }
+
+    function updateContent(content, language) {
+        if (!isInitialized) {
+            console.warn('Editor not initialized yet');
+            setTimeout(() => updateContent(content, language), 500);
+            initMonaco()
+            return;
+        }
+
+        try {
+            editor.setValue(content || '');
+            const model = editor.getModel();
+            if (model && language) {
+                monaco.editor.setModelLanguage(model, language);
+            }
+            updatePreview();
+        } catch (e) {
+            console.error('Update error:', e);
+        }
+    }
+
+    function updatePreview() {
+        if (!editor) return;
+        try {
+            const content = editor.getValue();
+            document.getElementById('preview').innerHTML =
+                marked.parse(content, { breaks: true });
+        } catch (e) {
+            console.error('Preview error:', e);
+            document.getElementById('preview').innerHTML =
+                `<pre>${e.message}</pre>`;
+        }
+    }
+
+    // window.addEventListener('message', event => {
+    //     console.log('Message received:', event.data);
+    //     if (typeof event.data === 'string') {
+    //         updateContent(event.data, 'markdown');
+    //     }
+    // });
+    //
+    // window.addEventListener('load', initMonaco);
+    function handleWebViewMessage(content) {
+        console.log("Received content via PostMessage");
+        updateContent(content, 'markdown');
+    }
+
+    window.addEventListener('load', function() {
+        window.addEventListener('message', event => {
+            if (event.source === window) {
+                handleWebViewMessage(event.data);
+            }
+        });
+        // works.
+        window.chrome.webview.addEventListener('message', event => {
+            handleWebViewMessage(event.data);
+        });
+    });
+</script>
+</body>
+</html>

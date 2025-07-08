@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.IO;
+using Microsoft.Xaml.Behaviors.Core;
 using Newtonsoft.Json;
 using SunFlower.Abstractions;
 using SunFlower.Services;
@@ -20,6 +21,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
         _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
+        _callEditorCommand = new ActionCommand(CallEditor);
         
         Tell($"Recent files found: {_recentTable.Rows.Count}");
         Tell($"Seeds loaded: {_loadedSeeds.Count}");

@@ -1,8 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-using HandyControl.Data;
-using HandyControl.Themes;
+﻿using System.Windows;
 
 namespace SunFlower.Windows;
 
@@ -16,7 +12,6 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        
         base.OnStartup(e);
     }
 }

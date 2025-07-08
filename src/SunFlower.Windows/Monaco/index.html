@@ -16,17 +16,8 @@
             height: 100%;
         }
         #editor {
-            flex: 1;
+            width: 100%;
             height: 100%;
-        }
-        #preview {
-            flex: 1;
-            height: 100%;
-            padding: 15px;
-            overflow: auto;
-            border-left: 1px solid #ddd;
-            box-sizing: border-box;
-            background: #f8f8f8;
         }
     </style>
     <title>Monaco Editor</title>
@@ -34,13 +25,10 @@
 <body>
 <div id="container">
     <div id="editor"></div>
-    <div id="preview"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
 <script src="./min/vs/loader.js"></script>
-
-<!--<script src="./min/vs/basic-languages/markdown/markdown.js"></script>-->
 
 <script>
     require.config({
@@ -57,7 +45,7 @@
 
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
-                value: '// Загрузка данных...\n',
+                value: '// Fetching results...\n',
                 language: 'markdown',
                 theme: 'vs-light',
                 automaticLayout: true,
@@ -65,8 +53,8 @@
                 scrollBeyondLastLine: false
             });
 
-            editor.onDidChangeModelContent(updatePreview);
-            updatePreview();
+            //editor.onDidChangeModelContent(updatePreview);
+            //updatePreview();
 
             isInitialized = true;
             console.log('Monaco initialized');
@@ -87,22 +75,9 @@
             if (model && language) {
                 monaco.editor.setModelLanguage(model, language);
             }
-            updatePreview();
+            // preview unavailable at the moment :(
         } catch (e) {
             console.error('Update error:', e);
-        }
-    }
-
-    function updatePreview() {
-        if (!editor) return;
-        try {
-            const content = editor.getValue();
-            document.getElementById('preview').innerHTML =
-                marked.parse(content, { breaks: true });
-        } catch (e) {
-            console.error('Preview error:', e);
-            document.getElementById('preview').innerHTML =
-                `<pre>${e.message}</pre>`;
         }
     }
 

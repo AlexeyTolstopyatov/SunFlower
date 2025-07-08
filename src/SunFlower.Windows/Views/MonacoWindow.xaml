@@ -9,7 +9,14 @@
         mc:Ignorable="d"
         Title="CommonAssembly" Height="900" Width="600">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
         <web:WebView2
+            Grid.Row="1"
             x:Name="View2"/>
+        
     </Grid>
 </hc:Window>

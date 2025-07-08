@@ -65,6 +65,7 @@ public class MonacoController
             if (File.Exists(htmlPath))
             {
                 _webView.CoreWebView2.Navigate(htmlPath);
+                SetTheme();
             }
             else
             {
@@ -86,11 +87,10 @@ public class MonacoController
             await UpdateMarkdownReportAsync(results);
             return;
         }
-
+        
         try
         {
             string markdownContent = MarkdownGenerator.GenerateReport(results);
-            Debug.WriteLine($"Sending Markdown content ({markdownContent.Length} chars)");
             
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
         }
@@ -113,14 +113,6 @@ public class MonacoController
             string markdownContent = MarkdownGenerator.GenerateReport(results);
             string escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
 
-            // send to monaco
-            string script = $@"
-                updateContent(`{escapedContent}`, 'markdown');
-                // preview enabled
-                monaco.editor.setModelMarkers(editor.getModel(), 'owner', []);
-            ";
-
-            await _webView.CoreWebView2.ExecuteScriptAsync(script);
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
         }
         catch (Exception ex)
@@ -129,21 +121,17 @@ public class MonacoController
         }
         finally
         {
-            await _webView.CoreWebView2.ExecuteScriptAsync("showLoadingIndicator(false);");
+            _webView.CoreWebView2.PostWebMessageAsString("showLoadingIndicator(false);");
         }
         
     }
-    
-    public async Task SetThemeAsync()
+
+    private void SetTheme()
     {
-        string themeName = Theme.GetSkin(_webView) switch
-        {
-            SkinType.Default => "vs",
-            SkinType.Dark => "vs-dark",
-            _ => "vs",
-        };
-    
-        await _webView.CoreWebView2.ExecuteScriptAsync(
-            $"editor.updateOptions({{ theme: '{themeName}' }});");
+        
+        string themeName = (App.Current.Resources[2] as Theme).Skin == SkinType.Dark ? "vs-dark" : "vs-light";
+        Console.Error.WriteLine(themeName);
+        
+        _webView.CoreWebView2.ExecuteScriptAsync($"editor.updateOptions({{ theme: '{themeName}' }});");
     }
 }

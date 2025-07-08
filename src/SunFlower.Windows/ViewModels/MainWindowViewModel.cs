@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.Xaml.Behaviors.Core;
 using Newtonsoft.Json;
 using SunFlower.Abstractions;
-using SunFlower.Services;
 using SunFlower.Windows.Services;
 
 namespace SunFlower.Windows.ViewModels;
@@ -13,7 +12,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     public MainWindowViewModel()
     {
         _recentTable = LoadRecentTableOnStartup();
-        _loadedSeeds = LoadFlowerSeedResults();
+        _loadedSeeds = [];
         _statusText = string.Empty;
         
         _getFileCommand = new Command(GetFile);
@@ -59,18 +58,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     private DataTable LoadRecentTableOnStartup()
     {
         Tell(nameof(LoadRecentTableOnStartup));
-        string json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "recent.json");
+        string json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
         return JsonConvert.DeserializeObject<DataTable>(json)!;
     }
-
-    private List<IFlowerSeed> LoadFlowerSeedResults()
-    {
-        return FlowerSeedManager
-            .CreateInstance()
-            .LoadAllFlowerSeeds()
-            .Seeds;
-    }
-
+    
     private void Tell(string phrase)
     {
         string text = "-> " + phrase + "\r\n";

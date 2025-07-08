@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using HandyControl.Data;
 using HandyControl.Themes;
 using SunFlower.Abstractions.Types;
@@ -9,12 +8,12 @@ using System.IO;
 using System.Windows;
 
 namespace SunFlower.Windows.Services;
-public class MonacoController
+public class MonacoEditorService
 {
     private readonly WebView2 _webView;
     private bool _isWebViewInitialized;
 
-    public MonacoController(WebView2 webView)
+    public MonacoEditorService(WebView2 webView)
     {
         _webView = webView ?? throw new ArgumentNullException(nameof(webView));
         InitializeAsync();
@@ -128,10 +127,10 @@ public class MonacoController
 
     private void SetTheme()
     {
-        
-        string themeName = (App.Current.Resources[2] as Theme).Skin == SkinType.Dark ? "vs-dark" : "vs-light";
+        string themeName = (Theme.GetSkin(App.Current.MainWindow) == SkinType.Dark) ? "vs-dark" : "vs-light";
         Console.Error.WriteLine(themeName);
         
         _webView.CoreWebView2.ExecuteScriptAsync($"editor.updateOptions({{ theme: '{themeName}' }});");
     }
+    
 }

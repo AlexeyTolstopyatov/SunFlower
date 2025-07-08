@@ -1,6 +1,4 @@
-﻿using HandyControl.Themes;
-using Microsoft.Web.WebView2.WinForms;
-using SunFlower.Abstractions;
+﻿using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Windows.Services;
 using SunFlower.Windows.ViewModels;
@@ -10,13 +8,13 @@ namespace SunFlower.Windows.Views;
 public partial class MonacoWindow : HandyControl.Controls.Window
 {
     private readonly MonacoWindowViewModel _viewModel;
-    private readonly MonacoController _monacoController;
+    private readonly MonacoEditorService _monacoEditorService;
     public MonacoWindow(List<IFlowerSeed> seeds)
     {
         InitializeComponent();
         
-        _monacoController = new MonacoController(View2);
-        _viewModel = new MonacoWindowViewModel(_monacoController, seeds);
+        _monacoEditorService = new MonacoEditorService(View2);
+        _viewModel = new MonacoWindowViewModel(seeds);
         DataContext = _viewModel;
         
         Loaded += async (s, e) => 
@@ -38,7 +36,7 @@ public partial class MonacoWindow : HandyControl.Controls.Window
                 }
             }
             
-            await _monacoController.UpdateMarkdownReportAsync(results);
+            await _monacoEditorService.UpdateMarkdownReportAsync(results);
         };
 #if DEBUG
         View2.CoreWebView2InitializationCompleted += (s, e) => 

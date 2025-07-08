@@ -71,7 +71,7 @@ public partial class MainWindowViewModel
             .CreateInstance()
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(FilePath)
-            .UnloadUnusedSeeds()
+          //.UnloadUnusedSeeds()
             .Seeds;
         
         new PropertiesWindow()
@@ -108,7 +108,7 @@ public partial class MainWindowViewModel
         
         // Write to recent table
         JArray resultList;
-        string filePath = AppDomain.CurrentDomain.BaseDirectory + "recent.json";
+        string filePath = AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json";
         
         if (File.Exists(filePath))
         {
@@ -122,7 +122,7 @@ public partial class MainWindowViewModel
         }
         else
         {
-            File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "recent.json");
+            File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
             
             JObject openedFileObj = JObject.FromObject(result);
             resultList = [openedFileObj];
@@ -136,7 +136,7 @@ public partial class MainWindowViewModel
             .CreateInstance() 
           //.LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
-            .UnloadUnusedSeeds()
+          //.UnloadUnusedSeeds()
             .Seeds;
         
         // information about external Exceptions

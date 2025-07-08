@@ -41,10 +41,14 @@ public partial class MainWindowViewModel
     }
 
     private ICommand _callEditorCommand;
-    
+    /// <summary>
+    /// Calls Monaco Editor window
+    /// </summary>
     private void CallEditor()
     {
-        new MonacoWindow(Seeds)
+        new MonacoWindow(Seeds
+            .Where(s => s.Status.IsEnabled)
+            .ToList())
         {
             Title = FilePath,
         }.Show();

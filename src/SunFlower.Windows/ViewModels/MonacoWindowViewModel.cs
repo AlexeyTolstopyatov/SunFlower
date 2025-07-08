@@ -1,15 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.IO;
+using System.Windows.Input;
+using Microsoft.Win32;
+using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Windows.Services;
-using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
 public class MonacoWindowViewModel : NotifyPropertyChanged
 {
-    private readonly MonacoController _controller;
-    public MonacoWindowViewModel(MonacoController controller, List<IFlowerSeed> seeds)
+    private readonly List<FlowerSeedResult> _results;
+
+    public MonacoWindowViewModel()
+    {
+        _results = [];
+        _saveResultsCommand = new ActionCommand(SaveResults);
+    }
+    public MonacoWindowViewModel(List<IFlowerSeed> seeds)
     {
         List<FlowerSeedResult> results = [];
         foreach (IFlowerSeed seed in seeds)
@@ -23,34 +31,28 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
             {
                 results.Add(result);
             }
-
-            
         }
-        _controller = controller;
-        _results = new(results);
+        _results = results;
+        _saveResultsCommand = new ActionCommand(SaveResults);
+    }
+
+    public ICommand SaveResultsCommand
+    {
+        get => _saveResultsCommand;
+        set => SetField(ref _saveResultsCommand, value);
+    }
+    private ICommand _saveResultsCommand;
+
+    private void SaveResults()
+    {
+        SaveFileDialog dialog = new()
+        {
+            Filter = "Markdown Document (*.md)|*.md|All types (*.*)|*.*",
+        };
+        
+        dialog.ShowDialog();
+        
+        File.WriteAllText(dialog.FileName, MarkdownGenerator.GenerateReport(_results));
     }
     
-    private ObservableCollection<FlowerSeedResult> _results = [];
-
-    public ObservableCollection<FlowerSeedResult> Results
-    {
-        get => _results;
-        set
-        {
-            _results = value;
-            OnPropertyChanged();
-            UpdateReport();
-        }
-    }
-
-    public void AddResult(FlowerSeedResult result)
-    {
-        _results.Add(result);
-        UpdateReport();
-    }
-
-    private async void UpdateReport()
-    {
-        await _controller.UpdateMarkdownReportAsync(Results);
-    }
 }

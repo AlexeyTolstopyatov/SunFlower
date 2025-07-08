@@ -6,6 +6,12 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
+        <Version>1.3.1</Version>
+        <Title>Sunflower Windows</Title>
+        <Copyright>CoffeeLake 2024-2025</Copyright>
+        <AssemblyVersion>1.3.1.1</AssemblyVersion>
+        <FileVersion>1.3.1.1</FileVersion>
+        <ApplicationIcon>sunflower64.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

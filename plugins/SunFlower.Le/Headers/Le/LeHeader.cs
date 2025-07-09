@@ -162,8 +162,5 @@ public struct LeHeader
     
     [MarshalAs(UnmanagedType.U4)]
     public uint LE_HeapExtra;         // extra heap allocation.
-    
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-    public byte[] LE_Reserved;       // reserved.
 }
 

@@ -10,8 +10,4 @@
       <ProjectReference Include="..\..\src\SunFlower.Abstractions\SunFlower.Abstractions.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
 </Project>

@@ -1,15 +1,8 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ded089e8_002D3aed_002D4368_002Dbf88_002D912c36900b57/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ConnectPlugin" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=616c4079_002D357a_002D4fb9_002D84b2_002D551ca9b35cb1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CheckoutDriver" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.ConnectPlugin&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutPeImage&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutDriver&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fcf6c0f4_002D1e0e_002D4077_002D87fb_002Df392401bbadd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ConnectPlugin #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.ConnectPlugin&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutPeImage&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+	</wpf:ResourceDictionary>

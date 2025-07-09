@@ -28,6 +28,6 @@ public struct NeEntriesTableMovableItem
 
 public struct IntelInstruction
 {
-    public Byte OpCode;
-    public UInt32 Address;
+    public byte OpCode;
+    public uint Address;
 }

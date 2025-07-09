@@ -175,7 +175,7 @@ public class NeTableManager
         {
             Columns = { "Reference#", "Reference Offset" }
         };
-        for (Int32 i = 0; i < _manager.ModuleReferences.Length; ++i)
+        for (int i = 0; i < _manager.ModuleReferences.Length; ++i)
         {
             modres.Rows.Add(
                 i + 1,

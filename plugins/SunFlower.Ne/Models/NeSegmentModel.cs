@@ -2,14 +2,14 @@
 
 namespace SunFlower.Ne.Models;
 
-public class NeSegmentModel(NeSegmentInfo info, string[] chars)
+public class NeSegmentModel(NeSegmentInfo info, uint segmentId, string[] chars)
 {
     public string Type { get; set; } = info.Type;
-    
     public string[] Characteristics { get; set; } = chars;
-    public UInt16 SegmentNumber { get; set; } = info.SegmentNumber;
-    public UInt32 FileOffset { get; set; } = info.FileOffset;
-    public UInt16 FileLength { get; set; } = info.FileLength;
-    public UInt16 Flags { get; set; } = info.Flags;
-    public UInt16 MinAllocation { get; set; } = info.MinAllocation;
+    public uint SegmentId { get; set; } = segmentId;
+    public ushort SegmentNumber { get; set; } = info.SegmentNumber;
+    public uint FileOffset { get; set; } = info.FileOffset;
+    public ushort FileLength { get; set; } = info.FileLength;
+    public ushort Flags { get; set; } = info.Flags;
+    public ushort MinAllocation { get; set; } = info.MinAllocation;
 }

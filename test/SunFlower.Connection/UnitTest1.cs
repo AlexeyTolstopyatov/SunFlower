@@ -1,3 +1,8 @@
+using System.Diagnostics;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
+using NUnit.Framework.Internal;
+using SunFlower.Ne.Headers;
+using SunFlower.Ne.Models;
 using SunFlower.Pe;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
@@ -48,9 +53,18 @@ public class Tests
     [Test]
     public void CheckoutNeImage()
     {
-        string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        //string path = @"D:\Projects\WINFO\VB3PRJ.EXE";
+        //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
+        string path = @"D:\Projects\WINFO\VB3PRJ.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
+        
+        Assert.Pass();
+    }
+
+    [Test]
+    public void CheckoutDriver()
+    {
+        string path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
+        SunFlower.Le.Services.LeDumpManager manager = new(path);
         
         Assert.Pass();
     }

@@ -2,7 +2,7 @@
 
 public struct NeExport
 {
-    public Byte Count;
-    public String Name;
-    public UInt16 Ordinal;
+    public byte Count;
+    public string Name;
+    public ushort Ordinal;
 }

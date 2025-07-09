@@ -9,7 +9,7 @@ public class NeImportModel
 public class ImportingFunction()
 {
     public string Name { get; set; } = string.Empty;
-    public UInt16 Ordinal { get; set; }
-    public UInt16 Offset { get; set; }
-    public UInt16 Segment { get; set; }
+    public ushort Ordinal { get; set; }
+    public ushort Offset { get; set; }
+    public ushort Segment { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿using SunFlower.Le.Headers.Le;
 
-namespace SunFlower.Le.Models;
+namespace SunFlower.Le.Models.Le;
 
 public class ObjectTableModel(ObjectTable table, List<string> flags)
 {

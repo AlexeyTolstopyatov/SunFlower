@@ -1,7 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SunFlower.Ne.Headers;
+namespace SunFlower.Le.Headers;
 
+/// <summary>
+/// Extended DOS Executable header
+/// </summary>
 [Serializable]
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
 public struct MzHeader

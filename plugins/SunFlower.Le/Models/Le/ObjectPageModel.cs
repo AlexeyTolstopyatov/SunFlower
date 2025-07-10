@@ -1,6 +1,6 @@
 ﻿using SunFlower.Le.Headers.Le;
 
-namespace SunFlower.Le.Models;
+namespace SunFlower.Le.Models.Le;
 
 public class ObjectPageModel(ObjectPage page, List<string> flags, long offset)
 {

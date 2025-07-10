@@ -1,8 +1,9 @@
-﻿using SunFlower.Le.Headers.Le;
-using SunFlower.Ne.Headers;
+﻿using System.ComponentModel;
+using SunFlower.Le.Headers.Le;
+using SunFlower.Le.Headers;
 using SunFlower.Ne.Services;
 using System.Text;
-using SunFlower.Le.Models;
+using SunFlower.Le.Models.Le;
 
 namespace SunFlower.Le.Services;
 
@@ -22,9 +23,10 @@ public class LeDumpManager : UnsafeManager
     public List<NonResidentName> NonResidentNames { get; set; } = [];
     public List<Function> ImportingModules { get; set; } = [];
     public List<Function> ImportingProcedures { get; set; } = [];
-    public List<EntryBundle> EntryBundles { get; set; } = [];
+    public List<EntryBundleModel> EntryBundles { get; set; } = [];
     public List<ObjectTableModel> ObjectTables { get; set; } = [];
     public List<ObjectPageModel> ObjectPages { get; set; } = [];
+    public List<uint> FixupPagesOffsets { get; set; }
     public UInt32 Offset(UInt32 address) => _offset + address;
 
     private void Initialize(string path)
@@ -127,7 +129,7 @@ public class LeDumpManager : UnsafeManager
     private void FillEntryPoints(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_EntryTable);
-
+        List<string> flags = [];
         byte bundleSize;
         while ((bundleSize = reader.ReadByte()) != 0)
         {
@@ -141,7 +143,8 @@ public class LeDumpManager : UnsafeManager
                 ObjectIndex = objectIndex,
             };
 
-            bool is32Bit = (bundleFlags & 0b00000010) != 0;
+            bool is32Bit = ((bundleFlags & 0b00000010) != 0);
+            bool isVaild = ((bundleFlags & 0b00000001) != 0);
 
             List<Entry16> entries = [];
             List<Entry32> entry32S = [];
@@ -151,28 +154,42 @@ public class LeDumpManager : UnsafeManager
 
                 if (is32Bit)
                 {
+                    flags.Add("ENTRY_USE32");
                     uint offset = reader.ReadUInt32();
+                    
+                    string isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
+                    string isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
+
                     entry32S.Add(new Entry32
                     {
                         Flag = entryFlags,
-                        Offset = offset
+                        Offset = offset,
+                        FlagNames = new[] {isExported, isSharedObj}.Where(s => !string.IsNullOrEmpty(s)).ToArray()
                     });
                 }
                 else
                 {
+                    // fill flags for entries-bundle
+                    flags.Add("ENTRY_USE16");
                     ushort offset = reader.ReadUInt16();
+                    string isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
+                    string isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
+                    
+                    // fill flags for each entry
+                    
                     entries.Add(new Entry16
                     {
                         Flag = entryFlags,
-                        Offset = offset
+                        Offset = offset,
+                        FlagNames = new[] {isExported, isSharedObj}.Where(x => !string.IsNullOrEmpty(x)).ToArray()
                     });
                 }
             }
 
             bundle.Entries = entries.ToArray();
             bundle.ExtendedEntries = entry32S.ToArray();
-
-            EntryBundles.Add(bundle);
+            
+            EntryBundles.Add(new EntryBundleModel(bundle, flags));
         }
     }
     
@@ -274,24 +291,148 @@ public class LeDumpManager : UnsafeManager
         switch (entry.Flags & (byte)ObjectPage.PageFlags.TypeMask)
         {
             case (byte)ObjectPage.PageFlags.Legal:
-                flags.Add("DATA32 or CODE32");
+                flags.Add("OBJPAGE_LEGAL");
                 break;
             case (byte)ObjectPage.PageFlags.Iterated:
-                flags.Add("compressed or repeated data");
+                flags.Add("OBJPAGE_ITER (compressed or repeated data)");
                 break;
             case (byte)ObjectPage.PageFlags.Invalid:
-                flags.Add("should be skipped");
+                flags.Add("OBJPAGE_INVALID (should be skipped)");
                 break;
             case (byte)ObjectPage.PageFlags.ZeroFilled:
-                flags.Add("uninitialized data");
+                flags.Add("OBJPAGE_ZERO (uninitialized data)");
                 break;
         }
     
         if ((entry.Flags & (byte)ObjectPage.PageFlags.LastPageInFile) != 0)
         {
-            flags.Add("last page");
+            flags.Add("OBJPAGE_LAST");
         }
         
         ObjectPages.Add(new ObjectPageModel(entry, flags, CalculatePageFileOffset(entry)));
+    }
+    /// <summary>
+    /// Every fixup record you can find -- use FillFixupPages
+    /// because fixup pages table tells characteristics of record
+    /// </summary>
+    /// <param name="reader"><see cref="BinaryReader"/> instance</param>
+    /// <param name="fixupSize">Size proceed in FillFixupPages for current record</param>
+    /// <returns>Record and writes it to Record model collection</returns>
+    public List<FixupRecord> ReadFixupRecordsTable(BinaryReader reader, uint fixupSize)
+    {
+        // prepare fixup record addresses
+        uint fixupOffset = Offset(LeHeader.LE_FixupsRec);
+        
+        reader.BaseStream.Position = fixupOffset;
+        List<FixupRecord> records = [];
+        long endPosition = fixupOffset + fixupSize;
+        
+        // prepare translator collections 
+        List<string> atp = [];
+        List<string> rtp = [];
+        string importingName = string.Empty;
+        string importingOrdinal = string.Empty;
+        
+        while (reader.BaseStream.Position < endPosition)
+        {
+            // address type
+            FixupRecord record = new FixupRecord
+            {
+                AddressType = reader.ReadByte(),
+                RelocationType = reader.ReadByte()
+            };
+            
+            
+            if (FixupRelocationAddressType.HasOffsetList(record.AddressType))
+            {
+                atp.Add("ADDR_HAS_OFFSETS");
+                
+                byte count = reader.ReadByte();
+                record.Offsets = new ushort[count];
+                for (int i = 0; i < count; i++)
+                {
+                    record.Offsets[i] = reader.ReadUInt16();
+                }
+            }
+            else
+            {
+                atp.Add("ADDR_NO_OFFSETS");
+                record.Offsets = new[] { reader.ReadUInt16() };
+            }
+            // relocation type
+            switch (FixupRelocationType.GetRelocationType(record.RelocationType))
+            {
+                case "REL_INTERNAL_REF":
+                    rtp.Add("REL_INTERNAL_REF");
+                    record.TargetObject = reader.ReadByte();
+                    
+                    break;
+                    
+                case "REL_IMPORT_ORD":
+                    rtp.Add("REL_IMPORT_ORD");
+                    record.ModuleIndex = reader.ReadByte();
+                    record.Ordinal = FixupRelocationType.Is16BitOrdinal(record.RelocationType) 
+                        ? reader.ReadUInt16() 
+                        : reader.ReadByte();
+
+                    importingOrdinal = "@" + record.Ordinal;
+                    
+                    break;
+                    
+                case "REL_IMPORT_NAME":
+                    
+                    rtp.Add("REL_IMPORT_NAME");
+                    record.ModuleIndex = reader.ReadByte();
+                    reader.ReadByte(); // Reserved
+                    record.NameOffset = reader.ReadUInt16();
+
+                    long currentPosition = reader.BaseStream.Position;
+                    
+                    // black magic procedure names tricks
+                    reader.BaseStream.Position = (long)(Offset(LeHeader.LE_ImportNames) + record.NameOffset);
+                    byte size = reader.ReadByte();
+                    if (size != 0)
+                    {
+                        importingName = Encoding.ASCII.GetString(reader.ReadBytes(size));
+                    }
+
+                    reader.BaseStream.Position = currentPosition;
+                    break;
+            }
+
+            // Extra fields checkout
+            if (FixupRelocationType.IsAdditive(record.RelocationType))
+            {
+                if (FixupRelocationType.Is32BitTarget(record.RelocationType))
+                {
+                    reader.ReadUInt32();
+                    rtp.Add("REL_TARGET_32");
+                }
+                else
+                {
+                    reader.ReadUInt16();
+                    rtp.Add("REL_TARGET_16");
+                }
+            }
+            
+            if (FixupRelocationType.HasExtraData(record.RelocationType))
+            {
+                rtp.Add("REL_EXTRA_DATA");
+                record.ExtraData = reader.ReadUInt16();
+            }
+
+            records.Add(record);
+            
+            FixupRecordsTableModel model = new(record, atp, rtp, importingName, importingOrdinal);
+        }
+        return records;
+    }
+
+    private void FillFixupPages(BinaryReader reader)
+    {
+        for (int i = 0; i <= LeHeader.; i++)
+        {
+            FixupPagesOffsets.Add(reader.ReadUInt32());
+        }
     }
 }

@@ -254,7 +254,7 @@ public class LeTableManager
             else if (bundle.EntryBundle.ExtendedEntries.Length != 0)
             {
                 entries.TableName = $"Bundle #{bundle.BundleNumber} | 32-bit Entries";
-                foreach (Entry16 entry in bundle.EntryBundle.Entries)
+                foreach (Entry32 entry in bundle.EntryBundle.ExtendedEntries)
                 {
                     string efl = bundle
                         .Flags
@@ -299,13 +299,13 @@ public class LeTableManager
         foreach (FixupRecordsTableModel record in _manager.FixupRecords)
         {
             rawTable.Rows.Add(
-                record.Record.AddressType,
-                record.Record.RelocationType,
-                record.Record.TargetObject,
-                record.Record.AddValue,
-                record.Record.ExtraData,
-                record.Record.ModuleIndex,
-                record.Record.NameOffset,
+                record.Record.AddressType.ToString("X"),
+                record.Record.RelocationType.ToString("X"),
+                record.Record.TargetObject.ToString("X"),
+                record.Record.AddValue.ToString("X"),
+                record.Record.ExtraData.ToString("X"),
+                record.Record.ModuleIndex.ToString("X"),
+                record.Record.NameOffset.ToString("X"),
                 record.Record.Ordinal);
         }
         
@@ -333,11 +333,11 @@ public class LeTableManager
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
             table.Rows.Add(
-                model.PageIndex,
-                model.Record.TargetObject,
-                model.Record.AddValue,
-                model.Record.ExtraData,
-                model.Record.OsFixup,
+                model.PageIndex.ToString("X"),
+                model.Record.TargetObject.ToString("X"),
+                model.Record.AddValue.ToString("X"),
+                model.Record.ExtraData.ToString("X"),
+                model.Record.OsFixup.ToString("X"),
                 model.ImportingOrdinal,
                 model.ImportingName,
                 atp,

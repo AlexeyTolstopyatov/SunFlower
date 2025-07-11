@@ -2,8 +2,9 @@
 
 namespace SunFlower.Le.Models.Le;
 
-public class FixupRecordsTableModel(FixupRecord rec, List<string> atp, List<string> rtp, string name, string ordinal)
+public class FixupRecordsTableModel(int pageIndex, FixupRecord rec, List<string> atp, List<string> rtp, string name, string ordinal)
 {
+    public int PageIndex { get; set; } = pageIndex;
     public FixupRecord Record { get; set; } = rec;
     public string[] AddressTypeFlags { get; set; } = atp.ToArray();
     public string[] RecordTypeFlags { get; set; } = rtp.ToArray();

@@ -21,7 +21,7 @@ public enum FlowerSeedEntryType
     /// </summary>
     RawBytes,
     /// <summary>
-    /// Just string
+    /// <see cref="List{String}"/> instance which contains all data
     /// </summary>
     Text,
 }

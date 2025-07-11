@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using NUnit.Framework.Internal;
+using SunFlower.Le.Services;
 using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
 using SunFlower.Pe;
@@ -64,7 +65,8 @@ public class Tests
     public void CheckoutDriver()
     {
         string path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
-        SunFlower.Le.Services.LeDumpManager manager = new(path);
+        LeDumpManager manager = new(path);
+        LeTableManager tableManager = new(manager);
         
         Assert.Pass();
     }

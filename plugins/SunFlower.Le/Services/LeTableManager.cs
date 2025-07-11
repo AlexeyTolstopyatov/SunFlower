@@ -20,6 +20,7 @@ public class LeTableManager
     public string[] ImportedProcedures { get; set; } = [];
     public DataTable FixupPages { get; set; } = new("Fixup Pages Table");
     public DataTable[] FixupRecords { get; set; } = [];
+    public List<string> Characteristics { get; set; } = [];
 
     public LeTableManager(LeDumpManager manager)
     {
@@ -29,6 +30,7 @@ public class LeTableManager
         MakeObjectTables();
         MakeEntryTable();
         MakeFixupTables(); // eternal suffering
+        MakeCharacteristics();
     }
 
     private void MakeHeaders(MzHeader mz, LeHeader le)
@@ -174,17 +176,16 @@ public class LeTableManager
         ObjectsTable.Columns.Add("Flags");
         ObjectsTable.Columns.Add("Map Index");
         ObjectsTable.Columns.Add("Map Entries");
-        ObjectsTable.Columns.Add("?");
+        ObjectsTable.Columns.Add("Unknown");
         ObjectsTable.Columns.Add("Translated flags");
-
+        
         foreach (ObjectTableModel table in _manager.ObjectTables)
         {
-            string text = "";
-            foreach (string s in table.ObjectFlags)
-            {
-                text = $"`{s}` ";
-            }
-            ObjectPages.Rows.Add(
+            string text = table
+                .ObjectFlags
+                .Aggregate("", (current, s) => current + $"`{s}` ");
+            
+            ObjectsTable.Rows.Add(
                 table.ObjectTable.VirtualSegmentSize,
                 table.ObjectTable.RelocationBaseAddress,
                 table.ObjectTable.ObjectFlags,
@@ -211,7 +212,8 @@ public class LeTableManager
                 page.Page.HighPage.ToString("X"),
                 page.Page.LowPage.ToString("X"),
                 page.Page.Flags.ToString("X"),
-                page.RealOffset.ToString("X"), flags
+                page.RealOffset.ToString("X"), 
+                flags
             );
         }
     }
@@ -221,7 +223,7 @@ public class LeTableManager
         // prepare general Entry bundles table
         DataTable table = new("Bundles table (EntryPoint table main part)")
         {
-            Columns = { "Bundle#", "Count", "Bundle#", "Object#", "Flags" }
+            Columns = { "#", "Count", "Bundle#", "Object#", "Flags" }
         };
         List<DataTable> entriesForEachBundle = [];
         
@@ -344,5 +346,68 @@ public class LeTableManager
         }
 
         FixupRecords = [rawTable, table];
+    }
+
+    private void MakeCharacteristics()
+    {
+        Characteristics.Add("### Program Header information");
+        Characteristics.Add("Target CPU: " + GetCpuType(_manager.LeHeader.LE_CPU));
+        Characteristics.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
+        
+        Characteristics.Add("Version and module flags set in Program header: 0x" + _manager.LeHeader.LE_Version.ToString("X"));
+        Characteristics.AddRange(GetModuleFlags(_manager.LeHeader.LE_Type));
+    }
+    private static string GetCpuType(ushort cpuType)
+    {
+        return cpuType switch
+        {
+            LeHeader.LeCpu286 => "Intel 286",
+            LeHeader.LeCpu386 => "Intel 386",
+            LeHeader.LeCpu486 => "Intel 486",
+            LeHeader.LeCpu586 => "Intel Pentium",
+            LeHeader.LeCpuI860 => "Intel i860",
+            LeHeader.LeCpuN11 => "N11",
+            LeHeader.LeCpuR2000 => "MIPS R2000",
+            LeHeader.LeCpuR6000 => "MIPS R6000",
+            LeHeader.LeCpuR4000 => "MIPS R4000",
+            _ => $"Unknown CPU (0x{cpuType:X4})"
+        };
+    }
+    
+    private static string GetOsType(ushort osType)
+    {
+        return osType switch
+        {
+            LeHeader.LeOsOs2 => "OS/2",
+            LeHeader.LeOsWindows => "Windows",
+            LeHeader.LeOsDos4 => "DOS 4.x",
+            LeHeader.LeOsWin386 => "Windows 386",
+            _ => $"Unknown OS (0x{osType:X4})"
+        };
+    }
+    
+    private static string[] GetModuleFlags(uint flags)
+    {
+        var result = new List<string>();
+
+        if ((flags & LeHeader.LeTypeInitPer) != 0)
+            result.Add("Initialise per-process library");
+
+        if ((flags & LeHeader.LeTypeIntFixup) != 0)
+            result.Add("No internal fixups");
+
+        if ((flags & LeHeader.LeTypeExtFixup) != 0)
+            result.Add("No external fixups");
+
+        if ((flags & LeHeader.LeTypeNoLoad) != 0)
+            result.Add("Module not loadable");
+
+        if ((flags & LeHeader.LeTypeDll) != 0)
+            result.Add("DLL module");
+
+        if (result.Count == 0)
+            result.Add("No special flags");
+
+        return result.ToArray();
     }
 }

@@ -38,14 +38,5 @@ public partial class MonacoWindow : HandyControl.Controls.Window
             
             await _monacoEditorService.UpdateMarkdownReportAsync(results);
         };
-#if DEBUG
-        View2.CoreWebView2InitializationCompleted += (s, e) => 
-        {
-            if (e.IsSuccess)
-            {
-                View2.CoreWebView2.OpenDevToolsWindow();
-            }
-        };
-#endif
     }
 }

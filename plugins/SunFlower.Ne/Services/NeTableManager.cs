@@ -75,33 +75,33 @@ public class NeTableManager
         };
         
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
-        table.Rows.Add(nameof(ne.magic), ne.magic.ToString("X"));
-        table.Rows.Add(nameof(ne.ver), ne.ver.ToString("X"));
-        table.Rows.Add(nameof(ne.rev), ne.rev.ToString("X"));
-        table.Rows.Add(nameof(ne.enttab), ne.enttab.ToString("X"));
-        table.Rows.Add(nameof(ne.cbenttab), ne.cbenttab.ToString("X"));
-        table.Rows.Add(nameof(ne.crc), ne.crc.ToString("X"));
-        table.Rows.Add(nameof(ne.pflags), ne.pflags.ToString("X"));
-        table.Rows.Add(nameof(ne.aflags), ne.aflags.ToString("X"));
-        table.Rows.Add(nameof(ne.autodata), ne.autodata.ToString("X"));
-        table.Rows.Add(nameof(ne.heap), ne.heap.ToString("X"));
-        table.Rows.Add(nameof(ne.stack), ne.stack.ToString("X"));
-        table.Rows.Add(nameof(ne.csip), ne.csip.ToString("X"));
-        table.Rows.Add(nameof(ne.sssp), ne.sssp.ToString("X"));
-        table.Rows.Add(nameof(ne.cseg), ne.cseg.ToString("X"));
-        table.Rows.Add(nameof(ne.cmod), ne.cmod.ToString("X"));
-        table.Rows.Add(nameof(ne.segtab), ne.segtab.ToString("X"));
-        table.Rows.Add(nameof(ne.rsrctab), ne.rsrctab.ToString("X"));
-        table.Rows.Add(nameof(ne.restab), ne.restab.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ID), ne.NE_ID.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_LinkerVersion), ne.NE_LinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_LinkerRevision), ne.NE_LinkerRevision.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_EntryTable), ne.NE_EntryTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_EntriesCount), ne.NE_EntriesCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Checksum), ne.NE_Checksum.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ProgramFlags), ne.NE_ProgramFlags.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_AppFlags), ne.NE_AppFlags.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_AutoSegment), ne.NE_AutoSegment.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Heap), ne.NE_Heap.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Stack), ne.NE_Stack.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_CsIp), ne.NE_CsIp.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SsSp), ne.NE_SsSp.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SegmentsCount), ne.NE_SegmentsCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ModReferencesCount), ne.NE_ModReferencesCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SegmentsTable), ne.NE_SegmentsTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ResourcesTable), ne.NE_ResourcesTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ResidentNamesTable), ne.NE_ResidentNamesTable.ToString("X"));
         table.Rows.Add(nameof(ne.cmovent), ne.cmovent.ToString("X"));
-        table.Rows.Add(nameof(ne.align), ne.align.ToString("X"));
-        table.Rows.Add(nameof(ne.os), ne.os.ToString("X"));
-        table.Rows.Add(nameof(ne.flagsothers), ne.flagsothers.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Alignment), ne.NE_Alignment.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_OS), ne.NE_OS.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_FlagOthers), ne.NE_FlagOthers.ToString("X"));
         table.Rows.Add(nameof(ne.pretthunks), ne.pretthunks.ToString("X"));
         table.Rows.Add(nameof(ne.psegrefbytes), ne.psegrefbytes.ToString("X"));
-        table.Rows.Add(nameof(ne.swaparea), ne.swaparea.ToString("X"));
-        table.Rows.Add(nameof(ne.minor), ne.minor.ToString("X"));
-        table.Rows.Add(nameof(ne.magic), ne.major.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SwapArea), ne.NE_SwapArea.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), ne.NE_WindowsVersionMinor.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ID), ne.NE_WindowsVersionMajor.ToString("X"));
 
         return table;
     }
@@ -212,7 +212,7 @@ public class NeTableManager
         List<string> md = [];
         md.Add("### Image");
 
-        string os = _manager.NeHeader.os switch
+        string os = _manager.NeHeader.NE_OS switch
         {
             0x1 => "OS/2",
             0x2 => "Win16",
@@ -222,7 +222,7 @@ public class NeTableManager
             _ => "Not specified"
         };
 
-        string cpu = _manager.NeHeader.pflags switch
+        string cpu = _manager.NeHeader.NE_ProgramFlags switch
         {
             var f when (f & 0x4) != 0 => "I8086",
             var f when (f & 0x5) != 0 => "I286",

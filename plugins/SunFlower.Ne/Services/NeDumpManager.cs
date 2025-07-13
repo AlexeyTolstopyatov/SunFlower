@@ -50,7 +50,7 @@ public class NeDumpManager : UnsafeManager
 
         NeHeader = Fill<NeHeader>(reader);
 
-        if (NeHeader.magic != 0x454e && NeHeader.magic != 0x4e45) // magic or cigam
+        if (NeHeader.NE_ID != 0x454e && NeHeader.NE_ID != 0x4e45) // magic or cigam
             throw new InvalidOperationException("Doesn't have new signature");
 
         FillSegments(reader);
@@ -65,9 +65,9 @@ public class NeDumpManager : UnsafeManager
     private void FillSegments(BinaryReader reader)
     {
         List<NeSegmentInfo> segTable = [];
-        reader.BaseStream.Position = Offset(NeHeader.segtab);
+        reader.BaseStream.Position = Offset(NeHeader.NE_SegmentsTable);
 
-        for (int i = 0; i < NeHeader.cseg; i++)
+        for (int i = 0; i < NeHeader.NE_SegmentsCount; i++)
         {
             NeSegmentInfo segment = Fill<NeSegmentInfo>(reader);
             FillNeSegmentModel(ref segment, (uint)i + 1);
@@ -94,10 +94,10 @@ public class NeDumpManager : UnsafeManager
 
     private void FillModuleReferences(BinaryReader reader)
     {
-        reader.BaseStream.Position = Offset(NeHeader.modtab);
-        ModuleReferences = new NeModule[NeHeader.cmod];
+        reader.BaseStream.Position = Offset(NeHeader.NE_ModReferencesTable);
+        ModuleReferences = new NeModule[NeHeader.NE_ModReferencesCount];
 
-        for (int i = 0; i < NeHeader.cmod; i++)
+        for (int i = 0; i < NeHeader.NE_ModReferencesCount; i++)
         {
             NeModule mod = Fill<NeModule>(reader);
             ModuleReferences[i] = mod;
@@ -108,8 +108,8 @@ public class NeDumpManager : UnsafeManager
     {
         List<NeEntryTableModel> entries = [];
         
-        reader.BaseStream.Position = Offset(NeHeader.enttab);
-        long endPosition = NeHeader.enttab + NeHeader.cbenttab;
+        reader.BaseStream.Position = Offset(NeHeader.NE_EntryTable);
+        long endPosition = NeHeader.NE_EntryTable + NeHeader.NE_EntriesCount;
 
         while (reader.BaseStream.Position < endPosition)
         {
@@ -235,10 +235,10 @@ public class NeDumpManager : UnsafeManager
     {
         List<NeExport> exports = [];
 
-        if (NeHeader.cbnrestab == 0)
+        if (NeHeader.NE_NonResidentNamesCount == 0)
             return;
 
-        reader.BaseStream.Position = NeHeader.nrestab;
+        reader.BaseStream.Position = NeHeader.NE_NonResidentNamesTable;
 
         byte i;
         while ((i = reader.ReadByte()) != 0)
@@ -259,7 +259,7 @@ public class NeDumpManager : UnsafeManager
     private void FillImports(BinaryReader reader)
     {
         List<NeImportModel> imports = new List<NeImportModel>();
-        uint importTableOffset = Offset(NeHeader.imptab);
+        uint importTableOffset = Offset(NeHeader.NE_ImportModulesTable);
         
         foreach (NeModule neModule in ModuleReferences)
         {

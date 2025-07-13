@@ -10,7 +10,7 @@
 Write-Host "--- Importing to Sources ---" -ForegroundColor Blue
 
 # Define paths
-$solutionRoot = "D:\GitHub\SunFlower"
+$solutionRoot = "D:\Locals\SunFlower"
 $mainAppPath = "$solutionRoot\src\SunFlower.Windows\bin\Debug\net8.0-windows"
 $pluginsOutputPath = "$mainAppPath\Plugins"
 

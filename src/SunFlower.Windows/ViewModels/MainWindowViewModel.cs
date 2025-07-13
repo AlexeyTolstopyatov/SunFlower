@@ -25,6 +25,8 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
         _callEditorCommand = new ActionCommand(CallEditor);
         _clearCacheCommand = new ActionCommand(ClearCache);
+        _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
+        _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
         
         Tell($"Recent files found: {_recentTable.Rows.Count}");
         

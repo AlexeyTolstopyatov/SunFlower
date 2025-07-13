@@ -8,8 +8,8 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="{StaticResource RegionBrush}"
-        Title="Sunflower Workspace" 
-        Height="600" 
+        Title="Sunflower Workspace"
+        Height="600"
         Width="900">
     <hc:Window.DataContext>
         <local:MainWindowViewModel/>
@@ -39,6 +39,9 @@
                 <MenuItem
                     Command="{Binding ClearCacheCommand}"
                     Header="Clear Editor cache"/>
+                <MenuItem
+                    Header="Clear Recent files table"
+                    Command="{Binding GetDeleteRecentFilesCommandCommand}"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
@@ -53,7 +56,7 @@
                     FontWeight="Medium"
                     FontSize="24"
                     Text="Recent"/>
-                <ToggleButton 
+                <ToggleButton
                     Margin="5"
                     Width="190"
                     Content="Show Status side menu"
@@ -75,7 +78,7 @@
             </StackPanel>
         </hc:Card>
         <!--DropDown menu/status bar-->
-        <hc:Drawer 
+        <hc:Drawer
             Name="DrawerBottom" 
             Dock="Bottom"
             ShowMask="False">

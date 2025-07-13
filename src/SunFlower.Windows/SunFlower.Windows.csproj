@@ -49,8 +49,4 @@
       <ProjectReference Include="..\SunFlower\SunFlower.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\" />
-    </ItemGroup>
-
 </Project>

@@ -30,7 +30,7 @@ public class LeDumpManager : UnsafeManager
     public UInt32 Offset(UInt32 address) => _offset + address;
 
     /// <summary>
-    /// Дверь сартира
+    /// Дверь сартира приоткрылась
     /// </summary>
     public Dictionary<ushort, string> NamesCache { get; } = new();
 

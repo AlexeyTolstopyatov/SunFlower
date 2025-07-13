@@ -38,6 +38,20 @@ public partial class MainWindowViewModel
     private ICommand _getProcessCommand;
     private ICommand _getNotImplementedGrowlCommand;
     private ICommand _getMachineWordsCommand;
+    private ICommand _clearRecentFilesCommand;
+    private ICommand _clearRecentFileCommand;
+
+    public ICommand ClearRecentFileCommand
+    {
+        get => _clearRecentFileCommand;
+        set => SetField(ref _clearRecentFileCommand, value);
+    }
+
+    public ICommand GetDeleteRecentFilesCommandCommand
+    {
+        get => _clearRecentFilesCommand;
+        set => SetField(ref _clearRecentFilesCommand, value);
+    }
 
     public ICommand GetMachineWordsCommand
     {
@@ -167,6 +181,24 @@ public partial class MainWindowViewModel
     private void GetNotImplementedGrowl(object unused)
     {
         Growl.InfoGlobal("Not implemented yet");
+    }
+
+    private void ClearRecentFiles()
+    {
+        RecentTable.Clear();
+        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json", "[]");
+    }
+
+    private void ClearRecentFile(object file)
+    {
+        try
+        {
+            RecentTable.Rows.Find(file)!.Delete();
+        }
+        catch (Exception e)
+        {
+            Growl.WarningGlobal(e.Message);
+        }
     }
     #endregion
 }

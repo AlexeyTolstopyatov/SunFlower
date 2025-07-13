@@ -29,7 +29,7 @@ public class NewExecutableSeed : IFlowerSeed
                 tableManager.SegmentTable,
                 tableManager.EntryPointsTable,
                 tableManager.ModuleReferencesTable,
-                tableManager.NonResidentNamesTable
+                tableManager.NamesTable
             ];
             Status.Results.Add(new FlowerSeedResult()
             {

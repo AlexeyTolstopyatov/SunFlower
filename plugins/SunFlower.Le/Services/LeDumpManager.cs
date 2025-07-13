@@ -29,11 +29,6 @@ public class LeDumpManager : UnsafeManager
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
     public UInt32 Offset(UInt32 address) => _offset + address;
 
-    /// <summary>
-    /// Дверь сартира приоткрылась
-    /// </summary>
-    public Dictionary<ushort, string> NamesCache { get; } = new();
-
     private void Initialize(string path)
     {
         FileStream stream = new(path, FileMode.Open, FileAccess.Read);

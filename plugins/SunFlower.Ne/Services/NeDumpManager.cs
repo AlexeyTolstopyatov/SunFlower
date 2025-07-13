@@ -14,12 +14,12 @@ public class NeDumpManager : UnsafeManager
     public NeSegmentInfo[] Segments { get; set; } = [];
     
     public NeImportModel[] ImportModels { get; set; } = [];
-    public NeExport[] ExportingFunctions { get; set; } = [];
+    public NeExport[] NonResidentNames { get; set; } = [];
     public NeModule[] ModuleReferences { get; set; } = [];
     public List<NeSegmentModel> SegmentModels { get; set; } = [];
     public List<NeEntryTableModel> EntryTableItems { get; set; } = [];
     public List<uint> EntryPointsAddresses { get; set; } = [];
-
+    public List<NeExport> ResidentNames { get; set; } = [];
     public List<ImportingFunction> NamesTable { get; set; } = [];
 
     private uint _offset = 0;
@@ -57,6 +57,7 @@ public class NeDumpManager : UnsafeManager
         FillEntryTable(reader); // warn!
         FillModuleReferences(reader);
         FillNonResidentNames(reader);
+        FillResidentNames(reader);
         FillImports(reader);
         
         reader.Close();
@@ -66,12 +67,15 @@ public class NeDumpManager : UnsafeManager
     {
         List<NeSegmentInfo> segTable = [];
         reader.BaseStream.Position = Offset(NeHeader.NE_SegmentsTable);
+    
+        var alignment = (uint)(1 << NeHeader.NE_Alignment); // means NE_SectorShift (0 is equivalent to 9?)
 
         for (int i = 0; i < NeHeader.NE_SegmentsCount; i++)
         {
             NeSegmentInfo segment = Fill<NeSegmentInfo>(reader);
+            segment.FileOffset *= alignment;
+        
             FillNeSegmentModel(ref segment, (uint)i + 1);
-
             segTable.Add(segment);
         }
 
@@ -106,117 +110,96 @@ public class NeDumpManager : UnsafeManager
 
     private void FillEntryTable(BinaryReader reader)
     {
-        List<NeEntryTableModel> entries = [];
-        
+        List<NeEntryTableModel> entries = new();
+        EntryPointsAddresses = new();
         reader.BaseStream.Position = Offset(NeHeader.NE_EntryTable);
-        long endPosition = NeHeader.NE_EntryTable + NeHeader.NE_EntriesCount;
+        
+        ushort currentOrdinal = 1;
+        long endPosition = reader.BaseStream.Position + NeHeader.NE_EntriesCount;
 
         while (reader.BaseStream.Position < endPosition)
         {
-            byte count = reader.ReadByte();
-            if (count == 0) break;
+            byte entryCount = reader.ReadByte();
+            if (entryCount == 0) break;
 
-            byte type = reader.ReadByte();
+            byte segIndicator = reader.ReadByte();
 
-            if (type == 0xFF) // UNUSED
+            // warn: I've decided to skip unused ordinals.
+            if (segIndicator == 0x00)
             {
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < entryCount; i++)
                 {
-                    entries.Add(new NeEntryTableModel(true, false, type)
+                    entries.Add(new NeEntryTableModel(true, false, segIndicator)
                     {
-                        Type = ".UNUSED",
-                        Offset = 0
+                        Type = "UNUSED",
+                        Ordinal = currentOrdinal++
                     });
-                    EntryPointsAddresses.Add(0); // null entry
+                    EntryPointsAddresses.Add(0);
                 }
-
                 continue;
             }
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < entryCount; i++)
             {
-                ushort segId = 0;
-                ushort offset;
-                string bundleType;
-                if (type == 0xFE) // MOVEABLE
+                byte flags = 0;
+                ushort offset = 0;
+                byte segment = 0;
+                string bundleType = "";
+
+                switch (segIndicator)
                 {
-                    bundleType = ".MOVABLE";
-                    byte segIndex = reader.ReadByte();
-                    offset = reader.ReadUInt16();
-
-                    if (segIndex > 0 && segIndex <= SegmentModels.Count)
-                    {
-                        segId = (UInt16)SegmentModels[segIndex - 1].SegmentId;
-                    }
-                }
-                else // FIXED
-                {
-                    bundleType = ".FIXED";
-                    offset = reader.ReadUInt16();
-
-                    if (type > 0 && type <= SegmentModels.Count)
-                    {
-                        segId = (UInt16)SegmentModels[type - 1].SegmentId;
-                    }
+                    // .movable
+                    case 0xFF:
+                        bundleType = "MOVABLE";
+                        flags = reader.ReadByte();
+                        reader.ReadByte(); // INT 3FH (0x3F)
+                        segment = reader.ReadByte();
+                        offset = reader.ReadUInt16();
+                        break;
+                    // .fixed
+                    case >= 0x01 and <= 0xFE:
+                        bundleType = "FIXED";
+                        flags = reader.ReadByte();
+                        offset = reader.ReadUInt16();
+                        segment = segIndicator;
+                        break;
                 }
 
-                // Calculate address: segment * 0x1000 + offset
-                uint address = segId > 0
-                    ? (uint)(segId * 0x1000) + offset
-                    : 0;
-
-                EntryPointsAddresses.Add(address);
-                entries.Add(new NeEntryTableModel(false, true, type)
+                uint address = CalculateSegmentAddress(segment, offset);
+                var entry = new NeEntryTableModel(false, true, segIndicator)
                 {
                     Type = bundleType,
+                    Segment = segment,
                     Offset = offset,
-                    Segment = segId,
-                });
+                    Flags = flags,
+                    Ordinal = currentOrdinal
+                };
+
+                entries.Add(entry);
+                EntryPointsAddresses.Add(address);
+                currentOrdinal++;
             }
         }
 
         EntryTableItems = entries;
     }
-    public void CreateSymbols(List<uint> entryPoints, List<(int ordinal, string name)> nameTable)
-    {
-        foreach ((int ordinal, string name) entry in nameTable)
-        {
-            int ordinal = entry.ordinal;
-            if (ordinal <= 0 || ordinal >= entryPoints.Count)
-                continue;
-            uint address = entryPoints[ordinal];
-            if (address == 0)
-                continue;
-            string name = entry.name;
-            
-            // (name, address)
-            NamesTable.Add(new ImportingFunction()
-            {
-                Name = name,
-                Ordinal = (UInt16)ordinal,
-                Offset = (UInt16)address
-            });
-        }
-    }
-    public void ProcessNameTable(BinaryReader reader, List<(int ordinal, string name)> table)
-    {
-        foreach (var entry in EntryTableItems)
-        {
-            int ordinal = entry.Segment; // Ordinal <-> Segment
-            if (ordinal <= 0 || ordinal >= EntryPointsAddresses.Count) 
-                continue;
-            
-            uint address = EntryPointsAddresses[ordinal];
-            if (address == 0) 
-                continue;
-            
-            // Create symbol: both named and @ordinal version
-            //CreateSymbol(address, entry.Name);
-            
-            //CreateSymbol(address, $"@{ordinal}");
-        }
-    }
 
+    private uint CalculateSegmentAddress(byte segmentId, ushort offset)
+    {
+        if (segmentId == 0) return 0;
+        try
+        {
+            // Try to count Physical address using shifting /header set alignment/
+            uint alignment = (uint)(1 << NeHeader.NE_Alignment); // Sector shift
+            uint segmentAddress = Segments[segmentId - 1].FileOffset * alignment;
+            
+            return segmentAddress + offset;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
     private List<uint> ConvertToAddresses(List<NeEntryTableModel> entryPoints)
     {
         const ushort segmentBase = 0x1000;  // NULL page avoid
@@ -229,6 +212,28 @@ public class NeDumpManager : UnsafeManager
         }
     
         return addresses;
+    }
+
+    private void FillResidentNames(BinaryReader reader)
+    {
+        List<NeExport> exports = [];
+
+        reader.BaseStream.Position = Offset(NeHeader.NE_ResidentNamesTable);
+
+        byte i;
+        while ((i = reader.ReadByte()) != 0)
+        {
+            string name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            ushort ordinal = reader.ReadUInt16();
+            exports.Add(new NeExport()
+            {
+                Count = i,
+                Name = name,
+                Ordinal = ordinal
+            });
+        }
+
+        ResidentNames = exports;
     }
     
     private void FillNonResidentNames(BinaryReader reader)
@@ -253,60 +258,60 @@ public class NeDumpManager : UnsafeManager
             });
         }
 
-        ExportingFunctions = exports.ToArray();
+        NonResidentNames = exports.ToArray();
     }
     
     private void FillImports(BinaryReader reader)
     {
-        List<NeImportModel> imports = new List<NeImportModel>();
+        List<NeImportModel> imports = new();
         uint importTableOffset = Offset(NeHeader.NE_ImportModulesTable);
         
-        foreach (NeModule neModule in ModuleReferences)
+        reader.BaseStream.Position = Offset(NeHeader.NE_ModReferencesTable);
+        ushort[] moduleRefOffsets = new ushort[NeHeader.NE_ModReferencesCount];
+        for (int i = 0; i < NeHeader.NE_ModReferencesCount; i++)
         {
-            reader.BaseStream.Position = importTableOffset + neModule.ImportOffset;
-            
-            byte nameLen = reader.ReadByte();
-            string moduleName = new(reader.ReadChars(nameLen));
-            
-            NeImportModel moduleImport = new()
-            {
-                DllName = moduleName,
-                Functions = []
-            };
+            moduleRefOffsets[i] = reader.ReadUInt16();
+        }
 
+        foreach (ushort moduleNameOffset in moduleRefOffsets)
+        {
+            reader.BaseStream.Position = importTableOffset + moduleNameOffset;
+            NeImportModel moduleImport = new() { Functions = new() };
+            
+            // Module name check
+            byte nameLen = reader.ReadByte();
+            moduleImport.DllName = Encoding.ASCII.GetString(reader.ReadBytes(nameLen));
+        
+            // Procedure name kek
             while (true)
             {
                 byte funcLen = reader.ReadByte();
                 if (funcLen == 0) break;
-                
+            
                 bool isOrdinal = (funcLen & 0x80) != 0;
-                byte realLength = (byte)(funcLen & 0x7F);
-                
+                byte realLen = (byte)(funcLen & 0x7F);
+            
+                ImportingFunction func = new();
+            
                 if (isOrdinal)
                 {
                     ushort ordinal = reader.ReadUInt16();
-                    moduleImport.Functions.Add(new ImportingFunction
-                    {
-                        Name = $"@{ordinal}",
-                        Ordinal = ordinal
-                    });
+                    func.Name = $"@{ordinal}";
+                    func.Ordinal = ordinal;
                 }
                 else
                 {
-                    string funcName = Encoding.ASCII.GetString(reader.ReadBytes(realLength));
-                    moduleImport.Functions.Add(new ImportingFunction
-                    {
-                        Name = funcName,
-                        Ordinal = 0
-                    });
+                    func.Name = Encoding.ASCII.GetString(reader.ReadBytes(realLen));
+                    func.Ordinal = 0;
                 }
-            }
             
+                moduleImport.Functions.Add(func);
+            }
+        
             imports.Add(moduleImport);
         }
-        
+    
         ImportModels = imports.ToArray();
-        ResolveImports();
     }
     private void ResolveImports()
     {

@@ -4,6 +4,7 @@ using NUnit.Framework.Internal;
 using SunFlower.Le.Services;
 using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
+using SunFlower.Ne.Services;
 using SunFlower.Pe;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
@@ -55,8 +56,9 @@ public class Tests
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        string path = @"D:\Projects\WINFO\VB3PRJ.EXE";
+        string path = @"D:\TEST\PIFEDIT.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
+        NeTableManager tableManager = new(manager);
         
         Assert.Pass();
     }

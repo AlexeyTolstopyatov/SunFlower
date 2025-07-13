@@ -16,4 +16,6 @@ public class NeEntryTableModel(bool isUnused, bool isMovable, byte flags)
 
     public ushort Offset { get; set; }
     public ushort Segment { get; set; }
+    public ushort Ordinal { get; set; }
+    public byte Flags { get; set; } 
 }

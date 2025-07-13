@@ -16,13 +16,13 @@ public class NeTableManager
         MakeSegmentsTable();
         MakeEntryPointsTable();
         MakeModuleReferencesTable();
-        MakeNonResidentNames();
+        MakeNames();
     }
     
     public DataTable[] Headers { get; set; } = [];
     public DataTable SegmentTable { get; set; } = new();
     public DataTable ResidentNamesTable { get; set; } = new();
-    public DataTable NonResidentNamesTable { get; set; } = new();
+    public DataTable NamesTable { get; set; } = new();
     public DataTable EntryPointsTable { get; set; } = new();
     public DataTable ModuleReferencesTable { get; set; } = new();
     // public DataTable ImportingNamesTable { get; set; } = new();
@@ -93,12 +93,12 @@ public class NeTableManager
         table.Rows.Add(nameof(ne.NE_SegmentsTable), ne.NE_SegmentsTable.ToString("X"));
         table.Rows.Add(nameof(ne.NE_ResourcesTable), ne.NE_ResourcesTable.ToString("X"));
         table.Rows.Add(nameof(ne.NE_ResidentNamesTable), ne.NE_ResidentNamesTable.ToString("X"));
-        table.Rows.Add(nameof(ne.cmovent), ne.cmovent.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_MovableEntriesCount), ne.NE_MovableEntriesCount.ToString("X"));
         table.Rows.Add(nameof(ne.NE_Alignment), ne.NE_Alignment.ToString("X"));
         table.Rows.Add(nameof(ne.NE_OS), ne.NE_OS.ToString("X"));
         table.Rows.Add(nameof(ne.NE_FlagOthers), ne.NE_FlagOthers.ToString("X"));
-        table.Rows.Add(nameof(ne.pretthunks), ne.pretthunks.ToString("X"));
-        table.Rows.Add(nameof(ne.psegrefbytes), ne.psegrefbytes.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_PretThunks), ne.NE_PretThunks.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_PerSegmentRefBytes), ne.NE_PerSegmentRefBytes.ToString("X"));
         table.Rows.Add(nameof(ne.NE_SwapArea), ne.NE_SwapArea.ToString("X"));
         table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), ne.NE_WindowsVersionMinor.ToString("X"));
         table.Rows.Add(nameof(ne.NE_ID), ne.NE_WindowsVersionMajor.ToString("X"));
@@ -149,12 +149,13 @@ public class NeTableManager
             return;
         DataTable entries = new("EntryTable")
         {
-            Columns = { "Offset", "Segment", "Entry", "Data type", "Entry type" }
+            Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
         };
         
         foreach (NeEntryTableModel item in _manager.EntryTableItems)
         {
             entries.Rows.Add(
+                "@" + item.Ordinal,
                 item.Offset.ToString("X"),
                 item.Segment,
                 item.Entry,
@@ -186,25 +187,36 @@ public class NeTableManager
         ModuleReferencesTable = modres;
     }
 
-    private void MakeNonResidentNames()
+    private void MakeNames()
     {
-        if (_manager.ExportingFunctions.Length == 0)
+        if (_manager.NonResidentNames.Length == 0)
             return;
         
-        DataTable nonres = new("Non Resident Names table")
+        DataTable nonres = new("NonResident/Resident Names table")
         {
-            Columns = { "Count", "Name", "Ordinal" }
+            Columns = { "Count", "Name", "Ordinal", "Name Table" }
         };
-        foreach (NeExport neExportDump in _manager.ExportingFunctions)
+        foreach (NeExport neExportDump in _manager.NonResidentNames)
         {
             nonres.Rows.Add(
                 neExportDump.Count,
                 neExportDump.Name,
-                "@" + neExportDump.Ordinal
+                "@" + neExportDump.Ordinal,
+                "[Not resident]"
             );
         }
 
-        NonResidentNamesTable = nonres;
+        foreach (NeExport export in _manager.ResidentNames)
+        {
+            nonres.Rows.Add(
+                export.Count,
+                export.Name,
+                "@" + export.Ordinal,
+                "[Resident]"
+            );
+        }
+
+        NamesTable = nonres;
     }
 
     private void MakeCharacteristics()
@@ -232,6 +244,14 @@ public class NeTableManager
         };
         md.Add($"Target operating system environment: `{os}`");
         md.Add($"Target CPU architecture: `{cpu}`");
+
+        md.Add("### Importing modules");
+        md.Add("All .DLL/EXE module names which resolved successfully");
+
+        foreach (string mod in _manager.ImportModels.Select(m => m.DllName))
+        {
+            md.Add($" - `{mod}`");
+        }
         
         Characteristics = md.ToArray();
     }

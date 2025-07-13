@@ -28,13 +28,13 @@ public struct NeHeader
     [MarshalAs(UnmanagedType.U2)] public ushort NE_ModReferencesTable = 0; 
     [MarshalAs(UnmanagedType.U2)] public ushort NE_ImportModulesTable = 0;
     [MarshalAs(UnmanagedType.U4)] public uint NE_NonResidentNamesTable = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort cmovent = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_Alignment = 0;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_MovableEntriesCount = 0;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_Alignment = 0; // log(base 2) | 0 eq 9
     [MarshalAs(UnmanagedType.U2)] public ushort NE_ResourcesCount = 0;
     [MarshalAs(UnmanagedType.U1)] public byte NE_OS = 0;
     [MarshalAs(UnmanagedType.U1)] public byte NE_FlagOthers = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort pretthunks = 0; 
-    [MarshalAs(UnmanagedType.U2)] public ushort psegrefbytes = 0;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_PretThunks = 0; 
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_PerSegmentRefBytes = 0;
     [MarshalAs(UnmanagedType.U2)] public ushort NE_SwapArea = 0;
     [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMinor = 0;
     [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMajor = 0;

@@ -9,7 +9,7 @@ namespace Sunflower.Links;
 /// </summary>
 public class PifFlowerSeed : IFlowerSeed
 {
-    public string Seed { get; } = "Sunflower MS-DOS Links (.PIF)";
+    public string Seed { get; } = "Sunflower MS-DOS PIF Viewer";
     public FlowerSeedStatus Status { get; set; } = new();
     public int Main(string path)
     {
@@ -17,7 +17,7 @@ public class PifFlowerSeed : IFlowerSeed
         {
             // define Program information start by file extension or first WORD
             // see "Microsoft PIF structure.pdf" in git repo.
-
+            
             return 0;
         }
         catch (Exception e)

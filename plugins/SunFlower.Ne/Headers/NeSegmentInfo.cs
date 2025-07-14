@@ -6,11 +6,11 @@ namespace SunFlower.Ne.Headers;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct NeSegmentInfo
 {
-    public UInt16 SegmentNumber;// Next fields by this are exists in docs
-    public UInt32 FileOffset;
-    public UInt16 FileLength;
-    public UInt16 Flags;
-    public UInt16 MinAllocation;
+    public ushort SegmentNumber;// Next fields by this are exists in docs
+    public ushort FileOffset;
+    public ushort FileLength;
+    public ushort Flags;
+    public ushort MinAllocation;
     public string Type => (Flags & 0x0007) switch
     {
         0x0000 => "CODE16",

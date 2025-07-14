@@ -1,14 +1,8 @@
-using System.Diagnostics;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
-using NUnit.Framework.Internal;
 using SunFlower.Le.Services;
-using SunFlower.Ne.Headers;
-using SunFlower.Ne.Models;
-using SunFlower.Ne.Services;
 using SunFlower.Pe;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
-
+using SunFlower.Links.Services;
 namespace SunFlower.Connection;
 
 public class Tests
@@ -56,9 +50,8 @@ public class Tests
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        string path = @"D:\TEST\PIFEDIT.EXE";
+        string path = @"D:\TEST\Windows2.1\KERNEL.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
-        NeTableManager tableManager = new(manager);
         
         Assert.Pass();
     }
@@ -69,6 +62,13 @@ public class Tests
         string path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
         LeDumpManager manager = new(path);
         LeTableManager tableManager = new(manager);
+        
+        Assert.Pass();
+    }
+    [Test]
+    public void CheckoutPif()
+    {
+        PifDumpManager manager = new(@"D:\TEST\Windows2.1\PIF\BASIC.PIF");
         
         Assert.Pass();
     }

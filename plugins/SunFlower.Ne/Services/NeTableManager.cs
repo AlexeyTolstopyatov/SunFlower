@@ -14,6 +14,7 @@ public class NeTableManager
         
         MakeHeadersTables();
         MakeSegmentsTable();
+        MakeSegmentRelocations();
         MakeEntryPointsTable();
         MakeModuleReferencesTable();
         MakeNames();
@@ -21,7 +22,7 @@ public class NeTableManager
     
     public DataTable[] Headers { get; set; } = [];
     public DataTable SegmentTable { get; set; } = new();
-    public DataTable ResidentNamesTable { get; set; } = new();
+    public DataTable SegmentRelocations { get; set; } = new("Every Segment Relocations");
     public DataTable NamesTable { get; set; } = new();
     public DataTable EntryPointsTable { get; set; } = new();
     public DataTable ModuleReferencesTable { get; set; } = new();
@@ -187,6 +188,42 @@ public class NeTableManager
         ModuleReferencesTable = modres;
     }
 
+    private void MakeSegmentRelocations()
+    {
+        SegmentRelocations.Columns.AddRange(
+            [
+                new DataColumn("Seg ID"), 
+                new DataColumn("Records#"),
+                new DataColumn("Source"),
+                new DataColumn("Reloc type"),
+                new DataColumn("Reloc Flags"),
+                new DataColumn("Seg Type"),
+                new DataColumn("Target"),
+                new DataColumn("Target Type"),
+                new DataColumn("Mod#"),
+                new DataColumn("Name"),
+                new DataColumn("Ordinal"),
+                new DataColumn("Fixup")
+            ]);
+
+        foreach (SegmentRelocationModel relocation in _manager.SegmentRelocations)
+        {
+            SegmentRelocations.Rows.Add(
+                relocation.SegmentId,
+                relocation.RecordsCount,
+                relocation.SourceType,
+                relocation.RelocationType,
+                relocation.RelocationFlags,
+                relocation.SegmentType,
+                relocation.Target,
+                relocation.TargetType,
+                relocation.ModuleIndex,
+                relocation.Name,
+                relocation.Ordinal,
+                relocation.FixupType
+            );
+        }
+    }
     private void MakeNames()
     {
         if (_manager.NonResidentNames.Length == 0)

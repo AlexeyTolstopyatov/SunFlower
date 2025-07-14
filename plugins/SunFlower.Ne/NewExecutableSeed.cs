@@ -24,9 +24,9 @@ public class NewExecutableSeed : IFlowerSeed
             });
             List<DataTable> unboxed =
             [
-                tableManager.Headers[0],
-                tableManager.Headers[1],
+                ..tableManager.Headers,
                 tableManager.SegmentTable,
+                tableManager.SegmentRelocations,
                 tableManager.EntryPointsTable,
                 tableManager.ModuleReferencesTable,
                 tableManager.NamesTable

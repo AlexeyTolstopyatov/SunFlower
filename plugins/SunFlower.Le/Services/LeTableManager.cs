@@ -339,7 +339,7 @@ public class LeTableManager
                 model.Record.ExtraData.ToString("X"),
                 model.Record.OsFixup.ToString("X"),
                 model.ImportingOrdinal,
-                model.ImportingName,
+                $"`{model.ImportingName}`",
                 atp,
                 rtp
                 );
@@ -355,7 +355,10 @@ public class LeTableManager
         Characteristics.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
         
         Characteristics.Add("Version and module flags set in Program header: 0x" + _manager.LeHeader.LE_Version.ToString("X"));
-        Characteristics.AddRange(GetModuleFlags(_manager.LeHeader.LE_Type));
+        foreach (string flag in GetModuleFlags(_manager.LeHeader.LE_Type))
+        {
+            Characteristics.Add($" - `{flag}`");
+        }
     }
     private static string GetCpuType(ushort cpuType)
     {

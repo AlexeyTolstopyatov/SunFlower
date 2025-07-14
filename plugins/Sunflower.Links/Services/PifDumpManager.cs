@@ -46,7 +46,7 @@ public class PifDumpManager : UnsafeManager
         
         ushort length = reader.ReadUInt16();
         long baseSectionPosition = 0;
-            
+        
         if (length == 0x171) // Old Format (Windows 1.X/2.X)
         {
             stream.Position = 0;
@@ -62,34 +62,59 @@ public class PifDumpManager : UnsafeManager
             // Section Header
             stream.Position = 0x171;
             SectionHeads.Add(Fill<PifSectionHead>(reader));
-            baseSectionPosition = 0x171 + 0x10; // 0x187
+            baseSectionPosition = 0x187;
+        }
+        else
+        {
+            throw new InvalidDataException("Unable to read file like Program Information File (PIF)");
         }
 
-        // Next sections
         long nextSectionOffset = baseSectionPosition;
-
-        while (nextSectionOffset != 0 && nextSectionOffset < stream.Length)
+        int safetyCounter = 0;
+        const int MAX_SECTIONS = 10; // avoid infinite loop
+        
+        while (nextSectionOffset > 0 && 
+               nextSectionOffset < stream.Length && 
+               safetyCounter++ < MAX_SECTIONS)
         {
             stream.Position = nextSectionOffset;
+            
             var sectionHead = Fill<PifSectionHead>(reader);
             SectionHeads.Add(sectionHead);
+            
+            if (sectionHead.NextSectionOffset == 0xFFFF)
+            {
+                // 0xFFFF offset means last section in file. Force exit.
+                stream.Position = sectionHead.PartitionOffset;
+                ReadSectionData(reader, sectionHead);
+                break;
+            }
+            if (sectionHead.NextSectionOffset < stream.Length)
+            {
+                stream.Position = sectionHead.PartitionOffset;
                 
-            stream.Position = sectionHead.NextSectionOffset;
-            ReadSectionData(reader, sectionHead);
-
+                ReadSectionData(reader, sectionHead);
+                
+                stream.Position = sectionHead.NextSectionOffset;
+            }
+            else
+            {
+                Debug.WriteLine("Invalid data offset, skipping section");
+            }
+            
             nextSectionOffset = sectionHead.NextSectionOffset;
         }
     }
 
     private void ReadSectionData(BinaryReader reader, PifSectionHead sectionHead)
     {
-        switch (sectionHead.DataLength) // Erase '\0'
+        switch (sectionHead.DataLength)
         {
             case 0x68:
                 Windows3X386 = Fill<Windows3x386>(reader);
                 break;
 
-            case 0x06:
+            case 0x6:
                 Windows3X286 = Fill<Windows3x286>(reader);
                 break;
 
@@ -111,7 +136,15 @@ public class PifDumpManager : UnsafeManager
             //     Debug.WriteLine(content);
             //     break;
             default:
-                // Unknown sections should be skipped
+                string sysNaming = new string(sectionHead.Name).Trim('\0');
+                if (string.Equals(sysNaming, "CONFIG  SYS 4.0", StringComparison.InvariantCulture))
+                {
+                    
+                }
+                else if (string.Equals(sysNaming, "AUTOEXECBAT 4.0", StringComparison.InvariantCulture))
+                {
+                    
+                }
                 reader.ReadBytes(sectionHead.DataLength);
                 break;
         }

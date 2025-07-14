@@ -68,7 +68,7 @@ public class Tests
     [Test]
     public void CheckoutPif()
     {
-        PifDumpManager manager = new(@"D:\TEST\Windows2.1\PIF\BASIC.PIF");
+        PifDumpManager manager = new(@"C:\Users\atvlg\OneDrive\Desktop\batchbox.pif");
         
         Assert.Pass();
     }

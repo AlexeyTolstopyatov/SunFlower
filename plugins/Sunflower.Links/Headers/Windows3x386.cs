@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Sunflower.Links.Headers;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Windows3x386
 {
     public ushort ConventionalMemMaxSizeK;

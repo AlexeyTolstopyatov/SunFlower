@@ -1,4 +1,8 @@
-﻿using SunFlower.Abstractions;
+﻿using System.Data;
+using System.Text;
+using SunFlower.Abstractions;
+using SunFlower.Abstractions.Types;
+using SunFlower.Links.Services;
 
 namespace Sunflower.Links;
 
@@ -15,8 +19,32 @@ public class PifFlowerSeed : IFlowerSeed
     {
         try
         {
+            PifDumpManager dumpManager = new(path);
+            PifTableManager tableManager = new(dumpManager);
+
+            List<string> intoList =
+            [
+                "### File information",
+                $" - FileName: {path}",
+                $" - Size: {new FileInfo(path).Length / 1024}K",
+                $" - Created at {new FileInfo(path).CreationTimeUtc}"
+            ];
+
+            FlowerSeedResult intro = new FlowerSeedResult()
+            {
+                BoxedResult = intoList,
+                Type = FlowerSeedEntryType.Text
+            };
             // define Program information start by file extension or first WORD
             // see "Microsoft PIF structure.pdf" in git repo.
+            Status.Results.Add(intro);
+            Status.Results.Add(new FlowerSeedResult()
+            {
+                Type = FlowerSeedEntryType.DataTables,
+                BoxedResult = new List<DataTable>(){tableManager.MicrosoftPifExTable}
+            });
+
+            Status.IsEnabled = true;
             
             return 0;
         }

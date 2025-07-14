@@ -2,7 +2,7 @@
 
 namespace Sunflower.Links.Headers;
 
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
 public struct PifSectionHead
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]

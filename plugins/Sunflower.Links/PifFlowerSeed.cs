@@ -41,7 +41,13 @@ public class PifFlowerSeed : IFlowerSeed
             Status.Results.Add(new FlowerSeedResult()
             {
                 Type = FlowerSeedEntryType.DataTables,
-                BoxedResult = new List<DataTable>(){tableManager.MicrosoftPifExTable}
+                BoxedResult = new List<DataTable>()
+                {
+                    tableManager.SectionHeaders,
+                    tableManager.MicrosoftPifExTable,
+                    tableManager.Windows386Table,
+                    tableManager.Windows286Table,
+                }
             });
 
             Status.IsEnabled = true;

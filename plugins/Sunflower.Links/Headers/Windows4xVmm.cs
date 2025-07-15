@@ -2,6 +2,7 @@
 
 namespace Sunflower.Links.Headers;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Windows4xVmm
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 88)]

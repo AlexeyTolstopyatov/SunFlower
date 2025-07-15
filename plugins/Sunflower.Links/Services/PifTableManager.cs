@@ -1,22 +1,47 @@
 ﻿using System.Data;
-using System.Security.Cryptography.X509Certificates;
 using Sunflower.Links.Headers;
 
 namespace SunFlower.Links.Services;
 
 public class PifTableManager
 {
-    private PifDumpManager _manager;
+    private readonly PifDumpManager _manager;
 
+    public DataTable SectionHeaders { get; private set; } = new();
     public DataTable MicrosoftPifExTable { get; private set; } = new();
-    public DataColumn Windows386Table { get; private set; } = new();
+    public DataTable Windows386Table { get; private set; } = new();
+    public DataTable Windows286Table { get; private set; } = new();
+    public DataTable WindowsVmmTable { get; private set; } = new();
 
     public PifTableManager(PifDumpManager manager)
     {
         _manager = manager;
+        MakeSectionHeaders();
         MakeMicrosoftPifEx();
+        MakeWindows386();
+        MakeWindows286();
+        MakeWindowsVmm();
     }
 
+    private void MakeSectionHeaders()
+    {
+        DataTable table = new("PIF Section Headings table")
+        {
+            Columns = { "Name", "Length", "Next Offset", "Partition Offset" }
+        };
+        foreach (PifSectionHead head in _manager.SectionHeads)
+        {
+            table.Rows.Add(
+                TryExcludeSpecificAscii(head.Name),
+                head.DataLength.ToString("X"),
+                head.NextSectionOffset.ToString("X"),
+                head.PartitionOffset.ToString("X")
+            );
+        }
+
+        SectionHeaders = table;
+    }
+    
     private void MakeMicrosoftPifEx()
     {
         DataTable table = new("Microsoft PIFex Section")
@@ -90,8 +115,11 @@ public class PifTableManager
         MicrosoftPifExTable = table;
     }
 
-    private void MakeWindows386(BinaryReader reader)
+    private void MakeWindows386()
     {
+        if (_manager.SectionHeads.All(x => x.DataLength != 0x68))
+            return;
+        
         DataTable table = new("Windows 386 3.0 Section")
         {
             Columns = { "Segment", "Value" }
@@ -208,8 +236,142 @@ public class PifTableManager
         
         table.Rows.Add(nameof(_manager.Windows3X386.ArgumentsVector),
             TryExcludeSpecificAscii(_manager.Windows3X386.ArgumentsVector));
+
+        Windows386Table = table;
     }
-    
+
+    private void MakeWindows286()
+    {
+        if (_manager.SectionHeads.All(x => x.DataLength != 0x6))
+            return;
+        
+        DataTable table = new("Windows 286 3.0 Section")
+        {
+            Columns = { "Segment", "Value" }
+        };
+        table.Rows.Add(nameof(Windows3x286.XmsMemMaxSizeK), _manager.Windows3X286.XmsMemMaxSizeK);
+        table.Rows.Add(nameof(Windows3x286.XmsMemReqSizeK), _manager.Windows3X286.XmsMemReqSizeK);
+
+        string flags = "";
+        if ((_manager.Windows3X286.Flags & 0x0001) != 0)
+            flags += "Not use [Alt]+[Tab], ";
+        if ((_manager.Windows3X286.Flags & 0x0002) != 0)
+            flags += "Not use [Alt]+[Esc], ";
+        if ((_manager.Windows3X286.Flags & 0x0004) != 0)
+            flags += "Not use [Alt]+[PrtScr], ";
+        if ((_manager.Windows3X286.Flags & 0x0008) != 0)
+            flags += "Not use [PrtScr], ";
+        if ((_manager.Windows3X286.Flags & 0x0010) != 0)
+            flags += "Not use [Ctrl]+[Esc], ";
+        if ((_manager.Windows3X286.Flags & 0x0020) != 0)
+            flags += "Not keep a screen, ";
+        if ((_manager.Windows3X286.Flags & 0x4000) != 0)
+            flags += "Direct Interaction COM3, ";
+        if ((_manager.Windows3X286.Flags & 0x8000) != 0)
+            flags += "Direct interaction COM4, ";
+
+        table.Rows.Add(nameof(Windows3x286.Flags), flags);
+
+        Windows286Table = table;
+    }
+
+    private void MakeWindowsVmm()
+    {
+        if (_manager.SectionHeads.All(x => x.DataLength != 0x1AC))
+            return;
+        
+        DataTable table = new DataTable("Windows 9x VMM Section");
+        table.Columns.Add("Segment", typeof(string));
+        table.Columns.Add("Value", typeof(string));
+        
+        Windows4xVmm data = _manager.Windows4XVmm;
+        
+        AddField(table, "Reserved88", data.Reserved88, bytes => BitConverter.ToString(bytes).Replace("-", ""));
+        
+        AddField(table, "IconStorage", data.IconStorage, TryExcludeSpecificAscii);
+        
+        AddField(table, "IconIndex", data.IconIndex, v => $"{v} (0x{v:X4})");
+        AddField(table, "DosModeFlags", data.DosModeFlags, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "Reserved10", data.Reserved10, TryExcludeSpecificAscii);
+        AddField(table, "Priority", data.Priority, v => $"{v} (0x{v:X4})");
+        AddField(table, "DosWindowFlags", data.DosWindowFlags, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "Reserved8", data.Reserved8, bytes => BitConverter.ToString(bytes).Replace("-", ""));
+        AddField(table, "NumberOfLines", data.NumberOfLines, v => $"{v} (0x{v:X4})");
+        AddField(table, "ShortcutKeyFlags", data.ShortcutKeyFlags, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "Reserved00", data.Reserved00, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved05", data.Reserved05, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved19", data.Reserved19, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved03", data.Reserved03, v => $"{v} (0x{v:X4})");
+        AddField(table, "ReservedC8", data.ReservedC8, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved3E8", data.Reserved3E8, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved02", data.Reserved02, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved0A", data.Reserved0A, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "MouseFlags", data.MouseFlags, v => $"{v} (0x{v:X4})");
+        AddField(table, "Reserved6", data.Reserved6, bytes => BitConverter.ToString(bytes).Replace("-", ""));
+        
+        AddField(table, "FontFlags", data.FontFlags, v => $"{v} (0x{v:X4})");
+        AddField(table, "Unknown", data.Unknown, v => $"{v} (0x{v:X4})");
+        AddField(table, "CurrentFontSizeX", data.CurrentFontSizeX, v => $"{v} (0x{v:X4})");
+        AddField(table, "CurrentFontSizeY", data.CurrentFontSizeY, v => $"{v} (0x{v:X4})");
+        AddField(table, "CurrentFontSizeXToo", data.CurrentFontSizeXToo, v => $"{v} (0x{v:X4})");
+        AddField(table, "CurrentFontSizeYToo", data.CurrentFontSizeYToo, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "RasterFontName", data.RasterFontName, TryExcludeSpecificAscii);
+        AddField(table, "TrueTypeFontName", data.TrueTypeFontName, TryExcludeSpecificAscii);
+        
+        AddField(table, "UnknownWinNt", data.UnknownWinNt, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "ToolBarFlags", data.ToolBarFlags, v => $"{v} (0x{v:X4})");
+        AddField(table, "ScreenSizeX", data.ScreenSizeX, v => $"{v} (0x{v:X4})");
+        AddField(table, "ScreenSizeY", data.ScreenSizeY, v => $"{v} (0x{v:X4})");
+        AddField(table, "ClientWindowAreaX", data.ClientWindowAreaX, v => $"{v} (0x{v:X4})");
+        AddField(table, "ClientWindowAreaY", data.ClientWindowAreaY, v => $"{v} (0x{v:X4})");
+        AddField(table, "WindowSizeX", data.WindowSizeX, v => $"{v} (0x{v:X4})");
+        AddField(table, "WindowSizeY", data.WindowSizeY, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "AlsoUnknown", data.AlsoUnknown, v => $"{v} (0x{v:X4})");
+        AddField(table, "RestoreFlag", data.RestoreFlag, v => $"{v} (0x{v:X4})");
+
+        string state = "";
+        if ((data.WindowStateFlag & 0x02) != 0)
+            state = "Last Window state - Maximized";
+        
+        AddField(table, "WindowStateFlag", data.WindowStateFlag, v => $"{state} (0x{v:X4})");
+        AddField(table, "WindowState", data.WindowState, v => $"{v} (0x{v:X4})");
+        AddField(table, "UnknownWin951", data.UnknownWin951, v => $"{v} (0x{v:X4})");
+        AddField(table, "UnknownWin952", data.UnknownWin952, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "RightMaxBorderPosition", data.RightMaxBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "BottomMaxBorderPosition", data.BottomMaxBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "LeftMaxBorderPosition", data.LeftMaxBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "TopMaxBorderPosition", data.TopMaxBorderPosition, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "RightBorderPosition", data.RightBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "BottomBorderPosition", data.BottomBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "LeftBorderPosition", data.LeftBorderPosition, v => $"{v} (0x{v:X4})");
+        AddField(table, "TopBorderPosition", data.TopBorderPosition, v => $"{v} (0x{v:X4})");
+        
+        AddField(table, "AnotherUnknown0", data.AnotherUnknown0, v => $"{v} (0x{v:X8})");
+        
+        AddField(table, "CmdFileName", data.CmdFileName, TryExcludeSpecificAscii);
+        
+        AddField(table, "EnvironmentMemAlloc", data.EnvironmentMemAlloc, v => $"{v} (0x{v:X4})");
+        AddField(table, "DpmiAlloc", data.DpmiAlloc, v => $"{v} (0x{v:X4})");
+        AddField(table, "Unknown1", data.Unknown1, v => $"{v} (0x{v:X4})");
+
+        WindowsVmmTable = table;
+    }
+    private void AddField<T>(DataTable table, string name, T value, Func<T, string> formatter)
+    {
+        DataRow row = table.NewRow();
+        row["Segment"] = name;
+        row["Value"] = formatter(value);
+        table.Rows.Add(row);
+    }
     private static string TryExcludeSpecificAscii(char[] array)
     {
         char[] excluded = array.Where(c => char.IsAsciiLetterOrDigit(c) || char.IsPunctuation(c) || char.IsSeparator(c)).ToArray();

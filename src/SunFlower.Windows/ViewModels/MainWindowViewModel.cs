@@ -111,7 +111,6 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
             Process.Start("explorer.exe", target);
         }
     }
-
     /// <summary>
     /// Plugins have specified interface which helps to communicate
     /// with main loader module.

@@ -1,3 +1,16 @@
-﻿{
-  
-}
+﻿[
+  {
+    "Name": "VBA Model (16-bit)",
+    "Integer": 8,
+    "Long": 16,
+    "Single": 16,
+    "Double": 32
+  },
+  {
+    "Name": "VBA Model (32-bit)",
+    "Integer": 16,
+    "Long": 32,
+    "Single": 32,
+    "Double": 64
+  }
+]

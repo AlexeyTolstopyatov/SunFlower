@@ -59,6 +59,20 @@ public class WindowManager : NotifyPropertyChanged
         
     }
     /// <summary>
+    /// Force shows window
+    /// </summary>
+    /// <param name="windowInstance">window instance</param>
+    /// <typeparam name="TView">type of window instance</typeparam>
+    public void ShowUnmanaged<TView>(TView windowInstance, [Optional] bool isDialog, [Optional] string title) where TView : Window
+    {
+        windowInstance.Title = title;
+
+        if (isDialog)
+            windowInstance.ShowDialog();
+        else
+            windowInstance.Show();
+    }
+    /// <summary>
     /// Closes window by expected instance type
     /// </summary>
     /// <param name="viewModel">DataContext</param>

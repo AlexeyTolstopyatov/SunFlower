@@ -67,6 +67,20 @@ public sealed class RegistryManager
         return this;
     }
     /// <summary>
+    /// Deserializes JSON list to <see cref="DataTable"/>
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    public RegistryManager Fill<T>(ref T obj)
+    {
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        string json = File.ReadAllText(_fileName);
+        
+        obj = JsonConvert.DeserializeObject<T>(json)!;
+        
+        return this;
+    }
+    /// <summary>
     /// Seriously. Calls notepad with current file in argument vector
     /// </summary>
     /// <returns></returns>

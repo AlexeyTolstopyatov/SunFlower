@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using HandyControl.Controls;
 using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
@@ -53,11 +54,11 @@ public partial class MainWindowViewModel
     /// </summary>
     private void CallEditor()
     {
-        new MonacoWindow(Seeds
+        _windowManager.ShowUnmanaged(new MonacoWindow(
+            Seeds
             .Where(s => s.Status.IsEnabled)
-            .ToList())
-        {
-            Title = FilePath,
-        }.Show();
+            .ToList()), 
+            title: FilePath, 
+            isDialog: false);
     }
 }

@@ -25,7 +25,7 @@ public class FlowerSeedManager : IFlowerSeedManager
     public IFlowerSeedManager LoadAllFlowerSeeds()
     {
         Seeds = []; // again!
-        string seedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+        var seedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
 
         if (!Directory.Exists(seedPath))
         {
@@ -33,13 +33,13 @@ public class FlowerSeedManager : IFlowerSeedManager
             return this;
         }
 
-        foreach (string dllPath in Directory.EnumerateFiles(seedPath, "*.dll", SearchOption.AllDirectories))
+        foreach (var dllPath in Directory.EnumerateFiles(seedPath, "*.dll", SearchOption.AllDirectories))
         {
             try
             {
-                Assembly assembly = Assembly.LoadFrom(dllPath);
+                var assembly = Assembly.LoadFrom(dllPath);
                 
-                foreach (Type type in assembly.GetTypes())
+                foreach (var type in assembly.GetTypes())
                 {
                     if (!typeof(IFlowerSeed).IsAssignableFrom(type))
                     {
@@ -48,7 +48,7 @@ public class FlowerSeedManager : IFlowerSeedManager
                     }
                     
                     // IFlowerSeed instance
-                    IFlowerSeed plugin = (IFlowerSeed)Activator.CreateInstance(type)!;
+                    var plugin = (IFlowerSeed)Activator.CreateInstance(type)!;
                         
                     // Add to hashset
                     Seeds.Add(plugin);
@@ -71,12 +71,12 @@ public class FlowerSeedManager : IFlowerSeedManager
     {
         var results = new Dictionary<string, int>();
         
-        foreach (IFlowerSeed plugin in Seeds)
+        foreach (var plugin in Seeds)
         {
             try
             {
                 // Main invoke
-                int result = plugin.Main(targetingFile);
+                var result = plugin.Main(targetingFile);
                 results.Add(plugin.Seed, result);
             }
             catch (Exception ex)
@@ -94,7 +94,7 @@ public class FlowerSeedManager : IFlowerSeedManager
     /// <param name="path">targeting file</param>
     public FlowerSeedManager UpdateAllInvokedFlowerSeeds(string path)
     {
-        foreach (IFlowerSeed seed in Seeds)
+        foreach (var seed in Seeds)
         {
             try
             {

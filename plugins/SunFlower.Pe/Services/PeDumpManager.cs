@@ -55,25 +55,25 @@ public class PeDumpManager(string path) : UnsafeManager, IManager
     }
     private void FindHeaders(BinaryReader reader)
     {
-        UInt16 dos2 = reader.ReadUInt16();
+        var dos2 = reader.ReadUInt16();
         if (dos2 != 0x5A4D && dos2 != 0x4D5A)
         {
             throw new InvalidOperationException("Not a DOS/2 signature");
         }
     
         reader.BaseStream.Position = 0;
-        MzHeader dos2Hdr = Fill<MzHeader>(reader);
+        var dos2Hdr = Fill<MzHeader>(reader);
         Dos2Header = dos2Hdr;
 
         reader.BaseStream.Position = dos2Hdr.e_lfanew;
 
-        uint peSignature = reader.ReadUInt32();
+        var peSignature = reader.ReadUInt32();
         if (peSignature != 0x00004550)
         {
             throw new InvalidOperationException("Not a PE signature");
         }
 
-        PeFileHeader fileHdr = Fill<PeFileHeader>(reader);
+        var fileHdr = Fill<PeFileHeader>(reader);
         FileHeader = fileHdr;
 
         Is64Bit = fileHdr.Machine switch

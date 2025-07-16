@@ -22,9 +22,9 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeHeadersTables()
     {
-        DataTable dosHeader = MakeDosHeader();
-        DataTable fileHeader = MakeFileHeader();
-        DataTable optionalHeader = Is64Bit
+        var dosHeader = MakeDosHeader();
+        var fileHeader = MakeFileHeader();
+        var optionalHeader = Is64Bit
             ? MakeOptionalHeader()
             : MakeOptional32Header();
         
@@ -32,7 +32,7 @@ public class PeTableManager(PeImageModel model) : IManager
         
         if (model.CorHeader.SizeOfHead == 0x48) // <-- always true if .NET
         {
-            DataTable cor = MakeCor20Header();
+            var cor = MakeCor20Header();
             dts.Add(cor);
         }
 
@@ -41,7 +41,7 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private DataTable MakeDosHeader()
     {
-        MzHeader mz = model.MzHeader;
+        var mz = model.MzHeader;
         DataTable table = new()
         {
             TableName = "DOS/2 Executable"
@@ -71,7 +71,7 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private DataTable MakeFileHeader()
     {
-        PeFileHeader mz = model.FileHeader;
+        var mz = model.FileHeader;
         DataTable table = new()
         {
             TableName = "Portable Executable"
@@ -91,7 +91,7 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private DataTable MakeOptionalHeader()
     {
-        PeOptionalHeader optional = model.OptionalHeader;
+        var optional = model.OptionalHeader;
         DataTable table = new()
         {
             TableName = "Optional Part (64-bit fields)"
@@ -134,7 +134,7 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private DataTable MakeOptional32Header()
     {
-        PeOptionalHeader32 optional = model.OptionalHeader32;
+        var optional = model.OptionalHeader32;
         DataTable table = new()
         {
             TableName = "Optional Part (32-bit fields)"
@@ -213,7 +213,7 @@ public class PeTableManager(PeImageModel model) : IManager
             }
         };
         
-        foreach (PeSection dump in model.Sections)
+        foreach (var dump in model.Sections)
         {
             sections.Rows.Add(
                 new String(dump.Name.Where(x => x != '\0').ToArray()),
@@ -266,7 +266,7 @@ public class PeTableManager(PeImageModel model) : IManager
             Columns = { "Name", "Ordinal", "Address" }
         };
         
-        foreach (ExportFunction function in model.ExportTableModel.Functions)
+        foreach (var function in model.ExportTableModel.Functions)
         {
             functions.Rows.Add(
                 function.Name,
@@ -296,9 +296,9 @@ public class PeTableManager(PeImageModel model) : IManager
             }
         };
 
-        foreach (ImportModule import in model.ImportTableModel.Modules)
+        foreach (var import in model.ImportTableModel.Modules)
         {
-            foreach (ImportedFunction function in import.Functions)
+            foreach (var function in import.Functions)
             {
                 imports.Rows.Add(
                     import.DllName,

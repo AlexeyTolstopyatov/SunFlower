@@ -65,7 +65,7 @@ public class LeDumpManager : UnsafeManager
     private void FillNames(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_ResidentNames);
-        byte size = reader.ReadByte();
+        var size = reader.ReadByte();
         while (size != 0)
         {
             ResidentName name = new()
@@ -98,7 +98,7 @@ public class LeDumpManager : UnsafeManager
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_ImportModNames);
 
-        byte size = reader.ReadByte();
+        var size = reader.ReadByte();
         while (size != 0)
         {
             Function name = new()
@@ -136,13 +136,13 @@ public class LeDumpManager : UnsafeManager
         reader.BaseStream.Position = Offset(LeHeader.LE_EntryTable);
         List<string> flags = [];
         byte bundleSize;
-        int count = 1;
+        var count = 1;
         while ((bundleSize = reader.ReadByte()) != 0)
         {
             count++;
             
-            byte bundleFlags = reader.ReadByte(); 
-            ushort objectIndex = reader.ReadUInt16();
+            var bundleFlags = reader.ReadByte(); 
+            var objectIndex = reader.ReadUInt16();
             
             EntryBundle bundle = new()
             {
@@ -151,21 +151,21 @@ public class LeDumpManager : UnsafeManager
                 ObjectIndex = objectIndex,
             };
 
-            bool is32Bit = ((bundleFlags & 0b00000010) != 0);
+            var is32Bit = ((bundleFlags & 0b00000010) != 0);
 
             List<Entry16> entries = [];
             List<Entry32> entry32S = [];
-            for (int i = 0; i < bundleSize; i++)
+            for (var i = 0; i < bundleSize; i++)
             {
-                byte entryFlags = reader.ReadByte();
+                var entryFlags = reader.ReadByte();
 
                 if (is32Bit)
                 {
                     flags.Add("ENTRY_USE32");
-                    uint offset = reader.ReadUInt32();
+                    var offset = reader.ReadUInt32();
                     
-                    string isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
-                    string isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
+                    var isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
+                    var isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
 
                     entry32S.Add(new Entry32
                     {
@@ -178,9 +178,9 @@ public class LeDumpManager : UnsafeManager
                 {
                     // fill flags for entries-bundle
                     flags.Add("ENTRY_USE16");
-                    ushort offset = reader.ReadUInt16();
-                    string isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
-                    string isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
+                    var offset = reader.ReadUInt16();
+                    var isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
+                    var isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
                     
                     // fill flags for each entry
                     
@@ -208,7 +208,7 @@ public class LeDumpManager : UnsafeManager
     
         reader.BaseStream.Position = Offset(LeHeader.LE_ObjOffset);
         
-        for (int i = 0; i < LeHeader.LE_ObjNum; i++)
+        for (var i = 0; i < LeHeader.LE_ObjNum; i++)
         {
             ObjectTable entry = new()
             {
@@ -228,14 +228,14 @@ public class LeDumpManager : UnsafeManager
     private void DecodeObjectFlags(ObjectTable entry)
     {
         // Permissions
-        string readable = ((entry.ObjectFlags & 0x0001) != 0) ? "OBJ_READ" : "";
-        string writable = ((entry.ObjectFlags & 0x0002) != 0) ? "OBJ_WRITE" : "";
-        string executable = ((entry.ObjectFlags & 0x0004) != 0) ? "OBJ_EXEC" : "";
-        string isResource = ((entry.ObjectFlags & 0x0008) != 0) ? "OBJ_RES" : "";
+        var readable = ((entry.ObjectFlags & 0x0001) != 0) ? "OBJ_READ" : "";
+        var writable = ((entry.ObjectFlags & 0x0002) != 0) ? "OBJ_WRITE" : "";
+        var executable = ((entry.ObjectFlags & 0x0004) != 0) ? "OBJ_EXEC" : "";
+        var isResource = ((entry.ObjectFlags & 0x0008) != 0) ? "OBJ_RES" : "";
         
         // Object type
-        uint objectType = (entry.ObjectFlags >> 8) & 0x03;
-        string typeDesc = objectType switch
+        var objectType = (entry.ObjectFlags >> 8) & 0x03;
+        var typeDesc = objectType switch
         {
             0 => "OBJ_TYPE_NORMAL",
             1 => "OBJ_TYPE_ZERO_FILLED",
@@ -245,10 +245,10 @@ public class LeDumpManager : UnsafeManager
         };
     
         // Specific flags
-        string is16By16 = ((entry.ObjectFlags & 0x1000) != 0) ? "OBJ_16_16_ALIAS" : "";
-        string isBig = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_USE32" : "OBJ_USE16";
-        string isConforming = ((entry.ObjectFlags & 0x4000) != 0) ? "OBJ_CONFORM" : "";
-        string hasIoPrev = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_IO_PRIVILEGE" : "";
+        var is16By16 = ((entry.ObjectFlags & 0x1000) != 0) ? "OBJ_16_16_ALIAS" : "";
+        var isBig = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_USE32" : "OBJ_USE16";
+        var isConforming = ((entry.ObjectFlags & 0x4000) != 0) ? "OBJ_CONFORM" : "";
+        var hasIoPrev = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_IO_PRIVILEGE" : "";
         
         List<string> flags
             = [readable, writable, executable, isResource, typeDesc, isBig, is16By16, hasIoPrev, isConforming];
@@ -264,9 +264,9 @@ public class LeDumpManager : UnsafeManager
         
         //List<ObjectPage> entries = new();
         
-        for (int i = 0; i < LeHeader.LE_Pages; i++)
+        for (var i = 0; i < LeHeader.LE_Pages; i++)
         {
-            ObjectPage entry = new ObjectPage
+            var entry = new ObjectPage
             {
                 HighPage = reader.ReadUInt16(),
                 LowPage = reader.ReadByte(),
@@ -281,7 +281,7 @@ public class LeDumpManager : UnsafeManager
     }
     private long CalculatePageFileOffset(ObjectPage entry)
     {
-        uint pageNumber = (uint)((entry.HighPage << 8) | entry.LowPage);
+        var pageNumber = (uint)((entry.HighPage << 8) | entry.LowPage);
         
         // PageOffset = (Page# - 1) * sizeof(Page) + DataPageOffset
         return (pageNumber - 1) * LeHeader.LE_PageSize 
@@ -326,19 +326,19 @@ public class LeDumpManager : UnsafeManager
         if (_moduleNameCache.TryGetValue(moduleIndex, out var name))
             return name;
         
-        uint tableStart = LeHeader.LE_ImportModNames;
+        var tableStart = LeHeader.LE_ImportModNames;
         reader.BaseStream.Position = tableStart;
         // Пропускаем записи от 0 до moduleIndex
-        for (int i = 0; i <= moduleIndex; i++)
+        for (var i = 0; i <= moduleIndex; i++)
         {
-            byte len = reader.ReadByte();
+            var len = reader.ReadByte();
             if (len == 0)
             {
                 name = string.Empty;
             }
             else
             {
-                byte[] bytes = reader.ReadBytes(len);
+                var bytes = reader.ReadBytes(len);
                 name = Encoding.ASCII.GetString(bytes);
             }
             // only if single address
@@ -362,34 +362,34 @@ public class LeDumpManager : UnsafeManager
     /// <returns>Record and writes it to Record model collection</returns>
     private void ReadFixupRecordsTable(BinaryReader reader, uint fixupSize, uint startOffset, int pageIndex)
     {
-        uint fixupOffset = startOffset; // + Offset(FixupRec)
+        var fixupOffset = startOffset; // + Offset(FixupRec)
         
         reader.BaseStream.Position = fixupOffset;
-        long endPosition = (long)fixupOffset + fixupSize;
+        var endPosition = (long)fixupOffset + fixupSize;
         
         while (reader.BaseStream.Position < endPosition)
         {
-            List<string> atp = new List<string>();
-            List<string> rtp = new List<string>();
-            string importingName = string.Empty;
-            string importingOrdinal = string.Empty;
+            var atp = new List<string>();
+            var rtp = new List<string>();
+            var importingName = string.Empty;
+            var importingOrdinal = string.Empty;
             
-            FixupRecord record = new FixupRecord
+            var record = new FixupRecord
             {
                 AddressType = reader.ReadByte(),
                 RelocationType = reader.ReadByte()
             };
 
             // Address type flags
-            bool hasMultipleOffsets = (record.AddressType & 0x20) != 0;
-            bool hasOffsetList = (record.AddressType & 0x02) != 0;
+            var hasMultipleOffsets = (record.AddressType & 0x20) != 0;
+            var hasOffsetList = (record.AddressType & 0x02) != 0;
             
             if (hasMultipleOffsets)
             {
                 atp.Add("ADDR_MULTI_OFFSETS");
-                byte count = reader.ReadByte();
+                var count = reader.ReadByte();
                 record.Offsets = new ushort[count];
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     record.Offsets[i] = reader.ReadUInt16();
                 }
@@ -428,16 +428,16 @@ public class LeDumpManager : UnsafeManager
                     reader.ReadByte(); // Reserved
                     record.NameOffset = reader.ReadUInt16();
 
-                    string procedureName = "{BEFORE_READ}";
+                    var procedureName = "{BEFORE_READ}";
                     try
                     {
-                        uint procTableStart = LeHeader.LE_ImportNames;
+                        var procTableStart = LeHeader.LE_ImportNames;
                         reader.BaseStream.Position = procTableStart + record.NameOffset;
         
-                        byte nameLength = reader.ReadByte();
+                        var nameLength = reader.ReadByte();
                         if (nameLength > 0) // Length
                         {
-                            byte[] nameBytes = reader.ReadBytes(nameLength);
+                            var nameBytes = reader.ReadBytes(nameLength);
                             procedureName = Encoding.ASCII.GetString(nameBytes); // or IBM-850
                         }
                     }
@@ -458,8 +458,8 @@ public class LeDumpManager : UnsafeManager
                     }
                     else
                     {
-                        long current = reader.BaseStream.Position;
-                        string moduleName = GetModuleName(reader, record.ModuleIndex);
+                        var current = reader.BaseStream.Position;
+                        var moduleName = GetModuleName(reader, record.ModuleIndex);
                         importingName = $"{moduleName}!{procedureName}";
 
                         reader.BaseStream.Position = current;
@@ -497,16 +497,16 @@ public class LeDumpManager : UnsafeManager
         // Offset(x) = returns x + HeaderOffset
         reader.BaseStream.Position = Offset(LeHeader.LE_Fixups);
         // MemoryPagesCount has value of fixup .EXE pages
-        for (int i = 0; i <= LeHeader.LE_Pages; i++)
+        for (var i = 0; i <= LeHeader.LE_Pages; i++)
         {
             FixupPagesOffsets.Add(reader.ReadUInt32());
         }
         
-        for (int pageIdx = 0; pageIdx < LeHeader.LE_Pages; pageIdx++)
+        for (var pageIdx = 0; pageIdx < LeHeader.LE_Pages; pageIdx++)
         {
-            uint start = FixupPagesOffsets[pageIdx];
-            uint end = FixupPagesOffsets[pageIdx + 1];
-            uint size = end - start;
+            var start = FixupPagesOffsets[pageIdx];
+            var end = FixupPagesOffsets[pageIdx + 1];
+            var size = end - start;
     
             if (size > 0)
             {

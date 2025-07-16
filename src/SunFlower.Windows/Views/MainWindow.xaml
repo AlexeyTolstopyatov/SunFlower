@@ -26,8 +26,7 @@
                     Command="{Binding GetFileCommand}"
                     Header="Read executable"/>
                 <MenuItem
-                    Command="{Binding GetProcessCommand}"
-                    Header="Catch Win32 process"/>
+                    Header="Open recent files storage"/>
             </MenuItem>
             
             <!--Independent tools/windows-->
@@ -42,6 +41,10 @@
                 <MenuItem
                     Header="Clear Recent files table"
                     Command="{Binding GetDeleteRecentFilesCommandCommand}"/>
+                <MenuItem
+                    CommandParameter="recent"
+                    Command="{Binding }"
+                    Header="Open Recent files storage"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
@@ -65,7 +68,9 @@
                 <DataGrid
                     IsReadOnly="True"
                     x:Name="RecentDataGrid"
+                    MaxHeight="500"
                     Margin="10"
+                    d:ItemsSource="{d:SampleData 10}"
                     ItemsSource="{Binding RecentTable}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDoubleClick">
@@ -73,6 +78,14 @@
                                 CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                 Command="{Binding GetRecentFileCommand}"/>
                         </i:EventTrigger>
+                        <i:KeyTrigger
+                            Key="Delete"
+                            Modifiers="Shift">
+                            <i:InvokeCommandAction
+                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                Command="{Binding ClearRecentFileCommand}"/>
+                            
+                        </i:KeyTrigger>
                     </i:Interaction.Triggers>
                 </DataGrid>
             </StackPanel>

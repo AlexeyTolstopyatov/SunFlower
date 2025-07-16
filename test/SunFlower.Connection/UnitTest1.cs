@@ -26,7 +26,7 @@ public class Tests
     [Test]
     public void CheckoutPeImage()
     {
-        string path = @"D:\Projects\vb\Semi VB Decompiler\ApiLoader.exe";
+        var path = @"D:\Projects\vb\Semi VB Decompiler\ApiLoader.exe";
         PortableExecutableSeed seed = new();
         seed.Main(path);
         
@@ -34,7 +34,7 @@ public class Tests
         PeDumpManager manager = new(path);
         manager.Initialize();
 
-        PeExportsManager exportsManager =
+        var exportsManager =
             PeExportsManager.CreateInstance(manager.FileSectionsInfo, path);
         PeImportsManager importsManager =
             new(manager.FileSectionsInfo, path);
@@ -50,7 +50,7 @@ public class Tests
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        string path = @"D:\TEST\Windows2.1\KERNEL.EXE";
+        var path = @"D:\TEST\Windows2.1\KERNEL.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
         
         Assert.Pass();
@@ -59,7 +59,7 @@ public class Tests
     [Test]
     public void CheckoutDriver()
     {
-        string path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
+        var path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
         LeDumpManager manager = new(path);
         LeTableManager tableManager = new(manager);
         

@@ -20,14 +20,14 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
     public MonacoWindowViewModel(List<IFlowerSeed> seeds)
     {
         List<FlowerSeedResult> results = [];
-        foreach (IFlowerSeed seed in seeds)
+        foreach (var seed in seeds)
         {
             results.Add(new FlowerSeedResult()
             {
                 Type = FlowerSeedEntryType.Text,
                 BoxedResult = new List<string>(){seed.Seed}
             });
-            foreach (FlowerSeedResult result in seed.Status.Results)
+            foreach (var result in seed.Status.Results)
             {
                 results.Add(result);
             }

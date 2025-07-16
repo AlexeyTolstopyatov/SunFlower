@@ -26,7 +26,7 @@ public class DirectoryManager(FileSectionsInfo info) : UnsafeManager
     /// <exception cref="SectionNotFoundException"> If RVA not belongs to any section </exception>
     protected Int64 Offset(Int64 rva)
     {
-        PeSection section = Section(rva);
+        var section = Section(rva);
         
         return 0 + section.PointerToRawData + (rva - section.VirtualAddress);
     }
@@ -37,8 +37,8 @@ public class DirectoryManager(FileSectionsInfo info) : UnsafeManager
     {   // rva = {uint} 2019914798 
         // rva = {long} 2019914798 
         // RVA always 32-bit
-        UInt32 rva32 = Convert.ToUInt32(rva); // instead casting
-        foreach (PeSection section in info.Sections.OrderBy(s => s.VirtualAddress))
+        var rva32 = Convert.ToUInt32(rva); // instead casting
+        foreach (var section in info.Sections.OrderBy(s => s.VirtualAddress))
         {
             if (rva32 >= section.VirtualAddress && 
                 rva32 < section.VirtualAddress + section.VirtualSize)
@@ -55,10 +55,10 @@ public class DirectoryManager(FileSectionsInfo info) : UnsafeManager
     /// <returns>Array of structures</returns>
     protected T[] ReadArray<T>(BinaryReader reader, UInt32 rva, UInt32 count) where T : struct
     {
-        Int64 offset = Offset(rva);
+        var offset = Offset(rva);
         reader.BaseStream.Seek(offset, SeekOrigin.Begin);
-        T[] result = new T[count];
-        for (Int32 i = 0; i < count; i++)
+        var result = new T[count];
+        for (var i = 0; i < count; i++)
             result[i] = Fill<T>(reader);
         return result;
     }

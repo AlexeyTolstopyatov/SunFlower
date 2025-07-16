@@ -43,13 +43,13 @@
                 <StackPanel>
                     <TextBlock Text="CPU "/>
                     <TextBlock Text="Signature"/>
-                    <TextBlock Text="Signature (raw)"/>
+                    <TextBlock Text="Signature (hex)"/>
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
                     <TextBlock Text="{Binding Cpu}"/>
                     <TextBlock Text="{Binding Signature}"/>
-                    <TextBlock Text="Signature (hex)"/>
+                    <TextBlock Text="{Binding SignatureDWord}"/>
                 </StackPanel>
             </Grid>
         </hc:Card>

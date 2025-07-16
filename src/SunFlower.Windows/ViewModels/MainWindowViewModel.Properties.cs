@@ -29,9 +29,16 @@ public partial class MainWindowViewModel
         set => SetField(ref _cpu, value);
     }
 
+    public string SignatureDWord
+    {
+        get => _signatureDWord;
+        set => SetField(ref _signatureDWord, value);
+    }
+    
     private string _fileName;
     private string _filePath;
     private string _signature;
+    private string _signatureDWord;
     private string _cpu;
 
     public ICommand CallEditorCommand

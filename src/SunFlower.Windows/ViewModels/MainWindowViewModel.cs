@@ -7,13 +7,21 @@ using Microsoft.Xaml.Behaviors.Core;
 using Newtonsoft.Json;
 using SunFlower.Abstractions;
 using SunFlower.Windows.Services;
+using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
 public partial class MainWindowViewModel : NotifyPropertyChanged
 {
+    private readonly RegistryManager _registryManager;
+    private readonly WindowManager _windowManager;
+    
     public MainWindowViewModel()
     {
+        // managers
+        _registryManager = RegistryManager.CreateInstance();
+        _windowManager = new();
+        
         _recentTable = LoadRecentTableOnStartup();
         _loadedSeeds = [];
         _statusText = string.Empty;
@@ -22,7 +30,13 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getRecentFileCommand = new Command(GetRecentFile);
         _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
-        _getMachineWordsCommand = new Command((o) => { OpenChildWindowByDataContext(new MachineWordsWindowViewModel()); });
+        _getMachineWordsCommand = new Command(_ =>
+        {
+            _windowManager.Show(
+                new MachineWordsWindowViewModel(), 
+                new DataGridWindow(), 
+                title: "IA-32 table");
+        });
         _callEditorCommand = new ActionCommand(CallEditor);
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
@@ -30,17 +44,16 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         
         Tell($"Recent files found: {_recentTable.Rows.Count}");
         
-        _windowsService = new WindowsService();
         _fileName = string.Empty;
         _filePath = string.Empty;
         _cpu = string.Empty;
         _signature = string.Empty;
+        _signatureDWord = string.Empty;
         
         Tell("Windows service registered");
         TellCurrentAbstractionsVersion();
     }
     
-    private readonly IWindowsService _windowsService;
     private DataTable _recentTable;
     private List<IFlowerSeed> _loadedSeeds;
     private string _statusText;
@@ -70,19 +83,19 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     private DataTable LoadRecentTableOnStartup()
     {
         Tell(nameof(LoadRecentTableOnStartup));
-        string json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
+        var json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
         return JsonConvert.DeserializeObject<DataTable>(json)!;
     }
     
     private void Tell(string phrase)
     {
-        string text = "-> " + phrase + "\r\n";
+        var text = "-> " + phrase + "\r\n";
         StatusText += text;
     }
 
     private void ClearCache()
     {
-        string target = Path.Combine(
+        var target = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Sunflower.Windows",
             "WebView2Cache");
@@ -107,7 +120,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     /// </summary>
     private void TellCurrentAbstractionsVersion()
     {
-        string abstractionsVer =
+        var abstractionsVer =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
                 .FileVersion ?? "NOT FOUND";
         

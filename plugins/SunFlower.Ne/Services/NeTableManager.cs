@@ -31,15 +31,15 @@ public class NeTableManager
     
     private void MakeHeadersTables()
     {
-        DataTable dosHeader = MakeDosHeader();
-        DataTable windowsHeader = MakeWindowsHeader();
+        var dosHeader = MakeDosHeader();
+        var windowsHeader = MakeWindowsHeader();
                 
         Headers = [dosHeader, windowsHeader];
     }
     
     private DataTable MakeDosHeader()
     {
-        MzHeader mz = _manager.MzHeader;
+        var mz = _manager.MzHeader;
         DataTable table = new()
         {
             TableName = "DOS/2 Executable"
@@ -69,7 +69,7 @@ public class NeTableManager
     
     private DataTable MakeWindowsHeader()
     {
-        NeHeader ne = _manager.NeHeader;
+        var ne = _manager.NeHeader;
         DataTable table = new()
         {
             TableName = "Windows-OS/2 New Executable"
@@ -124,9 +124,9 @@ public class NeTableManager
             new DataColumn("Characteristics")
         ]);
 
-        foreach (NeSegmentModel segmentDump in _manager.SegmentModels)
+        foreach (var segmentDump in _manager.SegmentModels)
         {
-            string array = segmentDump
+            var array = segmentDump
                 .Characteristics
                 .Aggregate("", (current, characteristic) => current + (characteristic + " "));
             
@@ -153,7 +153,7 @@ public class NeTableManager
             Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
         };
         
-        foreach (NeEntryTableModel item in _manager.EntryTableItems)
+        foreach (var item in _manager.EntryTableItems)
         {
             entries.Rows.Add(
                 "@" + item.Ordinal,
@@ -177,7 +177,7 @@ public class NeTableManager
         {
             Columns = { "Reference#", "Reference Offset" }
         };
-        for (int i = 0; i < _manager.ModuleReferences.Length; ++i)
+        for (var i = 0; i < _manager.ModuleReferences.Length; ++i)
         {
             modres.Rows.Add(
                 i + 1,
@@ -206,7 +206,7 @@ public class NeTableManager
                 new DataColumn("Fixup")
             ]);
 
-        foreach (SegmentRelocationModel relocation in _manager.SegmentRelocations)
+        foreach (var relocation in _manager.SegmentRelocations)
         {
             SegmentRelocations.Rows.Add(
                 relocation.SegmentId,
@@ -233,7 +233,7 @@ public class NeTableManager
         {
             Columns = { "Count", "Name", "Ordinal", "Name Table" }
         };
-        foreach (NeExport neExportDump in _manager.NonResidentNames)
+        foreach (var neExportDump in _manager.NonResidentNames)
         {
             nonres.Rows.Add(
                 neExportDump.Count,
@@ -243,7 +243,7 @@ public class NeTableManager
             );
         }
 
-        foreach (NeExport export in _manager.ResidentNames)
+        foreach (var export in _manager.ResidentNames)
         {
             nonres.Rows.Add(
                 export.Count,
@@ -261,7 +261,7 @@ public class NeTableManager
         List<string> md = [];
         md.Add("### Image");
 
-        string os = _manager.NeHeader.NE_OS switch
+        var os = _manager.NeHeader.NE_OS switch
         {
             0x1 => "OS/2",
             0x2 => "Win16",
@@ -271,7 +271,7 @@ public class NeTableManager
             _ => "Not specified"
         };
 
-        string cpu = _manager.NeHeader.NE_ProgramFlags switch
+        var cpu = _manager.NeHeader.NE_ProgramFlags switch
         {
             var f when (f & 0x4) != 0 => "I8086",
             var f when (f & 0x5) != 0 => "I286",
@@ -285,7 +285,7 @@ public class NeTableManager
         md.Add("### Importing modules");
         md.Add("All .DLL/EXE module names which resolved successfully");
 
-        foreach (string mod in _manager.ImportModels.Select(m => m.DllName))
+        foreach (var mod in _manager.ImportModels.Select(m => m.DllName))
         {
             md.Add($" - `{mod}`");
         }

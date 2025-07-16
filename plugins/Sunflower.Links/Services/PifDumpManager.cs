@@ -41,10 +41,10 @@ public class PifDumpManager : UnsafeManager
 
     private void Initialize(string path)
     {
-        using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-        using BinaryReader reader = new BinaryReader(stream);
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+        using var reader = new BinaryReader(stream);
         
-        ushort length = reader.ReadUInt16();
+        var length = reader.ReadUInt16();
         long baseSectionPosition = 0;
         
         if (length == 0x171) // Old Format (Windows 1.X/2.X)
@@ -69,8 +69,8 @@ public class PifDumpManager : UnsafeManager
             throw new InvalidDataException("Unable to read file like Program Information File (PIF)");
         }
 
-        long nextSectionOffset = baseSectionPosition;
-        int safetyCounter = 0;
+        var nextSectionOffset = baseSectionPosition;
+        var safetyCounter = 0;
         const int MAX_SECTIONS = 10; // avoid infinite loop
         
         while (nextSectionOffset > 0 && 
@@ -136,7 +136,7 @@ public class PifDumpManager : UnsafeManager
             //     Debug.WriteLine(content);
             //     break;
             default:
-                string sysNaming = new string(sectionHead.Name).Trim('\0');
+                var sysNaming = new string(sectionHead.Name).Trim('\0');
                 if (string.Equals(sysNaming, "CONFIG  SYS 4.0", StringComparison.InvariantCulture))
                 {
                     

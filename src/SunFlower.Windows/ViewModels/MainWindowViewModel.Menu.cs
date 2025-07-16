@@ -1,13 +1,9 @@
 ﻿using System.Data;
-using System.IO;
 using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Win32;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SunFlower.Abstractions;
-using SunFlower.Models;
 using SunFlower.Services;
+using SunFlower.Windows.Attributes;
 
 namespace SunFlower.Windows.ViewModels;
 
@@ -72,14 +68,15 @@ public partial class MainWindowViewModel
     /// <param name="selectedRowView"></param>
     private void GetRecentFile(object selectedRowView)
     {
-        DataRowView unboxed = (DataRowView)selectedRowView;
+        var unboxed = (DataRowView)selectedRowView;
+        
         FileName = unboxed.Row["Name"].ToString() ?? "Unknown file";
         FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
         Signature = unboxed.Row["Signature"].ToString() ?? string.Empty;
         Cpu = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
         
         if (FilePath == string.Empty)
-            return; // disable "Call Editor"
+            return; // terminate "Call Editor"
 
         Seeds = FlowerSeedManager
             .CreateInstance()
@@ -88,12 +85,7 @@ public partial class MainWindowViewModel
           //.UnloadUnusedSeeds()
             .Seeds;
         
-        new PropertiesWindow()
-        {
-            Title = FilePath,
-            DataContext = this
-        }.Show(); // <-- ViewModel doesn't know about Views!!!
-        
+        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
     }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
@@ -114,57 +106,36 @@ public partial class MainWindowViewModel
         if (dialog.FileName == string.Empty)
             return;
 
-        ImageReaderResult result = ImageReader.GetImageResults(dialog.FileName);
+        // collect data-structure
+        var result = ImageReader.Get(dialog.FileName);
         FileName = result.Name;
         FilePath = result.Path;
-        Signature = result.Signature;
+        Signature = result.SignatureString;
         Cpu = result.CpuArchitecture;
-        
-        // Write to recent table
-        JArray resultList;
-        string filePath = AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json";
-        
-        if (File.Exists(filePath))
-        {
-            string recentJson = File.ReadAllText(filePath);
-            resultList = JArray.Parse(recentJson);
-            
-            JObject openedFileObj = JObject.FromObject(result);
-            resultList.Add(openedFileObj);
-        
-            File.WriteAllText(filePath, resultList.ToString(Formatting.Indented));
-        }
-        else
-        {
-            File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
-            
-            JObject openedFileObj = JObject.FromObject(result);
-            resultList = [openedFileObj];
+        SignatureDWord = result.SignatureDWord.ToString("X");
 
-            File.WriteAllText(filePath, resultList.ToString(Formatting.Indented));
-        }
+        _registryManager
+            .SetFileName("recent")
+          //.Create()
+            .Create(result);
+          //.OpenInWindowsNotepad();
+        
         RecentTable = LoadRecentTableOnStartup(); // bad idea.
         
         // Extensions recall
-        Seeds = FlowerSeedManager
-            .CreateInstance() 
+        Seeds = FlowerSeedManager.CreateInstance() 
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
-          //.UnloadUnusedSeeds()
             .Seeds;
         
         // information about external Exceptions
-        foreach (IFlowerSeed plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
+        foreach (var plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
         {
             Tell(plugin.Status.LastError is null ? $"[{plugin.Seed}] LastError null" : plugin.Status.LastError.ToString());
         }
         
         // Call plugins Window/Main Workspace
-        new PropertiesWindow()
-        {
-            Title = FilePath,
-            DataContext = this
-        }.Show();
+        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
     }
     /// <summary>
     /// Experimental feature (try to catch process by ID/Name)
@@ -183,21 +154,56 @@ public partial class MainWindowViewModel
         Growl.InfoGlobal("Not implemented yet");
     }
 
+    /// <summary>
+    /// Clear all recent files JSON list
+    /// </summary>
     private void ClearRecentFiles()
     {
         RecentTable.Clear();
-        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json", "[]");
+        
+        _registryManager
+            .SetFileName("recent")
+            .Create();
     }
-
+    /// <summary>
+    /// Deletes current /selected in <see cref="RecentTable"/> row from JSON list
+    /// and <see cref="RecentTable"/>
+    /// </summary>
+    /// <param name="file"></param>
     private void ClearRecentFile(object file)
     {
         try
         {
-            RecentTable.Rows.Find(file)!.Delete();
+            // typeof(file) == DataRowView
+            if (file is not DataRowView view) 
+                return;
+            
+            view.Row.Delete();
+            _registryManager
+                .SetFileName("recent")
+                .Delete(view.Row);
         }
         catch (Exception e)
         {
             Growl.WarningGlobal(e.Message);
+        }
+    }
+    /// <summary>
+    /// Opens file /in Windows Notepad/ by selected item CommandParameter
+    /// </summary>
+    /// <param name="name"></param>
+    [Forgotten]
+    private void OpenRegFileByName(object name)
+    {
+        try
+        {
+            _registryManager
+                .SetFileName(name.ToString()!)
+                .OpenInWindowsNotepad();
+        }
+        catch (Exception e)
+        {
+            Growl.WarningGlobal($"{e.Message}");
         }
     }
     #endregion

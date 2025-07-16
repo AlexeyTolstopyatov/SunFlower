@@ -30,9 +30,9 @@ public class PeClrManager(FileSectionsInfo info, string path) : DirectoryManager
 
     private Cor20Header FillCor20Header(BinaryReader reader)
     {
-        Int64 corOffset = Offset(info.Directories[14].VirtualAddress);
+        var corOffset = Offset(info.Directories[14].VirtualAddress);
         reader.BaseStream.Seek(corOffset, SeekOrigin.Begin);
-        Cor20Header cor = Fill<Cor20Header>(reader);
+        var cor = Fill<Cor20Header>(reader);
 
         return cor;
     }

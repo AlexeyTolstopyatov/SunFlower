@@ -6,12 +6,12 @@ using System.IO;
 using System.Windows;
 
 namespace SunFlower.Windows.Services;
-public class MonacoEditorService
+public class MonacoEditorManager
 {
     private readonly WebView2 _webView;
     private bool _isWebViewInitialized;
 
-    public MonacoEditorService(WebView2 webView)
+    public MonacoEditorManager(WebView2 webView)
     {
         _webView = webView ?? throw new ArgumentNullException(nameof(webView));
         InitializeAsync();
@@ -39,12 +39,12 @@ public class MonacoEditorService
     {
         try
         {
-            string userDataFolder = Path.Combine(
+            var userDataFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Sunflower.Windows",
                 "WebView2Cache");
 
-            CoreWebView2Environment? env = await CoreWebView2Environment.CreateAsync(
+            var env = await CoreWebView2Environment.CreateAsync(
                 userDataFolder: userDataFolder);
 
             await _webView.EnsureCoreWebView2Async(env);
@@ -58,7 +58,7 @@ public class MonacoEditorService
                 }
             };
 
-            string htmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Monaco", "index.html");
+            var htmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Monaco", "index.html");
             if (File.Exists(htmlPath))
             {
                 _webView.CoreWebView2.Navigate(htmlPath);
@@ -86,7 +86,7 @@ public class MonacoEditorService
         
         try
         {
-            string markdownContent = MarkdownGenerator.GenerateReport(results);
+            var markdownContent = MarkdownGenerator.GenerateReport(results);
             
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
         }
@@ -106,8 +106,8 @@ public class MonacoEditorService
         try
         {
             // make MDBook
-            string markdownContent = MarkdownGenerator.GenerateReport(results);
-            string escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
+            var markdownContent = MarkdownGenerator.GenerateReport(results);
+            var escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
 
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
         }

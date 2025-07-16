@@ -30,7 +30,7 @@ public class PifFlowerSeed : IFlowerSeed
                 $" - Created at {new FileInfo(path).CreationTimeUtc}"
             ];
 
-            FlowerSeedResult intro = new FlowerSeedResult()
+            var intro = new FlowerSeedResult()
             {
                 BoxedResult = intoList,
                 Type = FlowerSeedEntryType.Text

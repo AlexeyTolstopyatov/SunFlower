@@ -1,30 +1,39 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices.JavaScript;
-using Microsoft.VisualBasic;
-using SunFlower.Models;
+﻿using SunFlower.Models;
 
 namespace SunFlower;
 /// <summary>
 /// Builtin service for recognition image by filename.
+///
+/// Influences only on registry JSON list (see "recent.json"),
+/// which YOU CAN ALWAYS edit manually
 /// </summary>
-public class ImageReader
+public static class ImageReader
 {
-    public static ImageReaderResult GetImageResults(string path)
+    /// <summary>
+    /// Generic function, returns Image result anyway for every
+    /// supported Binary File format by core.
+    ///
+    /// Core plugins /extensions in Project's solution/
+    /// supports: MZ-e /extended/, PIF, PE32/+, LE16/+ NE/16 binaries.
+    /// </summary>
+    /// <param name="path">path to the required File</param>
+    /// <returns>Filled <see cref="ImageReaderResult"/> structure </returns>
+    public static ImageReaderResult Get(string path)
     {
         ImageReaderResult result = new()
         {
             Path = path,
             Name = new FileInfo(path).Name,
             CpuArchitecture = "?",
-            Signature = "?"
+            SignatureString = "?",
         };
         
         FileStream stream = new(path, FileMode.Open, FileAccess.Read);
         BinaryReader reader = new(stream);
 
-        UInt16 mzSignature = reader.ReadUInt16();
+        var mzSignature = reader.ReadUInt16();
 
-        if (mzSignature == 0x5a4d || mzSignature == 0x4d5a)
+        if (mzSignature is 0x5a4d or 0x4d5a)
         {
             return GetMicrosoftImageResult(reader, ref result);
         }
@@ -33,44 +42,43 @@ public class ImageReader
         
         return result;
     }
-
+    /// <summary>
+    /// Sees old Microsoft segmentation Formats. (PE32/+, LE16/+, NE16, MZ16)
+    /// ONLY extended xx-DOS Mark Zbikowski (MZ) header. BW-DOS and other xx-DOS
+    /// which has e_overlay field and relocations set in Standard MZ this function ignores.
+    /// </summary>
+    /// <param name="reader">current <see cref="BinaryReader"/> instance</param>
+    /// <param name="result">current structure by pointer</param>
     private static ImageReaderResult GetMicrosoftImageResult(BinaryReader reader, ref ImageReaderResult result)
     {
         // find next sign by pointer
         reader.BaseStream.Position = 0x3C;
-        UInt32 dwNewHeaderPointer = reader.ReadUInt32();
+        var dwNewHeaderPointer = reader.ReadUInt32();
 
         reader.BaseStream.Position = dwNewHeaderPointer;
-        UInt32 dwNewHeader = reader.ReadUInt32();
+        var dwNewHeader = reader.ReadUInt32();
+        result.SignatureDWord = dwNewHeader;
         
         switch (dwNewHeader)
         {
-            case 0x454e:
-                result.Signature = "New Executable (NE16)";
-                result.CpuArchitecture = "IA-32"; // Exists only for x86  
+            case 0x454e: // only IA-32. cigam
+                result.SignatureString = "New Executable (NE16)";
+                result.CpuArchitecture = "IA-32";
                 break;
-            case 0x454c:
-                result.Signature = "Linear Executable (LE16/32)";
+            case 0x454c or 0x4c45: // magic \/ cigam
+                result.SignatureString = "Linear Executable (LE16/+)";
                 break;
-            case 0x584c: // supports alpha/ppc/x86
-                result.Signature = "Linear Executable (LX32)";
+            case 0x584c or 0x4c58: // supports alpha/ppc/IA-32
+                result.SignatureString = "Linear Executable (LX32)";
                 break;
-            case 0x4550: // supports dohuya (see PE Format by microsoft.com)
-                result.Signature = "Portable Executable (PE32/+)";
+            case 0x4550 or 0x5045: // don't actually know about cigam
+                result.SignatureString = "Portable Executable (PE32/+)";
                 break;
             default:     // DOS/2x bin, supports only x86
-                result.Signature = $"DOS 2.x Executable (MZ16)";
+                result.SignatureString = $"DOS 2.x Executable (MZ16)";
                 result.CpuArchitecture = "IA-32";
                 break;
         }
-        
-        #if DEBUG // more information about offset
-        reader.BaseStream.Position = dwNewHeaderPointer;
-        char[] bNewHeaderAsciiString = reader.ReadChars(4);
-        
-        Debug.WriteLine($"{new string(bNewHeaderAsciiString)} (full: {dwNewHeader})");
-        #endif
-        
         // Need to find DOS/16 executables
         
         return result;

@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Text;
-using HandyControl.Themes;
 using SunFlower.Abstractions.Types;
 
 namespace SunFlower.Windows.Services;
@@ -13,7 +12,7 @@ public static class MarkdownGenerator
         md.AppendLine($"**Generated at**: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         md.AppendLine();
 
-        foreach (FlowerSeedResult result in results)
+        foreach (var result in results)
         {
             md.AppendLine(FormatResult(result));
             md.AppendLine();
@@ -57,7 +56,7 @@ public static class MarkdownGenerator
     private static string FormatDataTables(List<DataTable> dataTables)
     {
         StringBuilder tablesString = new();
-        foreach (DataTable dataTable in dataTables)
+        foreach (var dataTable in dataTables)
         {
             tablesString.AppendLine($"### {dataTable.TableName}");
             tablesString.AppendLine(FormatDataTable(dataTable));
@@ -79,7 +78,7 @@ public static class MarkdownGenerator
         sb.AppendLine();
         
         sb.Append("|");
-        for (int i = 0; i < table.Columns.Count; i++)
+        for (var i = 0; i < table.Columns.Count; i++)
         {
             sb.Append("---|");
         }
@@ -88,7 +87,7 @@ public static class MarkdownGenerator
         foreach (DataRow row in table.Rows)
         {
             sb.Append("| ");
-            for (int i = 0; i < table.Columns.Count; i++)
+            for (var i = 0; i < table.Columns.Count; i++)
             {
                 sb.Append($"{row[i]} | ");
             }

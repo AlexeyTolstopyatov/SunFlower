@@ -48,27 +48,27 @@ public class PeExportsManager(FileSectionsInfo info, string path) : DirectoryMan
         
         PeExportTableModel model = new();
         
-        UInt32 exportRva = _info.Directories[0].VirtualAddress;
-        Int64 exportOffset = Offset(exportRva);
+        var exportRva = _info.Directories[0].VirtualAddress;
+        var exportOffset = Offset(exportRva);
 
         reader.BaseStream.Seek(exportOffset, SeekOrigin.Begin);
-        PeImageExportDirectory exportDir = Fill<PeImageExportDirectory>(reader);
+        var exportDir = Fill<PeImageExportDirectory>(reader);
         model.ExportDirectory = exportDir; // <-- ExportDirectory added
         
         reader.BaseStream.Position = Offset(exportDir.Name);
         
-        String moduleName = ReadImportString(reader);
+        var moduleName = ReadImportString(reader);
         Debug.WriteLine(moduleName);
         
-        UInt32[] functionAddresses = ReadArray<UInt32>(reader, exportDir.AddressOfFunctions, exportDir.NumberOfFunctions);
-        UInt32[] namePointers = ReadArray<UInt32>(reader, exportDir.AddressOfNames, exportDir.NumberOfNames);
-        UInt16[] ordinals = ReadArray<UInt16>(reader, exportDir.AddressOfNameOrdinals, exportDir.NumberOfNames);
+        var functionAddresses = ReadArray<UInt32>(reader, exportDir.AddressOfFunctions, exportDir.NumberOfFunctions);
+        var namePointers = ReadArray<UInt32>(reader, exportDir.AddressOfNames, exportDir.NumberOfNames);
+        var ordinals = ReadArray<UInt16>(reader, exportDir.AddressOfNameOrdinals, exportDir.NumberOfNames);
 
-        for (Int32 i = 0; i < exportDir.NumberOfNames; i++)
+        for (var i = 0; i < exportDir.NumberOfNames; i++)
         {
-            String functionName = ReadExportString(reader, namePointers[i]);
-            UInt32 ordinal = (ordinals[i] + exportDir.Base);
-            UInt64 address = _info.Is64Bit 
+            var functionName = ReadExportString(reader, namePointers[i]);
+            var ordinal = (ordinals[i] + exportDir.Base);
+            var address = _info.Is64Bit 
                 ? ReadArray<UInt64>(reader, functionAddresses[ordinals[i]], 1)[0] 
                 : ReadArray<UInt32>(reader, functionAddresses[ordinals[i]], 1)[0];
 
@@ -99,7 +99,7 @@ public class PeExportsManager(FileSectionsInfo info, string path) : DirectoryMan
     /// <returns> ASCII(Z) string of exported entry</returns>
     private String ReadExportString(BinaryReader reader, UInt32 rva)
     {
-        Int64 offset = Offset(rva);
+        var offset = Offset(rva);
         reader.BaseStream.Seek(offset, SeekOrigin.Begin);
         List<Byte> bytes = [];
         Byte b;

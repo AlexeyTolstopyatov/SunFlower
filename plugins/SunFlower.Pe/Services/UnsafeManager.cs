@@ -17,9 +17,9 @@ public class UnsafeManager
     /// <returns></returns>
     protected TStruct Fill<TStruct>(BinaryReader reader) where TStruct : struct
     {
-        Byte[] bytes = reader.ReadBytes(Marshal.SizeOf(typeof(TStruct)));
-        GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-        TStruct result = Marshal.PtrToStructure<TStruct>(handle.AddrOfPinnedObject());
+        var bytes = reader.ReadBytes(Marshal.SizeOf(typeof(TStruct)));
+        var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+        var result = Marshal.PtrToStructure<TStruct>(handle.AddrOfPinnedObject());
         handle.Free();
         
         return result;

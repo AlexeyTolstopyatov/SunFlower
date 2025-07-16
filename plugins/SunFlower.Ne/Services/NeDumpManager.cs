@@ -70,9 +70,9 @@ public class NeDumpManager : UnsafeManager
     
         var alignment = (ushort)(1 << NeHeader.NE_Alignment); // means NE_SectorShift (0 is equivalent to 9?)
 
-        for (int i = 0; i < NeHeader.NE_SegmentsCount; i++)
+        for (var i = 0; i < NeHeader.NE_SegmentsCount; i++)
         {
-            NeSegmentInfo segment = Fill<NeSegmentInfo>(reader);
+            var segment = Fill<NeSegmentInfo>(reader);
             segment.FileOffset *= alignment;
         
             FillNeSegmentModel(ref segment, (uint)i + 1);
@@ -113,7 +113,7 @@ public class NeDumpManager : UnsafeManager
             ];
         
         // try to calculate reloc
-        uint relocationOffset = Convert.ToUInt32(segment.FileOffset + segment.FileLength);
+        var relocationOffset = Convert.ToUInt32(segment.FileOffset + segment.FileLength);
         reader.BaseStream.Position = relocationOffset;
         
         // reading all records // out of bounds... but why
@@ -138,12 +138,12 @@ public class NeDumpManager : UnsafeManager
             ];
         }
         
-        for (int i = 0; i < recordCount; i++)
+        for (var i = 0; i < recordCount; i++)
         {
-            byte sourceAndFlags = reader.ReadByte();
+            var sourceAndFlags = reader.ReadByte();
             var sourceType = (RelocationSourceType)(sourceAndFlags & 0x0F);
             
-            string sourceTypeString = sourceType switch
+            var sourceTypeString = sourceType switch
             {
                 RelocationSourceType.LowByte => "LOBYTE",
                 RelocationSourceType.Segment => "SEGMENT",
@@ -154,7 +154,7 @@ public class NeDumpManager : UnsafeManager
             
             var flags = (RelocationFlags)(sourceAndFlags & 0xF0);
             
-            ushort offset = reader.ReadUInt16();
+            var offset = reader.ReadUInt16();
             RelocationRecord record = new();
             SegmentRelocationModel model = new()
             {
@@ -166,8 +166,8 @@ public class NeDumpManager : UnsafeManager
             switch (flags & RelocationFlags.TargetMask)
             {
                 case RelocationFlags.InternalRef:
-                    byte segmentType = reader.ReadByte();
-                    ushort target = reader.ReadUInt16();
+                    var segmentType = reader.ReadByte();
+                    var target = reader.ReadUInt16();
                     
                     model.RelocationType = "Internal Reference";
                     model.RelocationFlags.Add("REL_INTERNAL_REF");
@@ -177,13 +177,13 @@ public class NeDumpManager : UnsafeManager
                     break;
                     
                 case RelocationFlags.ImportName:
-                    ushort modIndex = reader.ReadUInt16();
-                    ushort modOffset = reader.ReadUInt16();
+                    var modIndex = reader.ReadUInt16();
+                    var modOffset = reader.ReadUInt16();
                     
-                    long position = reader.BaseStream.Position; 
+                    var position = reader.BaseStream.Position; 
                     
                     reader.BaseStream.Position = Offset(NeHeader.NE_ImportModulesTable) + modOffset;
-                    byte length = reader.ReadByte();
+                    var length = reader.ReadByte();
                     
                     model.RelocationType = "Import by Name";
                     model.RelocationFlags.Add("REL_IMPORT_NAME");
@@ -194,8 +194,8 @@ public class NeDumpManager : UnsafeManager
                     break;
                     
                 case RelocationFlags.ImportOrdinal:
-                    ushort modIndexOrd = reader.ReadUInt16();
-                    ushort ordinal = reader.ReadUInt16();
+                    var modIndexOrd = reader.ReadUInt16();
+                    var ordinal = reader.ReadUInt16();
                     
                     model.RelocationFlags.Add("REL_IMPORT_ORDINAL");
                     model.RelocationType = "Import Ordinal";
@@ -205,7 +205,7 @@ public class NeDumpManager : UnsafeManager
                     break;
                     
                 case RelocationFlags.OSFixup:
-                    OsFixupType type = (OsFixupType)reader.ReadUInt16();
+                    var type = (OsFixupType)reader.ReadUInt16();
                     reader.ReadUInt16(); // Reserved (0)
 
                     model.RelocationType = "OS Fixup";
@@ -249,9 +249,9 @@ public class NeDumpManager : UnsafeManager
         reader.BaseStream.Position = Offset(NeHeader.NE_ModReferencesTable);
         ModuleReferences = new NeModule[NeHeader.NE_ModReferencesCount];
 
-        for (int i = 0; i < NeHeader.NE_ModReferencesCount; i++)
+        for (var i = 0; i < NeHeader.NE_ModReferencesCount; i++)
         {
-            NeModule mod = Fill<NeModule>(reader);
+            var mod = Fill<NeModule>(reader);
             ModuleReferences[i] = mod;
         }
     }
@@ -263,19 +263,19 @@ public class NeDumpManager : UnsafeManager
         reader.BaseStream.Position = Offset(NeHeader.NE_EntryTable);
         
         ushort currentOrdinal = 1;
-        long endPosition = reader.BaseStream.Position + NeHeader.NE_EntriesCount;
+        var endPosition = reader.BaseStream.Position + NeHeader.NE_EntriesCount;
 
         while (reader.BaseStream.Position < endPosition)
         {
-            byte entryCount = reader.ReadByte();
+            var entryCount = reader.ReadByte();
             if (entryCount == 0) break;
 
-            byte segIndicator = reader.ReadByte();
+            var segIndicator = reader.ReadByte();
 
             // warn: I've decided to skip unused ordinals.
             if (segIndicator == 0x00)
             {
-                for (int i = 0; i < entryCount; i++)
+                for (var i = 0; i < entryCount; i++)
                 {
                     entries.Add(new NeEntryTableModel(true, false, segIndicator)
                     {
@@ -287,12 +287,12 @@ public class NeDumpManager : UnsafeManager
                 continue;
             }
 
-            for (int i = 0; i < entryCount; i++)
+            for (var i = 0; i < entryCount; i++)
             {
                 byte flags = 0;
                 ushort offset = 0;
                 byte segment = 0;
-                string bundleType = "";
+                var bundleType = "";
 
                 switch (segIndicator)
                 {
@@ -313,7 +313,7 @@ public class NeDumpManager : UnsafeManager
                         break;
                 }
 
-                uint address = TryGetEntryPointPhysicalAddress(segment, offset);
+                var address = TryGetEntryPointPhysicalAddress(segment, offset);
                 var entry = new NeEntryTableModel(false, true, segIndicator)
                 {
                     Type = bundleType,
@@ -345,8 +345,8 @@ public class NeDumpManager : UnsafeManager
         try
         {
             // Try to count Physical address using shifting /header set alignment/
-            uint alignment = (uint)(1 << NeHeader.NE_Alignment); // Sector shift
-            uint segmentAddress = Segments[segmentId - 1].FileOffset * alignment;
+            var alignment = (uint)(1 << NeHeader.NE_Alignment); // Sector shift
+            var segmentAddress = Segments[segmentId - 1].FileOffset * alignment;
             
             return segmentAddress + offset;
         }
@@ -368,8 +368,8 @@ public class NeDumpManager : UnsafeManager
         byte i;
         while ((i = reader.ReadByte()) != 0)
         {
-            string name = Encoding.ASCII.GetString(reader.ReadBytes(i));
-            ushort ordinal = reader.ReadUInt16();
+            var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            var ordinal = reader.ReadUInt16();
             exports.Add(new NeExport()
             {
                 Count = i,
@@ -397,8 +397,8 @@ public class NeDumpManager : UnsafeManager
         byte i;
         while ((i = reader.ReadByte()) != 0)
         {
-            string name = Encoding.ASCII.GetString(reader.ReadBytes(i));
-            ushort ordinal = reader.ReadUInt16();
+            var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            var ordinal = reader.ReadUInt16();
             exports.Add(new NeExport()
             {
                 Count = i,
@@ -417,38 +417,38 @@ public class NeDumpManager : UnsafeManager
     private void FillImports(BinaryReader reader)
     {
         List<NeImportModel> imports = new();
-        uint importTableOffset = Offset(NeHeader.NE_ImportModulesTable);
+        var importTableOffset = Offset(NeHeader.NE_ImportModulesTable);
 
         reader.BaseStream.Position = Offset(NeHeader.NE_ModReferencesTable);
-        ushort[] moduleRefOffsets = new ushort[NeHeader.NE_ModReferencesCount];
-        for (int i = 0; i < NeHeader.NE_ModReferencesCount; i++)
+        var moduleRefOffsets = new ushort[NeHeader.NE_ModReferencesCount];
+        for (var i = 0; i < NeHeader.NE_ModReferencesCount; i++)
         {
             moduleRefOffsets[i] = reader.ReadUInt16();
         }
 
-        foreach (ushort moduleNameOffset in moduleRefOffsets)
+        foreach (var moduleNameOffset in moduleRefOffsets)
         {
             reader.BaseStream.Position = importTableOffset + moduleNameOffset;
             NeImportModel moduleImport = new() { Functions = new() };
 
             // Module name check
-            byte nameLen = reader.ReadByte();
+            var nameLen = reader.ReadByte();
             moduleImport.DllName = Encoding.ASCII.GetString(reader.ReadBytes(nameLen));
 
             // Procedure name kek
             while (true)
             {
-                byte funcLen = reader.ReadByte();
+                var funcLen = reader.ReadByte();
                 if (funcLen == 0) break;
 
-                bool isOrdinal = (funcLen & 0x80) != 0;
-                byte realLen = (byte)(funcLen & 0x7F);
+                var isOrdinal = (funcLen & 0x80) != 0;
+                var realLen = (byte)(funcLen & 0x7F);
 
                 ImportingFunction func = new();
 
                 if (isOrdinal) // <-- Module references are invalid. They took NonResidentNames table 
                 {
-                    ushort ordinal = reader.ReadUInt16();
+                    var ordinal = reader.ReadUInt16();
                     func.Name = $"@{ordinal}";
                     func.Ordinal = ordinal;
                 }

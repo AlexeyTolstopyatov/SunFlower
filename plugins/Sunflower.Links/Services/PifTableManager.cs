@@ -29,7 +29,7 @@ public class PifTableManager
         {
             Columns = { "Name", "Length", "Next Offset", "Partition Offset" }
         };
-        foreach (PifSectionHead head in _manager.SectionHeads)
+        foreach (var head in _manager.SectionHeads)
         {
             table.Rows.Add(
                 TryExcludeSpecificAscii(head.Name),
@@ -60,7 +60,7 @@ public class PifTableManager
         table.Rows.Add(nameof(MicrosoftPifEx.ConventionalMemMinSizeK), _manager.MicrosoftPifEx.ConventionalMemMinSizeK.ToString("X"));
         table.Rows.Add(nameof(MicrosoftPifEx.FileName), TryExcludeSpecificAscii(_manager.MicrosoftPifEx.FileName).Trim('\0'));
 
-        string fileDosFlags = string.Empty;
+        var fileDosFlags = string.Empty;
         if ((_manager.MicrosoftPifEx.FileDosFlags & 0x0001) != 0)
             fileDosFlags += "`Directly Modify Memory`,";
         if ((_manager.MicrosoftPifEx.FileDosFlags & 0x0002) != 0)
@@ -88,7 +88,7 @@ public class PifTableManager
         table.Rows.Add(nameof(MicrosoftPifEx.WindowPositionX), _manager.MicrosoftPifEx.WindowPositionX.ToString("X"));
         table.Rows.Add(nameof(MicrosoftPifEx.WindowPositionY), _manager.MicrosoftPifEx.WindowPositionY.ToString("X"));
 
-        string videoMode = "";
+        var videoMode = "";
         if ((_manager.MicrosoftPifEx.VideoPageFlags & 0x0007) != 0)
             videoMode += $"`Number of last Video Page is {_manager.MicrosoftPifEx.VideoPageFlags & 0x0007}`";
         if ((_manager.MicrosoftPifEx.VideoPageFlags & 0x0010) != 0)
@@ -96,7 +96,7 @@ public class PifTableManager
         
         table.Rows.Add(nameof(MicrosoftPifEx.VideoPageFlags), videoMode);
 
-        string anotherVideoFlags = "";
+        var anotherVideoFlags = "";
         if ((_manager.MicrosoftPifEx.AnotherFlags & 0x0010) != 0)
             anotherVideoFlags += $"`Direct interaction KEYBOARD`";
         if ((_manager.MicrosoftPifEx.AnotherFlags & 0x0020) != 0)
@@ -142,7 +142,7 @@ public class PifTableManager
             _manager.Windows3X386.XmsMemReqSizeK.ToString("X"));
         
         // DosFlags
-        string dosFlags = "";
+        var dosFlags = "";
         if ((_manager.Windows3X386.DosModeFlags & 0x00000001) != 0)
             dosFlags += "Permit Exit when Active, ";
         if ((_manager.Windows3X386.DosModeFlags & 0x00000002) != 0)
@@ -198,7 +198,7 @@ public class PifTableManager
         
         // VideoFlags
 
-        string videoFlags = "";
+        var videoFlags = "";
         
         if ((_manager.Windows3X386.VideoFlags & 0x0001) != 0)
             videoFlags += "Video ROM emulation, ";
@@ -252,7 +252,7 @@ public class PifTableManager
         table.Rows.Add(nameof(Windows3x286.XmsMemMaxSizeK), _manager.Windows3X286.XmsMemMaxSizeK);
         table.Rows.Add(nameof(Windows3x286.XmsMemReqSizeK), _manager.Windows3X286.XmsMemReqSizeK);
 
-        string flags = "";
+        var flags = "";
         if ((_manager.Windows3X286.Flags & 0x0001) != 0)
             flags += "Not use [Alt]+[Tab], ";
         if ((_manager.Windows3X286.Flags & 0x0002) != 0)
@@ -280,11 +280,11 @@ public class PifTableManager
         if (_manager.SectionHeads.All(x => x.DataLength != 0x1AC))
             return;
         
-        DataTable table = new DataTable("Windows 9x VMM Section");
+        var table = new DataTable("Windows 9x VMM Section");
         table.Columns.Add("Segment", typeof(string));
         table.Columns.Add("Value", typeof(string));
         
-        Windows4xVmm data = _manager.Windows4XVmm;
+        var data = _manager.Windows4XVmm;
         
         AddField(table, "Reserved88", data.Reserved88, bytes => BitConverter.ToString(bytes).Replace("-", ""));
         
@@ -336,7 +336,7 @@ public class PifTableManager
         AddField(table, "AlsoUnknown", data.AlsoUnknown, v => $"{v} (0x{v:X4})");
         AddField(table, "RestoreFlag", data.RestoreFlag, v => $"{v} (0x{v:X4})");
 
-        string state = "";
+        var state = "";
         if ((data.WindowStateFlag & 0x02) != 0)
             state = "Last Window state - Maximized";
         
@@ -367,14 +367,14 @@ public class PifTableManager
     }
     private void AddField<T>(DataTable table, string name, T value, Func<T, string> formatter)
     {
-        DataRow row = table.NewRow();
+        var row = table.NewRow();
         row["Segment"] = name;
         row["Value"] = formatter(value);
         table.Rows.Add(row);
     }
     private static string TryExcludeSpecificAscii(char[] array)
     {
-        char[] excluded = array.Where(c => char.IsAsciiLetterOrDigit(c) || char.IsPunctuation(c) || char.IsSeparator(c)).ToArray();
+        var excluded = array.Where(c => char.IsAsciiLetterOrDigit(c) || char.IsPunctuation(c) || char.IsSeparator(c)).ToArray();
         return new string(excluded);
     }
 }

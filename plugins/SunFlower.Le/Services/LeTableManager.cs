@@ -135,7 +135,7 @@ public class LeTableManager
         ResidentNames.Columns.Add("Name");
         ResidentNames.Columns.Add("Ordinal");
         ResidentNames.Columns.Add("Size (hex)");
-        foreach (ResidentName name in _manager.ResidentNames)
+        foreach (var name in _manager.ResidentNames)
         {
             ResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size.ToString("X"));
         }
@@ -147,7 +147,7 @@ public class LeTableManager
         NonResidentNames.Columns.Add("Name");
         NonResidentNames.Columns.Add("Ordinal");
         NonResidentNames.Columns.Add("Size (hex)");
-        foreach (NonResidentName name in _manager.NonResidentNames)
+        foreach (var name in _manager.NonResidentNames)
         {
             NonResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size);
         }
@@ -179,9 +179,9 @@ public class LeTableManager
         ObjectsTable.Columns.Add("Unknown");
         ObjectsTable.Columns.Add("Translated flags");
         
-        foreach (ObjectTableModel table in _manager.ObjectTables)
+        foreach (var table in _manager.ObjectTables)
         {
-            string text = table
+            var text = table
                 .ObjectFlags
                 .Aggregate("", (current, s) => current + $"`{s}` ");
             
@@ -202,9 +202,9 @@ public class LeTableManager
         ObjectPages.Columns.Add("Real Offset (hex)");
         ObjectPages.Columns.Add("Translated flags");
 
-        foreach (ObjectPageModel page in _manager.ObjectPages)
+        foreach (var page in _manager.ObjectPages)
         {
-            string flags = page
+            var flags = page
                 .Flags
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
@@ -227,9 +227,9 @@ public class LeTableManager
         };
         List<DataTable> entriesForEachBundle = [];
         
-        foreach (EntryBundleModel bundle in _manager.EntryBundles)
+        foreach (var bundle in _manager.EntryBundles)
         {
-            string flags = bundle
+            var flags = bundle
                 .Flags
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
             
@@ -243,9 +243,9 @@ public class LeTableManager
             if (bundle.EntryBundle.Entries.Length != 0)
             {
                 entries.TableName = $"Bundle #{bundle.BundleNumber} | 16-bit Entries ";
-                foreach (Entry16 entry in bundle.EntryBundle.Entries)
+                foreach (var entry in bundle.EntryBundle.Entries)
                 {
-                    string efl = bundle
+                    var efl = bundle
                         .Flags
                         .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
                     entries.Rows.Add(entry.Flag, entry.Offset.ToString("X"),  efl);
@@ -254,9 +254,9 @@ public class LeTableManager
             else if (bundle.EntryBundle.ExtendedEntries.Length != 0)
             {
                 entries.TableName = $"Bundle #{bundle.BundleNumber} | 32-bit Entries";
-                foreach (Entry32 entry in bundle.EntryBundle.ExtendedEntries)
+                foreach (var entry in bundle.EntryBundle.ExtendedEntries)
                 {
-                    string efl = bundle
+                    var efl = bundle
                         .Flags
                         .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
                     entries.Rows.Add(entry.Flag, entry.Offset.ToString("X"),  efl);
@@ -275,7 +275,7 @@ public class LeTableManager
         FixupPages.Columns.Add("Index");
         FixupPages.Columns.Add("Position (hex)");
 
-        for (int i = 0; i < _manager.FixupPagesOffsets.Count; i++)
+        for (var i = 0; i < _manager.FixupPagesOffsets.Count; i++)
         {
             FixupPages.Rows.Add($"#{i+1}", _manager.FixupPagesOffsets[i]);
         }
@@ -296,7 +296,7 @@ public class LeTableManager
             }
         };
 
-        foreach (FixupRecordsTableModel record in _manager.FixupRecords)
+        foreach (var record in _manager.FixupRecords)
         {
             rawTable.Rows.Add(
                 record.Record.AddressType.ToString("X"),
@@ -325,11 +325,11 @@ public class LeTableManager
             }
         };
         
-        foreach (FixupRecordsTableModel model in _manager.FixupRecords)
+        foreach (var model in _manager.FixupRecords)
         {
-            string atp = model.AddressTypeFlags
+            var atp = model.AddressTypeFlags
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
-            string rtp = model.RecordTypeFlags
+            var rtp = model.RecordTypeFlags
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
             table.Rows.Add(
@@ -355,7 +355,7 @@ public class LeTableManager
         Characteristics.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
         
         Characteristics.Add("Version and module flags set in Program header: 0x" + _manager.LeHeader.LE_Version.ToString("X"));
-        foreach (string flag in GetModuleFlags(_manager.LeHeader.LE_Type))
+        foreach (var flag in GetModuleFlags(_manager.LeHeader.LE_Type))
         {
             Characteristics.Add($" - `{flag}`");
         }

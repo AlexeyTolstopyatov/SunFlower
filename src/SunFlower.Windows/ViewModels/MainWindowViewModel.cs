@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Xaml.Behaviors.Core;
-using Newtonsoft.Json;
 using SunFlower.Abstractions;
 using SunFlower.Windows.Services;
 using SunFlower.Windows.Views;
@@ -30,6 +29,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getRecentFileCommand = new Command(GetRecentFile);
         _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
+        _getRegistryFileCommand = new Command(OpenRegFileByName);
         _getMachineWordsCommand = new Command(_ =>
         {
             _windowManager.Show(
@@ -41,8 +41,6 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
         _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
-        
-        Tell($"Recent files found: {_recentTable.Rows.Count}");
         
         _fileName = string.Empty;
         _filePath = string.Empty;
@@ -83,8 +81,12 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     private DataTable LoadRecentTableOnStartup()
     {
         Tell(nameof(LoadRecentTableOnStartup));
-        var json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Registry\\recent.json");
-        return JsonConvert.DeserializeObject<DataTable>(json)!;
+        DataTable result = new();
+        RegistryManager.CreateInstance()
+            .SetFileName("recent")
+            .Fill(ref result);
+            
+        return result;
     }
     
     private void Tell(string phrase)

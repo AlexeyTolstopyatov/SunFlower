@@ -25,8 +25,6 @@
                 <MenuItem
                     Command="{Binding GetFileCommand}"
                     Header="Read executable"/>
-                <MenuItem
-                    Header="Open recent files storage"/>
             </MenuItem>
             
             <!--Independent tools/windows-->
@@ -43,7 +41,7 @@
                     Command="{Binding GetDeleteRecentFilesCommandCommand}"/>
                 <MenuItem
                     CommandParameter="recent"
-                    Command="{Binding }"
+                    Command="{Binding GetRegistryFileCommand}"
                     Header="Open Recent files storage"/>
             </MenuItem>
         </Menu>

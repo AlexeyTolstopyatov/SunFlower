@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Windows.Input;
 using HandyControl.Controls;
+using HandyControl.Data;
 using Microsoft.Win32;
 using SunFlower.Services;
 using SunFlower.Windows.Attributes;
@@ -29,6 +30,14 @@ public partial class MainWindowViewModel
         set => SetField(ref _getProcessCommand, value);
     }
 
+    private ICommand _getRegistryFileCommand;
+
+    public ICommand GetRegistryFileCommand
+    {
+        get => _getRegistryFileCommand;
+        set => SetField(ref _getRegistryFileCommand, value);
+    }
+
     private ICommand _getFileCommand;
     private ICommand _getRecentFileCommand;
     private ICommand _getProcessCommand;
@@ -36,7 +45,6 @@ public partial class MainWindowViewModel
     private ICommand _getMachineWordsCommand;
     private ICommand _clearRecentFilesCommand;
     private ICommand _clearRecentFileCommand;
-
     public ICommand ClearRecentFileCommand
     {
         get => _clearRecentFileCommand;
@@ -68,23 +76,32 @@ public partial class MainWindowViewModel
     /// <param name="selectedRowView"></param>
     private void GetRecentFile(object selectedRowView)
     {
-        var unboxed = (DataRowView)selectedRowView;
-        
-        FileName = unboxed.Row["Name"].ToString() ?? "Unknown file";
-        FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
-        Signature = unboxed.Row["Signature"].ToString() ?? string.Empty;
-        Cpu = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
-        
-        if (FilePath == string.Empty)
-            return; // terminate "Call Editor"
+        try
+        {
+            var unboxed = (DataRowView)selectedRowView;
 
-        Seeds = FlowerSeedManager
-            .CreateInstance()
-            .LoadAllFlowerSeeds()
-            .UpdateAllInvokedFlowerSeeds(FilePath)
-          //.UnloadUnusedSeeds()
-            .Seeds;
-        
+            FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
+            FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
+            Signature = unboxed.Row["SignatureString"].ToString() ?? string.Empty;
+            SignatureDWord = unboxed["SignatureDWord"].ToString() ?? string.Empty;
+            Cpu = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
+
+            if (FilePath == string.Empty)
+                return; // terminate "Call Editor"
+
+            Seeds = FlowerSeedManager
+                .CreateInstance()
+                .LoadAllFlowerSeeds()
+                .UpdateAllInvokedFlowerSeeds(FilePath)
+                //.UnloadUnusedSeeds()
+                .Seeds;
+        }
+        catch (Exception e)
+        {
+            Growl.ErrorGlobal(e.Message);
+            return;
+        }
+
         _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
     }
     /// <summary>
@@ -112,7 +129,7 @@ public partial class MainWindowViewModel
         FilePath = result.Path;
         Signature = result.SignatureString;
         Cpu = result.CpuArchitecture;
-        SignatureDWord = result.SignatureDWord.ToString("X");
+        SignatureDWord = result.SignatureDWord.ToString();
 
         _registryManager
             .SetFileName("recent")
@@ -129,9 +146,10 @@ public partial class MainWindowViewModel
             .Seeds;
         
         // information about external Exceptions
+        Tell("=== Disabled plugins tracing ===");
         foreach (var plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
         {
-            Tell(plugin.Status.LastError is null ? $"[{plugin.Seed}] LastError null" : plugin.Status.LastError.ToString());
+            Tell(plugin.Status.LastError is null ? $"?[{plugin.Seed}] has no result." : $"![{plugin.Seed}] " + plugin.Status.LastError.Message);
         }
         
         // Call plugins Window/Main Workspace

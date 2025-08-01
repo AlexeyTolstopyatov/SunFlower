@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Text;
+using Microsoft.VisualBasic;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Ne.Services;
@@ -43,5 +45,23 @@ public class NewExecutableSeed : IFlowerSeed
             Status.LastError = e;
             return -1;
         }
+    }
+    /// <summary>
+    /// Prints hexadecimal map of caught bytes slice
+    /// </summary>
+    /// <param name="title"></param>
+    /// <returns></returns>
+    private string GetHexViewOf(string title, byte[] bytes)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"### {title}");
+        
+        // 00 00 00 00 00 00 00 00 |........| 
+        // 00 FF FF 30 65 66 67 31 |.яя0abc1|
+        // ...
+        
+        
+        
+        return sb.ToString();
     }
 }

@@ -8,7 +8,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Background="{StaticResource RegionBrush}"
-        Title="Sunflower Workspace"
+        Title="Home"
         Height="600"
         Width="900">
     <hc:Window.DataContext>
@@ -56,11 +56,12 @@
                     Margin="10"
                     FontWeight="Medium"
                     FontSize="24"
-                    Text="Recent"/>
+                    Text="Recent files"/>
                 <ToggleButton
                     Margin="5"
                     Width="190"
-                    Content="Show Status side menu"
+                    ToolTip="Show side-panel with plugin tracing"
+                    Content="Plugins tracing"
                     Style="{StaticResource ToggleButtonSwitch}"
                     IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/>
                 <DataGrid
@@ -88,7 +89,7 @@
                 </DataGrid>
             </StackPanel>
         </hc:Card>
-        <!--DropDown menu/status bar-->
+        <!--DropDown menu/plugins tracing bar-->
         <hc:Drawer
             Name="DrawerBottom" 
             Dock="Bottom"

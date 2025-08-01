@@ -6,7 +6,9 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
         mc:Ignorable="d"
-        Title="PropertiesWindow" 
+        Background="{StaticResource RegionBrush}"
+        Title="Selected Image dialog" 
+        MaxWidth="300"
         SizeToContent="WidthAndHeight">
     <hc:Window.DataContext>
         <local:MainWindowViewModel/>
@@ -22,10 +24,12 @@
         </Grid.RowDefinitions>
         
         <TextBlock
+            TextWrapping="WrapWithOverflow"
             FontSize="16"
             FontWeight="Medium"
             Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock
+            TextWrapping="WrapWithOverflow"
             VerticalAlignment="Top"
             FontSize="16"
             Grid.Row="1"
@@ -42,8 +46,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <TextBlock Text="CPU "/>
+                    <TextBlock Text="Description"/>
                     <TextBlock Text="Signature"/>
-                    <TextBlock Text="Signature (hex)"/>
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
@@ -58,6 +62,7 @@
             <TextBlock
                 FontSize="16"
                 FontWeight="Medium"
+                Foreground="{StaticResource PrimaryTextBrush}"
                 Text="Prepared extensions"/>
             <hc:Card
                 Margin="10">
@@ -79,13 +84,26 @@
                 </ItemsControl>
             </hc:Card>
         </StackPanel>
-        
-        <!-- Ready / Steady / GO -->
-        <Button
-            Grid.Row="4"
+        <StackPanel
             HorizontalAlignment="Right"
-            Command="{Binding CallEditorCommand}"
-            Style="{StaticResource ButtonPrimary}"
-            Content="Call Editor"/>
+            Orientation="Horizontal"
+            Grid.Row="4">
+            <!--Works with all un/processed images.-->
+            <Button
+                Margin="5,0,5,0"
+                Style="{StaticResource ButtonSuccess}"
+                Command="{Binding CallHexViewerCommand}"
+                ToolTip="Works independent on loaded plugins"
+                Content="Call HexView">
+            
+            </Button>
+            <!-- Ready / Steady / GO -->
+            <Button
+                HorizontalAlignment="Right"
+                Command="{Binding CallEditorCommand}"
+                Style="{StaticResource ButtonPrimary}"
+                ToolTip="Depends on loaded plugins. If monaco window will be empty - close it and call editor again"
+                Content="Call Monaco"/>
+        </StackPanel>
     </Grid>
 </hc:Window>

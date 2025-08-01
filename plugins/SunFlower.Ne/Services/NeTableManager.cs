@@ -21,11 +21,11 @@ public class NeTableManager
     }
     
     public DataTable[] Headers { get; set; } = [];
-    public DataTable SegmentTable { get; set; } = new();
+    public DataTable SegmentTable { get; set; } = new("Table of file Segments");
     public DataTable SegmentRelocations { get; set; } = new("Every Segment Relocations");
-    public DataTable NamesTable { get; set; } = new();
-    public DataTable EntryPointsTable { get; set; } = new();
-    public DataTable ModuleReferencesTable { get; set; } = new();
+    public DataTable NamesTable { get; set; } = new("Resident/NonResident Names");
+    public DataTable EntryPointsTable { get; set; } = new("EntryPoints Table");
+    public DataTable ModuleReferencesTable { get; set; } = new("Module References table");
     // public DataTable ImportingNamesTable { get; set; } = new();
     public string[] Characteristics { get; set; } = [];
     
@@ -42,7 +42,7 @@ public class NeTableManager
         var mz = _manager.MzHeader;
         DataTable table = new()
         {
-            TableName = "DOS/2 Executable"
+            TableName = "DOS/2 Extended Executable"
         };
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
 
@@ -102,7 +102,7 @@ public class NeTableManager
         table.Rows.Add(nameof(ne.NE_PerSegmentRefBytes), ne.NE_PerSegmentRefBytes.ToString("X"));
         table.Rows.Add(nameof(ne.NE_SwapArea), ne.NE_SwapArea.ToString("X"));
         table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), ne.NE_WindowsVersionMinor.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ID), ne.NE_WindowsVersionMajor.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_WindowsVersionMajor), ne.NE_WindowsVersionMajor.ToString("X"));
 
         return table;
     }
@@ -206,19 +206,23 @@ public class NeTableManager
                 new DataColumn("Fixup")
             ]);
 
+        
         foreach (var relocation in _manager.SegmentRelocations)
         {
+            var array = relocation.RelocationFlags
+                .Aggregate("", (current, characteristic) => current + (characteristic + " "));
+
             SegmentRelocations.Rows.Add(
                 relocation.SegmentId,
                 relocation.RecordsCount,
                 relocation.SourceType,
                 relocation.RelocationType,
-                relocation.RelocationFlags,
+                array,
                 relocation.SegmentType,
                 relocation.Target,
                 relocation.TargetType,
                 relocation.ModuleIndex,
-                relocation.Name,
+                OnlyAscii(relocation.Name),
                 relocation.Ordinal,
                 relocation.FixupType
             );
@@ -260,15 +264,18 @@ public class NeTableManager
     {
         List<string> md = [];
         md.Add("### Image");
-
+        md.Add($"Project Name: `{_manager.ResidentNames[0].Name}`"); // <-- first name always project-name
+        md.Add($"Description: {_manager.NonResidentNames[0].Name}");
+        
         var os = _manager.NeHeader.NE_OS switch
         {
+            0x0 => "Not specified", // set for *.FON. means "any OS supported"  
             0x1 => "OS/2",
             0x2 => "Win16",
             0x3 => "DOS/4",
-            0x4 => "Win32s",
+            0x4 => "Win386",
             0x5 => "BoSS",
-            _ => "Not specified"
+            _ => $"Unknown 0x{_manager.NeHeader.NE_OS:X}" // <-- really don't know how handle it
         };
 
         var cpu = _manager.NeHeader.NE_ProgramFlags switch
@@ -291,5 +298,10 @@ public class NeTableManager
         }
         
         Characteristics = md.ToArray();
+    }
+
+    private static string OnlyAscii(string target)
+    {
+        return new string(target.Where(char.IsAscii).ToArray());
     }
 }

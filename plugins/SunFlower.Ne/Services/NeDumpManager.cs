@@ -73,13 +73,13 @@ public class NeDumpManager : UnsafeManager
         for (var i = 0; i < NeHeader.NE_SegmentsCount; i++)
         {
             var segment = Fill<NeSegmentInfo>(reader);
-            segment.FileOffset *= alignment;
+            //segment.FileOffset *= alignment;
         
             FillNeSegmentModel(ref segment, (uint)i + 1);
+            
             // pain...
-            SegmentRelocations.AddRange(FillSegmentRelocations(reader, segment, i));
+            SegmentRelocations.AddRange(FillSegmentRelocations(reader, segment, i + 1));
             segTable.Add(segment);
-
         }
 
         Segments = segTable.ToArray();
@@ -94,7 +94,7 @@ public class NeDumpManager : UnsafeManager
     /// <param name="segment"></param>
     /// <param name="segmentId"></param>
     /// <returns></returns>
-    public List<SegmentRelocationModel> FillSegmentRelocations(BinaryReader reader, NeSegmentInfo segment, int segmentId)
+    private List<SegmentRelocationModel> FillSegmentRelocations(BinaryReader reader, NeSegmentInfo segment, int segmentId)
     {
         var result = new SegmentRelocations { SegmentId = segmentId };
         List<SegmentRelocationModel> relocationModel = [];
@@ -113,7 +113,7 @@ public class NeDumpManager : UnsafeManager
             ];
         
         // try to calculate reloc
-        var relocationOffset = Convert.ToUInt32(segment.FileOffset + segment.FileLength);
+        Int64 relocationOffset = segment.FileOffset + segment.FileLength;
         reader.BaseStream.Position = relocationOffset;
         
         // reading all records // out of bounds... but why
@@ -121,19 +121,17 @@ public class NeDumpManager : UnsafeManager
         try
         {
             recordCount = reader.ReadUInt16();
-
         }
-        catch
+        catch(Exception e)
         {
-            recordCount = 0;
             return
             [
                 new()
                 {
                     RelocationFlags = ["REL_ERR"],
-                    RelocationType = "Unable to read",
+                    RelocationType = $"`Thrown at {segmentId}::{segment.Type}. (stopped at: {reader.BaseStream.Position:X})`",
                     SegmentId = segmentId,
-                    SegmentType = "SEG_FARADDR"
+                    SegmentType = "SEG_UNABLE_READ"
                 }
             ];
         }
@@ -149,7 +147,7 @@ public class NeDumpManager : UnsafeManager
                 RelocationSourceType.Segment => "SEGMENT",
                 RelocationSourceType.FarAddress => "FAR_ADDR",
                 RelocationSourceType.Offset => "OFFSET",
-                _ => $"UNKNOWN(0x{(byte)sourceType:X2})"
+                _ => $"UNKNOWN (0x{(byte)sourceType:X2})"
             };
             
             var flags = (RelocationFlags)(sourceAndFlags & 0xF0);
@@ -238,8 +236,8 @@ public class NeDumpManager : UnsafeManager
         if ((segment.Flags & (ushort)NeSegmentType.Mask) != 0) chars.Add("SEG_HASMASK");
         if ((segment.Flags & (ushort)NeSegmentType.DiscardPriority) != 0) chars.Add("SEG_DISCARDABLE");
         if ((segment.Flags & (ushort)NeSegmentType.Movable) != 0) chars.Add("SEG_MOVABLE_BASE");
-        if ((segment.Flags & (ushort)NeSegmentType.Data) != 0) chars.Add("SEG_DATA");
-        if ((segment.Flags & (ushort)NeSegmentType.Code) != 0) chars.Add("SEG_CODE");
+        chars.Add((segment.Flags & 0x02) != 0 ? "SEG_ITERATED" : "SEG_NORMAL");
+        chars.Add((segment.Flags & 0x01) == 0 ? "SEG_CODE" : "SEG_DATA");
 
         SegmentModels.Add(new NeSegmentModel(segment, segmentId, chars.ToArray()));
     }
@@ -256,7 +254,7 @@ public class NeDumpManager : UnsafeManager
         }
     }
 
-    private void FillEntryTable(BinaryReader reader)
+    private void FillEntryTable(BinaryReader reader) // <-- FIXES FIXES FIXES (see Win16ne)
     {
         List<NeEntryTableModel> entries = new();
         EntryPointsAddresses = new();
@@ -268,18 +266,19 @@ public class NeDumpManager : UnsafeManager
         while (reader.BaseStream.Position < endPosition)
         {
             var entryCount = reader.ReadByte();
+            
             if (entryCount == 0) break;
 
             var segIndicator = reader.ReadByte();
 
             // warn: I've decided to skip unused ordinals.
-            if (segIndicator == 0x00)
+            if (segIndicator == 0)
             {
                 for (var i = 0; i < entryCount; i++)
                 {
                     entries.Add(new NeEntryTableModel(true, false, segIndicator)
                     {
-                        Type = "UNUSED",
+                        Type = "[UNUSED]",
                         Ordinal = currentOrdinal++
                     });
                     EntryPointsAddresses.Add(0);
@@ -296,24 +295,23 @@ public class NeDumpManager : UnsafeManager
 
                 switch (segIndicator)
                 {
-                    // .movable
-                    case 0xFF:
-                        bundleType = "MOVABLE";
+                    // .fixed
+                    case >= 0x01 and < 0xFE: // [0x01; 0xFE)
+                        bundleType = $"[FIXED] 0x{segIndicator:X}";
+                        flags = reader.ReadByte();
+                        offset = reader.ReadUInt16();
+                        segment = segIndicator;
+                        break;
+                    // .moveable
+                    case 0xFF: // {0xFF}
+                        bundleType = $"[MOVEABLE] 0x{segIndicator:X}";
                         flags = reader.ReadByte();
                         reader.ReadByte(); // INT 3FH (0x3F)
                         segment = reader.ReadByte();
                         offset = reader.ReadUInt16();
                         break;
-                    // .fixed
-                    case >= 0x01 and <= 0xFE:
-                        bundleType = "FIXED";
-                        flags = reader.ReadByte();
-                        offset = reader.ReadUInt16();
-                        segment = segIndicator;
-                        break;
                 }
 
-                var address = TryGetEntryPointPhysicalAddress(segment, offset);
                 var entry = new NeEntryTableModel(false, true, segIndicator)
                 {
                     Type = bundleType,
@@ -324,36 +322,11 @@ public class NeDumpManager : UnsafeManager
                 };
 
                 entries.Add(entry);
-                EntryPointsAddresses.Add(address);
                 currentOrdinal++;
             }
         }
 
         EntryTableItems = entries;
-    }
-
-    /// <summary>
-    /// Tries to calculate EntryPoint physical file address
-    /// if something went wrong - returns zero address.
-    /// </summary>
-    /// <param name="segmentId">Number of segment/object</param>
-    /// <param name="offset"></param>
-    /// <returns>Physical address of EntryPoint or zero</returns>
-    private uint TryGetEntryPointPhysicalAddress(byte segmentId, ushort offset)
-    {
-        if (segmentId == 0) return 0;
-        try
-        {
-            // Try to count Physical address using shifting /header set alignment/
-            var alignment = (uint)(1 << NeHeader.NE_Alignment); // Sector shift
-            var segmentAddress = Segments[segmentId - 1].FileOffset * alignment;
-            
-            return segmentAddress + offset;
-        }
-        catch
-        {
-            return 0;
-        }
     }
     /// <summary>
     /// Fills resident names

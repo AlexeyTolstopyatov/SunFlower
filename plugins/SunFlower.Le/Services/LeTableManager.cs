@@ -339,7 +339,7 @@ public class LeTableManager
                 model.Record.ExtraData.ToString("X"),
                 model.Record.OsFixup.ToString("X"),
                 model.ImportingOrdinal,
-                $"`{model.ImportingName}`",
+                $"`{OnlyAscii(model.ImportingName)}`",
                 atp,
                 rtp
                 );
@@ -412,5 +412,12 @@ public class LeTableManager
             result.Add("No special flags");
 
         return result.ToArray();
+    }
+
+    private static string OnlyAscii(string str)
+    {
+        List<char> processed = str.Where(char.IsAscii).ToList();
+        
+        return new string(processed.ToArray());
     }
 }

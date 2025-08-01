@@ -50,7 +50,7 @@ public class Tests
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        var path = @"D:\TEST\Windows2.1\KERNEL.EXE";
+        var path = @"D:\TEST\VBRUN\VB3PRJ.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
         
         Assert.Pass();

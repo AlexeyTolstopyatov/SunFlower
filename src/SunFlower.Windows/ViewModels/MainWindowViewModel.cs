@@ -35,9 +35,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
             _windowManager.Show(
                 new MachineWordsWindowViewModel(), 
                 new DataGridWindow(), 
-                title: "IA-32 table");
+                title: "From Sunflower registry");
         });
         _callEditorCommand = new ActionCommand(CallEditor);
+        _callHexViewerCommand = new ActionCommand(CallViewer);
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
         _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
@@ -67,7 +68,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         get => _statusText;
         set => SetField(ref _statusText, value);
     }
-
+    
     public ICommand ClearCacheCommand
     {
         get => _clearCacheCommand;
@@ -85,16 +86,19 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         RegistryManager.CreateInstance()
             .SetFileName("recent")
             .Fill(ref result);
-            
+        
         return result;
     }
-    
+    /// <summary>
+    /// Pushes message to MainWindow status-box
+    /// </summary>
+    /// <param name="phrase"></param>
     private void Tell(string phrase)
     {
         var text = "-> " + phrase + "\r\n";
         StatusText += text;
     }
-
+    
     private void ClearCache()
     {
         var target = Path.Combine(

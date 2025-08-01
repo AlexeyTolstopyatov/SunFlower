@@ -8,7 +8,7 @@ namespace SunFlower.Le;
 
 public class LinearExecutableFlowerSeed : IFlowerSeed
 {
-    public string Seed { get; } = "Sunflower LE Win32s-OS/2 Any-CPU";
+    public string Seed { get; } = "Sunflower Win32s-OS/2 LE Any-CPU";
     public FlowerSeedStatus Status { get; set; } = new();
 
     public int Main(string path)

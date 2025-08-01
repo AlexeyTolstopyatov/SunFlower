@@ -41,6 +41,25 @@ public partial class MainWindowViewModel
     private string _signature;
     private string _signatureDWord;
     private string _cpu;
+    private bool _isReady;
+
+    /// <summary>
+    /// Binds to "CallMonaco" button.
+    /// If enabled plugins = 0 -> holds "false"
+    /// </summary>
+    public bool IsReady
+    {
+        get => _isReady;
+        set
+        {
+            _isReady = value;
+            
+            if (Seeds.All(s => s.Status.IsEnabled))
+                SetField(ref _isReady, true);
+            else 
+                SetField(ref _isReady, false);
+        }
+    }
 
     public ICommand CallEditorCommand
     {
@@ -48,7 +67,14 @@ public partial class MainWindowViewModel
         set => SetField(ref _callEditorCommand, value);
     }
 
+    public ICommand CallHexViewerCommand
+    {
+        get => _callHexViewerCommand;
+        set => SetField(ref _callHexViewerCommand, value);
+    }
     private ICommand _callEditorCommand;
+    private ICommand _callHexViewerCommand;
+    
     /// <summary>
     /// Calls Monaco Editor window
     /// </summary>
@@ -60,5 +86,13 @@ public partial class MainWindowViewModel
             .ToList()), 
             title: FilePath, 
             isDialog: false);
+    }
+
+    private void CallViewer()
+    {
+        _windowManager.ShowUnmanaged(new HexViewerWindow()
+        {
+            DataContext = new HexViewViewModel(_filePath)
+        }, false, _filePath);
     }
 }

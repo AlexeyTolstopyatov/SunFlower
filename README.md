@@ -1,4 +1,7 @@
 ### Sunflower
+
+<img src="assets/sunflower.svg" height="128" width="128" align="right">
+
 Sunflower is an open-source, plugin-driven system designed for binary analysis. Was inspired by Ghidra, PEAnathomist, CFFExplrer, VBSemiDecompiler, and other toolkits. This is a extensible Binary Analysis idea.
 
 This repository includes 4 parts of my work:
@@ -9,7 +12,7 @@ This repository includes 4 parts of my work:
     - Native part (`PINVOKE`/`FFI` usages/`Win32 API` base/...)
     - Monaco Editor bindings
 
-All core plugins moved from JellyBins ~(JellyBins obsolete)~
+All core plugins moved from [JellyBins](https://github.com/AlexeyTolstopyatov/jellybins) ~(JellyBins obsolete)~
 
 Main idea was an isolation of add-ons because main codebase had become
 very large. The previous project was rewritten from scratch five times, and in an undone state of parts is contained here. 
@@ -55,6 +58,15 @@ type MyAnalyzer() =
 
 5) Build and Drop .DLL into `%Application%/Plugins`
 
+### Supported Binary Formats
+
+In this repo `/plugins` catalog contains next core plugins for other segmented
+executable formats.
+ - [New Executable (NE-16)](SUPPORT_NE.md)
+ - [Linear Executable (LE-16/+ and OS/2 OMF LX)](SUPPORT_LE.md)
+ - [Portable Executable (PE-32/+)](SUPPORT_PE.md)
+ - [Program Information (MS-DOS PIF)](SUPPORT_PIF.md)
+
 ### An architecture problems that seriously bother me, but I can't fix them
 
  - **Stupid** Exceptions handling -
@@ -68,14 +80,26 @@ Any differences between foundation file version and plugins foundation calls for
 Despite the fact that the loader's core uses only the capabilities of `.NET` Core platform, and bundled with the loader's main plugins are written from scratch without the use of external tools, the window application `Sunflower.Windows.exe` uses many different add-ons to be more comfortable and modern. 
 
 All frameworks and toolkits
- - WPF `.net-windows7.0`
- - `.NET 8.0` - Foundation of Windowed client
+ - WPF `.net-windows7.0` - Foundation of Windowed client
+ - `.NET 8.0` - Foundation of everything
  - [HandyControls](https://github.com/HandyOrg/HandyControl) `3.4.0` - better Window controls / little MVVM experience
  - [Microsoft WPF Behaviours](https://github.com/microsoft/XamlBehaviorsWpf) - The MVVM experience
  - [Monaco](https://github.com/microsoft/monaco-editor) `0.52` - All flower-extension results in one document 
  - [Monaco-Markdown](https://github.com/trofimander/monaco-markdown) - Highlighting extension for Markdown documents
  - Win32 bindings - `OpenFileDialog` / `SaveFileDialog` bindings
  - [Microsoft Web View](https://github.com/MicrosoftEdge/WebView2Browser) - Toolkit for Monaco editor support.
+ - [HexView](https://github.com/fjeremic/HexView.Wpf) - Hexadecimal view of file
+
+### Documents and Sources
+ - DoDi's VB Decompiler sources (MIT)
+ - VBGamer45 - Semi VB Decompiler sources (MIT) 
+ - Ghidra part of utils source (Apache-2.0 license)
+ - Microsoft NE Segmented EXE format
+ - OS/2 OMF (Object Module Format) docs
+ - [Microsoft PE Format](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format)
+ - [Microsoft DOS PIF Web Archive copy](https://web.archive.org/web/20220214185118/http://www.smsoft.ru/en/pifdoc.htm)
+ - [Suggesting Visual Basic 4.0 internals](https://gist.github.com/AlexeyTolstopyatov/96a4d36639256fb624e32ae6153bfa11) - SemiVB Decompiler
+ - [Suggesting Visual Basic 3.0 internals](https://gist.github.com/AlexeyTolstopyatov/fc19496b8b1a9a5bbb5f12c415c0c1f3) - DoDi VB Decompiler
 
 ### Beeing honest
 

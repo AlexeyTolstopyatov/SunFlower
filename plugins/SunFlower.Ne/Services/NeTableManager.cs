@@ -14,7 +14,7 @@ public class NeTableManager
         
         MakeHeadersTables();
         MakeSegmentsTable();
-        MakeSegmentRelocations();
+        //MakeSegmentRelocations();
         MakeEntryPointsTable();
         MakeModuleReferencesTable();
         MakeNames();
@@ -24,7 +24,7 @@ public class NeTableManager
     public DataTable SegmentTable { get; set; } = new("Table of file Segments");
     public DataTable SegmentRelocations { get; set; } = new("Every Segment Relocations");
     public DataTable NamesTable { get; set; } = new("Resident/NonResident Names");
-    public DataTable EntryPointsTable { get; set; } = new("EntryPoints Table");
+    public DataTable[] EntryTables { get; set; } = [];
     public DataTable ModuleReferencesTable { get; set; } = new("Module References table");
     // public DataTable ImportingNamesTable { get; set; } = new();
     public string[] Characteristics { get; set; } = [];
@@ -148,24 +148,33 @@ public class NeTableManager
     {
         if (_manager.EntryTableItems.Count == 0)
             return;
-        DataTable entries = new("EntryTable")
-        {
-            Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
-        };
         
-        foreach (var item in _manager.EntryTableItems)
+        var counter = 1;
+        var tables = new List<DataTable>();
+        
+        foreach (NeEntryBundle bundle in _manager.EntryTableItems)
         {
-            entries.Rows.Add(
-                "@" + item.Ordinal,
-                item.Offset.ToString("X"),
-                item.Segment,
-                item.Entry,
-                item.Data,
-                item.Type
-            );
+            DataTable entries = new($"EntryTable Bundle #{counter}")
+            {
+                Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
+            };
+            foreach (var item in bundle.EntryPoints)
+            {
+                entries.Rows.Add(
+                    "@" + item.Ordinal,
+                    item.Offset.ToString("X"),
+                    item.Segment,
+                    item.Entry,
+                    item.Data,
+                    item.Type
+                );
+            }
+
+            counter++;
+            tables.Add(entries);
         }
 
-        EntryPointsTable = entries;
+        EntryTables = tables.ToArray();
     }
 
     private void MakeModuleReferencesTable()
@@ -188,46 +197,46 @@ public class NeTableManager
         ModuleReferencesTable = modres;
     }
 
-    private void MakeSegmentRelocations()
-    {
-        SegmentRelocations.Columns.AddRange(
-            [
-                new DataColumn("Seg ID"), 
-                new DataColumn("Records#"),
-                new DataColumn("Source"),
-                new DataColumn("Reloc type"),
-                new DataColumn("Reloc Flags"),
-                new DataColumn("Seg Type"),
-                new DataColumn("Target"),
-                new DataColumn("Target Type"),
-                new DataColumn("Mod#"),
-                new DataColumn("Name"),
-                new DataColumn("Ordinal"),
-                new DataColumn("Fixup")
-            ]);
-
-        
-        foreach (var relocation in _manager.SegmentRelocations)
-        {
-            var array = relocation.RelocationFlags
-                .Aggregate("", (current, characteristic) => current + (characteristic + " "));
-
-            SegmentRelocations.Rows.Add(
-                relocation.SegmentId,
-                relocation.RecordsCount,
-                relocation.SourceType,
-                relocation.RelocationType,
-                array,
-                relocation.SegmentType,
-                relocation.Target,
-                relocation.TargetType,
-                relocation.ModuleIndex,
-                OnlyAscii(relocation.Name),
-                relocation.Ordinal,
-                relocation.FixupType
-            );
-        }
-    }
+    // private void MakeSegmentRelocations()
+    // {
+    //     SegmentRelocations.Columns.AddRange(
+    //         [
+    //             new DataColumn("Seg ID"), 
+    //             new DataColumn("Records#"),
+    //             new DataColumn("Source"),
+    //             new DataColumn("Reloc type"),
+    //             new DataColumn("Reloc Flags"),
+    //             new DataColumn("Seg Type"),
+    //             new DataColumn("Target"),
+    //             new DataColumn("Target Type"),
+    //             new DataColumn("Mod#"),
+    //             new DataColumn("Name"),
+    //             new DataColumn("Ordinal"),
+    //             new DataColumn("Fixup")
+    //         ]);
+    //
+    //     
+    //     foreach (var relocation in _manager.SegmentRelocations)
+    //     {
+    //         var array = relocation.RelocationFlags
+    //             .Aggregate("", (current, characteristic) => current + (characteristic + " "));
+    //
+    //         SegmentRelocations.Rows.Add(
+    //             relocation.SegmentId,
+    //             relocation.RecordsCount,
+    //             relocation.SourceType,
+    //             relocation.RelocationType,
+    //             array,
+    //             relocation.SegmentType,
+    //             relocation.Target,
+    //             relocation.TargetType,
+    //             relocation.ModuleIndex,
+    //             OnlyAscii(relocation.Name),
+    //             relocation.Ordinal,
+    //             relocation.FixupType
+    //         );
+    //     }
+    // }
     private void MakeNames()
     {
         if (_manager.NonResidentNames.Length == 0)
@@ -241,7 +250,7 @@ public class NeTableManager
         {
             nonres.Rows.Add(
                 neExportDump.Count,
-                neExportDump.Name,
+                OnlyAscii(neExportDump.Name),
                 "@" + neExportDump.Ordinal,
                 "[Not resident]"
             );
@@ -251,7 +260,7 @@ public class NeTableManager
         {
             nonres.Rows.Add(
                 export.Count,
-                export.Name,
+                OnlyAscii(export.Name),
                 "@" + export.Ordinal,
                 "[Resident]"
             );
@@ -263,17 +272,19 @@ public class NeTableManager
     private void MakeCharacteristics()
     {
         List<string> md = [];
-        md.Add("### Image");
-        md.Add($"Project Name: `{_manager.ResidentNames[0].Name}`"); // <-- first name always project-name
-        md.Add($"Description: {_manager.NonResidentNames[0].Name}");
+        
+        //md.Add("_Main information details took from Windows New segmented EXE header (called `IMAGE_OS2_HEADER` in Win32 API)_\r\n");
+        md.Add("\r\n### Image");
+        md.Add($"Project Name: `{OnlyAscii(_manager.ResidentNames[0].Name)}`"); // <-- first name always project-name
+        md.Add($"Description: {OnlyAscii(_manager.NonResidentNames[0].Name)}");
         
         var os = _manager.NeHeader.NE_OS switch
         {
-            0x0 => "Not specified", // set for *.FON. means "any OS supported"  
-            0x1 => "OS/2",
-            0x2 => "Win16",
+            0x0 => "Any OS supported", // set for *.FON. means "any OS supported"  
+            0x1 => "OS/2 (Os2ss)",
+            0x2 => "Windows/286 (Win16)",
             0x3 => "DOS/4",
-            0x4 => "Win386",
+            0x4 => "Windows/386 (Win16)",
             0x5 => "BoSS",
             _ => $"Unknown 0x{_manager.NeHeader.NE_OS:X}" // <-- really don't know how handle it
         };
@@ -286,22 +297,61 @@ public class NeTableManager
             var f when (f & 0x7) != 0 => "I8087",
             _ => "Not specified"
         };
-        md.Add($"Target operating system environment: `{os}`");
-        md.Add($"Target CPU architecture: `{cpu}`");
+        
+        md.Add("\r\n### Hardware/Software");
+        md.Add($" - Operating system: `{os}`");
+        md.Add($" - CPU architecture: `{cpu}`");
+        md.Add($" - LINK.EXE version: {_manager.NeHeader.NE_LinkerVersion}.{_manager.NeHeader.NE_LinkerRevision}");
+        if (_manager.NeHeader.NE_LinkerVersion < 5)
+            md.Add("> [!WARNING]\r\n>LINK.EXE 4.0 and earlier has another logic for EntryPoints table. You have a risk of wrong bytes interpretation");
+        
+        if (_manager.NeHeader.NE_WindowsVersionMajor > 0)
+            md.Add($" - Microsoft Windows version: {_manager.NeHeader.NE_WindowsVersionMajor}.{_manager.NeHeader.NE_WindowsVersionMinor}");
+        
+        md.Add("\r\n### Loader requirements");
+        
+        md.Add($" - Heap=`{_manager.NeHeader.NE_Heap}`");
+        md.Add($" - Stack=`{_manager.NeHeader.NE_Stack}`");
+        md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea}`");
+        
+        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs}:{_manager.MzHeader.ip}`");
+        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss}:{_manager.MzHeader.sp}`");
+        var cs = _manager.NeHeader.NE_CsIp >> 16;
+        var ip = _manager.NeHeader.NE_CsIp & 0xFFFF;
+        
+        md.Add($" - Win16-OS/2 `CS:IP={cs:X}:{ip:X}` (hex)"); // <-- handle it
+        md.Add($" - Win16-OS/2 `SS:SP={(_manager.NeHeader.NE_SsSp >> 16):X}:{(_manager.NeHeader.NE_SsSp & 0xFFFF):X}` (hex)"); // <-- handle it
+        md.Add($"> [!INFO]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in #{cs:X} segment with 0x{ip:X} offset");
+        
+        md.Add("\r\n### Entities summary");
+        md.Add($"1. Number of Segments - `{_manager.NeHeader.NE_SegmentsCount}`");
+        md.Add($"2. Number of Entry Bundles - `{_manager.NeHeader.NE_EntriesCount}`");
+        md.Add($"3. Number of Moveable Entries - `{_manager.NeHeader.NE_MovableEntriesCount}`");
+        md.Add($"4. Number of Automatic Data segments - `{_manager.NeHeader.NE_AutoSegment}`");
+        md.Add($"5. Number of Resources - `{_manager.NeHeader.NE_ResourcesCount}`");
+        md.Add($"6. Number of NonResident names - `{_manager.NeHeader.NE_NonResidentNamesCount}`");
+        md.Add($"7. Number of Module References - `{_manager.NeHeader.NE_ModReferencesCount}`");
+        
+        md.Add("\r\n### Importing modules");
+        md.Add("All .DLL/.EXE module names which resolved successfully");
 
-        md.Add("### Importing modules");
-        md.Add("All .DLL/EXE module names which resolved successfully");
+        md.AddRange(_manager.ImportModels.Select(m => m.DllName).Select(mod => $" - `{mod}`"));
 
-        foreach (var mod in _manager.ImportModels.Select(m => m.DllName))
+
+        // TODO: make app flags/program flags
+
+        if (_manager.NeHeader.NE_FlagOthers != 0)
         {
-            md.Add($" - `{mod}`");
+            // TODO: make support of OS/2 loader flags
+            md.Add("### OS/2 Module Characteristics");
         }
         
         Characteristics = md.ToArray();
     }
-
+    
     private static string OnlyAscii(string target)
     {
-        return new string(target.Where(char.IsAscii).ToArray());
+        // exclude special chars from string
+        return new string(target.Where(c => char.IsAscii(c) && c != '\0').ToArray());
     }
 }

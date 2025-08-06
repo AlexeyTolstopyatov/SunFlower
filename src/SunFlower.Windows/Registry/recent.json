@@ -1,3 +1,17 @@
 ﻿[
-  
+  {
+    "Name": "WINFO16C.EXE",
+    "Path": "D:\\TEST\\VBRUN\\WINFO16C.EXE",
+    "SignatureString": "Visual Basic 4.0 (?/NE16)",
+    "CpuArchitecture": "IA-32",
+    "SignatureDWord": 255
+  },
+  {
+    "Name": "CALLDLLS32.EXE",
+    "Path": "D:\\TEST\\VBRUN\\CALLDLLS32.EXE",
+    "SignatureString": "Visual Basic 4.0 (?/PE32)",
+    "CpuArchitecture": "IA-32",
+    "SignatureDWord": 255
+  }
+
 ]

@@ -7,7 +7,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:h="clr-namespace:HexView.Wpf;assembly=HexView.Wpf"
         mc:Ignorable="d"
-        Background="{StaticResource RegionBrush}"
+        Background="{StaticResource BorderBrush}"
         Title="HexViewerWindow" Height="600" Width="800">
     <hc:Window.DataContext>
         <local:HexViewViewModel/>
@@ -16,7 +16,7 @@
         <h:HexViewer
             ShowAddress="True"
             FontSize="16"
-            Background="{StaticResource RegionBrush}"
+            Background="{StaticResource BorderBrush}"
             Foreground="{StaticResource PrimaryTextBrush}"
             DataSource="{Binding Reader.Reader}"/>
     </Grid>

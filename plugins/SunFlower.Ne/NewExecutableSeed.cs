@@ -29,7 +29,7 @@ public class NewExecutableSeed : IFlowerSeed
                 ..tableManager.Headers,
                 tableManager.SegmentTable,
                 tableManager.SegmentRelocations,
-                tableManager.EntryPointsTable,
+                ..tableManager.EntryTables,
                 tableManager.ModuleReferencesTable,
                 tableManager.NamesTable
             ];

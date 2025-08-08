@@ -1,7 +1,20 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1a57c4ad_002D5148_002D446f_002D9e2d_002D68cae09f9dad/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CheckoutNeImage" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b386b3f2_002D33f6_002D4bc6_002Dbf65_002D3b9994878c91/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CheckoutNeImage" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutDriver&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=da93a8c7_002D1bc4_002D4330_002D8631_002De0587f5da435/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CheckoutNeImage #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f60c7c92_002Dfda0_002D41f1_002Da54b_002Dffe2d2f160a8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CheckoutNeImage #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutDriver&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

@@ -14,21 +14,23 @@ public class NeTableManager
         
         MakeHeadersTables();
         MakeSegmentsTable();
-        //MakeSegmentRelocations();
+        MakeSegmentRelocations();
         MakeEntryPointsTable();
         MakeModuleReferencesTable();
         MakeNames();
+        MakeImports();
     }
     
     public DataTable[] Headers { get; set; } = [];
     public DataTable SegmentTable { get; set; } = new("Table of file Segments");
-    public DataTable SegmentRelocations { get; set; } = new("Every Segment Relocations");
+    public DataTable[] RelocationsTables { get; set; } = [];
     public DataTable NamesTable { get; set; } = new("Resident/NonResident Names");
     public DataTable[] EntryTables { get; set; } = [];
     public DataTable ModuleReferencesTable { get; set; } = new("Module References table");
     // public DataTable ImportingNamesTable { get; set; } = new();
     public string[] Characteristics { get; set; } = [];
-    
+    public string[] Imports { get; set; } = [];
+
     private void MakeHeadersTables()
     {
         var dosHeader = MakeDosHeader();
@@ -197,46 +199,54 @@ public class NeTableManager
         ModuleReferencesTable = modres;
     }
 
-    // private void MakeSegmentRelocations()
-    // {
-    //     SegmentRelocations.Columns.AddRange(
-    //         [
-    //             new DataColumn("Seg ID"), 
-    //             new DataColumn("Records#"),
-    //             new DataColumn("Source"),
-    //             new DataColumn("Reloc type"),
-    //             new DataColumn("Reloc Flags"),
-    //             new DataColumn("Seg Type"),
-    //             new DataColumn("Target"),
-    //             new DataColumn("Target Type"),
-    //             new DataColumn("Mod#"),
-    //             new DataColumn("Name"),
-    //             new DataColumn("Ordinal"),
-    //             new DataColumn("Fixup")
-    //         ]);
-    //
-    //     
-    //     foreach (var relocation in _manager.SegmentRelocations)
-    //     {
-    //         var array = relocation.RelocationFlags
-    //             .Aggregate("", (current, characteristic) => current + (characteristic + " "));
-    //
-    //         SegmentRelocations.Rows.Add(
-    //             relocation.SegmentId,
-    //             relocation.RecordsCount,
-    //             relocation.SourceType,
-    //             relocation.RelocationType,
-    //             array,
-    //             relocation.SegmentType,
-    //             relocation.Target,
-    //             relocation.TargetType,
-    //             relocation.ModuleIndex,
-    //             OnlyAscii(relocation.Name),
-    //             relocation.Ordinal,
-    //             relocation.FixupType
-    //         );
-    //     }
-    // }
+    private void MakeSegmentRelocations()
+    {
+        var tables = new List<DataTable>();
+        var sexWithRelocations = _manager.SegmentModels.Where(s => s.Relocations.Count > 0).Distinct().ToList(); 
+        
+        foreach (var segment in sexWithRelocations)
+        {
+            var tableName = $"Relocations Table for Segment #{segment.SegmentNumber} ({segment.Type})";
+            DataTable table = new(tableName)
+            {
+                Columns =
+                {
+                    "ATP", 
+                    "RTP",
+                    "RTP String",
+                    "Is Additive",
+                    "OffsetInSeg",
+                    "SegType",
+                    "Target",
+                    "Target Type",
+                    "Mod#",
+                    "Name",
+                    "Ordinal",
+                    "Fixup"
+                }
+            };
+
+            foreach (var rel in segment.Relocations)
+            {
+                // prepare table
+                table.Rows.Add(
+                    rel.AddressType, 
+                    rel.RelocationFlags, 
+                    rel.RelocationType, 
+                    rel.IsAdditive,
+                    rel.OffsetInSegment, 
+                    rel.SegmentType, 
+                    rel.Target, 
+                    rel.TargetType, 
+                    rel.ModuleIndex,
+                    rel.Ordinal, 
+                    rel.NameOffset);
+            }
+            tables.Add(table);
+        }
+
+        RelocationsTables = tables.ToArray();
+    }
     private void MakeNames()
     {
         if (_manager.NonResidentNames.Length == 0)
@@ -269,6 +279,26 @@ public class NeTableManager
         NamesTable = nonres;
     }
 
+    private void MakeImports()
+    {
+        List<string> md = [];
+        
+        md.Add("\r\n### Importing modules");
+        md.Add("All .DLL/.EXE module names which resolved successfully");
+        
+        //md.AddRange(_manager.ImportModels.Select(m => m.DllName).Select(mod => $" - `{mod}`"));
+
+        foreach (var importModel in _manager.ImportModels)
+        {
+            md.Add($" - `{importModel.DllName}`");
+            foreach (var function in importModel.Functions)
+            {
+                md.Add($"    - `{function.Name}@{function.Ordinal}`");
+            }
+        }
+
+        Imports = md.ToArray();
+    }
     private void MakeCharacteristics()
     {
         List<string> md = [];
@@ -310,18 +340,18 @@ public class NeTableManager
         
         md.Add("\r\n### Loader requirements");
         
-        md.Add($" - Heap=`{_manager.NeHeader.NE_Heap}`");
-        md.Add($" - Stack=`{_manager.NeHeader.NE_Stack}`");
-        md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea}`");
+        md.Add($" - Heap=`{_manager.NeHeader.NE_Heap:X}`");
+        md.Add($" - Stack=`{_manager.NeHeader.NE_Stack:X}`");
+        md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea:X}`");
         
-        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs}:{_manager.MzHeader.ip}`");
-        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss}:{_manager.MzHeader.sp}`");
+        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X}:{_manager.MzHeader.ip:X}`");
+        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X}:{_manager.MzHeader.sp:X}`");
         var cs = _manager.NeHeader.NE_CsIp >> 16;
         var ip = _manager.NeHeader.NE_CsIp & 0xFFFF;
         
         md.Add($" - Win16-OS/2 `CS:IP={cs:X}:{ip:X}` (hex)"); // <-- handle it
         md.Add($" - Win16-OS/2 `SS:SP={(_manager.NeHeader.NE_SsSp >> 16):X}:{(_manager.NeHeader.NE_SsSp & 0xFFFF):X}` (hex)"); // <-- handle it
-        md.Add($"> [!INFO]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in #{cs:X} segment with 0x{ip:X} offset");
+        md.Add($"> [!INFO]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
         
         md.Add("\r\n### Entities summary");
         md.Add($"1. Number of Segments - `{_manager.NeHeader.NE_SegmentsCount}`");
@@ -332,14 +362,8 @@ public class NeTableManager
         md.Add($"6. Number of NonResident names - `{_manager.NeHeader.NE_NonResidentNamesCount}`");
         md.Add($"7. Number of Module References - `{_manager.NeHeader.NE_ModReferencesCount}`");
         
-        md.Add("\r\n### Importing modules");
-        md.Add("All .DLL/.EXE module names which resolved successfully");
-
-        md.AddRange(_manager.ImportModels.Select(m => m.DllName).Select(mod => $" - `{mod}`"));
-
-
         // TODO: make app flags/program flags
-
+        
         if (_manager.NeHeader.NE_FlagOthers != 0)
         {
             // TODO: make support of OS/2 loader flags

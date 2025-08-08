@@ -11,4 +11,5 @@ public class NeSegmentModel(NeSegmentInfo info, uint segmentNumber, string[] cha
     public uint FileLength { get; set; } = info.FileLength;
     public ushort Flags { get; set; } = info.Flags;
     public ushort MinAllocation { get; set; } = info.MinAllocation;
+    public List<Relocation> Relocations { get; set; } = [];
 }

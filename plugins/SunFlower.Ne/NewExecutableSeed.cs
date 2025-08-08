@@ -24,11 +24,16 @@ public class NewExecutableSeed : IFlowerSeed
                 Type = FlowerSeedEntryType.Text,
                 BoxedResult = tableManager.Characteristics
             });
+            Status.Results.Add(new FlowerSeedResult()
+            {
+                Type = FlowerSeedEntryType.Text,
+                BoxedResult = tableManager.Imports
+            });
             List<DataTable> unboxed =
             [
                 ..tableManager.Headers,
                 tableManager.SegmentTable,
-                tableManager.SegmentRelocations,
+                ..tableManager.RelocationsTables,
                 ..tableManager.EntryTables,
                 tableManager.ModuleReferencesTable,
                 tableManager.NamesTable

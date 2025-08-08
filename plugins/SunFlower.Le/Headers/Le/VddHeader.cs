@@ -13,11 +13,10 @@ public struct VddHeader
     public uint LE_WindowsResLength;
     
     [MarshalAs(UnmanagedType.U2)]
-    public ushort LE_DeviceID;          // device ID (Windows VxD only).
+    public ushort LE_DeviceID;
     
     [MarshalAs(UnmanagedType.U2)]
-    public ushort LE_DDKMajor;               // DDK version number.
+    public ushort LE_DDKMajor;
     [MarshalAs(UnmanagedType.U2)]
     public ushort LE_DDKMinor;
-    
 }

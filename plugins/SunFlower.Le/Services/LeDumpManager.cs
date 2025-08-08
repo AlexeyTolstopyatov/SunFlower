@@ -22,12 +22,12 @@ public class LeDumpManager : UnsafeManager
     public List<NonResidentName> NonResidentNames { get; set; } = [];
     public List<Function> ImportingModules { get; set; } = [];
     public List<Function> ImportingProcedures { get; set; } = [];
-    public List<EntryBundleModel> EntryBundles { get; set; } = [];
+    public List<EntryBundle> EntryBundles { get; set; } = [];
     public List<ObjectTableModel> ObjectTables { get; set; } = [];
     public List<ObjectPageModel> ObjectPages { get; set; } = [];
     public List<uint> FixupPagesOffsets { get; set; } = [];
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
-    public UInt32 Offset(UInt32 address) => _offset + address;
+    private UInt32 Offset(UInt32 address) => _offset + address;
 
     private void Initialize(string path)
     {
@@ -44,11 +44,13 @@ public class LeDumpManager : UnsafeManager
 
         LeHeader = Fill<LeHeader>(reader);
 
-        if (LeHeader.LE_ID is 0x584c or 0x4c58)
+        if (LeHeader.LE_ID is 0x584c or 0x4c58) // LX magic/cigam. IBM OS/2 standard Object Format (OMF).
             goto __continue; // Format incompatibility warning?!
         
-        if (LeHeader.LE_ID is not 0x454c and not 0x4c45) // magic or cigam
+        if (LeHeader.LE_ID is not 0x454c and not 0x4c45) // LE magic or cigam. Win32s (WOW32) or VxD-model driver or Microsoft OS/2 OMF.
             throw new InvalidOperationException("Doesn't have 'LE' signature");
+        
+        // LC (Compressed Linear Objects) I've given up to seek information...
         
         stream.Seek(20, SeekOrigin.Current); // skip zero-filled page
         DriverHeader = Fill<VddHeader>(reader);
@@ -65,32 +67,37 @@ public class LeDumpManager : UnsafeManager
     private void FillNames(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_ResidentNames);
-        var size = reader.ReadByte();
-        while (size != 0)
+        byte i;
+        while ((i = reader.ReadByte()) != 0)
         {
-            ResidentName name = new()
+            var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            var ordinal = reader.ReadUInt16();
+            NonResidentNames.Add(new()
             {
-                Name = Encoding.ASCII.GetString(reader.ReadBytes(size)),
-                Ordinal = reader.ReadUInt16(),
-                Size = size
-            };
-            ResidentNames.Add(name);
-            size = reader.ReadByte();
+                Size = i,
+                Name = name,
+                Ordinal = ordinal
+            });
         }
 
+        // no Offset for not-resident names.
         reader.BaseStream.Position = LeHeader.LE_NoneRes;
-        size = reader.ReadByte();
+        if (LeHeader.LE_NoneResSize == 0)
+            return;
 
-        while (size != 0)
+        reader.BaseStream.Position = LeHeader.LE_NoneRes;
+
+        byte j;
+        while ((j = reader.ReadByte()) != 0)
         {
-            NonResidentName name = new()
+            var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            var ordinal = reader.ReadUInt16();
+            NonResidentNames.Add(new()
             {
-                Name = Encoding.ASCII.GetString(reader.ReadBytes(size)),
-                Ordinal = reader.ReadUInt16(),
-                Size = size
-            };
-            NonResidentNames.Add(name);
-            size = reader.ReadByte();
+                Size = j,
+                Name = name,
+                Ordinal = ordinal
+            });
         }
     }
 
@@ -125,6 +132,19 @@ public class LeDumpManager : UnsafeManager
         }
     }
     
+    
+    // View of EntryTable like Win16-OS/2 executables (NE)
+    // ### 16-bit Entry Bundle #\{counter}  <--+
+    // Target object - `\{objIndex}`           |    *** Nested dependent Data *** 
+    // Flags                                   | BundleInfoStrings : List<String>
+    //   - 16-bit/32-bit                       | Will be as independent strings collection
+    //   - .VALID/.UNUSED                      | Fills EntryTables : List<DataTable> together
+    // Count: 2                             <--+
+    // |---|---------|-----------|--------| <--+
+    // | # | Entry   | Object    | Offset |    | EntryTable in EntryTables : List<DataTable>
+    // |---|---------|-----------|--------|    | Iterates with BundleInfoStrings
+    // | 1 | EXPORT  | SHARED    | 1EBD20 |    |
+    // | 2 | STATIC  | IMPURE    | 386A   | <--+ # - Global iterator or Ordinal setter. @1...@end
     /// <summary>
     /// If EntryPoints exists, some of them stores in <see cref="ResidentNames"/>
     /// , some of them in <see cref="NonResidentNames"/>, and their Ordinals in
@@ -134,69 +154,31 @@ public class LeDumpManager : UnsafeManager
     private void FillEntryPoints(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_EntryTable);
-        List<string> flags = [];
         byte bundleSize;
-        var count = 1;
+        var currentOrdinal = 1; // global exports iterator.
+        
         while ((bundleSize = reader.ReadByte()) != 0)
         {
-            count++;
-            
             var bundleFlags = reader.ReadByte(); 
             var objectIndex = reader.ReadUInt16();
-            
-            EntryBundle bundle = new()
-            {
-                EntriesCount = bundleSize,
-                EntryBundleIndex = bundleFlags,
-                ObjectIndex = objectIndex,
-            };
 
-            var is32Bit = ((bundleFlags & 0b00000010) != 0);
+            EntryBundle bundle = new(bundleSize, bundleFlags, objectIndex);
 
-            List<Entry16> entries = [];
-            List<Entry32> entry32S = [];
+            var is32Bit = (bundleFlags & 0b00000010) != 0;
+
+            List<Entry> entries = [];
             for (var i = 0; i < bundleSize; i++)
             {
                 var entryFlags = reader.ReadByte();
-
-                if (is32Bit)
-                {
-                    flags.Add("ENTRY_USE32");
-                    var offset = reader.ReadUInt32();
-                    
-                    var isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
-                    var isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
-
-                    entry32S.Add(new Entry32
-                    {
-                        Flag = entryFlags,
-                        Offset = offset,
-                        FlagNames = new[] {isExported, isSharedObj}.Where(s => !string.IsNullOrEmpty(s)).ToArray()
-                    });
-                }
-                else
-                {
-                    // fill flags for entries-bundle
-                    flags.Add("ENTRY_USE16");
-                    var offset = reader.ReadUInt16();
-                    var isExported = ((entryFlags & 0x01) != 0) ? "ENTRY_EXPORT" : "";
-                    var isSharedObj = ((entryFlags & 0x02) != 0) ? "OBJ_SHARED" : "OBJ_LOCAL";
-                    
-                    // fill flags for each entry
-                    
-                    entries.Add(new Entry16
-                    {
-                        Flag = entryFlags,
-                        Offset = offset,
-                        FlagNames = new[] {isExported, isSharedObj}.Where(x => !string.IsNullOrEmpty(x)).ToArray()
-                    });
-                }
+                var offset = is32Bit ? reader.ReadUInt32() : reader.ReadUInt16();
+                
+                entries.Add(new Entry(currentOrdinal, entryFlags, offset));
+                currentOrdinal++;
             }
 
             bundle.Entries = entries.ToArray();
-            bundle.ExtendedEntries = entry32S.ToArray();
             
-            EntryBundles.Add(new EntryBundleModel(count, bundle, flags));
+            EntryBundles.Add(bundle);
         }
     }
     
@@ -237,10 +219,10 @@ public class LeDumpManager : UnsafeManager
         var objectType = (entry.ObjectFlags >> 8) & 0x03;
         var typeDesc = objectType switch
         {
-            0 => "OBJ_TYPE_NORMAL",
-            1 => "OBJ_TYPE_ZERO_FILLED",
-            2 => "OBJ_TYPE_RESIDENT",
-            3 => "OBJ_TYPE_RESIDENT_CONTIGUOUS",
+            0 => "OBJ_NORMAL",
+            1 => "OBJ_ZERO_FILLED",
+            2 => "OBJ_RESIDENT",
+            3 => "OBJ_RESIDENT_CONTIGUOUS",
             _ => "OBJ_UNKNOWN"
         };
     

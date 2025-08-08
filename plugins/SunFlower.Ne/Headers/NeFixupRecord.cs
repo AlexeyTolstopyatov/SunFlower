@@ -64,14 +64,24 @@ public class OsFixupRelocation : RelocationRecord
     public OsFixupType FixupType { get; set; }
 }
 
-public class SegmentRelocations
+public class Relocation
 {
-    public int SegmentId { get; set; }
-    public List<RelocationRecord> Records { get; } = new();
-    
-    public IEnumerable<ImportNameRelocation> ImportNames => 
-        Records.OfType<ImportNameRelocation>();
-    
-    public IEnumerable<ImportOrdinalRelocation> ImportOrdinals => 
-        Records.OfType<ImportOrdinalRelocation>();
+    // for every record
+    public byte AddressType { get; set; }
+    public byte RelocationFlags { get; set; }
+    public string RelocationType { get; set; } = string.Empty;
+    public bool IsAdditive { get; set; }
+    public ushort OffsetInSegment { get; set; }
+
+    // internal reference
+    public ushort? SegmentType { get; set; }
+    public ushort? Target { get; set; }
+    public string? TargetType { get; set; }
+
+    // imports...
+    public ushort? ModuleIndex { get; set; }
+    public ushort? Ordinal { get; set; }
+    public ushort? NameOffset { get; set; }
+
+    public string? Fixup { get; set; }
 }

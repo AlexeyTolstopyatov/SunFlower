@@ -28,7 +28,7 @@ public class LeTableManager
         MakeHeaders(_manager.MzHeader, _manager.LeHeader);
         MakeNames();
         MakeObjectTables();
-        MakeEntryTable();
+        //MakeEntryTable();
         MakeFixupTables(); // eternal suffering
         MakeCharacteristics();
     }
@@ -217,58 +217,6 @@ public class LeTableManager
             );
         }
     }
-
-    private void MakeEntryTable()
-    {
-        // prepare general Entry bundles table
-        DataTable table = new("Bundles table (EntryPoint table main part)")
-        {
-            Columns = { "#", "Count", "Bundle#", "Object#", "Flags" }
-        };
-        List<DataTable> entriesForEachBundle = [];
-        
-        foreach (var bundle in _manager.EntryBundles)
-        {
-            var flags = bundle
-                .Flags
-                .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
-            
-            table.Rows.Add(bundle.BundleNumber, bundle.EntryBundle.EntriesCount, bundle.EntryBundle.EntryBundleIndex, bundle.EntryBundle.ObjectIndex, flags);
-            
-            DataTable entries = new($"Bundle #{bundle.BundleNumber} | EntryTable")
-            {
-                Columns = { "Flag (hex)", "Offset (hex)", "FlagNames" }
-            };
-            
-            if (bundle.EntryBundle.Entries.Length != 0)
-            {
-                entries.TableName = $"Bundle #{bundle.BundleNumber} | 16-bit Entries ";
-                foreach (var entry in bundle.EntryBundle.Entries)
-                {
-                    var efl = bundle
-                        .Flags
-                        .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
-                    entries.Rows.Add(entry.Flag, entry.Offset.ToString("X"),  efl);
-                }
-            }
-            else if (bundle.EntryBundle.ExtendedEntries.Length != 0)
-            {
-                entries.TableName = $"Bundle #{bundle.BundleNumber} | 32-bit Entries";
-                foreach (var entry in bundle.EntryBundle.ExtendedEntries)
-                {
-                    var efl = bundle
-                        .Flags
-                        .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
-                    entries.Rows.Add(entry.Flag, entry.Offset.ToString("X"),  efl);
-                }
-            }
-            entriesForEachBundle.Add(entries);
-        }
-
-        EntryTables = [table, ..entriesForEachBundle];
-        
-    }
-
 
     private void MakeFixupTables()
     {

@@ -46,26 +46,41 @@ public class Tests
         
         Assert.Pass();
     }
+    /// <summary>
+    /// 99% completed.
+    /// >> Resources Table undone.
+    /// >> VB3.0 runtime -> Sunflower Win16-VB3 IA-32
+    /// >> VB4.0 runtime -> Sunflower Win16-VB4 IA-32
+    /// 
+    /// </summary>
     [Test]
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        var path = @"D:\TEST\Windows2.1\CALC.EXE";
+        var path = @"D:\TEST\os2\SYSINST2.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
         SunFlower.Ne.Services.NeTableManager tableManager = new(manager);
         
         Assert.Pass();
     }
-
+    
     [Test]
     public void CheckoutDriver()
     {
-        var path = @"D:\Анализ файлов\inst\LE\CDFS.VXD";
+        // baaad...
+        const string path = @"D:\TEST\OS2\VTDAPI.386";
         LeDumpManager manager = new(path);
         LeTableManager tableManager = new(manager);
         
         Assert.Pass();
     }
+    /// <summary>
+    /// >> Main section done
+    /// >> Windows 3.0 286 done
+    /// >> Windows 3.0 386 done
+    /// >> Windows 95/98 Virtual Machine Manager (wait for TableManager)
+    /// >> Windows NT 3.x undone.
+    /// </summary>
     [Test]
     public void CheckoutPif()
     {

@@ -10,15 +10,20 @@ public struct NeSegmentInfo
     public ushort FileLength;
     public ushort Flags;
     public ushort MinAllocation;
+    private string _type;
     public string Type
     {
-        get => (Flags & 0x0007) switch
+        get
         {
-            0x0001 => ".DATA",
-            0x0002 => ".ITER",
-            _ => ".CODE"
-        };
-        set => throw new NotImplementedException();
+            _type = (Flags & 0x0007) switch
+            {
+                0x0001 => ".DATA",
+                0x0002 => ".ITER",
+                _ => ".CODE"
+            };
+            return _type;
+        }
+        set => _type = value;
     }
 }
 

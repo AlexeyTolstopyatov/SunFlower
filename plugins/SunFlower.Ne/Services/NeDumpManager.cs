@@ -77,10 +77,10 @@ public class NeDumpManager : UnsafeManager
         NeHeader = Fill<NeHeader>(reader);
 
         if (NeHeader.NE_ID != 0x454e && NeHeader.NE_ID != 0x4e45) // magic or cigam
-            throw new InvalidOperationException("Doesn't have new signature");
+            throw new InvalidOperationException("Doesn't have NE signature");
 
         FillSegments(reader);
-        FillEntryTable2(reader); // warn!
+        FillEntryTable(reader); // warn!
         FillModuleReferences(reader);
         FillNonResidentNames(reader);
         FillResidentNames(reader);
@@ -110,206 +110,121 @@ public class NeDumpManager : UnsafeManager
 
         Segments = segTable.ToArray();
         
-        foreach (var segment in segTable)
+        foreach (var segment in SegmentModels)
         {
-            if ((segment.Flags & 0x0C) == 0) continue; // within relocs
+            if ((segment.Flags & 0x0C) == 0) 
+                continue; // within relocs
+            
             var alignment = NeHeader.NE_Alignment;
             if (alignment == 0)
                 alignment = 9; // <-- 2^9 = 512 (paragraph allocation)
 
-            var sectorShift = 1 >> alignment;
+            var sectorShift = 1 << alignment;
             
             // physical offset allocation
-            var segmentDataOffset = segment.FileOffset * (long)sectorShift;
+            var segmentDataOffset = segment.FileOffset * sectorShift;
             var segmentDataLength = segment.FileLength == 0 ? 0x10000 : segment.FileLength;
             
             var relocationTableOffset = segmentDataOffset + segmentDataLength;
-
-            // bounds checkout
-            if (relocationTableOffset + 2 > reader.BaseStream.Length) continue;
+            
+            if (relocationTableOffset + 2 > reader.BaseStream.Length) 
+                continue;
 
             reader.BaseStream.Seek(relocationTableOffset, SeekOrigin.Begin);
+            List<Relocation> segmentRel = [];
+            
+            // start the per-segment records
             var relocationCount = reader.ReadUInt16();
 
-            // TODO: relocs extraction
-            // TODO: per-segments raw data slices
             for (var j = 0; j < relocationCount; j++)
             {
-                SegmentRelocations.Add(new SegmentRelocation
+                var atp = reader.ReadByte();
+                var relFlags = reader.ReadByte();
+                var rtp = relFlags & 0x03;
+                var isAdditive = (relFlags & 0x04) != 0;
+                var offsetInSegment = reader.ReadUInt16();
+                
+                switch ((RelocationFlags)rtp)
                 {
-                    OffsetInSegment = reader.ReadUInt16(),
-                    Info = reader.ReadUInt16()
-                    // other types depends on Info
-                });
-                // SegmentData::<byte[]>::new() ...
-                //  -> Index
-                //  -> Relocs
-                //  -> data vector
+                    case RelocationFlags.InternalRef:
+                        var segmentType = reader.ReadByte();
+                        var target = reader.ReadUInt16();
+                        
+                        reader.ReadByte(); // Reserved (0)
+                        segmentRel.Add(new Relocation
+                        {
+                            OffsetInSegment = offsetInSegment,
+                            IsAdditive = isAdditive,
+                            RelocationFlags = relFlags,
+                            RelocationType = "Internal",
+                            AddressType = atp,
+                            SegmentType = segmentType,
+                            TargetType = (segmentType == 0xFF) ? "FIXED" : "MOVABLE",
+                            Target = target
+                        });
+                        break;
+                    case RelocationFlags.ImportOrdinal:
+                        var moduleIndex = reader.ReadUInt16();
+                        var procOrdinal = reader.ReadUInt16();
+                        
+                        segmentRel.Add(new Relocation
+                        {
+                            OffsetInSegment = offsetInSegment,
+                            IsAdditive = isAdditive,
+                            AddressType = atp,
+                            RelocationFlags = relFlags,
+                            RelocationType = "Import",
+                            Ordinal = procOrdinal,
+                            ModuleIndex = moduleIndex
+                        });
+                        break;
+                    case RelocationFlags.ImportName:
+                        var moduleIndex2 = reader.ReadUInt16();
+                        var procNameOffset = reader.ReadUInt16();
+                        // try to get name???
+                        
+                        segmentRel.Add(new Relocation
+                        {
+                            OffsetInSegment = offsetInSegment,
+                            IsAdditive = isAdditive,
+                            AddressType = atp,
+                            RelocationFlags = relFlags,
+                            RelocationType = "Import",
+                            ModuleIndex = moduleIndex2,
+                            NameOffset = procNameOffset,
+                        });
+                        
+                        break;
+                    case RelocationFlags.OSFixup:
+                        var osFixup = (OsFixupType)reader.ReadUInt16();
+                        var reservedWord = reader.ReadUInt16();
+                        
+                        segmentRel.Add(new Relocation
+                        {
+                            OffsetInSegment = offsetInSegment,
+                            IsAdditive = isAdditive,
+                            AddressType = atp,
+                            RelocationFlags = relFlags,
+                            RelocationType = "OS Fixup",
+                            Fixup = osFixup.ToString()
+                        });
+                        
+                        break;
+                }
             }
+            segment.Relocations = segmentRel; // problem
         }
-
     }
     /// <summary>
-    /// 
-    /// upd: REVIEW NEEDED. I give up to make tables. This entity must be checked
-    /// upd2: BAD.
-    /// Fills FLAT model of every segment relocations
-    /// Works like <see cref="FillEntryTable"/> construct.
+    /// Fills and Pushes prepared model of segment entry in global SegmentsTable
     /// </summary>
-    /// <param name="reader"></param>
     /// <param name="segment"></param>
-    /// <param name="segmentId"></param>
-    /// <returns></returns>
-    private List<SegmentRelocationModel> FillSegmentRelocations(BinaryReader reader, NeSegmentInfo segment, int segmentId)
-    {
-        var result = new SegmentRelocations { SegmentId = segmentId };
-        List<SegmentRelocationModel> relocationModel = [];
-        
-        // Relocations exists?
-        if ((segment.Flags & (ushort)NeSegmentType.WithinRelocations) == 0)
-            return
-            [
-                new SegmentRelocationModel
-                {
-                    RelocationFlags = ["REL_NO_RELOCS"],
-                    RelocationType = "No relocations",
-                    SegmentId = segmentId,
-                    SegmentType = "SEG_WITHIN_RELOCS", 
-                    Ordinal = "?", 
-                    Name = "?", RecordsCount = 0, 
-                    FixupType = "NOT fixup", 
-                    ModuleIndex = 0, 
-                    SourceType = "?", 
-                    Target = 0, 
-                    TargetType = "?"
-                }
-            ];
-        
-        // try to calculate reloc
-        var relocationOffset = segment.FileOffset + segment.FileLength;
-        reader.BaseStream.Position = relocationOffset;
-        
-        // reading all records // out of bounds... but why
-        ushort recordCount;
-        try
-        {
-            recordCount = reader.ReadUInt16();
-        }
-        catch(Exception e)
-        {
-            return
-            [
-                new SegmentRelocationModel
-                {
-                    RelocationFlags = [e.Message],
-                    RelocationType = $"`Bad call `#{segmentId}!{segment.Type}::qw{reader.BaseStream.Position:X}`",
-                    SegmentId = segmentId,
-                    SegmentType = "SEG_UNABLE_READ"
-                }
-            ];
-        }
-        
-        for (var i = 0; i < recordCount; i++)
-        {
-            var sourceAndFlags = reader.ReadByte();
-            var sourceType = (RelocationSourceType)(sourceAndFlags & 0x0F);
-            
-            var sourceTypeString = sourceType switch
-            {
-                RelocationSourceType.LowByte => "LOBYTE",
-                RelocationSourceType.Segment => "SEGMENT",
-                RelocationSourceType.FarAddress => "FAR_ADDR",
-                RelocationSourceType.Offset => "OFFSET",
-                _ => $"UNKNOWN (0x{(byte)sourceType:X2})"
-            };
-            
-            var flags = (RelocationFlags)(sourceAndFlags & 0xF0);
-            
-            var offset = reader.ReadUInt16();
-            RelocationRecord record = new();
-            SegmentRelocationModel model = new()
-            {
-                SegmentId = segmentId,
-                RecordsCount = recordCount,
-                SourceType = sourceTypeString,
-                FixupType = "_",
-                Ordinal = "_",
-                Name = "_",
-            };
-            
-            switch (flags & RelocationFlags.TargetMask)
-            {
-                case RelocationFlags.InternalRef:
-                    var segmentType = reader.ReadByte();
-                    var target = reader.ReadUInt16();
-                    
-                    model.RelocationType = "Internal Reference";
-                    model.RelocationFlags.Add("REL_INTERNAL_REF");
-                    model.Target = target;
-                    // model.SegmentType = segmentType;
-                    reader.ReadByte(); // Reserved (0)
-                    
-                    break;
-                    
-                case RelocationFlags.ImportName:
-                    var modIndex = reader.ReadUInt16();
-                    var modOffset = reader.ReadUInt16();
-                    
-                    var position = reader.BaseStream.Position; 
-                    
-                    reader.BaseStream.Position = Offset(NeHeader.NE_ImportModulesTable) + modOffset;
-                    var length = reader.ReadByte();
-                    
-                    model.RelocationType = "Import by Name";
-                    model.RelocationFlags.Add("REL_IMPORT_NAME");
-                    model.Name = Encoding.ASCII.GetString(reader.ReadBytes(length)).TrimEnd('\0');
-                    model.ModuleIndex = modIndex;
-                    
-                    reader.BaseStream.Position = position;
-                    break;
-                    
-                case RelocationFlags.ImportOrdinal:
-                    var modIndexOrd = reader.ReadUInt16();
-                    var ordinal = reader.ReadUInt16();
-                    
-                    model.RelocationFlags.Add("REL_IMPORT_ORDINAL");
-                    model.RelocationType = "Import Ordinal";
-                    model.Ordinal = "@" + ordinal;
-                    model.ModuleIndex = modIndexOrd;
-                    
-                    break;
-                    
-                case RelocationFlags.OSFixup:
-                    var type = (OsFixupType)reader.ReadUInt16();
-                    reader.ReadUInt16(); // Reserved (0)
-
-                    model.RelocationType = "OS Fixup";
-                    model.RelocationFlags.Add("REL_OSFIXUP");
-                    model.RelocationFlags.Add(type.ToString());
-                    model.FixupType = type.ToString();
-                    
-                    break;
-                    
-                default:
-                    Debug.WriteLine($"Unknown relocation type: {flags & RelocationFlags.TargetMask}");
-                    break;
-            }
-            
-            record.SourceType = sourceType;
-            record.Flags = flags;
-            record.Offset = offset;
-            result.Records.Add(record);
-            
-            relocationModel.Add(model);
-        }
-        
-        return relocationModel;
-    }
+    /// <param name="segmentNumber"></param>
     private void FillNeSegmentModel(ref NeSegmentInfo segment, uint segmentNumber)
     {
         List<string> chars = [];
 
-        if ((segment.Flags & (ushort)NeSegmentType.WithinRelocations) != 0) chars.Add("SEG_WITHIN_RELOCS");
+        if ((segment.Flags & 0x0C) == 0) chars.Add("SEG_WITHIN_RELOCS");
         if ((segment.Flags & (ushort)NeSegmentType.Mask) != 0) chars.Add("SEG_HASMASK");
         if ((segment.Flags & (ushort)NeSegmentType.DiscardPriority) != 0) chars.Add("SEG_DISCARDABLE");
         if ((segment.Flags & (ushort)NeSegmentType.Movable) != 0) chars.Add("SEG_MOVABLE_BASE");
@@ -341,14 +256,14 @@ public class NeDumpManager : UnsafeManager
     /// </summary>
     /// <param name="reader"></param>
     /// <exception cref="InvalidDataException">If EntryTable not satisfied length itself</exception>
-    private void FillEntryTable2(BinaryReader reader)
+    private void FillEntryTable(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(NeHeader.NE_EntryTable);
         
         var bundles = new List<NeEntryBundle>();
         int bytesRemaining = NeHeader.NE_EntriesCount;
         var currentOrdinal = 1;
-
+        
         while (bytesRemaining > 0)
         {
             var count = reader.ReadByte();
@@ -540,9 +455,22 @@ public class NeDumpManager : UnsafeManager
             imports.Add(moduleImport);
         }
 
-        ImportModels = imports.ToArray();
+        // erase dll names from every Importing Function
+        var dllNames = imports.Select((i => i.DllName)).ToList();
+        var erasedImportModels = new List<NeImportModel>();
+        
+        foreach (var import in imports)
+        {
+            var erased = import.Functions.Where(i => !dllNames.Contains(i.Name)).ToList();
+            erasedImportModels.Add(new NeImportModel()
+            {
+                Functions = erased,
+                DllName = import.DllName
+            });
+        }
+        ImportModels = erasedImportModels.ToArray();
     }
-
+    
     private void TryFindVb3RuntimeSegment(BinaryReader reader)
     {
         reader.BaseStream.Position = Segments[0].FileOffset;

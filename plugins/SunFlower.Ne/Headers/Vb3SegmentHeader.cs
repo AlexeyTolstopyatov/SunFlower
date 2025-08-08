@@ -15,7 +15,7 @@ namespace SunFlower.Ne.Headers;
 /// And suggest, this data can be found in first .CODE segment of NE image
 /// if sizeof(CODE) segment = sizeof(struct)
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)] // unsafe sizeof = 8
 public class Vb3SegmentHeader
 {
     public char UnknownTarget1;

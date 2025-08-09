@@ -53,6 +53,11 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
                 Type = FlowerSeedEntryType.Regions,
                 BoxedResult = tableManager.EntryTableRegions
             });
+            Status.Results.Add(new FlowerSeedResult()
+            {
+                Type = FlowerSeedEntryType.Regions,
+                BoxedResult = tableManager.NamesRegions
+            });
             Status.IsEnabled = true;
             
             return 0;

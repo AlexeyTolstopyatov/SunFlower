@@ -24,6 +24,7 @@ public class LeTableManager
     public DataTable[] FixupRecords { get; set; } = [];
     public List<string> Characteristics { get; set; } = [];
     public List<Region> EntryTableRegions { get; set; } = [];
+    public List<Region> NamesRegions { get; set; } = [];
     // view logic problem
     
     public LeTableManager(LeDumpManager manager)
@@ -135,29 +136,46 @@ public class LeTableManager
 
     private void MakeNames()
     {
+        string residentHeader = "### Resident Names Table";
+        string notResidentHeader = "### NonResident Names Table";
+
+        string residentContent = "The resident name table is kept resident in system memory while the module is loaded. It is intended to contain the exported entry point names that are frequently dynamicaly linked to by name.";
+        string notResidentContent = "Non-resident names are not kept in memory and are read from the EXE file when a dynamic link reference is made.";
+        
         if (_manager.ResidentNames.Count == 0)
-            goto __nonResident;
+        {
+            residentContent = "`<missing next information>`";
+            goto __notResidentNames;
+        }
         ResidentNames.Columns.Add("Name:s");
-        ResidentNames.Columns.Add("Ordinal:4");
-        ResidentNames.Columns.Add("Size:2");
+        ResidentNames.Columns.Add("Ordinal:2");
+        ResidentNames.Columns.Add("Size:1");
         foreach (var name in _manager.ResidentNames)
         {
-            ResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size.ToString("X2"));
+            ResidentNames.Rows.Add(name.Name, name.Ordinal, "0x" + name.Size.ToString("X2"));
         }
+        NamesRegions.Add(new Region(residentHeader, residentContent, "")
+        {
+            Table = ResidentNames
+        });
         
-        __nonResident:
+        __notResidentNames:
         if (_manager.NonResidentNames.Count == 0)
             goto __imports;
         
-        NonResidentNames.Columns.Add("Name");
-        NonResidentNames.Columns.Add("Ordinal");
-        NonResidentNames.Columns.Add("Size (hex)");
+        NonResidentNames.Columns.Add("Name:s");
+        NonResidentNames.Columns.Add("Ordinal:2");
+        NonResidentNames.Columns.Add("Size:1");
         foreach (var name in _manager.NonResidentNames)
         {
-            NonResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size);
+            NonResidentNames.Rows.Add(name.Name, name.Ordinal, "0x" + name.Size.ToString("X2"));
         }
-        __imports:
+        NamesRegions.Add(new Region(notResidentHeader, notResidentContent, "")
+        {
+            Table = NonResidentNames
+        });
         
+        __imports:
         if (_manager.ImportingModules.Count == 0)
             return;
         List<string> names = [];
@@ -222,10 +240,10 @@ public class LeTableManager
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
             ObjectPages.Rows.Add(
-                page.Page.HighPage.ToString("X4"),
-                page.Page.LowPage.ToString("X4"),
-                page.Page.Flags.ToString("X2"),
-                page.RealOffset.ToString("X16"), 
+                "0x" + page.Page.HighPage.ToString("X4"),
+                "0x" + page.Page.LowPage.ToString("X4"),
+                "0x" + page.Page.Flags.ToString("X2"),
+                "0x" + page.RealOffset.ToString("X16"), 
                 flags
             );
         }
@@ -316,14 +334,18 @@ public class LeTableManager
         {
             string head = $"### EntryTable Bundle #{bundleCounter}";
             StringBuilder contentBuilder = new();
-            contentBuilder.AppendLine($"Bundle Index: `{bundle.EntryBundleIndex}`");
-            contentBuilder.AppendLine($"Object Index: `{bundle.ObjectIndex}`");
+            contentBuilder.AppendLine(
+                "The entry table contains object and offset information that is used to resolve fixup references to the entry points within this module. Not all entry points in the entry table will be exported, some entry points will only be used within the module. An ordinal number is used to index into the entry table. The entry table entries are numbered starting from one.");
+            contentBuilder.AppendLine();
+            contentBuilder.AppendLine($"Bundle Index: `{bundle.EntryBundleIndex}`\r\n");
+            contentBuilder.AppendLine($"Object Index: `{bundle.ObjectIndex}`\r\n");
 
             contentBuilder.AppendLine("Bundle Flags: ");
             contentBuilder.AppendLine($" - Usage=`{bundle.EntriesUsage}`");
             contentBuilder.AppendLine($" - Per-Entry Capacity=`{bundle.EntriesSafeSize}`");
             
-            contentBuilder.AppendLine($"");
+            contentBuilder.AppendLine("\r\n");
+            contentBuilder.AppendLine($"Rows affected: {bundle.EntriesCount}");
             DataTable entries = new()
             {
                 Columns = { "Ordinal:4", "Entry:s", "Object:s", "Offset:4", "Flag:2" }
@@ -339,7 +361,7 @@ public class LeTableManager
                     "0x" + entry.Flag.ToString("X2")
                     );
             }
-            EntryTableRegions.Add(new Region(head, contentBuilder.ToString(), $"Table #{bundleCounter} - Rows affected: {bundle.EntriesCount}")
+            EntryTableRegions.Add(new Region(head, contentBuilder.ToString(), string.Empty)
             {
                 Table = entries
             });
@@ -367,20 +389,21 @@ public class LeTableManager
         if (_manager.LeHeader.LE_ID is 0x584c or 0x4c58)
             md.Add("> [!WARNING]\r\n> Signature of FLAT EXEC header is `LX`. This FLAT EXEC binary contains **only 32-bit code** and has unknown structures for this plugin. You have a risk of corrupted bytes-interpretation.");
         
-        md.Add("\r\n### Loader requirements");
+        md.Add($"\r\n### `{name}` Loader requirements");
         md.Add("This summary contains hexadecimal values from FLAT EXEC header.");
         md.Add($" - HeapExtra=`{_manager.LeHeader.LE_HeapExtra:X}`");
         
-        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X4}:{_manager.MzHeader.ip:X4}`");
-        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X4}:{_manager.MzHeader.sp:X4}`");
+        md.Add($" - DOS/2 `CS:IP=0x{_manager.MzHeader.cs:X4}:0x{_manager.MzHeader.ip:X4}`");
+        md.Add($" - DOS/2 `SS:SP=0x{_manager.MzHeader.ss:X4}:0x{_manager.MzHeader.sp:X4}`");
         
         var cs = _manager.LeHeader.LE_EntryCS;
         var ip = _manager.LeHeader.LE_EntryEIP;
-        md.Add($" - Win32s-OS/2 `CS:EIP={cs:X8}:{ip:X8}` (hex)"); // <-- handle it
-        md.Add($" - Win32s-OS/2 `SS:ESP={_manager.LeHeader.LE_EntrySS:X8}:{_manager.LeHeader.LE_EntryESP:X8}` (hex)"); // <-- handle it
+        md.Add($" - Win32s-OS/2 `CS:EIP=0x{cs:X8}:0x{ip:X8}`"); // <-- handle it
+        md.Add($" - Win32s-OS/2 `SS:ESP=0x{_manager.LeHeader.LE_EntrySS:X8}:0x{_manager.LeHeader.LE_EntryESP:X8}`");
+        
         md.Add($"> [!INFO]\r\n> Flat EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) object with `EIP=0x{ip:X}` offset");
         
-        md.Add("\r\n### Entities summary");
+        md.Add($"\r\n### `{name}` Entities summary");
         md.Add("This summary contains decimal values took from FLAT EXEC Header model.");
         md.Add($"1. Number of Objects - `{_manager.LeHeader.LE_ObjNum}`");
         md.Add($"2. Number of Importing Modules - `{_manager.LeHeader.LE_ImportModNum}`");
@@ -399,7 +422,7 @@ public class LeTableManager
 
     private void MakeDriverCharacteristics(ref List<string> md)
     {
-        md.Add("\r\n### Windows `VxD` Driver");
+        md.Add("\r\n### Windows `VxD` Driver Header");
         md.Add($"Requires Microsoft Windows {_manager.DriverHeader.LE_DDKMajor}.{_manager.DriverHeader.LE_DDKMinor} and earlier versions.");
         md.Add($"Driver resources stores at: 0x{_manager.DriverHeader.LE_WindowsResOffset:X}");
         

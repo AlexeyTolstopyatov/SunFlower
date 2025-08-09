@@ -33,7 +33,7 @@ public class PifFlowerSeed : IFlowerSeed
             var intro = new FlowerSeedResult()
             {
                 BoxedResult = intoList,
-                Type = FlowerSeedEntryType.Text
+                Type = FlowerSeedEntryType.Strings
             };
             // define Program information start by file extension or first WORD
             // see "Microsoft PIF structure.pdf" in git repo.

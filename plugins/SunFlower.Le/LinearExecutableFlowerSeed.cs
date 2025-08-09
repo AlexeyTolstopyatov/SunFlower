@@ -20,12 +20,12 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
 
             Status.Results.Add(new FlowerSeedResult()
             {
-                Type = FlowerSeedEntryType.Text,
+                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = tableManager.Characteristics
             });
             FlowerSeedResult imports = new()
             {
-                Type = FlowerSeedEntryType.Text
+                Type = FlowerSeedEntryType.Strings
             };
             List<string> mods = ["### Imported Modules", ..tableManager.ImportedNames];
             List<string> procs = ["### Imported Procedures", ..tableManager.ImportedProcedures];
@@ -40,16 +40,19 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
                 ..tableManager.Headers,
                 tableManager.ObjectsTable,
                 tableManager.ObjectPages,
-                ..tableManager.EntryTables,
                 tableManager.FixupPages,
-                ..tableManager.FixupRecords,
+                //..tableManager.FixupRecords,
             ];
             Status.Results.Add(new FlowerSeedResult()
             {
                 Type = FlowerSeedEntryType.DataTables,
                 BoxedResult = unboxed
             });
-
+            Status.Results.Add(new FlowerSeedResult()
+            {
+                Type = FlowerSeedEntryType.Regions,
+                BoxedResult = tableManager.EntryTableRegions
+            });
             Status.IsEnabled = true;
             
             return 0;

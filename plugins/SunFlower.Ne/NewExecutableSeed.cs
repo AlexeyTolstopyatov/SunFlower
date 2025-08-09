@@ -21,12 +21,12 @@ public class NewExecutableSeed : IFlowerSeed
             
             Status.Results.Add(new FlowerSeedResult()
             {
-                Type = FlowerSeedEntryType.Text,
+                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = tableManager.Characteristics
             });
             Status.Results.Add(new FlowerSeedResult()
             {
-                Type = FlowerSeedEntryType.Text,
+                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = tableManager.Imports
             });
             List<DataTable> unboxed =

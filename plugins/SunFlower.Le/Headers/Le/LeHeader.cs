@@ -1,4 +1,7 @@
-﻿namespace SunFlower.Le.Headers.Le;
+﻿using System.Data;
+using System.Drawing;
+
+namespace SunFlower.Le.Headers.Le;
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -37,17 +40,19 @@ public struct LeHeader
     public const ushort LeOsDos4 = 3;
     public const ushort LeOsWin386 = 4;
     
-    [MarshalAs(UnmanagedType.U4)]
-    public uint LE_Version;           // Module version.
+    [MarshalAs(UnmanagedType.U2)]
+    public ushort LE_VersionMajor;           // Module version.
+    [MarshalAs(UnmanagedType.U2)]
+    public ushort LE_VersionMinor;
     
     [MarshalAs(UnmanagedType.U4)]
     public uint LE_Type;              // Module type.
     
-    public const uint LeTypeInitPer = (1 << 2);     // initialise per process.
-    public const uint LeTypeIntFixup = (1 << 4);     // no internal fixups.
-    public const uint LeTypeExtFixup = (1 << 5);     // no external fixups.
-    public const uint LeTypeNoLoad = (1 << 13);    // module not loadable.
-    public const uint LeTypeDll = (1 << 15);    // DLL
+    public const uint LeTypeInitPer = 1 << 2;     // initialise per process.
+    public const uint LeTypeIntFixup = 1 << 4;     // no internal fixups.
+    public const uint LeTypeExtFixup = 1 << 5;     // no external fixups.
+    public const uint LeTypeNoLoad = 1 << 13;    // module not loadable.
+    public const uint LeTypeDll = 1 << 15;    // DLL
     
     [MarshalAs(UnmanagedType.U4)]
     public uint LE_Pages;             // number of memory pages.
@@ -162,5 +167,11 @@ public struct LeHeader
     
     [MarshalAs(UnmanagedType.U4)]
     public uint LE_HeapExtra;         // extra heap allocation.
+    
+    // <=> pages shift +4h
+    // <=> stackSize +4h
+    
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+    public byte[] LE_Reserved;
 }
 

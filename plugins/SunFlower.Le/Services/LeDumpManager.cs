@@ -1,8 +1,10 @@
-﻿using SunFlower.Le.Headers.Le;
+﻿using System.Diagnostics;
+using SunFlower.Le.Headers.Le;
 using SunFlower.Le.Headers;
 using SunFlower.Ne.Services;
 using System.Text;
 using SunFlower.Le.Models.Le;
+using Object = SunFlower.Le.Headers.Le.Object;
 
 namespace SunFlower.Le.Services;
 
@@ -23,7 +25,7 @@ public class LeDumpManager : UnsafeManager
     public List<Function> ImportingModules { get; set; } = [];
     public List<Function> ImportingProcedures { get; set; } = [];
     public List<EntryBundle> EntryBundles { get; set; } = [];
-    public List<ObjectTableModel> ObjectTables { get; set; } = [];
+    public List<Object> Objects { get; set; } = [];
     public List<ObjectPageModel> ObjectPages { get; set; } = [];
     public List<uint> FixupPagesOffsets { get; set; } = [];
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
@@ -51,10 +53,8 @@ public class LeDumpManager : UnsafeManager
             throw new InvalidOperationException("Doesn't have 'LE' signature");
         
         // LC (Compressed Linear Objects) I've given up to seek information...
-        
-        stream.Seek(20, SeekOrigin.Current); // skip zero-filled page
         DriverHeader = Fill<VddHeader>(reader);
-
+        
         __continue:
         FillNames(reader);
         FillImportingNames(reader);
@@ -72,7 +72,7 @@ public class LeDumpManager : UnsafeManager
         {
             var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
             var ordinal = reader.ReadUInt16();
-            NonResidentNames.Add(new()
+            ResidentNames.Add(new()
             {
                 Size = i,
                 Name = name,
@@ -85,14 +85,12 @@ public class LeDumpManager : UnsafeManager
         if (LeHeader.LE_NoneResSize == 0)
             return;
 
-        reader.BaseStream.Position = LeHeader.LE_NoneRes;
-
         byte j;
         while ((j = reader.ReadByte()) != 0)
         {
-            var name = Encoding.ASCII.GetString(reader.ReadBytes(i));
+            var name = Encoding.ASCII.GetString(reader.ReadBytes(j));
             var ordinal = reader.ReadUInt16();
-            NonResidentNames.Add(new()
+            NonResidentNames.Add(new NonResidentName
             {
                 Size = j,
                 Name = name,
@@ -192,51 +190,23 @@ public class LeDumpManager : UnsafeManager
         
         for (var i = 0; i < LeHeader.LE_ObjNum; i++)
         {
-            ObjectTable entry = new()
-            {
-                VirtualSegmentSize = reader.ReadUInt32(),
-                RelocationBaseAddress = reader.ReadUInt32(),
-                ObjectFlags = reader.ReadUInt32(),
-                PageMapIndex = reader.ReadUInt32(),
-                PageMapEntries = reader.ReadUInt32(),
-                Unknown = reader.ReadUInt32()
-            };
+            var virtualSegmentSize = reader.ReadUInt32();
+            var relocationBase = reader.ReadUInt32();
+            var objectFlagsMask = reader.ReadUInt32();
+            var pageMap = reader.ReadUInt32();
+            var pageMapEntries = reader.ReadUInt32();
+            var unknownField = reader.ReadUInt32();
             
-            DecodeObjectFlags(entry);
+            Objects.Add(new Object(
+                virtualSegmentSize, 
+                relocationBase,
+                objectFlagsMask, 
+                pageMap, 
+                pageMapEntries, 
+                unknownField)
+            );
         }
 
-    }
-    
-    private void DecodeObjectFlags(ObjectTable entry)
-    {
-        // Permissions
-        var readable = ((entry.ObjectFlags & 0x0001) != 0) ? "OBJ_READ" : "";
-        var writable = ((entry.ObjectFlags & 0x0002) != 0) ? "OBJ_WRITE" : "";
-        var executable = ((entry.ObjectFlags & 0x0004) != 0) ? "OBJ_EXEC" : "";
-        var isResource = ((entry.ObjectFlags & 0x0008) != 0) ? "OBJ_RES" : "";
-        
-        // Object type
-        var objectType = (entry.ObjectFlags >> 8) & 0x03;
-        var typeDesc = objectType switch
-        {
-            0 => "OBJ_NORMAL",
-            1 => "OBJ_ZERO_FILLED",
-            2 => "OBJ_RESIDENT",
-            3 => "OBJ_RESIDENT_CONTIGUOUS",
-            _ => "OBJ_UNKNOWN"
-        };
-    
-        // Specific flags
-        var is16By16 = ((entry.ObjectFlags & 0x1000) != 0) ? "OBJ_16_16_ALIAS" : "";
-        var isBig = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_USE32" : "OBJ_USE16";
-        var isConforming = ((entry.ObjectFlags & 0x4000) != 0) ? "OBJ_CONFORM" : "";
-        var hasIoPrev = ((entry.ObjectFlags & 0x2000) != 0) ? "OBJ_IO_PRIVILEGE" : "";
-        
-        List<string> flags
-            = [readable, writable, executable, isResource, typeDesc, isBig, is16By16, hasIoPrev, isConforming];
-        flags = flags.Where(s => !string.IsNullOrEmpty(s)).ToList();
-        
-        ObjectTables.Add(new ObjectTableModel(entry, flags));
     }
 
     private void FillObjectMap(BinaryReader reader)
@@ -277,16 +247,16 @@ public class LeDumpManager : UnsafeManager
         switch (entry.Flags & (byte)ObjectPage.PageFlags.TypeMask)
         {
             case (byte)ObjectPage.PageFlags.Legal:
-                flags.Add("OBJPAGE_CODE_OR_DATA");
+                flags.Add("OBJPAGE_LEGAL");
                 break;
             case (byte)ObjectPage.PageFlags.Iterated:
-                flags.Add("OBJPAGE_ITER (compressed or repeated data)");
+                flags.Add("OBJPAGE_ITERATED");
                 break;
             case (byte)ObjectPage.PageFlags.Invalid:
-                flags.Add("OBJPAGE_INVALID (should be skipped)");
+                flags.Add("OBJPAGE_INVALID");
                 break;
             case (byte)ObjectPage.PageFlags.ZeroFilled:
-                flags.Add("OBJPAGE_ZERO (uninitialized data)");
+                flags.Add("OBJPAGE_BSS");
                 break;
         }
     

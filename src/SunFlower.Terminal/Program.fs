@@ -163,7 +163,7 @@ module UserInterface =
                 |> Seq.toArray
                 |> Seq.iter (fun result ->
                     match result.Type with
-                    | FlowerSeedEntryType.Text ->
+                    | FlowerSeedEntryType.Strings ->
                         let textResult = result.BoxedResult :?> string[]
                         textResult |> Array.iter (printfn "%s")
                     

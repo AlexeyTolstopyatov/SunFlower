@@ -1,8 +1,11 @@
 ﻿using System.Data;
 using System.Net.NetworkInformation;
+using System.Text;
+using SunFlower.Abstractions.Types;
 using SunFlower.Le.Headers;
 using SunFlower.Le.Headers.Le;
 using SunFlower.Le.Models.Le;
+using Object = SunFlower.Le.Headers.Le.Object;
 
 namespace SunFlower.Le.Services;
 
@@ -15,20 +18,21 @@ public class LeTableManager
     public DataTable ObjectPages { get; set; } = new("Object Pages Table");
     public DataTable ResidentNames { get; set; } = new("Resident Names Table");
     public DataTable NonResidentNames { get; set; } = new("NonResident Names Table");
-    public DataTable[] EntryTables { get; set; } = [];
     public string[] ImportedNames { get; set; } = [];
     public string[] ImportedProcedures { get; set; } = [];
     public DataTable FixupPages { get; set; } = new("Fixup Pages Table");
     public DataTable[] FixupRecords { get; set; } = [];
     public List<string> Characteristics { get; set; } = [];
-
+    public List<Region> EntryTableRegions { get; set; } = [];
+    // view logic problem
+    
     public LeTableManager(LeDumpManager manager)
     {
         _manager = manager;
         MakeHeaders(_manager.MzHeader, _manager.LeHeader);
         MakeNames();
         MakeObjectTables();
-        //MakeEntryTable();
+        MakeEntryTable();
         MakeFixupTables(); // eternal suffering
         MakeCharacteristics();
     }
@@ -84,7 +88,8 @@ public class LeTableManager
         table.Rows.Add(nameof(LeHeader.LE_Format), $"{header.LE_Format:X}");
         table.Rows.Add(nameof(LeHeader.LE_CPU), $"{header.LE_CPU:X}");
         table.Rows.Add(nameof(LeHeader.LE_OS), $"{header.LE_OS:X}");
-        table.Rows.Add(nameof(LeHeader.LE_Version), $"{header.LE_Version:X}");
+        table.Rows.Add(nameof(LeHeader.LE_VersionMajor), $"{header.LE_VersionMajor:X}");
+        table.Rows.Add(nameof(LeHeader.LE_VersionMinor), $"{header.LE_VersionMinor:X}");
         table.Rows.Add(nameof(LeHeader.LE_Type), $"{header.LE_Type:X}");
         table.Rows.Add(nameof(LeHeader.LE_Pages), $"{header.LE_Pages:X}");
         table.Rows.Add(nameof(LeHeader.LE_EntryCS), $"{header.LE_EntryCS:X}");
@@ -132,12 +137,12 @@ public class LeTableManager
     {
         if (_manager.ResidentNames.Count == 0)
             goto __nonResident;
-        ResidentNames.Columns.Add("Name");
-        ResidentNames.Columns.Add("Ordinal");
-        ResidentNames.Columns.Add("Size (hex)");
+        ResidentNames.Columns.Add("Name:s");
+        ResidentNames.Columns.Add("Ordinal:4");
+        ResidentNames.Columns.Add("Size:2");
         foreach (var name in _manager.ResidentNames)
         {
-            ResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size.ToString("X"));
+            ResidentNames.Rows.Add(name.Name, name.Ordinal, name.Size.ToString("X2"));
         }
         
         __nonResident:
@@ -171,36 +176,44 @@ public class LeTableManager
 
     private void MakeObjectTables()
     {
-        ObjectsTable.Columns.Add("Virtual Size");
-        ObjectsTable.Columns.Add("Base Relocation");
-        ObjectsTable.Columns.Add("Flags");
-        ObjectsTable.Columns.Add("Map Index");
-        ObjectsTable.Columns.Add("Map Entries");
-        ObjectsTable.Columns.Add("Unknown");
-        ObjectsTable.Columns.Add("Translated flags");
-        
-        foreach (var table in _manager.ObjectTables)
+        ObjectsTable.Columns.Add("#");
+        ObjectsTable.Columns.Add("Name:s");
+        ObjectsTable.Columns.Add("VirtualSize:4");
+        ObjectsTable.Columns.Add("RelBase:4");
+        ObjectsTable.Columns.Add("FlagsMask:4");
+        ObjectsTable.Columns.Add("PageMapIndex:4");
+        ObjectsTable.Columns.Add("PageMapEntries");
+        ObjectsTable.Columns.Add("Unknown:4");
+        ObjectsTable.Columns.Add("Flags:s");
+
+        var counter = 1;
+        foreach (var table in _manager.Objects)
         {
             var text = table
                 .ObjectFlags
                 .Aggregate("", (current, s) => current + $"`{s}` ");
+            var name = Object.GetSuggestedNameByPermissions(table);
             
             ObjectsTable.Rows.Add(
-                table.ObjectTable.VirtualSegmentSize,
-                table.ObjectTable.RelocationBaseAddress,
-                table.ObjectTable.ObjectFlags,
-                table.ObjectTable.PageMapIndex,
-                table.ObjectTable.PageMapEntries,
-                table.ObjectTable.Unknown,
+                counter,
+                name,
+                "0x" + table.VirtualSegmentSize.ToString("X8"),
+                "0x" + table.RelocationBaseAddress.ToString("X8"),
+                "0x" + table.ObjectFlagsMask.ToString("X8"),
+                "0x" + table.PageMapIndex.ToString("X8"),
+                "0x" + table.PageMapEntries.ToString("X8"),
+                table.Unknown.ToString("X8"),
                 text
             );
+
+            counter++;
         }
 
-        ObjectPages.Columns.Add("High Page (hex)");
-        ObjectPages.Columns.Add("Low Page (hex)");
-        ObjectPages.Columns.Add("Flags (hex)");
-        ObjectPages.Columns.Add("Real Offset (hex)");
-        ObjectPages.Columns.Add("Translated flags");
+        ObjectPages.Columns.Add("HighPage:2");
+        ObjectPages.Columns.Add("LowPage:2");
+        ObjectPages.Columns.Add("Flags:1");
+        ObjectPages.Columns.Add("RealOffset:8");
+        ObjectPages.Columns.Add("TranslatedFlags:s");
 
         foreach (var page in _manager.ObjectPages)
         {
@@ -209,10 +222,10 @@ public class LeTableManager
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
             ObjectPages.Rows.Add(
-                page.Page.HighPage.ToString("X"),
-                page.Page.LowPage.ToString("X"),
-                page.Page.Flags.ToString("X"),
-                page.RealOffset.ToString("X"), 
+                page.Page.HighPage.ToString("X4"),
+                page.Page.LowPage.ToString("X4"),
+                page.Page.Flags.ToString("X2"),
+                page.RealOffset.ToString("X16"), 
                 flags
             );
         }
@@ -265,11 +278,11 @@ public class LeTableManager
                 "Target",
                 "Add. Value",
                 "ExtraData",
-                "OS/2 Fixup",
+                "OSFixup",
                 "Ordinal",
                 "Name",
-                "Address Type",
-                "Reloc. Type"
+                "ATP",
+                "RTP"
             }
         };
         
@@ -281,7 +294,7 @@ public class LeTableManager
                 .Aggregate(string.Empty, (current, s) => current + $"`{s}` ");
 
             table.Rows.Add(
-                model.PageIndex.ToString("X"),
+                model.PageIndex.ToString(),
                 model.Record.TargetObject.ToString("X"),
                 model.Record.AddValue.ToString("X"),
                 model.Record.ExtraData.ToString("X"),
@@ -296,17 +309,100 @@ public class LeTableManager
         FixupRecords = [rawTable, table];
     }
 
+    private void MakeEntryTable()
+    {
+        var bundleCounter = 1;
+        foreach (var bundle in _manager.EntryBundles)
+        {
+            string head = $"### EntryTable Bundle #{bundleCounter}";
+            StringBuilder contentBuilder = new();
+            contentBuilder.AppendLine($"Bundle Index: `{bundle.EntryBundleIndex}`");
+            contentBuilder.AppendLine($"Object Index: `{bundle.ObjectIndex}`");
+
+            contentBuilder.AppendLine("Bundle Flags: ");
+            contentBuilder.AppendLine($" - Usage=`{bundle.EntriesUsage}`");
+            contentBuilder.AppendLine($" - Per-Entry Capacity=`{bundle.EntriesSafeSize}`");
+            
+            contentBuilder.AppendLine($"");
+            DataTable entries = new()
+            {
+                Columns = { "Ordinal:4", "Entry:s", "Object:s", "Offset:4", "Flag:2" }
+            };
+            
+            foreach (var entry in bundle.Entries)
+            {
+                entries.Rows.Add(
+                    "@" + entry.Ordinal,
+                    entry.EntryType,
+                    entry.ObjectType,
+                    "0x" + entry.Offset.ToString("X4"),
+                    "0x" + entry.Flag.ToString("X2")
+                    );
+            }
+            EntryTableRegions.Add(new Region(head, contentBuilder.ToString(), $"Table #{bundleCounter} - Rows affected: {bundle.EntriesCount}")
+            {
+                Table = entries
+            });
+            bundleCounter++;
+        }
+    }
     private void MakeCharacteristics()
     {
-        Characteristics.Add("### Program Header information");
-        Characteristics.Add("Target CPU: " + GetCpuType(_manager.LeHeader.LE_CPU));
-        Characteristics.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
+        List<string> md = [];
+        string description = (_manager.NonResidentNames.Count > 0) ? _manager.NonResidentNames[0].Name : "`<missing>`";
+        string name = (_manager.ResidentNames.Count > 0) ? _manager.ResidentNames[0].Name : "`<name_missing>`";
+        md.Add("### Program Header information");
+        md.Add($"Project Name: {_manager.ResidentNames[0].Name}");
+        md.Add($"Description: \"{description}\"");
+        md.Add("Target CPU: " + GetCpuType(_manager.LeHeader.LE_CPU));
+        md.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
+        md.Add($"Module Version: {_manager.LeHeader.LE_VersionMajor}.{_manager.LeHeader.LE_VersionMinor}");
         
-        Characteristics.Add("Version and module flags set in Program header: 0x" + _manager.LeHeader.LE_Version.ToString("X"));
+        md.Add($"Resolved \"{_manager.ResidentNames[0].Name}\" module flags:");
         foreach (var flag in GetModuleFlags(_manager.LeHeader.LE_Type))
         {
-            Characteristics.Add($" - `{flag}`");
+            md.Add($" - `{flag}`");
         }
+        
+        if (_manager.LeHeader.LE_ID is 0x584c or 0x4c58)
+            md.Add("> [!WARNING]\r\n> Signature of FLAT EXEC header is `LX`. This FLAT EXEC binary contains **only 32-bit code** and has unknown structures for this plugin. You have a risk of corrupted bytes-interpretation.");
+        
+        md.Add("\r\n### Loader requirements");
+        md.Add("This summary contains hexadecimal values from FLAT EXEC header.");
+        md.Add($" - HeapExtra=`{_manager.LeHeader.LE_HeapExtra:X}`");
+        
+        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X4}:{_manager.MzHeader.ip:X4}`");
+        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X4}:{_manager.MzHeader.sp:X4}`");
+        
+        var cs = _manager.LeHeader.LE_EntryCS;
+        var ip = _manager.LeHeader.LE_EntryEIP;
+        md.Add($" - Win32s-OS/2 `CS:EIP={cs:X8}:{ip:X8}` (hex)"); // <-- handle it
+        md.Add($" - Win32s-OS/2 `SS:ESP={_manager.LeHeader.LE_EntrySS:X8}:{_manager.LeHeader.LE_EntryESP:X8}` (hex)"); // <-- handle it
+        md.Add($"> [!INFO]\r\n> Flat EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) object with `EIP=0x{ip:X}` offset");
+        
+        md.Add("\r\n### Entities summary");
+        md.Add("This summary contains decimal values took from FLAT EXEC Header model.");
+        md.Add($"1. Number of Objects - `{_manager.LeHeader.LE_ObjNum}`");
+        md.Add($"2. Number of Importing Modules - `{_manager.LeHeader.LE_ImportModNum}`");
+        md.Add($"3. Number of Preload Pages - `{_manager.LeHeader.LE_PreLoadNum}`");
+        md.Add($"4. Number of Automatic Data segments - `{_manager.LeHeader.LE_AutoDS}`");
+        md.Add($"5. Number of Resources - `{_manager.LeHeader.LE_ResourceNum}`");
+        md.Add($"6. Number of NonResident names - `{_manager.LeHeader.LE_NoneResSize}`");
+        md.Add($"7. Number of Directives - `{_manager.LeHeader.LE_DirectivesNum}`");
+        md.Add($"8. Number of Demand Instances - `{_manager.LeHeader.LE_DemandInstNum}`");
+        
+        if (_manager.DriverHeader.LE_DDKMajor > 0)
+            MakeDriverCharacteristics(ref md);
+        
+        Characteristics = md;
+    }
+
+    private void MakeDriverCharacteristics(ref List<string> md)
+    {
+        md.Add("\r\n### Windows `VxD` Driver");
+        md.Add($"Requires Microsoft Windows {_manager.DriverHeader.LE_DDKMajor}.{_manager.DriverHeader.LE_DDKMinor} and earlier versions.");
+        md.Add($"Driver resources stores at: 0x{_manager.DriverHeader.LE_WindowsResOffset:X}");
+        
     }
     private static string GetCpuType(ushort cpuType)
     {
@@ -321,7 +417,7 @@ public class LeTableManager
             LeHeader.LeCpuR2000 => "MIPS R2000",
             LeHeader.LeCpuR6000 => "MIPS R6000",
             LeHeader.LeCpuR4000 => "MIPS R4000",
-            _ => $"Unknown CPU (0x{cpuType:X4})"
+            _ => $"Unknown: (0x{cpuType:X4})"
         };
     }
     
@@ -361,7 +457,7 @@ public class LeTableManager
 
         return result.ToArray();
     }
-
+    
     private static string OnlyAscii(string str)
     {
         List<char> processed = str.Where(char.IsAscii).ToList();

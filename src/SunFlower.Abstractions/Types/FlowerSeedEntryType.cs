@@ -23,5 +23,10 @@ public enum FlowerSeedEntryType
     /// <summary>
     /// <see cref="List{String}"/> instance which contains all data
     /// </summary>
-    Text,
+    Strings,
+    /// <summary>
+    /// List(Of <see cref="Region"/>)s.
+    /// Region contains 3'rd leveled Header, String of content and DataTable
+    /// </summary>
+    Regions,
 }

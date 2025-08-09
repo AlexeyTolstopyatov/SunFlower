@@ -51,7 +51,7 @@ public class PortableExecutableSeed : IFlowerSeed
             
             FlowerSeedResult start = new()
             {
-                Type = FlowerSeedEntryType.Text,
+                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = new string[]
                 {
                     "### Image structure details", 

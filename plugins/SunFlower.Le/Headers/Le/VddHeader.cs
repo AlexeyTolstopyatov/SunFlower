@@ -7,7 +7,7 @@ namespace SunFlower.Le.Headers.Le;
 public struct VddHeader
 {
     [MarshalAs(UnmanagedType.U4)] 
-    public uint LE_WindowsResInfoOffset;
+    public uint LE_WindowsResOffset;
     
     [MarshalAs(UnmanagedType.U4)] 
     public uint LE_WindowsResLength;
@@ -15,8 +15,8 @@ public struct VddHeader
     [MarshalAs(UnmanagedType.U2)]
     public ushort LE_DeviceID;
     
-    [MarshalAs(UnmanagedType.U2)]
-    public ushort LE_DDKMajor;
-    [MarshalAs(UnmanagedType.U2)]
-    public ushort LE_DDKMinor;
+    [MarshalAs(UnmanagedType.U1)]
+    public byte LE_DDKMinor;
+    [MarshalAs(UnmanagedType.U1)]
+    public byte LE_DDKMajor;
 }

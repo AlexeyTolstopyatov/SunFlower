@@ -25,13 +25,14 @@ public static class MarkdownGenerator
     {
         return result.Type switch
         {
-            FlowerSeedEntryType.Text => FormatTextLines(result.BoxedResult),
+            FlowerSeedEntryType.Strings => FormatStrings(result.BoxedResult),
             FlowerSeedEntryType.DataTables => FormatDataTables((List<DataTable>)result.BoxedResult),
+            FlowerSeedEntryType.Regions => FormatRegions((List<Region>)result.BoxedResult),
             _ => "Unsupported result type"
         };
     }
 
-    private static string FormatTextLines(object lines)
+    private static string FormatStrings(object lines)
     {
         try
         {
@@ -95,5 +96,30 @@ public static class MarkdownGenerator
         }
         
         return sb.ToString();
+    }
+
+    private static string FormatRegions(List<Region> regions)
+    {
+        StringBuilder builder = new();
+        //var iter = 1;
+        foreach (var region in regions)
+        {
+            builder.AppendLine(FormatRegion(region));
+            builder.AppendLine();
+        }
+
+        return builder.ToString();
+    }
+    private static string FormatRegion(Region reg /*, int iter*/)
+    {
+        StringBuilder builder = new();
+        
+        builder.AppendLine(reg.Head);
+        builder.AppendLine();
+
+        builder.AppendLine(reg.Content);
+        builder.AppendLine(FormatDataTable(reg.Table));
+        
+        return builder.ToString();
     }
 }

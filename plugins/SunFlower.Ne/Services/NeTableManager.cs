@@ -340,17 +340,17 @@ public class NeTableManager
         
         md.Add("\r\n### Loader requirements");
         
-        md.Add($" - Heap=`{_manager.NeHeader.NE_Heap:X}`");
-        md.Add($" - Stack=`{_manager.NeHeader.NE_Stack:X}`");
-        md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea:X}`");
+        md.Add($" - Heap=`{_manager.NeHeader.NE_Heap:X4}`");
+        md.Add($" - Stack=`{_manager.NeHeader.NE_Stack:X4}`");
+        md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea:X4}`");
         
-        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X}:{_manager.MzHeader.ip:X}`");
-        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X}:{_manager.MzHeader.sp:X}`");
+        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X}:{_manager.MzHeader.ip:X4}`");
+        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X}:{_manager.MzHeader.sp:X4}`");
         var cs = _manager.NeHeader.NE_CsIp >> 16;
         var ip = _manager.NeHeader.NE_CsIp & 0xFFFF;
         
-        md.Add($" - Win16-OS/2 `CS:IP={cs:X}:{ip:X}` (hex)"); // <-- handle it
-        md.Add($" - Win16-OS/2 `SS:SP={(_manager.NeHeader.NE_SsSp >> 16):X}:{(_manager.NeHeader.NE_SsSp & 0xFFFF):X}` (hex)"); // <-- handle it
+        md.Add($" - Win16-OS/2 `CS:IP={cs:X4}:{ip:X4}` (hex)"); // <-- handle it
+        md.Add($" - Win16-OS/2 `SS:SP={(_manager.NeHeader.NE_SsSp >> 16):X4}:{(_manager.NeHeader.NE_SsSp & 0xFFFF):X4}` (hex)"); // <-- handle it
         md.Add($"> [!INFO]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
         
         md.Add("\r\n### Entities summary");

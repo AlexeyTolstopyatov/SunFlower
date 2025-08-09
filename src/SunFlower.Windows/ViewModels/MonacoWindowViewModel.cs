@@ -24,7 +24,7 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
         {
             results.Add(new FlowerSeedResult()
             {
-                Type = FlowerSeedEntryType.Text,
+                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = new List<string>(){seed.Seed}
             });
             foreach (var result in seed.Status.Results)

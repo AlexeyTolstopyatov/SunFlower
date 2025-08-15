@@ -86,7 +86,7 @@ public class MonacoEditorManager
         
         try
         {
-            var markdownContent = MarkdownGenerator.GenerateReport(results);
+            var markdownContent = MarkdownGenerator.Generate(results);
             
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
         }
@@ -106,7 +106,7 @@ public class MonacoEditorManager
         try
         {
             // make MDBook
-            var markdownContent = MarkdownGenerator.GenerateReport(results);
+            var markdownContent = MarkdownGenerator.Generate(results);
             var escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
 
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);

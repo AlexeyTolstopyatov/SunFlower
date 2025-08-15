@@ -13,7 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.csproj" />
+      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
     </ItemGroup>
 
 </Project>

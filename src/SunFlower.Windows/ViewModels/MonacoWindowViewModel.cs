@@ -22,15 +22,12 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
         List<FlowerSeedResult> results = [];
         foreach (var seed in seeds)
         {
-            results.Add(new FlowerSeedResult()
+            results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
-                Type = FlowerSeedEntryType.Strings,
-                BoxedResult = new List<string>(){seed.Seed}
+                BoxedResult = new List<string> {seed.Seed}
             });
-            foreach (var result in seed.Status.Results)
-            {
-                results.Add(result);
-            }
+            
+            results.AddRange(seed.Status.Results);
         }
         _results = results;
         _saveResultsCommand = new ActionCommand(SaveResults);
@@ -52,7 +49,7 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
         
         dialog.ShowDialog();
         
-        File.WriteAllText(dialog.FileName, MarkdownGenerator.GenerateReport(_results));
+        File.WriteAllText(dialog.FileName, MarkdownGenerator.Generate(_results));
     }
     
 }

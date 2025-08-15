@@ -1,26 +1,30 @@
-﻿using System.Data;
+﻿namespace SunFlower.Abstractions
 
-namespace SunFlower.Abstractions;
-
+open System
 /// <summary>
-/// Main interface of all next following external DLLs
-/// You must implement it if you want your plugins will work.
+/// EntryPoint of SunFlower Plugin
+/// Must return the status <see cref="DataTable"/>
 /// </summary>
-public interface IFlowerSeed
-{
+/// <param name="path"></param>
+/// <returns></returns>
+type IFlowerSeed = interface
     /// <summary>
     /// .NET external DLL compatible with SunFlower interface
     /// </summary>
-    string Seed { get; }
+    abstract member Seed : String
+        with get
     /// <summary>
     /// Expected result from image diagnostics
     /// </summary>
-    FlowerSeedStatus Status { get; set; }
+    abstract member Status : FlowerSeedStatus
+        with get
     /// <summary>
     /// EntryPoint of SunFlower Plugin
     /// Must return the status <see cref="DataTable"/>
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    int Main(string path);
-}
+    abstract member Main : path : String -> Int32
+    
+    end
+

@@ -5,7 +5,7 @@ using SunFlower.Abstractions.Types;
 namespace SunFlower.Windows.Services;
 public static class MarkdownGenerator
 {
-    public static string GenerateReport(IEnumerable<FlowerSeedResult> results)
+    public static string Generate(IEnumerable<FlowerSeedResult> results)
     {
         StringBuilder md = new();
         md.AppendLine("# Sunflower Report");
@@ -14,14 +14,14 @@ public static class MarkdownGenerator
 
         foreach (var result in results)
         {
-            md.AppendLine(FormatResult(result));
+            md.AppendLine(FormatFlowerSeedResult(result));
             md.AppendLine();
         }
 
         return md.ToString();
     }
 
-    private static string FormatResult(FlowerSeedResult result)
+    private static string FormatFlowerSeedResult(FlowerSeedResult result)
     {
         return result.Type switch
         {
@@ -69,33 +69,57 @@ public static class MarkdownGenerator
     
     private static string FormatDataTable(DataTable table)
     {
-        StringBuilder sb = new();
+        if (table.Rows.Count == 0 || table.Columns.Count == 0)
+            return string.Empty;
         
-        sb.Append("| ");
-        foreach (DataColumn col in table.Columns)
+        string SafeToString(object value) => 
+            Convert.IsDBNull(value) ? " " : value.ToString() ?? " ";
+        
+        var tableBuilder = new StringBuilder();
+        
+        var columns = table.Columns
+            .Cast<DataColumn>()
+            .ToArray();
+        var rows = table.Rows
+            .Cast<DataRow>()
+            .ToArray();
+    
+        // row width processor
+        var columnWidths = columns.Select(col => {
+            var headerWidth = col.ColumnName.Length;
+            var maxContentWidth = rows
+                .Select(row => SafeToString(row[col]).Length)
+                .DefaultIfEmpty(0)
+                .Max();
+            return Math.Max(headerWidth, maxContentWidth) + 2; // padding 2ch
+        }).ToArray();
+
+        // heading
+        tableBuilder.AppendLine(FormatRow(columns.Select(c => c.ColumnName).ToArray()));
+        
+        var separator = string.Join("|", 
+            columnWidths.Select(w => new string('-', w)));
+        tableBuilder.AppendLine($"|--{separator}--|");
+    
+        // content
+        foreach (var row in rows)
         {
-            sb.Append($"{col.ColumnName} | ");
+            var rowData = columns
+                .Select(col => SafeToString(row[col]))
+                .ToArray();
+            tableBuilder.AppendLine(FormatRow(rowData));
         }
-        sb.AppendLine();
-        
-        sb.Append("|");
-        for (var i = 0; i < table.Columns.Count; i++)
+
+        return tableBuilder.ToString();
+
+        // delimiters
+        string FormatRow(string[] cells)
         {
-            sb.Append("---|");
+            var formatted = cells
+                .Select((cell, i) => cell.PadRight(columnWidths[i]))
+                .ToArray();
+            return "| " + string.Join(" | ", formatted) + " |";
         }
-        sb.AppendLine();
-        
-        foreach (DataRow row in table.Rows)
-        {
-            sb.Append("| ");
-            for (var i = 0; i < table.Columns.Count; i++)
-            {
-                sb.Append($"{row[i]} | ");
-            }
-            sb.AppendLine();
-        }
-        
-        return sb.ToString();
     }
 
     private static string FormatRegions(List<Region> regions)

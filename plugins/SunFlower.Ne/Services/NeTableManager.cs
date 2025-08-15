@@ -78,33 +78,33 @@ public class NeTableManager
         };
         
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
-        table.Rows.Add(nameof(ne.NE_ID), ne.NE_ID.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_LinkerVersion), ne.NE_LinkerVersion.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_LinkerRevision), ne.NE_LinkerRevision.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_EntryTable), ne.NE_EntryTable.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_EntriesCount), ne.NE_EntriesCount.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_Checksum), ne.NE_Checksum.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ProgramFlags), ne.NE_ProgramFlags.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_AppFlags), ne.NE_AppFlags.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_AutoSegment), ne.NE_AutoSegment.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_Heap), ne.NE_Heap.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_Stack), ne.NE_Stack.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_CsIp), ne.NE_CsIp.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_SsSp), ne.NE_SsSp.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_SegmentsCount), ne.NE_SegmentsCount.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ModReferencesCount), ne.NE_ModReferencesCount.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_SegmentsTable), ne.NE_SegmentsTable.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ResourcesTable), ne.NE_ResourcesTable.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ResidentNamesTable), ne.NE_ResidentNamesTable.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_MovableEntriesCount), ne.NE_MovableEntriesCount.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_Alignment), ne.NE_Alignment.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_OS), ne.NE_OS.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_FlagOthers), ne.NE_FlagOthers.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_PretThunks), ne.NE_PretThunks.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_PerSegmentRefBytes), ne.NE_PerSegmentRefBytes.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_SwapArea), ne.NE_SwapArea.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), ne.NE_WindowsVersionMinor.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_WindowsVersionMajor), ne.NE_WindowsVersionMajor.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ID), "0x" + ne.NE_ID.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_LinkerVersion), "0x" + ne.NE_LinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_LinkerRevision), "0x" + ne.NE_LinkerRevision.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_EntryTable), "0x" + ne.NE_EntryTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_EntriesCount), "0x" + ne.NE_EntriesCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Checksum), "0x" + ne.NE_Checksum.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ProgramFlags), "0x" + ne.NE_ProgramFlags.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_AppFlags), "0x" + ne.NE_AppFlags.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_AutoSegment), "0x" + ne.NE_AutoSegment.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Heap), "0x" + ne.NE_Heap.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Stack), "0x" + ne.NE_Stack.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_CsIp), "0x" + ne.NE_CsIp.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SsSp), "0x" + ne.NE_SsSp.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SegmentsCount), "0x" + ne.NE_SegmentsCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ModReferencesCount), "0x" + ne.NE_ModReferencesCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SegmentsTable), "0x" + ne.NE_SegmentsTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ResourcesTable), "0x" + ne.NE_ResourcesTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_ResidentNamesTable), "0x" + ne.NE_ResidentNamesTable.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_MovableEntriesCount), "0x" + ne.NE_MovableEntriesCount.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Alignment), "0x" + ne.NE_Alignment.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_OS), "0x" + ne.NE_OS.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_FlagOthers), "0x" + ne.NE_FlagOthers.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_PretThunks), "0x" + ne.NE_PretThunks.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_PerSegmentRefBytes), "0x" + ne.NE_PerSegmentRefBytes.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_SwapArea), "0x" + ne.NE_SwapArea.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), "0x" + ne.NE_WindowsVersionMinor.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_WindowsVersionMajor), "0x" + ne.NE_WindowsVersionMajor.ToString("X"));
 
         return table;
     }
@@ -134,11 +134,11 @@ public class NeTableManager
             
             segs.Rows.Add(
                 segmentDump.Type,
-                segmentDump.SegmentNumber.ToString("X"),
-                segmentDump.FileOffset.ToString("X"),
-                segmentDump.FileLength.ToString("X"),
-                segmentDump.Flags.ToString("X"),
-                segmentDump.MinAllocation.ToString("X"),
+                "0x" + segmentDump.SegmentNumber.ToString("X"),
+                "0x" + segmentDump.FileOffset.ToString("X"),
+                "0x" + segmentDump.FileLength.ToString("X"),
+                "0x" + segmentDump.Flags.ToString("X"),
+                "0x" + segmentDump.MinAllocation.ToString("X"),
                 array
             );
         }

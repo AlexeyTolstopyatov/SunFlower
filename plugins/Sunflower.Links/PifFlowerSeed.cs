@@ -30,17 +30,15 @@ public class PifFlowerSeed : IFlowerSeed
                 $" - Created at {new FileInfo(path).CreationTimeUtc}"
             ];
 
-            var intro = new FlowerSeedResult()
+            var intro = new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
                 BoxedResult = intoList,
-                Type = FlowerSeedEntryType.Strings
             };
             // define Program information start by file extension or first WORD
             // see "Microsoft PIF structure.pdf" in git repo.
             Status.Results.Add(intro);
-            Status.Results.Add(new FlowerSeedResult()
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
             {
-                Type = FlowerSeedEntryType.DataTables,
                 BoxedResult = new List<DataTable>()
                 {
                     tableManager.SectionHeaders,

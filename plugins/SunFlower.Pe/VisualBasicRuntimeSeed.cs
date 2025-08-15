@@ -3,6 +3,7 @@ using SunFlower.Pe.VisualBasic;
 
 namespace SunFlower.Pe;
 
+[FlowerSeedContract(MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)]
 public class VisualBasicRuntimeSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower Basic";

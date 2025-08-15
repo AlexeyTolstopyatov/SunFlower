@@ -5,5 +5,7 @@ namespace SunFlower.Attributes;
 [AttributeUsage(AttributeTargets.Class)]
 public class FlowerContractAttribute : Attribute
 {
-    public string RequiredInterface { get; } = typeof(IFlowerSeed).FullName;
+    public int MajorVersion { get; set; }
+    public int MinorVersion { get; set; }
+    public int BuildVersion { get; set; }
 }

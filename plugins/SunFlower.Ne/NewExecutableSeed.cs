@@ -7,6 +7,7 @@ using SunFlower.Ne.Services;
 
 namespace SunFlower.Ne;
 
+[FlowerSeedContract(MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)]
 public class NewExecutableSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower Win16-OS/2 NE IA-32";
@@ -19,14 +20,12 @@ public class NewExecutableSeed : IFlowerSeed
             NeTableManager tableManager = new(dumpManager);
             Status.IsEnabled = true;
             
-            Status.Results.Add(new FlowerSeedResult()
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
-                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = tableManager.Characteristics
             });
-            Status.Results.Add(new FlowerSeedResult()
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
-                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = tableManager.Imports
             });
             List<DataTable> unboxed =
@@ -38,9 +37,8 @@ public class NewExecutableSeed : IFlowerSeed
                 tableManager.ModuleReferencesTable,
                 tableManager.NamesTable
             ];
-            Status.Results.Add(new FlowerSeedResult()
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
             {
-                Type = FlowerSeedEntryType.DataTables,
                 BoxedResult = unboxed
             });
             return 0;

@@ -1,5 +1,4 @@
 ﻿using SunFlower.Abstractions;
-using SunFlower.Abstractions.Attributes;
 using SunFlower.Abstractions.Types;
 using SunFlower.Pe.Models;
 using SunFlower.Pe.Services;
@@ -9,7 +8,7 @@ namespace SunFlower.Pe;
 /// <summary>
 /// Template of IFlowerSeed implementation.
 /// </summary>
-[FlowerSeedContract(Version = "1.2")] // <-- important flags
+[FlowerSeedContract(MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)] // <-- important flags
 public class PortableExecutableSeed : IFlowerSeed
 {
     public string Seed => "Sunflower Windows PE32/+ IA-32(e)";
@@ -49,9 +48,8 @@ public class PortableExecutableSeed : IFlowerSeed
             PeTableManager manager = new(image);
             manager.Initialize();
             
-            FlowerSeedResult start = new()
+            FlowerSeedResult start = new(FlowerSeedEntryType.Strings)
             {
-                Type = FlowerSeedEntryType.Strings,
                 BoxedResult = new string[]
                 {
                     "### Image structure details", 
@@ -59,9 +57,8 @@ public class PortableExecutableSeed : IFlowerSeed
                     $"Target size: `{new FileInfo(path).Length / 1024}K`"
                 }
             };
-            FlowerSeedResult tables = new()
+            FlowerSeedResult tables = new(FlowerSeedEntryType.DataTables)
             {
-                Type = FlowerSeedEntryType.DataTables,
                 BoxedResult = manager.Results
             };
             Status.Results.Add(start);

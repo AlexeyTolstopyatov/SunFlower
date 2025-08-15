@@ -74,7 +74,7 @@ public sealed class RegistryManager
     public RegistryManager Fill<T>(ref T obj)
     {
         if (obj == null) throw new ArgumentNullException(nameof(obj));
-        string json = File.ReadAllText(_fileName);
+        var json = File.ReadAllText(_fileName);
         
         obj = JsonConvert.DeserializeObject<T>(json)!;
         

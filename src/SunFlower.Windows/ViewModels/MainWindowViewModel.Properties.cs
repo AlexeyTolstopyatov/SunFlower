@@ -80,12 +80,20 @@ public partial class MainWindowViewModel
     /// </summary>
     private void CallEditor()
     {
-        _windowManager.ShowUnmanaged(new MonacoWindow(
-            Seeds
-            .Where(s => s.Status.IsEnabled)
-            .ToList()), 
-            title: FilePath, 
-            isDialog: false);
+        try
+        {
+            _windowManager.ShowUnmanaged(new MonacoWindow(
+                    Seeds
+                        .Where(s => s.Status.IsEnabled)
+                        .ToList()),
+                title: FilePath,
+                isDialog: false);
+        }
+        catch (Exception e)
+        {
+            Growl.ErrorGlobal(e.Message);
+            Tell(e.ToString());
+        }
     }
 
     private void CallViewer()

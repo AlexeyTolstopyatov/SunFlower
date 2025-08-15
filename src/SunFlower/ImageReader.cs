@@ -61,9 +61,9 @@ public static class ImageReader
         
         switch (dwNewHeader)
         {
-            case 0x454e: // only IA-32. cigam
+            case 0x454e or 0x4e45: // only IA-32. cigam
                 result.SignatureString = "New Executable (NE16)";
-                result.CpuArchitecture = "IA-32";
+                result.CpuArchitecture = "i286, IA-32";
                 break;
             case 0x454c or 0x4c45: // magic \/ cigam
                 result.SignatureString = "Linear Executable (LE16/+)";
@@ -76,10 +76,10 @@ public static class ImageReader
                 break;
             default:     // DOS/2x bin, supports only x86
                 result.SignatureString = $"DOS 2.x Executable (MZ16)";
-                result.CpuArchitecture = "IA-32";
+                result.CpuArchitecture = "i8086+";
                 break;
         }
-        // Need to find DOS/16 executables
+        // Need to find BW-DOS DR-DOS executables
         
         return result;
     }

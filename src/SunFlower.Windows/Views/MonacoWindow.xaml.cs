@@ -25,9 +25,8 @@ public partial class MonacoWindow : HandyControl.Controls.Window
             List<FlowerSeedResult> results = [];
             foreach (var seed in seeds)
             {
-                results.Add(new FlowerSeedResult()
+                results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
                 {
-                    Type = FlowerSeedEntryType.Strings,
                     BoxedResult = new List<string>(){seed.Seed}
                 });
                 foreach (var result in seed.Status.Results)

@@ -23,6 +23,7 @@ very large. The previous project was rewritten from scratch five times, and in a
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
 4) Follow this template
+5) Read and learn [versioning](VERSIONING.md).
 
 ```csharp
 public class MyAnalyzer : IFlowerSeed {
@@ -100,6 +101,20 @@ All frameworks and toolkits
  - [Microsoft DOS PIF Web Archive copy](https://web.archive.org/web/20220214185118/http://www.smsoft.ru/en/pifdoc.htm)
  - [Suggesting Visual Basic 4.0 internals](https://gist.github.com/AlexeyTolstopyatov/96a4d36639256fb624e32ae6153bfa11) - SemiVB Decompiler
  - [Suggesting Visual Basic 3.0 internals](https://gist.github.com/AlexeyTolstopyatov/fc19496b8b1a9a5bbb5f12c415c0c1f3) - DoDi VB Decompiler
+
+### Contributing?
+All what you need to know - pull requests
+has a free format but it would be nice if
+messages will totally documented. 
+
+> [!TIP]
+> Make sure, you've seen [versioning](VERSIONING.md) rules
+
+I will be happy if you help me improve or fix
+parts if this product. 
+
+You can write me in Telegram or my e-mail
+Those information in profile-s readme. 
 
 ### Beeing honest
 

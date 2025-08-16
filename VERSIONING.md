@@ -32,7 +32,7 @@ minor and build version. But plugins which differs
 with Minor Version in contract will
 call message with warning from loader kernel. 
 
-> [!INFO]
+> [!TIP]
 > File version or Nuget package versions **of plugin library** doesn't check! This values represents fully for you. 
 
 File version of fundamentals library

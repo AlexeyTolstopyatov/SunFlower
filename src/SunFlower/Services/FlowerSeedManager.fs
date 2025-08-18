@@ -6,7 +6,12 @@ open System.Diagnostics
 open System.IO
 open System.Reflection
 open SunFlower.Abstractions
-
+//
+// CoffeeLake 2024-2025
+// This code licensed under MIT. Please see GitHub repo documentation
+//
+// @creator: atolstopyatov2017@vk.com
+//
 type FlowerSeedManager() =
     let mutable seeds : List<IFlowerSeed> = List<IFlowerSeed>()
     
@@ -16,6 +21,7 @@ type FlowerSeedManager() =
         /// for every seed. Throws child exception chain!!!
         /// 
         /// {
+        ///     "Title" : "Main actual result"
         ///     "PE32/+ plugin" : "0"
         ///     "CLR plugin" : "-1"
         /// }

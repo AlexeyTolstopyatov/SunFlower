@@ -9,4 +9,13 @@
         <Compile Include="Library.fs"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Services\IFlowerSeedManager.fs" />
+      <Compile Include="Services\FlowerSeedManager.fs" />
+    </ItemGroup>
+
 </Project>

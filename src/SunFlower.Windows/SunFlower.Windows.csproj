@@ -47,8 +47,4 @@
       </Page>
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\SunFlower\SunFlower.csproj" />
-    </ItemGroup>
-
 </Project>

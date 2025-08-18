@@ -15,8 +15,4 @@
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\SunFlower\SunFlower.csproj" />
-    </ItemGroup>
-
 </Project>

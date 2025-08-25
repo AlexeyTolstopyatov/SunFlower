@@ -34,8 +34,6 @@ type FlowerSeedManager() =
     let mutable majorVersion : Int32 = 2
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
-    
-    member this.GetContractVersion() = tryGetFlowerContract this
     // interface IFlowerSeedManager with
     /// <summary>
     /// Executes all seeds and returns status table
@@ -76,7 +74,7 @@ type FlowerSeedManager() =
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
-    member public this.LoadAllFlowerSeeds =
+    member public this.LoadAllFlowerSeeds () =
         "Sunflower Kernel::LoadAllFlowerSeeds"
             |> save
         // C# core part

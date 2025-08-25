@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Readers\" />
+      <Compile Include="Readers\FlowerBinarySeeker.fs" />
     </ItemGroup>
 
 </Project>

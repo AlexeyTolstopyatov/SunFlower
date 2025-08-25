@@ -3,6 +3,7 @@ using System.Windows.Input;
 using HandyControl.Controls;
 using HandyControl.Data;
 using Microsoft.Win32;
+using SunFlower.Readers;
 using SunFlower.Services;
 using SunFlower.Windows.Attributes;
 
@@ -89,8 +90,7 @@ public partial class MainWindowViewModel
             if (FilePath == string.Empty)
                 return; // terminate "Call Editor"
 
-            Seeds = FlowerSeedManager
-                .CreateInstance()
+            Seeds = FlowerSeedManager.CreateInstance()
                 .LoadAllFlowerSeeds()
                 .UpdateAllInvokedFlowerSeeds(FilePath)
                 //.UnloadUnusedSeeds()
@@ -124,7 +124,7 @@ public partial class MainWindowViewModel
             return;
 
         // collect data-structure
-        var result = ImageReader.Get(dialog.FileName);
+        var result = FlowerBinarySeeker.Get(dialog.FileName);
         FileName = result.Name;
         FilePath = result.Path;
         Signature = result.SignatureString;

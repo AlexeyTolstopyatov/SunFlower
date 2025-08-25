@@ -65,7 +65,7 @@ module FlowerCompatibility =
                     let compatible = isCompatible attr managerVersion
                     table.Rows.Add(versionStr, t.Name, compatible) |> ignore
                 | None ->
-                    table.Rows.Add("No contract", t.Name, false) |> ignore)
+                    table.Rows.Add("Contract?!", t.Name, false) |> ignore)
         with
         | ex ->
             table.Rows.Add("Load error", Path.GetFileName(assemblyPath), false) |> ignore

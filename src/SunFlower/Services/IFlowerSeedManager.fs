@@ -38,4 +38,8 @@ type IFlowerSeedManager = interface
     /// <param name="path">Targeting file</param>
     /// <returns></returns>
     abstract member GetAllInvokedFlowerSeeds : path : String -> Dictionary<String, Int32>
+    /// <summary>
+    /// Kernel storage of messages
+    /// </summary>
+    abstract member Messages : List<string>
     end

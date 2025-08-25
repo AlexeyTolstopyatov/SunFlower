@@ -16,6 +16,11 @@
     <ItemGroup>
       <Compile Include="Services\IFlowerSeedManager.fs" />
       <Compile Include="Services\FlowerSeedManager.fs" />
+      <Compile Include="Services\FlowerCompatibility.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Readers\" />
     </ItemGroup>
 
 </Project>

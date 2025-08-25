@@ -35,6 +35,7 @@ type FlowerSeedManager() =
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
     
+    member this.GetContractVersion() = tryGetFlowerContract this
     // interface IFlowerSeedManager with
     /// <summary>
     /// Executes all seeds and returns status table

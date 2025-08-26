@@ -128,7 +128,7 @@ type FlowerSeedManager() =
                 t.IsAssignableTo(parentType))
             // Attribute
             |> Seq.choose (fun t ->
-                let attr = t.GetCustomAttribute<FlowerSeedContractAttribute>()
+                let attr = t.GetCustomAttribute<FlowerSeedContractAttribute>() // .ctor????
                 try
                     if attr.MajorVersion = majorVersion then
                         try
@@ -141,7 +141,7 @@ type FlowerSeedManager() =
                     else None
                 with
                 | stop ->
-                    "Sunflower Kernel::STOP\r\n >> NULL plugin attribute!" |> save
+                    $"\r\n >> {t.Name} thrown an error {stop} " |> save
                     None
             )
             |> Seq.toList

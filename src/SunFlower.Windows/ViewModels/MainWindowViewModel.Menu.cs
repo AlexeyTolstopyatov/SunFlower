@@ -141,10 +141,16 @@ public partial class MainWindowViewModel
         RecentTable = LoadRecentTableOnStartup(); // bad idea.
         
         // Extensions recall
-        Seeds = FlowerSeedManager.CreateInstance() 
-            .LoadAllFlowerSeeds()
+        var inst = FlowerSeedManager.CreateInstance(); 
+            
+        Seeds = inst.LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
+        
+        foreach (var message in inst.Messages)
+        {
+            Tell(message);
+        }
         
         // information about external Exceptions
         Tell("=== Disabled plugins tracing ===");

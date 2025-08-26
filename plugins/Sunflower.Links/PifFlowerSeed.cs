@@ -11,6 +11,7 @@ namespace Sunflower.Links;
 /// contained link to existed .COM/.EXE file in old
 /// DOS|Windows|OS/2 operating systems.
 /// </summary>
+[FlowerSeedContract(2, 0, 0)]
 public class PifFlowerSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower MS-DOS PIF Viewer";

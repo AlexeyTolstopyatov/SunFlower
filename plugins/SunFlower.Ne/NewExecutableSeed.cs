@@ -7,7 +7,7 @@ using SunFlower.Ne.Services;
 
 namespace SunFlower.Ne;
 
-[FlowerSeedContract(MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)]
+[FlowerSeedContract(2,0,0)]
 public class NewExecutableSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower Win16-OS/2 NE IA-32";

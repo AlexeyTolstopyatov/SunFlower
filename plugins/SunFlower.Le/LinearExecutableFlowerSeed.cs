@@ -6,7 +6,7 @@ using SunFlower.Le.Services;
 
 namespace SunFlower.Le;
 
-[FlowerSeedContract(MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)]
+[FlowerSeedContract(2, 0, 0)]
 public class LinearExecutableFlowerSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower Win32s-OS/2 LE Any-CPU";

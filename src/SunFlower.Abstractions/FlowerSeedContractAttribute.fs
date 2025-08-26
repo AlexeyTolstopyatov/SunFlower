@@ -19,6 +19,9 @@ type FlowerSeedContractAttribute(major: int, minor: int, build: int) =
     let mutable majorVersion : Int32 = major
     let mutable minorVersion : Int32 = minor
     let mutable buildVersion : Int32 = build
+    
+    new() =
+        FlowerSeedContractAttribute(1, 3, 0)
     /// <summary>
     /// See Microsoft versioning specification
     /// Major means global changes in software

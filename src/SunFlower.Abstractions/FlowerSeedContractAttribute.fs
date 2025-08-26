@@ -13,11 +13,12 @@ open System
 /// </summary>
 [<Class>]
 [<AttributeUsage(AttributeTargets.Class)>]
-type FlowerSeedContractAttribute() =
+type FlowerSeedContractAttribute(major: int, minor: int, build: int) =
     inherit Attribute() with
-    let mutable majorVersion : Int32 = 1
-    let mutable minorVersion : Int32 = 3
-    let mutable buildVersion : Int32 = 0
+    
+    let mutable majorVersion : Int32 = major
+    let mutable minorVersion : Int32 = minor
+    let mutable buildVersion : Int32 = build
     /// <summary>
     /// See Microsoft versioning specification
     /// Major means global changes in software
@@ -25,9 +26,7 @@ type FlowerSeedContractAttribute() =
     /// 1.3.1 - FlowerContract looks like ...
     /// 2.0.0 - Global changes in FlowerContract. Fully incompatible with 1.x.x
     /// </summary>
-    member public f.MajorVersion
-        with get () = majorVersion
-        and set maj = majorVersion <- maj
+    member val MajorVersion = majorVersion with get, set
     /// <summary>
     /// See Microsoft versioning specification
     /// Minor means inner-scope changes without corrupting/changing public API
@@ -35,9 +34,7 @@ type FlowerSeedContractAttribute() =
     /// 1.3.1 - FlowerContract
     /// 1.4.0 - Compatible changes in FlowerContract but backwards usable
     /// </summary>
-    member public f.MinorVersion
-        with get () = minorVersion
-        and set min = majorVersion <- min
+    member val MinorVersion = minorVersion with get, set
     /// <summary>
     /// My specification tells:
     /// Build version means not #build and little but important changes
@@ -46,7 +43,5 @@ type FlowerSeedContractAttribute() =
     /// 1.3.1 - has internal panic and MainWindow crash
     /// 1.3.2 - fix of .1 internal panic
     /// </summary>
-    member public f.BuildVersion
-        with get () = buildVersion
-        and set bld = buildVersion <- bld 
+    member val BuildVersion = buildVersion with get, set
     

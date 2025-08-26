@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Drawing;
 using System.Windows.Input;
 using HandyControl.Controls;
 using HandyControl.Data;
@@ -83,9 +84,9 @@ public partial class MainWindowViewModel
 
             FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
             FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
-            Signature = unboxed.Row["SignatureString"].ToString() ?? string.Empty;
-            SignatureDWord = unboxed["SignatureDWord"].ToString() ?? string.Empty;
-            Cpu = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
+            TypeString = unboxed.Row["SignatureString"].ToString() ?? string.Empty;
+            Signature = unboxed["SignatureDWord"].ToString() ?? string.Empty;
+            Size = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
 
             if (FilePath == string.Empty)
                 return; // terminate "Call Editor"
@@ -127,10 +128,10 @@ public partial class MainWindowViewModel
         var result = FlowerBinarySeeker.Get(dialog.FileName);
         FileName = result.Name;
         FilePath = result.Path;
-        Signature = result.SignatureString;
-        Cpu = result.CpuArchitecture;
-        SignatureDWord = result.SignatureDWord.ToString();
-
+        TypeString = result.Type;
+        Signature = result.Sign;
+        Size = result.Size + "K"; // JS fell off
+        
         _registryManager
             .SetFileName("recent")
           //.Create()
@@ -161,7 +162,7 @@ public partial class MainWindowViewModel
     /// </summary>
     private void GetWin32Process(object unused)
     {
-        Growl.WarningGlobal("Administrator permissions required. Not implemented yet!");
+        Growl.WarningGlobal("Not implemented yet!");
     }
     /// <summary>
     /// Shows notification "Not implemented yet" at Desktop

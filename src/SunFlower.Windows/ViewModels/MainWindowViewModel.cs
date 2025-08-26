@@ -45,9 +45,9 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         
         _fileName = string.Empty;
         _filePath = string.Empty;
-        _cpu = string.Empty;
+        _size = string.Empty;
+        _typeString = string.Empty;
         _signature = string.Empty;
-        _signatureDWord = string.Empty;
         
         Tell("Windows service registered");
         TellCurrentAbstractionsVersion();

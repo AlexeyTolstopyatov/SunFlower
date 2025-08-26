@@ -26,7 +26,7 @@ type FlowerBinaryReport = {
     /// <summary>
     /// Size of target
     /// </summary>
-    Size : Int32
+    Size : Single
     /// <summary>
     /// Hexadecimal signature view
     /// </summary>
@@ -40,38 +40,73 @@ type FlowerBinaryReport = {
 /// Kernel seeker for various binary formats
 /// </summary>
 module FlowerBinarySeeker =
-    /// <summary>
-    /// Checks does image have MZ/ZM ASCII word 
-    /// </summary>
-    let private hasMarkZbikowskiWord (reader : BinaryReader) =
-        0
-    /// <summary>
-    /// Checks next known ASCII signature
-    /// by the e_lfanew pointer
-    /// </summary>
-    let private hasNextKnownAscii (reader : BinaryReader) =
-        0
-    /// <summary>
-    /// Checks: does image have a a-out valid mid_mag field
-    /// </summary>
-    let private hasMidMagicWord (reader : BinaryReader) =
-        0
-    /// <summary>
-    /// Checks: does image have a ELF32/+ magic QWORD
-    /// </summary>
-    /// <param name="reader"></param>
-    let private hasElfQWord (reader : BinaryReader) =
-        -1
-    
+    type BinaryCheckResult = 
+        | Found of magic: int * description: string // (magic, description) Tuple
+        | NotFound of magic: int
+        | Error
+
+    let private readBytes (reader: BinaryReader) position count =
+        try
+            reader.BaseStream.Seek(position, SeekOrigin.Begin) |> ignore
+            Some(reader.ReadBytes(count))
+        with _ -> None
+
+    let private checkMZHeader (reader: BinaryReader) =
+        match readBytes reader 0L 2 with
+        | Some [|0x4auy; 0x5auy|] -> Found (0x5a4d, "DOS Executable (MZ)")
+        | Some [|0x5auy; 0x4duy|] -> Found (0x4d5a, "DOS Executable (ZM)")
+        | Some bytes when bytes.Length = 2 -> 
+            NotFound (int bytes.[0] ||| (int bytes.[1] <<< 8))
+        | _ -> Error
+
+    let private checkNextHeader (reader: BinaryReader) =
+        match readBytes reader 0x3CL 4 with
+        | Some offsetBytes when offsetBytes.Length = 4 ->
+            let offset = BitConverter.ToInt32(offsetBytes, 0)
+            match readBytes reader (int64 offset) 2 with
+            | Some [|0x50uy; 0x45uy|] -> Found (0x4550, "WinNT Executable (PE)")
+            | Some [|0x45uy; 0x50uy|] -> Found (0x5045, "WinNT Executable (PE)")
+            | Some [|0x45uy; 0x4euy|] -> Found (0x454e, "Win16-OS/2 1.x Executable (NE)")
+            | Some [|0x4euy; 0x45uy|] -> Found (0x4e45, "Win16-OS/2 1.x Executable (NE)")
+            | Some [|0x45uy; 0x4cuy|] -> Found (0x454c, "Win32s-OS/2 2.x Executable (LE)")
+            | Some [|0x4cuy; 0x45uy|] -> Found (0x4c45, "Win32s-OS/2 2.x Executable (LE)")
+            | Some [|0x58uy; 0x4cuy|] -> Found (0x584c, "OS/2-ArcaOS Executable (LX)")
+            | Some [|0x4cuy; 0x58uy|] -> Found (0x4c58, "OS/2-ArcaOS Executable (LX)")
+            | Some bytes when bytes.Length = 2 -> 
+                NotFound (int bytes.[0] ||| (int bytes.[1] <<< 8))
+            | _ -> Error
+        | _ -> Error
+
+    let private checkELFHeader (reader: BinaryReader) =
+        match readBytes reader 0L 4 with
+        | Some [|0x7Fuy; 0x45uy; 0x4Cuy; 0x46uy|] -> 
+            Found (0x464C457F, "ELF Executable")
+        | Some bytes when bytes.Length = 4 -> 
+            NotFound (BitConverter.ToInt32(bytes, 0))
+        | _ -> Error
+
+    let private identifyFileType (reader: BinaryReader) =
+        let checks = [checkMZHeader; checkNextHeader; checkELFHeader]
+        
+        checks
+        |> List.tryPick (fun check -> 
+            match check reader with
+            | Found (magic, desc) -> Some (magic, desc)
+            | _ -> None)
+        |> Option.defaultValue (0, "Unknown")
+
     [<CompiledName "Get">]
     let get (path: string) : FlowerBinaryReport =
-        let data : FlowerBinaryReport = {
-            Name = FileInfo(path).Name
-            Size = FileInfo(path).Length |> int
-            Path = path
-            Sign = "?"
-            Type = "Unknown result" 
-        }
+        use stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)
+        use reader = new BinaryReader(stream)
         
-        data
-    
+        let (magic, fileType) = identifyFileType reader
+        let fileInfo = FileInfo(path)
+        
+        {
+            Name = fileInfo.Name
+            Path = path
+            Size = float32 fileInfo.Length / 1024f
+            Sign = $"0x%X{magic}"
+            Type = fileType
+        }

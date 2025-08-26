@@ -18,29 +18,29 @@ public partial class MainWindowViewModel
         set => SetField(ref _filePath, value);
     }
 
+    public string TypeString
+    {
+        get => _typeString;
+        set => SetField(ref _typeString, value);
+    }
+
+    public string Size
+    {
+        get => _size;
+        set => SetField(ref _size, value);
+    }
+
     public string Signature
     {
         get => _signature;
         set => SetField(ref _signature, value);
     }
-
-    public string Cpu
-    {
-        get => _cpu;
-        set => SetField(ref _cpu, value);
-    }
-
-    public string SignatureDWord
-    {
-        get => _signatureDWord;
-        set => SetField(ref _signatureDWord, value);
-    }
     
     private string _fileName;
     private string _filePath;
+    private string _typeString;
     private string _signature;
-    private string _signatureDWord;
-    private string _cpu;
+    private string _size;
     private bool _isReady;
 
     /// <summary>

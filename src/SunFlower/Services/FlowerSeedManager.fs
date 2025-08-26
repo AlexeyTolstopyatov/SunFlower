@@ -15,7 +15,7 @@ open Microsoft.FSharp.Collections
 //
 // @creator: atolstopyatov2017@vk.com
 //
-[<FlowerSeedContract (MajorVersion = 2, MinorVersion = 0, BuildVersion = 0)>]
+[<FlowerSeedContract(2, 0, 0)>]
 type FlowerSeedManager() =
     let mutable seeds : List<IFlowerSeed> = []
     let mutable messages : CorList<string> = CorList<string>()
@@ -129,15 +129,20 @@ type FlowerSeedManager() =
             // Attribute
             |> Seq.choose (fun t ->
                 let attr = t.GetCustomAttribute<FlowerSeedContractAttribute>()
-                if attr.MajorVersion = majorVersion then
-                    try
-                        if attr.MinorVersion <> minorVersion then
-                            $"[!]: {t.Name}#{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion} differs with {majorVersion}.{minorVersion}.{buildVersion}"
-                            |> save
-                           
-                        Activator.CreateInstance(t) :?> IFlowerSeed |> Some
-                    with _ -> None
-                else None
+                try
+                    if attr.MajorVersion = majorVersion then
+                        try
+                            if attr.MinorVersion <> minorVersion then
+                                $"[!]: {t.Name}#{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion} differs with {majorVersion}.{minorVersion}.{buildVersion}"
+                                |> save
+                               
+                            Activator.CreateInstance(t) :?> IFlowerSeed |> Some
+                        with _ -> None
+                    else None
+                with
+                | stop ->
+                    "Sunflower Kernel::STOP\r\n >> NULL plugin attribute!" |> save
+                    None
             )
             |> Seq.toList
         this

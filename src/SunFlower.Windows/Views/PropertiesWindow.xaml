@@ -51,9 +51,9 @@
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
-                    <TextBlock Text="{Binding Cpu}"/>
+                    <TextBlock Text="{Binding Size}"/>
+                    <TextBlock Text="{Binding TypeString}"/>
                     <TextBlock Text="{Binding Signature}"/>
-                    <TextBlock Text="{Binding SignatureDWord}"/>
                 </StackPanel>
             </Grid>
         </hc:Card>

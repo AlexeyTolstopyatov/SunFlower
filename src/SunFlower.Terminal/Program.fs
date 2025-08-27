@@ -3,21 +3,23 @@
 open System
 open System.Collections.Generic
 open System.Data
-open System.Diagnostics
 open System.IO
-open System.Reflection
-open SunFlower.Abstractions
-open SunFlower.Abstractions.Types
+open System.Net
+open SunFlower.Services
 
-///
-/// CoffeeLake (C) 2024-2025
-/// This module particular belongs JellyBins
-/// Licensed under MIT
-///
+//
+// CoffeeLake (C) 2024-2025
+// This module particular belongs JellyBins
+// Licensed under MIT
+//
+// @creator: atolstopyatov2017@vk.com
+//
+
+/// <summary>
 /// Module represents functional for printing
 /// <see cref="DataTable"/>s, <see cref="Dictionary"/>
 /// structures and will be extended later
-/// 
+/// </summary>
 module DataView =
     /// <summary>
     /// Prints dictionary as table without delimiters
@@ -87,211 +89,61 @@ module DataView =
             )
         printfn ""
     ()
-///
-/// CoffeeLake (C) 2025
-///
-/// GUI-less application for static binary analysis
-/// includes Sunflower loader API (see SunFlower.FlowerSeedManager)
-///
-/// Provides the ability to call external
-/// libraries compatible with the IFlowerSeed
-/// interface for further user intentions.
-///
-module UserInterface =
-    
-    
-    type AppState = {
-        Plugins: IFlowerSeed list
-        ActivePlugins: IFlowerSeed list
-        CurrentFile: string option
-    }
-    
-    let showMainMenu state =
-        Console.Clear()
-        let opt = Option.defaultValue "NONE" state.CurrentFile
-        
-        Console.ForegroundColor <- ConsoleColor.Yellow
-        printfn $"--- Required Abstractions.dll build: %s{FileVersionInfo.GetVersionInfo(Assembly.GetCallingAssembly().Location).FileVersion}"
-        Console.ResetColor()
-        
-        
-        printfn "=== SunFlower main menu ==="
-        printfn $"File: %s{opt}" // !!!
-        printfn $"Active plugins: {state.ActivePlugins.Length}"
-        printfn "----------------------------------------"
-        printfn "[A] Analyze file"
-        printfn "[P] Select plugins"
-        printfn "[F] Select file"
-        printfn "[W] Write results"
-        printfn "[Q] Quit"
-        printfn "----------------------------------------"
-        printf "Select option: "
-    
-    let showPluginSelection (plugins: IFlowerSeed list) (activePlugins: IFlowerSeed list) =
-        Console.Clear()
-        printfn "=== Seeds ==="
-        
-        printfn "0. Select all"
-        
-        plugins
-        |> List.iteri (fun i plugin ->
-            let status = if List.contains plugin activePlugins then "[X]" else "[ ]"
-            printfn $"{i+1}. {status} {plugin.Seed}"
-        )
-        
-        printf "\nEnter plugin numbers (comma separated): "
-        Console.ReadLine()
-    
-    let showAnalysisResults (results: (string * FlowerSeedStatus) list) =
-        Console.Clear()
-        
-        results
-        |> List.iter (fun (name, status) ->
-            Console.ForegroundColor <- 
-                if status.IsEnabled then ConsoleColor.Green 
-                else ConsoleColor.Yellow
-            
-            printfn $"-> {name}"
-            Console.ResetColor()
-            
-            if not status.IsEnabled then
-                printfn "---Seed Exceptions chain starts---"
-                printfn $"{status.LastError}"
-                printfn "---Seed Exception chains ends---"
-            else
-                status.Results
-                |> Seq.toArray
-                |> Seq.iter (fun result ->
-                    match result.Type with
-                    | FlowerSeedEntryType.Strings ->
-                        let textResult = result.BoxedResult :?> string[]
-                        textResult |> Array.iter (printfn "%s")
-                    
-                    | FlowerSeedEntryType.DataTables ->
-                        let tables = result.BoxedResult :?> List<DataTable> // <-- evil F# list casting hack
-                        tables |> Seq.iter DataView.printDataTable
-                    | _ -> 
-                        printfn $"Unsupported type: {result.Type}"
-                )
-            )
-        printfn "\nPress any key to continue..."
-        Console.ReadKey() |> ignore
-
-open UserInterface
-module AnalysisEngine =
-    let analyzeFile (plugins: IFlowerSeed list) filePath =
-        printfn $"Processing %s{ FileInfo(filePath).Name }"
-        
-        plugins
-        |> List.map (fun plugin ->
-            async {
-                try
-                    printfn $"Calling plugin: {plugin.Seed}"
-                    plugin.Main(filePath) |> ignore 
-                    return (plugin.Seed, plugin.Status)
-                with ex ->
-                    return (plugin.Seed, FlowerSeedStatus(
-                        IsEnabled = false,
-                        Results = List<FlowerSeedResult>(),
-                        LastError = ex
-                    ))
-            }
-        )
-        |> Async.Parallel
-        |> Async.RunSynchronously
-        |> Array.toList
-
-    let rec mainLoop (state: AppState) =
-        showMainMenu state
-        
-        match Console.ReadKey(true).KeyChar with
-        | 'a' | 'A' -> 
-            match state.CurrentFile, state.ActivePlugins with
-            | Some file, plugins when not (List.isEmpty plugins) ->
-                let results = analyzeFile plugins file
-                showAnalysisResults results
-                mainLoop state
-            | None, _ ->
-                printfn "No file selected! \nPress any key..."
-                Console.ReadKey() |> ignore
-                mainLoop state
-            | _, _ ->
-                printfn "SunFlower seeds selected \nPress any key..."
-                Console.ReadKey() |> ignore
-                mainLoop state
-                
-        | 'p' | 'P' ->
-            let input = showPluginSelection 
-                            (state.Plugins |> Seq.toList) 
-                            (state.ActivePlugins |> Seq.toList)
-            
-            let newActivePlugins =
-                if input = "0" then
-                    state.Plugins |> Seq.toList
-                else
-                    input.Split(',')
-                    |> Array.choose (fun s -> 
-                        match Int32.TryParse(s.Trim()) with
-                        | true, num when num > 0 && num <= state.Plugins.Length -> 
-                            Some state.Plugins.[num - 1]
-                        | _ -> None)
-                    |> Array.toList
-            
-            mainLoop { state with ActivePlugins = newActivePlugins }
-        
-        | 'f' | 'F' ->
-            Console.Clear()
-            printf "Enter file path: "
-            let path = Console.ReadLine()
-            
-            if File.Exists path then
-                mainLoop { state with CurrentFile = Some path }
-            else
-                printfn "File not found! \nPress any key..."
-                Console.ReadKey() |> ignore
-                mainLoop state
-        
-        | 'w' | 'W' ->
-            match state.CurrentFile, state.ActivePlugins with
-            | Some file, plugins when not (List.isEmpty plugins) ->
-                printf "Enter file path: "
-                let path = Console.ReadLine()
-                
-                let results = analyzeFile plugins file
-                showAnalysisResults results
-                mainLoop state
-            | _ -> mainLoop state
-        
-        | 'q' | 'Q' -> ()
-        | _ -> mainLoop state
-
 
 module App =
+    type Command =
+    | CheckSingle of path: string
+    | ExplainSingle of path: string
+    | Explain
+    | CheckAll
+    | Help
+    | Invalid of message: string
+
+    let parseArgs (args: string[]) =
+        match args with
+        | [| "--for"; path |] -> CheckSingle path
+        | [| "--forall" |] -> CheckAll
+        | [| "--why"; path |] -> ExplainSingle path
+        | [| "--help" |] | [| "-h" |] | [| "/?" |] -> Help
+        | [| "--what" |] | [| "--about" |] -> Explain
+        | [||] -> Help 
+        | _ -> Invalid "Unknown key"
+
+    let showHelp () =
+        printfn "Usage:"
+        printfn "  --for <path>    Compare current sunflower plugin with base"
+        printfn "  --forall        Compare all plugins with base"
+        printfn "  --why <path>    Compare current sunflower plugin verbose"
+        printfn "  --help, -h, /?  Show this page"
+
+    let executeCommand command =
+        match command with
+        | CheckSingle path ->
+            let result = FlowerCompatibility.get path
+            DataView.printDataTable result
+        | CheckAll ->
+            let result = FlowerCompatibility.getForAll ()
+            DataView.printDataTable result
+        | ExplainSingle path ->
+            let result = FlowerCompatibility.getVerbose path
+                         |> Seq.toList
+                         |> List.iter (printfn "%s")
+            result
+            ()
+        | Explain ->
+            try
+                let result = File.ReadAllText (Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SunFlower.runtimeconfig.dll"))
+                printfn "%s" result
+            with
+            | ex -> printfn "Couldn't find resources"
+        | Help ->
+            showHelp ()
+        | Invalid message ->
+            printfn "Error: %s" message
+            showHelp ()
+    
     [<EntryPoint>]
-    let main (args: string[]):int =
-        printfn "--- Collecting seeds"
-        
-        let plugins = SunFlower.Services.FlowerSeedManager
-                              .CreateInstance()
-                              .LoadAllFlowerSeeds()
-                              .Seeds
-                              |> Seq.toList
-        
-        let initialState = {
-            Plugins = plugins
-            ActivePlugins = plugins
-            CurrentFile = 
-                if args.Length > 0 && File.Exists args[0] 
-                then Some args[0] 
-                else None
-        }
-        printfn $"--- Initial Tracing"
-        printfn $"{initialState}"
-        
-        #if DEBUG
-        Console.Write("Press any key to continue . . .")
-        Console.ReadKey() |> ignore
-        #endif
-        
-        AnalysisEngine.mainLoop initialState
+    let main (args: string[]) =
+        let command = parseArgs args
+        executeCommand command
         0

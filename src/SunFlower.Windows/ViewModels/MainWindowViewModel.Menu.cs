@@ -84,18 +84,21 @@ public partial class MainWindowViewModel
 
             FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
             FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
-            TypeString = unboxed.Row["SignatureString"].ToString() ?? string.Empty;
-            Signature = unboxed["SignatureDWord"].ToString() ?? string.Empty;
-            Size = unboxed.Row["CpuArchitecture"].ToString() ?? string.Empty;
+            TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
+            Signature = unboxed["Sign"].ToString() ?? string.Empty;
+            Size = unboxed.Row["Size"].ToString() ?? string.Empty;
 
             if (FilePath == string.Empty)
                 return; // terminate "Call Editor"
 
-            Seeds = FlowerSeedManager.CreateInstance()
+            var inst = FlowerSeedManager.CreateInstance();
+            Seeds = inst
                 .LoadAllFlowerSeeds()
                 .UpdateAllInvokedFlowerSeeds(FilePath)
                 //.UnloadUnusedSeeds()
                 .Seeds;
+            
+            WriteTracing(ref inst);
         }
         catch (Exception e)
         {
@@ -147,7 +150,16 @@ public partial class MainWindowViewModel
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
         
-        foreach (var message in inst.Messages)
+        WriteTracing(ref inst);
+        
+        // Call plugins Window/Main Workspace
+        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
+    }
+
+    private void WriteTracing(ref FlowerSeedManager manager)
+    {
+        Tell("=== Kernel tracing ===");
+        foreach (var message in manager.Messages)
         {
             Tell(message);
         }
@@ -158,9 +170,7 @@ public partial class MainWindowViewModel
         {
             Tell(plugin.Status.LastError is null ? $"?[{plugin.Seed}] has no result." : $"![{plugin.Seed}] " + plugin.Status.LastError.Message);
         }
-        
-        // Call plugins Window/Main Workspace
-        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
+
     }
     /// <summary>
     /// Experimental feature (try to catch process by ID/Name)

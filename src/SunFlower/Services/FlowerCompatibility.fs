@@ -5,6 +5,7 @@ open System.Data
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core
+open SunFlower
 open SunFlower.Abstractions
 
 //
@@ -65,7 +66,7 @@ module FlowerCompatibility =
                     let compatible = isCompatible attr managerVersion
                     table.Rows.Add(versionStr, t.Name, compatible) |> ignore
                 | None ->
-                    table.Rows.Add("Contract?!", t.Name, false) |> ignore)
+                    table.Rows.Add("where?!", t.Name, false) |> ignore)
         with
         | ex ->
             table.Rows.Add("Load error", Path.GetFileName(assemblyPath), false) |> ignore
@@ -81,7 +82,7 @@ module FlowerCompatibility =
         
         // Add manager info
         let (major, minor, build) = managerVersion
-        table.Rows.Add($"{major}.{minor}.{build}", "FlowerSeedManager", true) |> ignore
+        table.Rows.Add($"{major}.{minor}.{build}", "Sunflower Kernel", true) |> ignore
         table.Rows.Add("", "", true) |> ignore  // Empty separator row
         
         // Process the specified assembly
@@ -112,3 +113,51 @@ module FlowerCompatibility =
             table.Rows.Add("Directory not found", pluginsPath, false) |> ignore    
         
         table
+        
+    /// <summary>
+    /// See VERSIONING.md for normal explain
+    /// This function will repeat information more compressed
+    /// for a target. 
+    /// </summary>
+    /// <param name="path"></param>
+    [<CompiledName "GetVerbose">]
+    let getVerbose (path: string) : CorList<string> =
+        let strings = CorList<string>()
+        let mmaj, mmin, mbld = getManagerVersion()
+        
+        strings.Add "All information about versioning contains in VERSIONING.md"
+        strings.Add "You better read this law."
+        strings.Add ""
+        strings.Add "Sunflower has parts of Abstractions (for you) and kernel (not for you)"
+        strings.Add "Plugins contracts always compares with kernel contract before start!"
+        strings.Add ""
+        
+        
+        try
+            let assembly = Assembly.LoadFrom(path)
+            assembly.GetTypes()
+            |> Array.filter (fun t -> 
+                typeof<IFlowerSeed>.IsAssignableFrom(t) && 
+                t.IsClass && 
+                not t.IsAbstract)
+            |> Array.iter (fun t ->
+                match tryGetFlowerContract t with
+                | Some attr ->
+                    let versionStr = $"{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion}"
+                    strings.Add $"*** {t.Name} v{versionStr} ***"
+                    if attr.MajorVersion <> mmaj then
+                        strings.Add $" -> Differs with kernel abstractions v{mmaj}.{mmin}.{mbld}! System must unload it!"
+                    else
+                        strings.Add $"    Not conflicts with kernel abstractions v{mmaj}.{mmin}.{mbld}! System can load it."
+                    if attr.MinorVersion <> mmin then
+                        strings.Add $" -> Differs with minor version. Make sure, it not conflicts with your plugins. System can load it."
+                | None ->
+                    strings.Add $"*** {t.Name} ***"
+                    strings.Add($" -> Doesn't have a [FlowerContract]! This is so bad!"))
+        with
+        | ex ->
+            strings.Add($"Load error: {Path.GetFileName(path)}")
+            strings.Add($"\tDetails: {ex.Message}")
+        
+        
+        strings

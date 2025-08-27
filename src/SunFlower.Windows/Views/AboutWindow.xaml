@@ -1,0 +1,29 @@
+﻿<hc:Window x:Class="SunFlower.Windows.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:SunFlower.Windows.Views"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        mc:Ignorable="d"
+        Title="About" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <hc:ImageBlock
+            x:Name="ImageBlock"
+            Height="128"
+            Grid.Column="1"/>
+        <TextBlock
+            x:Name="AboutBlock"
+            FontFamily="Consolas"
+            Margin="50"
+            Grid.Column="2">
+            
+        </TextBlock>
+    </Grid>
+</hc:Window>

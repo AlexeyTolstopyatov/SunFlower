@@ -44,9 +44,12 @@
                     Command="{Binding GetRegistryFileCommand}"
                     Header="Edit Recent files"/>
                 <MenuItem
-                    Header="Edit Table"
+                    Header="Edit Sizes"
                     CommandParameter="sizes"
                     Command="{Binding GetRegistryFileCommand}"/>
+                <MenuItem
+                    Header="About"
+                    Command="{Binding GetAboutCommand}"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>

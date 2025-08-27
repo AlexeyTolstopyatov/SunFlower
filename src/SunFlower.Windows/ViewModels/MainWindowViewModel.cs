@@ -24,7 +24,8 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _recentTable = LoadRecentTableOnStartup();
         _loadedSeeds = [];
         _statusText = string.Empty;
-        
+
+        _getAboutCommand = new ActionCommand(GetAbout);
         _getFileCommand = new Command(GetFile);
         _getRecentFileCommand = new Command(GetRecentFile);
         _getProcessCommand = new Command(GetWin32Process);

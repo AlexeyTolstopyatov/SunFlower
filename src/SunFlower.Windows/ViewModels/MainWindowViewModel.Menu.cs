@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Input;
 using HandyControl.Controls;
 using HandyControl.Data;
@@ -7,6 +8,7 @@ using Microsoft.Win32;
 using SunFlower.Readers;
 using SunFlower.Services;
 using SunFlower.Windows.Attributes;
+using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
@@ -47,6 +49,13 @@ public partial class MainWindowViewModel
     private ICommand _getMachineWordsCommand;
     private ICommand _clearRecentFilesCommand;
     private ICommand _clearRecentFileCommand;
+    private ICommand _getAboutCommand;
+
+    public ICommand GetAboutCommand
+    {
+        get => _getAboutCommand;
+        set => SetField(ref _getAboutCommand, value);
+    }
     public ICommand ClearRecentFileCommand
     {
         get => _clearRecentFileCommand;
@@ -86,7 +95,7 @@ public partial class MainWindowViewModel
             FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
             TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
             Signature = unboxed["Sign"].ToString() ?? string.Empty;
-            Size = unboxed.Row["Size"].ToString() ?? string.Empty;
+            Size = unboxed.Row["Size"].ToString() + "K" ?? string.Empty;
 
             if (FilePath == string.Empty)
                 return; // terminate "Call Editor"
@@ -189,6 +198,10 @@ public partial class MainWindowViewModel
         Growl.InfoGlobal("Not implemented yet");
     }
 
+    private void GetAbout()
+    {
+        _windowManager.ShowUnmanaged(new AboutWindow(), false, "About");
+    }
     /// <summary>
     /// Clear all recent files JSON list
     /// </summary>

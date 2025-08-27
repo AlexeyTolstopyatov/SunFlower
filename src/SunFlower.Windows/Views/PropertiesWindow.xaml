@@ -45,7 +45,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="CPU "/>
+                    <TextBlock Text="Size"/>
                     <TextBlock Text="Description"/>
                     <TextBlock Text="Signature"/>
                 </StackPanel>

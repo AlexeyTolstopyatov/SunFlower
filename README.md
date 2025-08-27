@@ -26,6 +26,7 @@ very large. The previous project was rewritten from scratch five times, and in a
 5) Read and learn [versioning](VERSIONING.md).
 
 ```csharp
+[FlowerContract(2, 0, 0)]
 public class MyAnalyzer : IFlowerSeed {
   /// Title
   public string Name => "It shows in Connected Plugins menu";
@@ -42,6 +43,7 @@ public class MyAnalyzer : IFlowerSeed {
 If you want use F# toolchain you can implement it like this:
 
 ```fsharp
+[<FlowerContract(2,0,0)>]
 type MyAnalyzer() =
   interface IFlowerSeed with
   /// Title

@@ -68,7 +68,7 @@ public class Tests
     public void CheckoutDriver()
     {
         // baaad...
-        const string path = @"D:\TEST\OS2\VTDAPI.386";
+        const string path = @"D:\TEST\OS2\CDFS.vxd";
         LeDumpManager manager = new(path);
         LeTableManager tableManager = new(manager);
         

@@ -29,6 +29,9 @@ public class LeDumpManager : UnsafeManager
     public List<ObjectPageModel> ObjectPages { get; set; } = [];
     public List<uint> FixupPagesOffsets { get; set; } = [];
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
+    public VddResources DriverResources { get; set; }
+    public VersionInfo VersionInfo { get; set; }
+    public FixedFileInfo FixedFileInfo { get; set; }
     private UInt32 Offset(UInt32 address) => _offset + address;
 
     private void Initialize(string path)
@@ -52,9 +55,22 @@ public class LeDumpManager : UnsafeManager
         if (LeHeader.LE_ID is not 0x454c and not 0x4c45) // LE magic or cigam. Win32s (WOW32) or VxD-model driver or Microsoft OS/2 OMF.
             throw new InvalidOperationException("Doesn't have 'LE' signature");
         
-        // LC (Compressed Linear Objects) I've given up to seek information...
+        // Windows Virtual Driver header
         DriverHeader = Fill<VddHeader>(reader);
         
+        if (DriverHeader.LE_WindowsResLength == 0)
+            goto __continue; // <-- no resources here.
+        
+        reader.BaseStream.Seek(DriverHeader.LE_WindowsResOffset, SeekOrigin.Begin); // |<-- save position
+        DriverResources = Fill<VddResources>(reader);
+        FillVersionInfo(reader); // |<-- undocumented. I'll try to find details
+        
+        // EntryPoints table contains DDB entry.
+        // DDB entry "Description block" has own offset. BUT firstly 
+        // you MUST read EntryPoint table.
+        
+        // If OS/2 module (LX) - you better avoid specific driver structs
+        // Some tables in 2 specifications really are the same. But NOT FOR LONG.
         __continue:
         FillNames(reader);
         FillImportingNames(reader);
@@ -62,8 +78,112 @@ public class LeDumpManager : UnsafeManager
         FillObjectTable(reader);
         FillObjectMap(reader);
         FillFixupPages(reader);
+        
+        
+        
     }
+    /// <summary>
+    /// Windows 95 VERSIONINFO struct reader
+    /// </summary>
+    /// <param name="reader"></param>
+    private void FillVersionInfo(BinaryReader reader)
+    {
+        // don't change position
+        VersionInfo version = new(); 
+        var originalPosition = reader.BaseStream.Position;
+        
+        try
+        {
+            version.Length = reader.ReadUInt16();
+            version.ValueLength = reader.ReadUInt16();
+            version.Type = reader.ReadUInt16();
+        
+            // "VS_VERSION_INFO"
+            var keyBuilder = new StringBuilder();
+            char currentChar;
+            reader.BaseStream.Position -= 2; // _VERSION_INFO -> VS_VERSION_INFO
+            while ((currentChar = reader.ReadChar()) != '\0')
+            {
+                keyBuilder.Append(currentChar);
+            }
+            version.Key = keyBuilder.ToString();
+        
+            // alignment
+            var currentPos = reader.BaseStream.Position;
+            if (currentPos % 4 != 0)
+            {
+                reader.BaseStream.Position += 4 - (currentPos % 4);
+            }
+        
+            // fixed data
+            if (version.ValueLength > 0)
+            {
+                version.Value = Fill<FixedFileInfo>(reader);
+            }
 
+            VersionInfo = version;
+        }
+        finally
+        {
+            reader.BaseStream.Position = originalPosition;
+        }
+    }
+    private void ProcessChildren(BinaryReader reader, VersionInfo parent, long offset)
+    {
+        var endPosition = reader.BaseStream.Position + parent.Length - 
+                          (reader.BaseStream.Position - offset);
+    
+        while (reader.BaseStream.Position < endPosition)
+        {
+            var childLength = reader.ReadUInt16();
+            var childValueLength = reader.ReadUInt16();
+            var childType = reader.ReadUInt16();
+        
+            // Чтение ключа дочерней структуры
+            var keyBuilder = new StringBuilder();
+            char currentChar;
+            while ((currentChar = reader.ReadChar()) != '\0')
+            {
+                keyBuilder.Append(currentChar);
+            }
+            var childKey = keyBuilder.ToString();
+        
+            // Выравнивание
+            if (reader.BaseStream.Position % 4 != 0)
+            {
+                reader.BaseStream.Position += 4 - (reader.BaseStream.Position % 4);
+            }
+            // BLOCK StringFileInfo BEGIN
+            //      BLOCK "040904b0"? BEGIN
+            //          VALUE "CompanyName", "My SoftWare\0"
+            //          VALUE "FileDescription", "File I/O virtual device driver\0"
+            //          VALUE "FileVersion", "1.00.1\0"
+            //          VALUE "InternalName", "MyMem\0"
+            //          VALUE "OriginalFilename","MyMem.vxd\0"
+            //          VALUE "LegalCopyright", "Copyright \251 My SoftWare 1999-2003\0"
+            //          VALUE "ProductName", "My file maintenance utility\0"
+            //          VALUE "ProductVersion", "2.2.06\0"
+            //      END
+            //      BLOCK "" BEGIN
+            //      END
+            // END
+            switch (childKey)
+            {
+                // Обработка в зависимости от типа дочерней структуры
+                case "StringFileInfo":
+                    //ProcessStringFileInfo(reader, childLength);
+                    break;
+                case "VarFileInfo":
+                    //ProcessVarFileInfo(reader, childLength);
+                    break;
+                default:
+                    // Пропуск неизвестной структуры
+                    reader.BaseStream.Position += childLength - 
+                                                  (reader.BaseStream.Position - offset);
+                    break;
+            }
+        }
+    }
     private void FillNames(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_ResidentNames);

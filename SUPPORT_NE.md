@@ -20,9 +20,9 @@ possible to take little bit info about `Win16` modules (files).
 | Per-segment table        | [x]    |
 
 > [!WARNING]
-> EntryTable fills incorrect.
+> EntryTable fills incorrect if LINK.EXE version earlier than 5.0
 
-### Visual Basic 4
+### Visual Basic 4 (next plugin)
 
 The only source with little more information
 about it is Semi VB Decompiler (by VBGamer 45).
@@ -42,7 +42,7 @@ that is really VB 4.0 application.
 
 Old VB4 header locates in NE segmented image. `VB4_HEADER` locates in PE file image. 
 
-### Visual Basic 3
+### Visual Basic 3 (next plugin)
 
 It is very difficult to make assumptions about the embedded VB 3.0 structures
 in the NE segmented file, since
@@ -52,5 +52,5 @@ Example of VB 3.0 application in JellyBins repo
 
 At least the number of fields, their order, and their capacity (cell data type) are known, but it will take a lot of experimentation to find out their names.
 
-> [!INFO]
+> [!TIP]
 > Tested Virtual Machine is Oracle VirtualBox machine with Microsoft Windows 2000 (NT 5.0) with installed SDK (Visual Basic 3.0, 4.0), WinDbg, Visual Embedded 6.0.

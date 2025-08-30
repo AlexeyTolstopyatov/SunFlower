@@ -22,16 +22,30 @@ public struct FixedFileInfo
     public int FileDateMs;
     public int FileDateLs;
 }
-[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-public struct VersionInfo
+
+public enum Win32ResourceType
 {
-    public ushort Length;
-    public ushort ValueLength;
-    public ushort Type;
-    public string Key; // "VS_VERSION_INFO"
-    // Alignment till 32-bit bound
-    public FixedFileInfo Value;
-    // Children goes here
+    VS_VERSION_INFO = 0,
+    StringFileInfo = 1,
+    VarFileInfo = 2,
+    StringTable = 3,
+    String = 4,
+    Var = 5
+}
+public class Win32Resource
+{
+    public ushort Length { get; set; }
+    public ushort ValueLength { get; set; }
+    public ushort Type { get; set; }
+    public string Key { get; set; } = string.Empty;
+    public byte[] Value { get; set; } = [];
+    public int BlockType { get; set; }
+    public List<Win32Resource> Children { get; set; } = [];
+}
+public class StringTable
+{
+    public string LanguageCode { get; set; }
+    public Dictionary<string, string> Strings { get; set; } = new();
 }
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct VddResources

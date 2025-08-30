@@ -30,7 +30,7 @@ public class LeDumpManager : UnsafeManager
     public List<uint> FixupPagesOffsets { get; set; } = [];
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
     public VddResources DriverResources { get; set; }
-    public VersionInfo VersionInfo { get; set; }
+    public Win32Resource VersionInfo { get; set; }
     public FixedFileInfo FixedFileInfo { get; set; }
     private UInt32 Offset(UInt32 address) => _offset + address;
 
@@ -63,7 +63,8 @@ public class LeDumpManager : UnsafeManager
         
         reader.BaseStream.Seek(DriverHeader.LE_WindowsResOffset, SeekOrigin.Begin); // |<-- save position
         DriverResources = Fill<VddResources>(reader);
-        FillVersionInfo(reader); // |<-- undocumented. I'll try to find details
+        stream.Position -= 2;
+        VersionInfo = ReadResourceBlock(reader, (uint)stream.Position);
         
         // EntryPoints table contains DDB entry.
         // DDB entry "Description block" has own offset. BUT firstly 
@@ -79,109 +80,97 @@ public class LeDumpManager : UnsafeManager
         FillObjectMap(reader);
         FillFixupPages(reader);
         
-        
-        
     }
-    /// <summary>
-    /// Windows 95 VERSIONINFO struct reader
-    /// </summary>
-    /// <param name="reader"></param>
-    private void FillVersionInfo(BinaryReader reader)
+    // Win32 Resource blocks handles in plugin like new type of Region
+    // DataTable instead.
+    //
+    // ### Win32 Resource script (by 0x0ffset in <project_name>) 
+    //
+    // Usually this file contains more detailed information about
+    // application's or driver's image. 
+    // > ![WARNING]
+    // > This resource script is a C/++ pseudocode
+    // ```cpp
+    // #include <winver.h>
+    // ...
+    // BLOCK "VersionInfo" {
+    //      ...
+    //      BLOCK "StringFileInfo" {
+    //          BLOCK "040904e4b0" {
+    //              VALUE "CompanyName", "Microsoft Corporation\000",
+    //              VALUE "OriginalFilename", "vjoyd.vxd"
+    //              ...
+    //          }
+    //      }
+    //      BLOCK VarFileInfo { VALUE "LanguageID", 1033 }
+    // }
+    // ```
+    private Win32Resource ReadResourceBlock(BinaryReader reader, uint baseOffset)
     {
-        // don't change position
-        VersionInfo version = new(); 
-        var originalPosition = reader.BaseStream.Position;
-        
-        try
-        {
-            version.Length = reader.ReadUInt16();
-            version.ValueLength = reader.ReadUInt16();
-            version.Type = reader.ReadUInt16();
-        
-            // "VS_VERSION_INFO"
-            var keyBuilder = new StringBuilder();
-            char currentChar;
-            reader.BaseStream.Position -= 2; // _VERSION_INFO -> VS_VERSION_INFO
-            while ((currentChar = reader.ReadChar()) != '\0')
-            {
-                keyBuilder.Append(currentChar);
-            }
-            version.Key = keyBuilder.ToString();
-        
-            // alignment
-            var currentPos = reader.BaseStream.Position;
-            if (currentPos % 4 != 0)
-            {
-                reader.BaseStream.Position += 4 - (currentPos % 4);
-            }
-        
-            // fixed data
-            if (version.ValueLength > 0)
-            {
-                version.Value = Fill<FixedFileInfo>(reader);
-            }
+        var startOffset = reader.BaseStream.Position;
+        var block = new Win32Resource();
 
-            VersionInfo = version;
-        }
-        finally
+        // resource header
+        block.Type = reader.ReadUInt16();
+        block.Length = reader.ReadUInt16();
+        block.ValueLength = reader.ReadUInt16();
+
+        // key T-CHAR -> ASCIIZ (Windows 95 not supports UNICODE)
+        block.Key = ReadAsciiString(reader);
+        reader.ReadUInt16(); // <-- padding?
+        AlignToDword(reader);
+
+        // value?
+        if (block.ValueLength > 0)
         {
-            reader.BaseStream.Position = originalPosition;
+            block.Value = reader.ReadBytes(block.ValueLength);
+            AlignToDword(reader);
         }
+
+        // rec reader for other blocks
+        var endOffset = startOffset + block.Length;
+        while (reader.BaseStream.Position < endOffset)
+        {
+            var child = ReadResourceBlock(reader, baseOffset);
+            block.Children.Add(child);
+        }
+
+        return block;
     }
-    private void ProcessChildren(BinaryReader reader, VersionInfo parent, long offset)
+    private string ReadUnicodeString(BinaryReader reader)
     {
-        var endPosition = reader.BaseStream.Position + parent.Length - 
-                          (reader.BaseStream.Position - offset);
-    
-        while (reader.BaseStream.Position < endPosition)
+        var bytes = new List<byte>();
+        byte b1, b2;
+        while (true)
         {
-            var childLength = reader.ReadUInt16();
-            var childValueLength = reader.ReadUInt16();
-            var childType = reader.ReadUInt16();
-        
-            // Чтение ключа дочерней структуры
-            var keyBuilder = new StringBuilder();
-            char currentChar;
-            while ((currentChar = reader.ReadChar()) != '\0')
-            {
-                keyBuilder.Append(currentChar);
-            }
-            var childKey = keyBuilder.ToString();
-        
-            // Выравнивание
-            if (reader.BaseStream.Position % 4 != 0)
-            {
-                reader.BaseStream.Position += 4 - (reader.BaseStream.Position % 4);
-            }
-            // BLOCK StringFileInfo BEGIN
-            //      BLOCK "040904b0"? BEGIN
-            //          VALUE "CompanyName", "My SoftWare\0"
-            //          VALUE "FileDescription", "File I/O virtual device driver\0"
-            //          VALUE "FileVersion", "1.00.1\0"
-            //          VALUE "InternalName", "MyMem\0"
-            //          VALUE "OriginalFilename","MyMem.vxd\0"
-            //          VALUE "LegalCopyright", "Copyright \251 My SoftWare 1999-2003\0"
-            //          VALUE "ProductName", "My file maintenance utility\0"
-            //          VALUE "ProductVersion", "2.2.06\0"
-            //      END
-            //      BLOCK "" BEGIN
-            //      END
-            // END
-            switch (childKey)
-            {
-                // Обработка в зависимости от типа дочерней структуры
-                case "StringFileInfo":
-                    //ProcessStringFileInfo(reader, childLength);
-                    break;
-                case "VarFileInfo":
-                    //ProcessVarFileInfo(reader, childLength);
-                    break;
-                default:
-                    // Пропуск неизвестной структуры
-                    reader.BaseStream.Position += childLength - 
-                                                  (reader.BaseStream.Position - offset);
-                    break;
-            }
+            b1 = reader.ReadByte();
+            b2 = reader.ReadByte();
+            if (b1 == 0 && b2 == 0) break;
+            bytes.Add(b1);
+            bytes.Add(b2);
+        }
+        return Encoding.Unicode.GetString(bytes.ToArray());
+    }
+
+    private string ReadAsciiString(BinaryReader reader)
+    {
+        var bytes = new List<byte>();
+        byte b = reader.ReadByte();
+        while (b != 0)
+        {
+            bytes.Add(b);
+            b = reader.ReadByte();
+        }
+
+        return Encoding.ASCII.GetString(bytes.ToArray());
+    }
+    private void AlignToDword(BinaryReader reader)
+    {
+        var position = reader.BaseStream.Position;
+        var alignment = (4 - (position % 4)) % 4;
+        if (alignment > 0)
+        {
+            reader.ReadBytes((int)alignment);
         }
     }
     private void FillNames(BinaryReader reader)

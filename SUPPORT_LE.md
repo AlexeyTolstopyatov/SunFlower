@@ -46,7 +46,7 @@ which system tries to find and resolve
 Driver resources structure has many names, in code of sunflower
 it calls `VxdResource` like `VxdHeader` see it by `.../plugins/SunFlower.Le/Headers/Le` path
 
-> ![TIP]
+> [!TIP]
 > The most popular and right way to define virtual device driver is 
 > a non-zero `e32_winres_off` field. This is an absolute (raw file pointer)
 > to `VXD_RESOURCE` structure. Data length of this struct `e32_winres_length`
@@ -118,7 +118,7 @@ One of not-resident names always names with `_DDB` postfix
 and ordinal or this non-resident name is a position
 of record (entry point) in entry points bundles (or just in EntryPoints table)
 
-> ![WARNING] this information took from undocumented
+> [!WARNING] this information took from undocumented
 > sources and partially by sunflower experiments
 
 ```

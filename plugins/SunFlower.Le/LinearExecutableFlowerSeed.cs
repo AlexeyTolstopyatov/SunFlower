@@ -51,7 +51,10 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
             {
                 BoxedResult = tableManager.NamesRegions
             });
-            
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.DriverRegions
+            });
             Status.IsEnabled = true;
             
             return 0;

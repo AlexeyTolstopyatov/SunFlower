@@ -14,12 +14,13 @@ public class LeDumpManager : UnsafeManager
 
     public LeDumpManager(string path)
     {
+        _isVirtualDriver = false;
         Initialize(path);
     }
 
     public MzHeader MzHeader { get; set; }
     public LeHeader LeHeader { get; set; }
-    public VddHeader DriverHeader { get; set; }
+    public VxdHeader DriverHeader { get; set; }
     public List<ResidentName> ResidentNames { get; set; } = [];
     public List<NonResidentName> NonResidentNames { get; set; } = [];
     public List<Function> ImportingModules { get; set; } = [];
@@ -29,11 +30,12 @@ public class LeDumpManager : UnsafeManager
     public List<ObjectPageModel> ObjectPages { get; set; } = [];
     public List<uint> FixupPagesOffsets { get; set; } = [];
     public List<FixupRecordsTableModel> FixupRecords { get; set; } = [];
-    public VddResources DriverResources { get; set; }
+    public VxdDescriptionBlock DescriptionBlock { get; set; } = new();
+    public VxdResources DriverResources { get; set; }
     public Win32Resource VersionInfo { get; set; }
     public FixedFileInfo FixedFileInfo { get; set; }
     private UInt32 Offset(UInt32 address) => _offset + address;
-
+    private bool _isVirtualDriver;
     private void Initialize(string path)
     {
         FileStream stream = new(path, FileMode.Open, FileAccess.Read);
@@ -56,15 +58,16 @@ public class LeDumpManager : UnsafeManager
             throw new InvalidOperationException("Doesn't have 'LE' signature");
         
         // Windows Virtual Driver header
-        DriverHeader = Fill<VddHeader>(reader);
+        _isVirtualDriver = true; // <-- DDB block wanted!
+        DriverHeader = Fill<VxdHeader>(reader);
         
         if (DriverHeader.LE_WindowsResLength == 0)
             goto __continue; // <-- no resources here.
         
         reader.BaseStream.Seek(DriverHeader.LE_WindowsResOffset, SeekOrigin.Begin); // |<-- save position
-        DriverResources = Fill<VddResources>(reader);
+        DriverResources = Fill<VxdResources>(reader);
         stream.Position -= 2;
-        VersionInfo = ReadResourceBlock(reader, (uint)stream.Position);
+        //VersionInfo = ReadResourceBlock(reader, (uint)stream.Position);
         
         // EntryPoints table contains DDB entry.
         // DDB entry "Description block" has own offset. BUT firstly 
@@ -79,6 +82,9 @@ public class LeDumpManager : UnsafeManager
         FillObjectTable(reader);
         FillObjectMap(reader);
         FillFixupPages(reader);
+        
+        if (_isVirtualDriver)
+            FillDescriptionBlock(reader);
         
     }
     // Win32 Resource blocks handles in plugin like new type of Region
@@ -96,7 +102,7 @@ public class LeDumpManager : UnsafeManager
     // BLOCK "VersionInfo" {
     //      ...
     //      BLOCK "StringFileInfo" {
-    //          BLOCK "040904e4b0" {
+    //          BLOCK "040904e4b0" { <-- language ID???
     //              VALUE "CompanyName", "Microsoft Corporation\000",
     //              VALUE "OriginalFilename", "vjoyd.vxd"
     //              ...
@@ -151,7 +157,6 @@ public class LeDumpManager : UnsafeManager
         }
         return Encoding.Unicode.GetString(bytes.ToArray());
     }
-
     private string ReadAsciiString(BinaryReader reader)
     {
         var bytes = new List<byte>();
@@ -173,6 +178,7 @@ public class LeDumpManager : UnsafeManager
             reader.ReadBytes((int)alignment);
         }
     }
+    
     private void FillNames(BinaryReader reader)
     {
         reader.BaseStream.Position = Offset(LeHeader.LE_ResidentNames);
@@ -288,7 +294,55 @@ public class LeDumpManager : UnsafeManager
             EntryBundles.Add(bundle);
         }
     }
-    
+
+    /// <summary>
+    /// VxD model contains _DDB block
+    /// I need this block
+    /// </summary>
+    /// <param name="reader"></param>
+    private void FillDescriptionBlock(BinaryReader reader)
+    {
+        var ddbNonResident = NonResidentNames.FirstOrDefault(x => x.Name.Contains("DDB"));
+        if (ddbNonResident == null)
+        {
+            Debug.WriteLine("DDB not found in non-resident names");
+            return;
+        }
+        var ddbOrdinal = ddbNonResident.Ordinal;
+        
+        var ddbEntry = EntryBundles
+            .SelectMany(b => b.Entries)
+            .FirstOrDefault(e => e.Ordinal == ddbOrdinal);
+
+        if (ddbEntry == null)
+        {
+            Debug.WriteLine("DDB entry not found in entry bundles");
+            return;
+        }
+        var bundleContainingDdb = EntryBundles.First(b => b.Entries.Contains(ddbEntry));
+        var objectIndex = bundleContainingDdb.ObjectIndex;
+        var ddbOffset = ddbEntry.Offset; // VA in object
+        var objectEntry = Objects[objectIndex - 1];
+        
+        var pageSize = LeHeader.LE_PageSize;
+        var pageIndexInObject = ddbOffset / pageSize;
+        var offsetInPage = ddbOffset % pageSize;
+        
+        var pageMapIndex = objectEntry.PageMapIndex + pageIndexInObject;
+        if (pageMapIndex >= ObjectPages.Count)
+        {
+            Debug.WriteLine("Page map index out of range");
+            return;
+        }
+        var pageEntry = ObjectPages[(int)pageMapIndex];
+        
+        var physicalPageNumber = (uint)((pageEntry.Page.HighPage << 8) | pageEntry.Page.LowPage);
+        var physicalOffset = (physicalPageNumber - 1) * pageSize + offsetInPage + Offset(LeHeader.LE_Data);
+        
+        reader.BaseStream.Position = physicalOffset;
+        VxdDescriptionBlock block = Fill<VxdDescriptionBlock>(reader);
+        DescriptionBlock = block;
+    }
     private void FillObjectTable(BinaryReader reader)
     {
         // There;s no sections yet.

@@ -48,7 +48,7 @@ public class StringTable
     public Dictionary<string, string> Strings { get; set; } = new();
 }
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct VddResources
+public struct VxdResources
 {
     public byte Type;
     public ushort Id;

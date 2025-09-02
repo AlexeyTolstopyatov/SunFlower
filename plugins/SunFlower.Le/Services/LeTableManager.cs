@@ -24,6 +24,7 @@ public class LeTableManager
     public List<string> Characteristics { get; set; } = [];
     public List<Region> EntryTableRegions { get; set; } = [];
     public List<Region> NamesRegions { get; set; } = [];
+    public List<Region> DriverRegions { get; set; } = [];
     // view logic problem
     
     public LeTableManager(LeDumpManager manager)
@@ -35,8 +36,50 @@ public class LeTableManager
         MakeEntryTable();
         MakeFixupTables(); // eternal suffering
         MakeCharacteristics();
+        
+        if (_manager.DriverHeader.LE_WindowsResOffset != 0)
+            MakeDriverRegions();
     }
 
+    private void MakeDriverRegions()
+    {
+        const string mainTitle = "### VxD Driver Header";
+        const string mainContent = "Contains general information about used DDK and offsets to I/O extra data structures";
+        
+        DataTable mainTable = new("VxD Header")
+        {
+            Columns = { "Name:s", "Value:?" }
+        };
+        
+        mainTable.Rows.Add(nameof(VxdHeader.LE_WindowsResOffset), _manager.DriverHeader.LE_WindowsResOffset.ToString("X"));
+        mainTable.Rows.Add(nameof(VxdHeader.LE_WindowsResLength), _manager.DriverHeader.LE_WindowsResLength.ToString("X"));
+        mainTable.Rows.Add(nameof(VxdHeader.LE_DeviceID), _manager.DriverHeader.LE_DeviceID.ToString("X"));
+        mainTable.Rows.Add(nameof(VxdHeader.LE_DDKMajor), _manager.DriverHeader.LE_DDKMajor.ToString("X"));
+        mainTable.Rows.Add(nameof(VxdHeader.LE_DDKMinor), _manager.DriverHeader.LE_DDKMinor.ToString("X"));
+        
+        Region main = new Region(mainTitle, mainContent, mainTable);
+
+        const string resTitle = "### VxD Resources Header";
+        const string resContent = "Originally `e32_winresoff` (here: `LE_WindowsResOffset`) field optionally stores raw file pointer to this structure.";
+        DataTable resTable = new("Resources Table")
+        {
+            Columns = { "Name:s", "Value:?" }
+        };
+
+        resTable.Rows.Add(nameof(VxdResources.Type), _manager.DriverResources.Type.ToString("X"));
+        resTable.Rows.Add(nameof(VxdResources.Id), _manager.DriverResources.Id.ToString("X"));
+        resTable.Rows.Add(nameof(VxdResources.Name), _manager.DriverResources.Name.ToString("X"));
+        resTable.Rows.Add(nameof(VxdResources.Flags), _manager.DriverResources.Flags.ToString("X"));
+        resTable.Rows.Add(nameof(VxdResources.Ordinal), _manager.DriverResources.Ordinal.ToString("X"));
+        resTable.Rows.Add(nameof(VxdResources.ResourceSize), _manager.DriverResources.Ordinal.ToString("X"));
+
+        Region resources = new(resTitle, resContent, resTable);
+        
+        DriverRegions.Add(main);
+        DriverRegions.Add(resources);
+        // DDB and Win32 resources are unavailable at the moment
+        
+    }
     private void MakeHeaders(MzHeader mz, LeHeader le)
     {
         List<DataTable> tables =

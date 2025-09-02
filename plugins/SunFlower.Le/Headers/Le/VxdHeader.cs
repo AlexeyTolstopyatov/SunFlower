@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace SunFlower.Le.Headers.Le;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct VddHeader
+public struct VxdHeader
 {
     [MarshalAs(UnmanagedType.U4)] 
     public uint LE_WindowsResOffset;

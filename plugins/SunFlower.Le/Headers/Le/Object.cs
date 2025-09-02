@@ -26,11 +26,11 @@ public struct Object(uint virtualSegmentSize, uint relocationBase, uint objectFl
     
     public string ObjectType => ((ObjectFlagsMask >> 8) & 0x03) switch
     {
-        0 => "OBJ_NORMAL", // <-- .CODE .DATA .BSS .RDATA .GOD (rwx object page)
-        1 => "OBJ_ZERO_FILLED",
-        2 => "OBJ_RESIDENT",
-        3 => "OBJ_RESIDENT_CONTIGUOUS",
-        _ => "OBJ_UNKNOWN"
+        0 => "NORMAL", // <-- .CODE .DATA .BSS .RDATA .GOD (rwx object page)
+        1 => "ZERO_FILLED",
+        2 => "RESIDENT",
+        3 => "RESIDENT_CONTIGUOUS",
+        _ => "UNKNOWN"
     };
     /// <summary>
     /// Tries to tell Borland-declared name of object section.

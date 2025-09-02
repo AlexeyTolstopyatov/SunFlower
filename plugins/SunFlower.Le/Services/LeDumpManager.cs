@@ -21,8 +21,8 @@ public class LeDumpManager : UnsafeManager
     public MzHeader MzHeader { get; set; }
     public LeHeader LeHeader { get; set; }
     public VxdHeader DriverHeader { get; set; }
-    public List<ResidentName> ResidentNames { get; set; } = [];
-    public List<NonResidentName> NonResidentNames { get; set; } = [];
+    public List<Name> ResidentNames { get; set; } = [];
+    public List<Name> NonResidentNames { get; set; } = [];
     public List<Function> ImportingModules { get; set; } = [];
     public List<Function> ImportingProcedures { get; set; } = [];
     public List<EntryBundle> EntryBundles { get; set; } = [];
@@ -190,7 +190,7 @@ public class LeDumpManager : UnsafeManager
             ResidentNames.Add(new()
             {
                 Size = i,
-                Name = name,
+                String = name,
                 Ordinal = ordinal
             });
         }
@@ -205,10 +205,10 @@ public class LeDumpManager : UnsafeManager
         {
             var name = Encoding.ASCII.GetString(reader.ReadBytes(j));
             var ordinal = reader.ReadUInt16();
-            NonResidentNames.Add(new NonResidentName
+            NonResidentNames.Add(new Name
             {
                 Size = j,
-                Name = name,
+                String = name,
                 Ordinal = ordinal
             });
         }
@@ -302,7 +302,7 @@ public class LeDumpManager : UnsafeManager
     /// <param name="reader"></param>
     private void FillDescriptionBlock(BinaryReader reader)
     {
-        var ddbNonResident = NonResidentNames.FirstOrDefault(x => x.Name.Contains("DDB"));
+        var ddbNonResident = NonResidentNames.FirstOrDefault(x => x.String.Contains("DDB"));
         if (ddbNonResident == null)
         {
             Debug.WriteLine("DDB not found in non-resident names");
@@ -371,13 +371,10 @@ public class LeDumpManager : UnsafeManager
         }
 
     }
-
     private void FillObjectMap(BinaryReader reader)
     {
         long tablePosition = Offset(LeHeader.LE_PageMap);
         reader.BaseStream.Position = tablePosition;
-        
-        //List<ObjectPage> entries = new();
         
         for (var i = 0; i < LeHeader.LE_Pages; i++)
         {
@@ -393,15 +390,6 @@ public class LeDumpManager : UnsafeManager
             FillObjectPage(entry);
         }
 
-    }
-    private long CalculatePageFileOffset(ObjectPage entry)
-    {
-        var pageNumber = (uint)((entry.HighPage << 8) | entry.LowPage);
-        
-        // PageOffset = (Page# - 1) * sizeof(Page) + DataPageOffset
-        return (pageNumber - 1) * LeHeader.LE_PageSize 
-               + LeHeader.LE_Data 
-               + MzHeader.e_lfanew;
     }
     private void FillObjectPage(ObjectPage entry)
     {
@@ -428,7 +416,7 @@ public class LeDumpManager : UnsafeManager
             flags.Add("OBJPAGE_LAST");
         }
         
-        ObjectPages.Add(new ObjectPageModel(entry, flags, CalculatePageFileOffset(entry)));
+        ObjectPages.Add(new ObjectPageModel(entry, flags));
     }
 
     private readonly Dictionary<uint, string> _moduleNameCache = [];

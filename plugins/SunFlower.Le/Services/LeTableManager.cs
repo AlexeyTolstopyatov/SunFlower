@@ -194,7 +194,7 @@ public class LeTableManager
         ResidentNames.Columns.Add("Size:1");
         foreach (var name in _manager.ResidentNames)
         {
-            ResidentNames.Rows.Add(name.Name, name.Ordinal, "0x" + name.Size.ToString("X2"));
+            ResidentNames.Rows.Add(name.String, name.Ordinal, "0x" + name.Size.ToString("X2"));
         }
         NamesRegions.Add(new Region(residentHeader, residentContent, ResidentNames));
         
@@ -207,7 +207,7 @@ public class LeTableManager
         NonResidentNames.Columns.Add("Size:1");
         foreach (var name in _manager.NonResidentNames)
         {
-            NonResidentNames.Rows.Add(name.Name, name.Ordinal, "0x" + name.Size.ToString("X2"));
+            NonResidentNames.Rows.Add(name.String, name.Ordinal, "0x" + name.Size.ToString("X2"));
         }
         NamesRegions.Add(new Region(notResidentHeader, notResidentContent, NonResidentNames));
         
@@ -293,7 +293,6 @@ public class LeTableManager
                 "0x" + page.Page.HighPage.ToString("X4"),
                 "0x" + page.Page.LowPage.ToString("X4"),
                 "0x" + page.Page.Flags.ToString("X2"),
-                "0x" + page.RealOffset.ToString("X16"), 
                 flags
             );
         }
@@ -423,16 +422,16 @@ public class LeTableManager
     private void MakeCharacteristics()
     {
         List<string> md = [];
-        var description = _manager.NonResidentNames.Count > 0 ? _manager.NonResidentNames[0].Name : "`<missing>`";
-        var name = _manager.ResidentNames.Count > 0 ? _manager.ResidentNames[0].Name : "`<name_missing>`";
+        var description = _manager.NonResidentNames.Count > 0 ? _manager.NonResidentNames[0].String : "`<missing>`";
+        var name = _manager.ResidentNames.Count > 0 ? _manager.ResidentNames[0].String : "`<name_missing>`";
         md.Add("### Program Header information");
-        md.Add($"Project Name: {_manager.ResidentNames[0].Name}");
+        md.Add($"Project Name: {_manager.ResidentNames[0].String}");
         md.Add($"Description: \"{description}\"");
         md.Add("Target CPU: " + GetCpuType(_manager.LeHeader.LE_CPU));
         md.Add("Target OS: " + GetOsType(_manager.LeHeader.LE_OS));
         md.Add($"Module Version: {_manager.LeHeader.LE_VersionMajor}.{_manager.LeHeader.LE_VersionMinor}");
         
-        md.Add($"Resolved \"{_manager.ResidentNames[0].Name}\" module flags:");
+        md.Add($"Resolved \"{_manager.ResidentNames[0].String}\" module flags:");
         foreach (var flag in GetModuleFlags(_manager.LeHeader.LE_Type))
         {
             md.Add($" - `{flag}`");

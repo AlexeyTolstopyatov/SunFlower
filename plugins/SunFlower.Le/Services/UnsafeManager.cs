@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SunFlower.Ne.Services;
+namespace SunFlower.Le.Services;
 
 ///
 /// CoffeeLake 2024-2025

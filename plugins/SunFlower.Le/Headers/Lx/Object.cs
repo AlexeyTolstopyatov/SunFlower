@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SunFlower.Le.Headers.Le;
+namespace SunFlower.Le.Headers.Lx;
+
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Object(uint virtualSegmentSize, uint relocationBase, uint objectFlagsMask, uint pageMap, uint pageMapEntries, uint unknown)

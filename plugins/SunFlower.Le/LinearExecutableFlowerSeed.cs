@@ -1,15 +1,14 @@
 ﻿using System.Data;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
-using SunFlower.Le.Headers.Le;
 using SunFlower.Le.Services;
 
 namespace SunFlower.Le;
 
-[FlowerSeedContract(2, 0, 0)]
+[FlowerSeedContract(2, 1, 0)]
 public class LinearExecutableFlowerSeed : IFlowerSeed
 {
-    public string Seed { get; } = "Sunflower Win32s-OS/2 LE Any-CPU";
+    public string Seed { get; } = "Sunflower Windows-OS/2 LE Any-CPU";
     public FlowerSeedStatus Status { get; private set; } = new();
 
     public int Main(string path)

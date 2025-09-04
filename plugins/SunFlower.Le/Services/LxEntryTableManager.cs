@@ -52,7 +52,7 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
                         ModuleOrdinal = reader.ReadUInt16(),
                         OffsetOrOrdinal = reader.ReadUInt32()
                     },
-                    _ => throw new NotSupportedException($"Unsupported entry type: {type}")
+                    _ => new EntryUnused()
                 };
                 bundle.Entries.Add(entry);
             }

@@ -69,9 +69,18 @@ public class Tests
     {
         // baaad...
         const string path = @"D:\TEST\OS2\VTDAPI.386";
-        LeDumpManager manager = new(path);
-        LeTableManager tableManager = new(manager);
+        LeDumpManager manager = new(path); // EntryPoint table may be corrupted
+        LeTableManager tableManager = new(manager); // EntryPoint table may be corrupted
         
+        Assert.Pass();
+    }
+
+    [Test]
+    public void CheckoutLxImage()
+    {
+        const string path = @"D:\TEST\ARCA\NETAPI.DLL";
+        LxDumpManager manager = new LxDumpManager(path);
+        LeDumpManager leManager = new LeDumpManager(path);
         Assert.Pass();
     }
     /// <summary>

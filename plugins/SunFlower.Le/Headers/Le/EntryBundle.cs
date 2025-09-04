@@ -1,6 +1,4 @@
-﻿using System.Security.AccessControl;
-
-namespace SunFlower.Le.Headers.Le;
+﻿namespace SunFlower.Le.Headers.Le;
 
 /// <summary>
 /// EntryTables looks like collection of bundles which

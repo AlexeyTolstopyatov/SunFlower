@@ -1,9 +1,7 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using SunFlower.Le.Headers;
+﻿using SunFlower.Le.Headers;
 using SunFlower.Le.Headers.Le;
 using SunFlower.Le.Headers.Lx;
 using SunFlower.Le.Models.Le;
-//using SunFlower.Ne.Services;
 using EntryBundle = SunFlower.Le.Headers.Lx.EntryBundle;
 using Object = SunFlower.Le.Headers.Le.Object;
 
@@ -18,7 +16,7 @@ public class LxDumpManager : UnsafeManager
     public List<Function> ImportingModules { get; set; }
     public List<Function> ImportingProcedures { get; set; }
     public List<EntryBundle> EntryBundles { get; set; }
-    public List<Object> Objects { get; set; }
+    public List<Headers.Lx.Object> Objects { get; set; }
     public List<ObjectPageModel> Pages { get; set; }
     private uint _offset;
 
@@ -36,15 +34,15 @@ public class LxDumpManager : UnsafeManager
         _offset = MzHeader.e_lfanew;
         stream.Position = MzHeader.e_lfanew;
         LxHeader = Fill<LxHeader>(reader);
-
-        if (LxHeader.SignatureWord is not 0x584c and 0x4c58)
-            throw new NotSupportedException("Doesn't have 'LX' magic");
+        if (LxHeader.e32_magic != 0x454c && LxHeader.e32_magic != 0x4c45)
+            if (LxHeader.e32_magic != 0x584c && LxHeader.e32_magic != 0x4c58)
+                throw new NotSupportedException("Doesn't have 'LX' magic");
         
-        var namesTables = new LeNamesTablesManager(reader, Offset(LxHeader.ResidentNamesTableOffset), LxHeader.NonResidentNamesTableOffsetFromTopOfFile);
-        var importNames = new LeImportNamesManager(reader, Offset(LxHeader.ImportedModulesNameTableOffset), Offset(LxHeader.ImportedProcedureNameTableOffset));
-        var entryTable = new LxEntryTableManager(reader, Offset(LxHeader.EntryTableOffset));
-        var objectTable = new LxObjectsManager(reader, Offset(LxHeader.ObjectTableEntries), LxHeader.ObjectTableEntries);
-        var pagesTable = new LePagesManager(reader, Offset(LxHeader.ObjectPageMapOffset), LxHeader.ModuleNumberOfPages);
+        var namesTables = new LeNamesTablesManager(reader, Offset(LxHeader.e32_restab), LxHeader.e32_nrestab);
+        var importNames = new LeImportNamesManager(reader, Offset(LxHeader.e32_impmod), Offset(LxHeader.e32_impproc));
+        var entryTable = new LxEntryTableManager(reader, Offset(LxHeader.e32_enttab));
+        var objectTable = new LxObjectsManager(reader, Offset(LxHeader.e32_objtab), LxHeader.e32_objcnt);
+        var pagesTable = new LePagesManager(reader, Offset(LxHeader.e32_objmap), LxHeader.e32_pagesum);
 
         NonResidentNames = namesTables.NonResidentNames;
         ResidentNames = namesTables.ResidentNames;

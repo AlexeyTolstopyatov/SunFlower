@@ -1,7 +1,4 @@
-﻿using System.Data;
-using System.Drawing;
-
-namespace SunFlower.Le.Headers.Le;
+﻿namespace SunFlower.Le.Headers.Le;
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]

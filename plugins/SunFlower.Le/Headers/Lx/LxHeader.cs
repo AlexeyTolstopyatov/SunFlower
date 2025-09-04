@@ -3,57 +3,58 @@
 namespace SunFlower.Le.Headers.Lx;
 
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct LxHeader
 {
-    [MarshalAs(UnmanagedType.U2)] public ushort SignatureWord;
-    [MarshalAs(UnmanagedType.I1)] public byte ByteOrder;
-    [MarshalAs(UnmanagedType.U1)] public byte WordOrder;
-    [MarshalAs(UnmanagedType.U4)] public uint ExecutableFormatLevel;
-    [MarshalAs(UnmanagedType.U2)] public ushort CPUType;
-    [MarshalAs(UnmanagedType.U2)] public ushort OSType;
-    [MarshalAs(UnmanagedType.U2)] public ushort ModuleVersionMajor;
-    [MarshalAs(UnmanagedType.U2)] public ushort ModuleVersionMinor;
-    [MarshalAs(UnmanagedType.U4)] public uint ModuleTypeFlags;
-    [MarshalAs(UnmanagedType.U4)] public uint ModuleNumberOfPages;
-    [MarshalAs(UnmanagedType.U4)] public uint InitialEIPObjectNumber;
-    [MarshalAs(UnmanagedType.U4)] public uint InitialEIP;
-    [MarshalAs(UnmanagedType.U4)] public uint InitialESPObjectNumber;
-    [MarshalAs(UnmanagedType.U4)] public uint InitialESP;
-    [MarshalAs(UnmanagedType.U4)] public uint MemoryPageSize;
-    [MarshalAs(UnmanagedType.U4)] public uint MemoryPageOffsetShift;
-    [MarshalAs(UnmanagedType.U4)] public uint BytesOnLastPage;
-    [MarshalAs(UnmanagedType.U4)] public uint FixupSectionSize;
-    [MarshalAs(UnmanagedType.U4)] public uint FixupSectionChecksum;
-    [MarshalAs(UnmanagedType.U4)] public uint LoaderSectionSize;
-    [MarshalAs(UnmanagedType.U4)] public uint LoaderSectionChecksum;
-    [MarshalAs(UnmanagedType.U4)] public uint ObjectTableOffset;
-    [MarshalAs(UnmanagedType.U2)] public ushort ObjectTableEntries;
-    [MarshalAs(UnmanagedType.U4)] public uint ObjectPageMapOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint ObjectIterateDataMapOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint ResourceTableOffset;
-    [MarshalAs(UnmanagedType.U2)] public ushort ResourceTableEntries;
-    [MarshalAs(UnmanagedType.U4)] public uint ResidentNamesTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint EntryTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint ModuleDirectivesTableOffset;
-    [MarshalAs(UnmanagedType.U2)] public ushort ModuleDirectivesTableEntries;
-    [MarshalAs(UnmanagedType.U4)] public uint FixupPageTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint FixupRecordTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint ImportedModulesNameTableOffset;
-    [MarshalAs(UnmanagedType.U2)] public ushort ImportedModulesCount;
-    [MarshalAs(UnmanagedType.U4)] public uint ImportedProcedureNameTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint PerPageChecksumTableOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint DataPagesOffsetFromTopOfFile;
-    [MarshalAs(UnmanagedType.U4)] public uint PreloadPagesCount;
-    [MarshalAs(UnmanagedType.U4)] public uint NonResidentNamesTableOffsetFromTopOfFile;
-    [MarshalAs(UnmanagedType.U4)] public uint NonResidentNamesTableLength;
-    [MarshalAs(UnmanagedType.U4)] public uint NonResidentNamesTableChecksum;
-    [MarshalAs(UnmanagedType.U4)] public uint AutomaticDataObject;
-    [MarshalAs(UnmanagedType.U4)] public uint DebugInformationOffset;
-    [MarshalAs(UnmanagedType.U4)] public uint DebugInformationLength;
-    [MarshalAs(UnmanagedType.U4)] public uint PreloadInstancePagesNumber;
-    [MarshalAs(UnmanagedType.U4)] public uint DemandInstancePagesNumber;
-    [MarshalAs(UnmanagedType.U4)] public uint HeapSize;
-    [MarshalAs(UnmanagedType.U4)] public uint StackSize;
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public byte[] Reserved;
+    public ushort e32_magic;
+    
+    public byte e32_border;
+    public byte e32_worder;
+    public uint e32_level;
+    public ushort e32_cpu;
+    public ushort e32_os;
+    public uint e32_ver;
+    public uint e32_mflags;
+    public uint e32_mpages;
+    public uint e32_startobj;
+    public uint e32_eip;
+    public uint e32_stackobj;
+    public uint e32_esp;
+    public uint e32_pagesize;
+    public uint e32_pageshift;
+    public uint e32_fixupsize;
+    public uint e32_fixupsum;
+    public uint e32_ldrsize;
+    public uint e32_ldrsum;
+    public uint e32_objtab;
+    public uint e32_objcnt;
+    public uint e32_objmap;
+    public uint e32_itermap;
+    public uint e32_rsrctab;
+    public uint e32_rsrccnt;
+    public uint e32_restab;
+    public uint e32_enttab;
+    public uint e32_dirtab;
+    public uint e32_dircnt;
+    public uint e32_fpagetab;
+    public uint e32_frectab;
+    public uint e32_impmod;
+    public uint e32_impmodcnt;
+    public uint e32_impproc;
+    public uint e32_pagesum;
+    public uint e32_datapage;
+    public uint e32_preload;
+    public uint e32_nrestab;
+    public uint e32_cbnrestab;
+    public uint e32_nressum;
+    public uint e32_autodata;
+    public uint e32_debuginfo;
+    public uint e32_debuglen;
+    public uint e32_instpreload;
+    public uint e32_instdemand;
+    public uint e32_heapsize;
+    public uint e32_stacksize;
+    
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+    public byte[] e32_res3;
 }

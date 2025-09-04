@@ -13,12 +13,6 @@ public struct Object(uint virtualSegmentSize, uint relocationBase, uint objectFl
     public uint Unknown = unknown; // or Reserved
     public string[] ObjectFlags => new []
     {
-        (ObjectFlagsMask & 0x0020) != 0 ? "SHARED" : "SINGLE", // LX
-        (ObjectFlagsMask & 0x0040) != 0 ? "PRELOAD_PAGES" : string.Empty, // LX
-        (ObjectFlagsMask & 0x0080) != 0 ? "INVALID_PAGES" : string.Empty, // LX
-        (ObjectFlagsMask & 0x0100) != 0 ? "ZERO_PAGES" : string.Empty, // LX
-        (ObjectFlagsMask & 0x0200) != 0 ? "RESIDENT!" : string.Empty, // LX
-        (ObjectFlagsMask & 0x0300) != 0 ? "RESIDENT/CONTIGUOUS!" : string.Empty, // LX
         (ObjectFlagsMask & 0x1000) != 0 ? "16:16" : string.Empty, // both
         (ObjectFlagsMask & 0x2000) != 0 ? "USE_32" : "USE_16", // both
         (ObjectFlagsMask & 0x4000) != 0 ? "CONFORMING" : string.Empty, //  both

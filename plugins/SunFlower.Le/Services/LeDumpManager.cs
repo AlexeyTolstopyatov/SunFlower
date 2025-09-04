@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using SunFlower.Le.Headers.Le;
+﻿using SunFlower.Le.Headers.Le;
 using SunFlower.Le.Headers;
-using System.Text;
 using SunFlower.Le.Models.Le;
 using Object = SunFlower.Le.Headers.Le.Object;
 
@@ -50,8 +48,9 @@ public class LeDumpManager : UnsafeManager
         LeHeader = Fill<LeHeader>(reader);
         var postHeadPosition = stream.Position;
         
-        if (LeHeader.LE_ID is not 0x454c and not 0x4c45) // LE magic or cigam. or VxD-model driver or Microsoft OS/2 OMF.
-            throw new InvalidOperationException("Doesn't have 'LE' signature");
+        if (LeHeader.LE_ID != 0x454c && LeHeader.LE_ID != 0x4c45)
+            if (LeHeader.LE_ID != 0x584c && LeHeader.LE_ID != 0x4c58)
+                throw new NotSupportedException("Doesn't have 'LX' magic");
 
         var namesTables = new LeNamesTablesManager(reader, Offset(LeHeader.LE_ResidentNames), LeHeader.LE_NoneRes);
         var importNames = new LeImportNamesManager(reader, Offset(LeHeader.LE_ImportModNames), Offset(LeHeader.LE_ImportNames));

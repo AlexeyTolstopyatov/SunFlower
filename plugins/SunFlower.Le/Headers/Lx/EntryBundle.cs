@@ -50,7 +50,7 @@ public class EntryForwarder : Entry
     public byte Flags { get; set; }
     public ushort ModuleOrdinal { get; set; }
     public uint OffsetOrOrdinal { get; set; }
-    public string EntryType => (Flags & 0x01) != 0 ? "[EXPORT]" : "[STATIC]";
+    //public string EntryType => (Flags & 0x01) != 0 ? "[EXPORT]" : "[STATIC]";
     public string ObjectOffsets => "`virtual`";
 }
 
@@ -74,7 +74,7 @@ public class EntryBundle
         EntryBundleType._286CallGate => "`.CALLGATE`",
         EntryBundleType.Forwarder => "`.FWD`",
         EntryBundleType.Unused => "`.UNUSED`",
-        _ => "`.WHAT?"
+        _ => "`.WHAT?`"
     };
 
     public string TypeDescription => Type switch

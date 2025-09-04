@@ -1,5 +1,4 @@
-﻿using SunFlower.Le.Headers.Le;
-using Object = SunFlower.Le.Headers.Le.Object;
+﻿using Object = SunFlower.Le.Headers.Le.Object;
 
 namespace SunFlower.Le.Models.Le;
 

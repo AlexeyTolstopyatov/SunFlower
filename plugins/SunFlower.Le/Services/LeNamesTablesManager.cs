@@ -31,6 +31,9 @@ public class LeNamesTablesManager
         }
 
         // no Offset for not-resident names.
+        if (nonResidentOffset == 0)
+            return;
+        
         reader.BaseStream.Position = nonResidentOffset;
         
         byte j;

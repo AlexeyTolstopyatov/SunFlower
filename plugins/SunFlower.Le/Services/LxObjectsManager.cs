@@ -2,7 +2,7 @@
 
 public class LxObjectsManager
 {
-    public List<Headers.Le.Object> Objects { get; set; } = [];
+    public List<Headers.Lx.Object> Objects { get; set; } = [];
 
     public LxObjectsManager(BinaryReader reader, uint offset, uint count)
     {
@@ -17,7 +17,7 @@ public class LxObjectsManager
             var pageMapEntries = reader.ReadUInt32();
             var unknownField = reader.ReadUInt32();
             
-            Objects.Add(new Headers.Le.Object()
+            Objects.Add(new Headers.Lx.Object()
             {
                 VirtualSegmentSize = virtualSegmentSize,
                 ObjectFlagsMask = objectFlagsMask,

@@ -1,4 +1,5 @@
-﻿using SunFlower.Le.Headers.Lx;
+﻿using System.Runtime.InteropServices;
+using SunFlower.Le.Headers.Lx;
 
 namespace SunFlower.Le.Services;
 
@@ -6,11 +7,11 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
 {
     public List<EntryBundle> EntryBundles { get; init; } = ReadEntryTable(reader, offset);
 
-    private static List<EntryBundle> ReadEntryTable(BinaryReader reader, uint entryTableOffset)
+    private static List<EntryBundle> ReadEntryTable(BinaryReader reader, uint entryTableOffset, [Optional] uint bundlesCount)
     {
         reader.BaseStream.Seek(entryTableOffset, SeekOrigin.Begin);
         var bundles = new List<EntryBundle>();
-
+        
         while (true)
         {
             var count = reader.ReadByte();

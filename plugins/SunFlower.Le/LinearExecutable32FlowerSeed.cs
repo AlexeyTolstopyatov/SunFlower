@@ -1,4 +1,7 @@
-﻿using SunFlower.Abstractions;
+﻿using System.Data;
+using SunFlower.Abstractions;
+using SunFlower.Abstractions.Types;
+using SunFlower.Le.Services;
 
 namespace SunFlower.Le;
 
@@ -9,7 +12,53 @@ public class LinearExecutable32FlowerSeed : IFlowerSeed
     public FlowerSeedStatus Status { get; } = new();
     public int Main(string path)
     {
-        
+        try
+        {
+            LxDumpManager dumpManager = new(path);
+            LxTableManager tableManager = new(dumpManager);
+
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
+            {
+                BoxedResult = tableManager.Characteristics
+            });
+            FlowerSeedResult imports = new(FlowerSeedEntryType.Strings)
+            {
+            };
+            List<string> mods = ["### Imported Modules", ..tableManager.ImportedNames];
+            List<string> procs = ["### Imported Procedures", ..tableManager.ImportedProcedures];
+            
+            mods.AddRange(procs);
+
+            imports.BoxedResult = mods;
+            Status.Results.Add(imports);
+            
+            List<DataTable> unboxed = [..tableManager.Headers];
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
+            {
+                BoxedResult = unboxed
+            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.ObjectRegions
+            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.EntryTableRegions
+            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.NamesRegions
+            });
+            
+            Status.IsEnabled = true;
+            
+            return 0;
+        }
+        catch (Exception e)
+        {
+            Status.LastError = e;
+            return -1;
+        }
         return 0;
     }
 }

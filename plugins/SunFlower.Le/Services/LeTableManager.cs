@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Text;
+using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Le.Headers;
 using SunFlower.Le.Headers.Le;
@@ -29,14 +30,14 @@ public class LeTableManager
     {
         _manager = manager;
         MakeHeaders(_manager.MzHeader, _manager.LeHeader);
+        if (_manager.DriverHeader.LE_WindowsResOffset != 0)
+            MakeDriverRegions();
+        
         MakeNames();
         MakeObjectTables();
         MakeEntryTable();
         MakeFixupTables(); // eternal suffering
         MakeCharacteristics();
-        
-        if (_manager.DriverHeader.LE_WindowsResOffset != 0)
-            MakeDriverRegions();
     }
 
     private void MakeDriverRegions()
@@ -214,14 +215,14 @@ public class LeTableManager
             return;
         List<string> names = [];
         
-        names.AddRange(_manager.ImportingModules.Select(function => function.Name));
+        names.AddRange(_manager.ImportingModules.Select(function => FlowerReport.SafeString(function.Name)));
         ImportedNames = names.ToArray();
         
         if (_manager.ImportingProcedures.Count == 0)
             return;
 
         names = [];
-        names.AddRange(_manager.ImportingProcedures.Select(f => f.Name));
+        names.AddRange(_manager.ImportingProcedures.Select(f => FlowerReport.SafeString(f.Name)));
 
         ImportedProcedures = names.ToArray();
     }
@@ -366,7 +367,7 @@ public class LeTableManager
                 model.Record.ExtraData.ToString("X"),
                 model.Record.OsFixup.ToString("X"),
                 model.ImportingOrdinal,
-                $"`{OnlyAscii(model.ImportingName)}`",
+                $"`{FlowerReport.SafeString(model.ImportingName)}`",
                 atp,
                 rtp
                 );
@@ -420,8 +421,8 @@ public class LeTableManager
     private void MakeCharacteristics()
     {
         List<string> md = [];
-        var description = _manager.NonResidentNames.Count > 0 ? _manager.NonResidentNames[0].String : "`<missing>`";
-        var name = _manager.ResidentNames.Count > 0 ? _manager.ResidentNames[0].String : "`<name_missing>`";
+        var description = _manager.NonResidentNames.Count > 0 ? FlowerReport.SafeString(_manager.NonResidentNames[0].String) : "`<missing>`";
+        var name = _manager.ResidentNames.Count > 0 ? FlowerReport.SafeString(_manager.ResidentNames[0].String) : "`<name_missing>`";
         md.Add("### Program Header information");
         md.Add($"Project Name: {_manager.ResidentNames[0].String}");
         md.Add($"Description: \"{description}\"");
@@ -447,8 +448,8 @@ public class LeTableManager
         
         var cs = _manager.LeHeader.LE_EntryCS;
         var ip = _manager.LeHeader.LE_EntryEIP;
-        md.Add($" - Win32s-OS/2 `CS:EIP=0x{cs:X8}:0x{ip:X8}`"); // <-- handle it
-        md.Add($" - Win32s-OS/2 `SS:ESP=0x{_manager.LeHeader.LE_EntrySS:X8}:0x{_manager.LeHeader.LE_EntryESP:X8}`");
+        md.Add($" - OS/2 `CS:EIP=0x{cs:X8}:0x{ip:X8}`"); // <-- handle it
+        md.Add($" - OS/2 `SS:ESP=0x{_manager.LeHeader.LE_EntrySS:X8}:0x{_manager.LeHeader.LE_EntryESP:X8}`");
         
         md.Add($"> [!INFO]\r\n> Flat EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) object with `EIP=0x{ip:X}` offset");
         
@@ -475,8 +476,8 @@ public class LeTableManager
         md.Add($"Requires Microsoft Windows {_manager.DriverHeader.LE_DDKMajor}.{_manager.DriverHeader.LE_DDKMinor} and earlier versions.");
         md.Add($"Driver resources stores at: 0x{_manager.DriverHeader.LE_WindowsResOffset:X}");
         
-        // TODO: make VxdResources struct / make VxdDdb struct.
-        
+        md.Add("");
+        md.Add("See next regions for more details");
     }
     private static string GetCpuType(ushort cpuType)
     {
@@ -530,12 +531,5 @@ public class LeTableManager
             result.Add("No special flags");
 
         return result.ToArray();
-    }
-    
-    private static string OnlyAscii(string str)
-    {
-        var processed = str.Where(char.IsAscii).ToList();
-        
-        return new string(processed.ToArray());
     }
 }

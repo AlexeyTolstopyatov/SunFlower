@@ -78,9 +78,11 @@ public class Tests
     [Test]
     public void CheckoutLxImage()
     {
-        const string path = @"D:\TEST\ARCA\NETAPI.DLL";
+        const string path = @"D:\TEST\ARCA\HELPMGR.DLL";
         LxDumpManager manager = new LxDumpManager(path);
         LeDumpManager leManager = new LeDumpManager(path);
+
+        LxTableManager tableManager = new(manager);
         Assert.Pass();
     }
     /// <summary>

@@ -19,7 +19,9 @@ public class VxdDriverManager : UnsafeManager
         DriverHeader = Fill<VxdHeader>(reader);
         
         if (DriverHeader.LE_WindowsResOffset == 0)
+        {
             return;
+        }
 
         reader.BaseStream.Position = DriverHeader.LE_WindowsResOffset;
         DriverResources = Fill<VxdResources>(reader);

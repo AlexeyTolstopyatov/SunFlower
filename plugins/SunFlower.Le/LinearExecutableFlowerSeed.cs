@@ -22,9 +22,7 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
             {
                 BoxedResult = tableManager.Characteristics
             });
-            FlowerSeedResult imports = new(FlowerSeedEntryType.Strings)
-            {
-            };
+            FlowerSeedResult imports = new(FlowerSeedEntryType.Strings);
             List<string> mods = ["### Imported Modules", ..tableManager.ImportedNames];
             List<string> procs = ["### Imported Procedures", ..tableManager.ImportedProcedures];
             

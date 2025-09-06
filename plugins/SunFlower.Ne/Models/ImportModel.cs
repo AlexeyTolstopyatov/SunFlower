@@ -1,6 +1,6 @@
 ﻿namespace SunFlower.Ne.Models;
 
-public class NeImportModel
+public class ImportModel
 {
     public string DllName { get; set; } = string.Empty;
     public List<ImportingFunction> Functions { get; set; } = [];

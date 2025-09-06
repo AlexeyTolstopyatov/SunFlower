@@ -74,14 +74,14 @@ public class Relocation
     public ushort OffsetInSegment { get; set; }
 
     // internal reference
-    public ushort? SegmentType { get; set; }
-    public ushort? Target { get; set; }
-    public string? TargetType { get; set; }
+    public ushort SegmentType { get; set; }
+    public ushort Target { get; set; }
+    public string TargetType { get; set; } = string.Empty;
 
     // imports...
-    public ushort? ModuleIndex { get; set; }
-    public ushort? Ordinal { get; set; }
-    public ushort? NameOffset { get; set; }
+    public ushort ModuleIndex { get; set; }
+    public ushort Ordinal { get; set; }
+    public ushort NameOffset { get; set; }
 
-    public string? Fixup { get; set; }
+    public string Fixup { get; set; } = string.Empty;
 }

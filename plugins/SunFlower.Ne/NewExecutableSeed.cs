@@ -28,19 +28,23 @@ public class NewExecutableSeed : IFlowerSeed
             {
                 BoxedResult = tableManager.Imports
             });
-            List<DataTable> unboxed =
-            [
-                ..tableManager.Headers,
-                tableManager.SegmentTable,
-                ..tableManager.RelocationsTables,
-                ..tableManager.EntryTables,
-                tableManager.ModuleReferencesTable,
-                tableManager.NamesTable
-            ];
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
             {
-                BoxedResult = unboxed
+                BoxedResult = tableManager.ModulesRegion
             });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.SegmentRegions
+            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.NamesRegions
+            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.EntryBundlesRegions
+            });
+            
             return 0;
         }
         catch (Exception e)

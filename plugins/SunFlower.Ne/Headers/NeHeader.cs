@@ -2,40 +2,39 @@
 
 namespace SunFlower.Ne.Headers;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct NeHeader
-{ 
-    public NeHeader() {}
-    
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ID = 0; 
-    [MarshalAs(UnmanagedType.U1)] public byte NE_LinkerVersion = 0; 
-    [MarshalAs(UnmanagedType.U1)] public byte NE_LinkerRevision = 0; 
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_EntryTable = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_EntriesCount = 0;
-    [MarshalAs(UnmanagedType.U4)] public uint NE_Checksum = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_ProgramFlags = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_AppFlags = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_AutoSegment = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_Heap = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_Stack = 0;
-    [MarshalAs(UnmanagedType.U4)] public uint NE_CsIp = 0;
-    [MarshalAs(UnmanagedType.U4)] public uint NE_SsSp = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_SegmentsCount = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ModReferencesCount = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_NonResidentNamesCount = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_SegmentsTable = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResourcesTable = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResidentNamesTable = 0; 
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ModReferencesTable = 0; 
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ImportModulesTable = 0;
-    [MarshalAs(UnmanagedType.U4)] public uint NE_NonResidentNamesTable = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_MovableEntriesCount = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_Alignment = 0; // log(base 2) | 0 eq 9
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResourcesCount = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_OS = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_FlagOthers = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_PretThunks = 0; 
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_PerSegmentRefBytes = 0;
-    [MarshalAs(UnmanagedType.U2)] public ushort NE_SwapArea = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMinor = 0;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMajor = 0;
+{
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ID;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_LinkerVersion;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_LinkerRevision;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_EntryTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_EntriesCount;
+    [MarshalAs(UnmanagedType.U4)] public uint NE_Checksum;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_ProgramFlags;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_AppFlags;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_AutoSegment;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_Heap;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_Stack;
+    [MarshalAs(UnmanagedType.U4)] public uint NE_CsIp;
+    [MarshalAs(UnmanagedType.U4)] public uint NE_SsSp;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_SegmentsCount;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ModReferencesCount;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_NonResidentNamesCount;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_SegmentsTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResourcesTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResidentNamesTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ModReferencesTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ImportModulesTable;
+    [MarshalAs(UnmanagedType.U4)] public uint NE_NonResidentNamesTable;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_MovableEntriesCount;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_Alignment; // log() | 0 eq 9
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_ResourcesCount;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_OS;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_FlagOthers;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_PretThunks;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_PerSegmentRefByte;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_SwapArea;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMinor;
+    [MarshalAs(UnmanagedType.U1)] public byte NE_WindowsVersionMajor;
 }

@@ -3,26 +3,26 @@
 public class EntryBundle
 {
     public int OrdinalBase { get; }
-    public List<SegmentEntry> Entries { get; }
+    public List<Entry> Entries { get; }
 
-    public EntryBundle(int ordinalBase, List<SegmentEntry> entries)
+    public EntryBundle(int ordinalBase, List<Entry> entries)
     {
         OrdinalBase = ordinalBase;
         Entries = entries;
     }
 }
 
-public abstract class SegmentEntry { }
+public abstract class Entry { }
 
-public class UnusedSegmentEntry : SegmentEntry { }
+public class UnusedEntry : Entry { }
 
-public class FixedSegmentEntry : SegmentEntry
+public class FixedEntry : Entry
 {
     public byte Segment { get; }
     public byte Flags { get; }
     public ushort Offset { get; }
 
-    public FixedSegmentEntry(byte segment, byte flags, ushort offset)
+    public FixedEntry(byte segment, byte flags, ushort offset)
     {
         Segment = segment;
         Flags = flags;
@@ -30,14 +30,14 @@ public class FixedSegmentEntry : SegmentEntry
     }
 }
 
-public class MoveableSegmentEntry : SegmentEntry
+public class MoveableEntry : Entry
 {
     public byte Flags { get; }
     public byte[] Magic { get; } // |> INT 0x3F
     public byte Segment { get; }
     public ushort Offset { get; }
 
-    public MoveableSegmentEntry(byte flags, byte[] magic, byte segment, ushort offset)
+    public MoveableEntry(byte flags, byte[] magic, byte segment, ushort offset)
     {
         Flags = flags;
         Magic = magic;

@@ -1,7 +1,7 @@
 ﻿namespace SunFlower.Ne.Models;
 
 
-public class NeEntryTableModel(bool isUnused, bool isMovable, byte flags)
+public class EntryTableModel(bool isUnused, bool isMovable, byte flags)
 {
     public string Type { get; set; } = !isUnused
         ? isMovable 
@@ -22,5 +22,5 @@ public class NeEntryTableModel(bool isUnused, bool isMovable, byte flags)
 
 public class NeEntryBundle
 {
-    public List<NeEntryTableModel> EntryPoints { get; set; }
+    public List<EntryTableModel> EntryPoints { get; set; }
 }

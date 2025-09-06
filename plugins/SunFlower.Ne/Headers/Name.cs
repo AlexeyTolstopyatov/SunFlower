@@ -1,8 +1,8 @@
 ﻿namespace SunFlower.Ne.Headers;
 
-public struct NeExport
+public struct Name
 {
     public byte Count;
-    public string Name;
+    public string String;
     public ushort Ordinal;
 }

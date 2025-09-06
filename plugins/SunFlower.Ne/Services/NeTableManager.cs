@@ -1,4 +1,7 @@
 ﻿using System.Data;
+using System.Reflection.Emit;
+using SunFlower.Abstractions;
+using SunFlower.Abstractions.Types;
 using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
 
@@ -20,16 +23,16 @@ public class NeTableManager
         MakeNames();
         MakeImports();
     }
+
+    public List<Region> NamesRegions { get; set; } = [];
+    public List<Region> EntryBundlesRegions { get; set; } = [];
+    public List<Region> RelocationRegions { get; set; } = [];
+    public List<Region> SegmentRegions { get; set; } = [];
     
     public DataTable[] Headers { get; set; } = [];
-    public DataTable SegmentTable { get; set; } = new("Table of file Segments");
-    public DataTable[] RelocationsTables { get; set; } = [];
-    public DataTable NamesTable { get; set; } = new("Resident/NonResident Names");
-    public DataTable[] EntryTables { get; set; } = [];
-    public DataTable ModuleReferencesTable { get; set; } = new("Module References table");
-    // public DataTable ImportingNamesTable { get; set; } = new();
     public string[] Characteristics { get; set; } = [];
     public string[] Imports { get; set; } = [];
+    public List<Region> ModulesRegion { get; set; } = [];
 
     private void MakeHeadersTables()
     {
@@ -101,7 +104,7 @@ public class NeTableManager
         table.Rows.Add(nameof(ne.NE_OS), "0x" + ne.NE_OS.ToString("X"));
         table.Rows.Add(nameof(ne.NE_FlagOthers), "0x" + ne.NE_FlagOthers.ToString("X"));
         table.Rows.Add(nameof(ne.NE_PretThunks), "0x" + ne.NE_PretThunks.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_PerSegmentRefBytes), "0x" + ne.NE_PerSegmentRefBytes.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_PerSegmentRefByte), "0x" + ne.NE_PerSegmentRefByte.ToString("X"));
         table.Rows.Add(nameof(ne.NE_SwapArea), "0x" + ne.NE_SwapArea.ToString("X"));
         table.Rows.Add(nameof(ne.NE_WindowsVersionMinor), "0x" + ne.NE_WindowsVersionMinor.ToString("X"));
         table.Rows.Add(nameof(ne.NE_WindowsVersionMajor), "0x" + ne.NE_WindowsVersionMajor.ToString("X"));
@@ -111,26 +114,26 @@ public class NeTableManager
 
     private void MakeSegmentsTable()
     {
-        if (_manager.SegmentModels.Count == 0)
+        if (_manager.Segments.Count == 0)
             return;
         
         DataTable segs = new("Segments Table");
         
         segs.Columns.AddRange([
-            new DataColumn("Segmentation Type"), 
-            new DataColumn("#Segment"), 
-            new DataColumn("Relative Offset (NVA)"),
-            new DataColumn("Segment Length"),
-            new DataColumn("Segment Characteristics"),
-            new DataColumn("Minimum Allocation"),
-            new DataColumn("Characteristics")
+            new DataColumn("Type:s"), 
+            new DataColumn("#Segment:4"), 
+            new DataColumn("Offset:2"),
+            new DataColumn("Length:2"),
+            new DataColumn("Flags:2"),
+            new DataColumn("Minimum Allocation:2"),
+            new DataColumn("Characteristics:s")
         ]);
 
-        foreach (var segmentDump in _manager.SegmentModels)
+        foreach (var segmentDump in _manager.Segments)
         {
             var array = segmentDump
                 .Characteristics
-                .Aggregate("", (current, characteristic) => current + (characteristic + " "));
+                .Aggregate("", (current, characteristic) => current + characteristic + " ");
             
             segs.Rows.Add(
                 segmentDump.Type,
@@ -143,19 +146,33 @@ public class NeTableManager
             );
         }
 
-        SegmentTable = segs;
+        var head = "### Segments Table";
+        var content = 
+            "The segment table contains an entry for each segment in the executable file.\n " +
+            "The number of segment table entries are defined in the segmented EXE header\n. " +
+            "The first entry in the segment table is segment number 1. " +
+            "The following is the structure of a segment table entry. ";
+        
+        SegmentRegions.Add(new Region(head, content, segs));
     }
 
     private void MakeEntryPointsTable()
     {
-        if (_manager.EntryTableItems.Count == 0)
+        if (_manager.EntryBundles.Count == 0)
             return;
         
         var counter = 1;
-        var tables = new List<DataTable>();
+        var content = 
+            "The linker forms bundles in the most dense manner it can, \n" +
+            "under the restriction that it cannot reorder entry points to improve bundling. " +
+            "\nThe reason for this restriction is that other .EXE files may refer to entry points within this bundle by their ordinal number.";
         
-        foreach (NeEntryBundle bundle in _manager.EntryTableItems)
+        var tables = new List<Region>();
+        
+        foreach (NeEntryBundle bundle in _manager.EntryBundles)
         {
+            var head = $"### EntryTable Bundle #{counter}";
+            
             DataTable entries = new($"EntryTable Bundle #{counter}")
             {
                 Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
@@ -173,56 +190,62 @@ public class NeTableManager
             }
 
             counter++;
-            tables.Add(entries);
+            tables.Add(new Region(head, content, entries));
         }
 
-        EntryTables = tables.ToArray();
+        EntryBundlesRegions = tables;
     }
 
     private void MakeModuleReferencesTable()
     {
-        if (_manager.ModuleReferences.Length == 0)
+        if (_manager.ModuleReferences.Count == 0)
             return;
+
+        var head = "### Module References";
+        var content = "The module-reference table follows the resident-name table. " +
+                      "Each entry contains an offset for the module-name string within the imported names table; " +
+                      "each entry is 2 bytes long.";
         
         DataTable modres = new("Module References")
         {
-            Columns = { "Reference#", "Reference Offset" }
+            Columns = { "Reference#:4", "Offset:2" }
         };
-        for (var i = 0; i < _manager.ModuleReferences.Length; ++i)
+        for (var i = 0; i < _manager.ModuleReferences.Count; ++i)
         {
             modres.Rows.Add(
                 i + 1,
-                _manager.ModuleReferences[i].ImportOffset
+                $"0x{_manager.ModuleReferences[i]:X4}"
             );
         }
 
-        ModuleReferencesTable = modres;
+        ModulesRegion.Add(new Region(head, content, modres));
     }
 
     private void MakeSegmentRelocations()
     {
-        var tables = new List<DataTable>();
-        var sexWithRelocations = _manager.SegmentModels.Where(s => s.Relocations.Count > 0).Distinct().ToList(); 
-        
+        var sexWithRelocations = _manager.Segments.Where(s => s.Relocations.Count > 0).Distinct().ToList();
+        var content = "The location and size of the per-segment data is defined in the segment table entry for the segment. " +
+                      "If the segment has relocation fixups, as defined in the segment table entry flags, they directly " +
+                      "follow the segment data in the file.";
         foreach (var segment in sexWithRelocations)
         {
-            var tableName = $"Relocations Table for Segment #{segment.SegmentNumber} ({segment.Type})";
-            DataTable table = new(tableName)
+            var head = $"### Relocations Table for Segment #{segment.SegmentNumber} ({segment.Type})";
+            DataTable table = new()
             {
                 Columns =
                 {
-                    "ATP", 
-                    "RTP",
-                    "RTP String",
-                    "Is Additive",
-                    "OffsetInSeg",
-                    "SegType",
-                    "Target",
-                    "Target Type",
-                    "Mod#",
-                    "Name",
-                    "Ordinal",
-                    "Fixup"
+                    "ATP:1", 
+                    "RTP:1",
+                    "RTP:s",
+                    "IsAdditive:f",
+                    "OffsetInSeg:2",
+                    "SegType:2",
+                    "Target:2",
+                    "TargetType:s",
+                    "Mod#:2",
+                    "Name:2",
+                    "Ordinal:2",
+                    "Fixup:s"
                 }
             };
 
@@ -230,29 +253,35 @@ public class NeTableManager
             {
                 // prepare table
                 table.Rows.Add(
-                    rel.AddressType, 
-                    rel.RelocationFlags, 
-                    rel.RelocationType, 
-                    rel.IsAdditive,
-                    rel.OffsetInSegment, 
-                    rel.SegmentType, 
-                    rel.Target, 
-                    rel.TargetType, 
-                    rel.ModuleIndex,
-                    rel.Ordinal, 
-                    rel.NameOffset);
+                    "0x" + rel.AddressType.ToString("X"), 
+                    "0x" + rel.RelocationFlags.ToString("X"), 
+                    "0x" + rel.RelocationType, 
+                    "0x" + rel.IsAdditive,
+                    "0x" + rel.OffsetInSegment.ToString("X"), 
+                    "0x" + rel.SegmentType.ToString("X"), 
+                    "0x" + rel.Target.ToString("X"), 
+                    "0x" + rel.TargetType, 
+                    "0x" + rel.ModuleIndex.ToString("X"),
+                    "@" + rel.Ordinal, 
+                    "0x" + rel.NameOffset.ToString("X"),
+                    "0x" + rel.Fixup);
             }
-            tables.Add(table);
+            // per-segment relocation regions
+            SegmentRegions.Add(new Region(head, content, table));
         }
-
-        RelocationsTables = tables.ToArray();
     }
     private void MakeNames()
     {
-        if (_manager.NonResidentNames.Length == 0)
+        if (_manager.NonResidentNames.Count == 0)
             return;
-        
-        DataTable nonres = new("NonResident/Resident Names table")
+        var content = "The resident-name table follows the resource table, " +
+                      "and contains this module's name string and resident exported procedure name strings. " +
+                      "The first string in this table is this module's name. \n\n" +
+                      "The nonresident-name table follows the entry table, and contains a " +
+                      "module description and nonresident exported procedure name strings. " +
+                      "The first string in this table is a module description. These name " +
+                      "strings are case-sensitive and are not null-terminated.";
+        DataTable nonres = new()
         {
             Columns = { "Count", "Name", "Ordinal", "Name Table" }
         };
@@ -260,7 +289,7 @@ public class NeTableManager
         {
             nonres.Rows.Add(
                 neExportDump.Count,
-                OnlyAscii(neExportDump.Name),
+                FlowerReport.SafeString(neExportDump.String),
                 "@" + neExportDump.Ordinal,
                 "[Not resident]"
             );
@@ -270,13 +299,13 @@ public class NeTableManager
         {
             nonres.Rows.Add(
                 export.Count,
-                OnlyAscii(export.Name),
+                FlowerReport.SafeString(export.String),
                 "@" + export.Ordinal,
                 "[Resident]"
             );
         }
 
-        NamesTable = nonres;
+        NamesRegions.Add(new Region("### Resident And NonResident Names", content, nonres));
     }
 
     private void MakeImports()
@@ -290,10 +319,10 @@ public class NeTableManager
 
         foreach (var importModel in _manager.ImportModels)
         {
-            md.Add($" - `{importModel.DllName}`");
+            md.Add($" - " + FlowerReport.SafeString(importModel.DllName));
             foreach (var function in importModel.Functions)
             {
-                md.Add($"    - `{function.Name}@{function.Ordinal}`");
+                md.Add($" - " + FlowerReport.SafeString(function.Name));
             }
         }
 
@@ -304,17 +333,17 @@ public class NeTableManager
         List<string> md = [];
         
         //md.Add("_Main information details took from Windows New segmented EXE header (called `IMAGE_OS2_HEADER` in Win32 API)_\r\n");
-        md.Add("\r\n### Image");
-        md.Add($"Project Name: `{OnlyAscii(_manager.ResidentNames[0].Name)}`"); // <-- first name always project-name
-        md.Add($"Description: {OnlyAscii(_manager.NonResidentNames[0].Name)}");
+        md.Add("\r\n# Image");
+        md.Add($"Project Name: {FlowerReport.SafeString(_manager.ResidentNames[0].String)}"); // <-- first name always project-name
+        md.Add($"Description: {FlowerReport.SafeString(_manager.NonResidentNames[0].String)}");
         
         var os = _manager.NeHeader.NE_OS switch
         {
             0x0 => "Any OS supported", // set for *.FON. means "any OS supported"  
-            0x1 => "OS/2 (Os2ss)",
-            0x2 => "Windows/286 (Win16)",
+            0x1 => "OS/2",
+            0x2 => "Windows/286",
             0x3 => "DOS/4",
-            0x4 => "Windows/386 (Win16)",
+            0x4 => "Windows/386",
             0x5 => "BoSS",
             _ => $"Unknown 0x{_manager.NeHeader.NE_OS:X}" // <-- really don't know how handle it
         };
@@ -338,7 +367,7 @@ public class NeTableManager
         if (_manager.NeHeader.NE_WindowsVersionMajor > 0)
             md.Add($" - Microsoft Windows version: {_manager.NeHeader.NE_WindowsVersionMajor}.{_manager.NeHeader.NE_WindowsVersionMinor}");
         
-        md.Add("\r\n### Loader requirements");
+        md.Add("\r\n## Loader requirements");
         
         md.Add($" - Heap=`{_manager.NeHeader.NE_Heap:X4}`");
         md.Add($" - Stack=`{_manager.NeHeader.NE_Stack:X4}`");
@@ -350,32 +379,62 @@ public class NeTableManager
         var ip = _manager.NeHeader.NE_CsIp & 0xFFFF;
         
         md.Add($" - Win16-OS/2 `CS:IP={cs:X4}:{ip:X4}` (hex)"); // <-- handle it
-        md.Add($" - Win16-OS/2 `SS:SP={(_manager.NeHeader.NE_SsSp >> 16):X4}:{(_manager.NeHeader.NE_SsSp & 0xFFFF):X4}` (hex)"); // <-- handle it
-        md.Add($"> [!INFO]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
+        md.Add($" - Win16-OS/2 `SS:SP={_manager.NeHeader.NE_SsSp >> 16:X4}:{_manager.NeHeader.NE_SsSp & 0xFFFF:X4}` (hex)"); // <-- handle it
+        md.Add($"> ![TIP]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
         
-        md.Add("\r\n### Entities summary");
+        md.Add("\r\n## Entities summary");
         md.Add($"1. Number of Segments - `{_manager.NeHeader.NE_SegmentsCount}`");
         md.Add($"2. Number of Entry Bundles - `{_manager.NeHeader.NE_EntriesCount}`");
         md.Add($"3. Number of Moveable Entries - `{_manager.NeHeader.NE_MovableEntriesCount}`");
         md.Add($"4. Number of Automatic Data segments - `{_manager.NeHeader.NE_AutoSegment}`");
         md.Add($"5. Number of Resources - `{_manager.NeHeader.NE_ResourcesCount}`");
-        md.Add($"6. Number of NonResident names - `{_manager.NeHeader.NE_NonResidentNamesCount}`");
+        md.Add($"6. Number of `BYTE`s in NonResident names table - `{_manager.NeHeader.NE_NonResidentNamesCount}`");
         md.Add($"7. Number of Module References - `{_manager.NeHeader.NE_ModReferencesCount}`");
         
-        // TODO: make app flags/program flags
+        // program flags 
+        var p = _manager.NeHeader.NE_ProgramFlags;
+        md.Add($"## Program Flags");
+        md.Add("### How data is handled?");
+        md.Add(@"
+In 16-bit DOS/Windows terminology, `DGROUP` is a segment class that referring
+to segments that are used for data.
+
+Win16 used segmentation to permit a DLL or program to have multiple
+instances along with an instance handle and manage multiple data
+segments. In example: allowed one `NOTEPAD.EXE` code segment to execute
+multiple instances of the notepad application.");
+        if ((p & 0x0000) != 0) md.Add(" - `NO_AUTODATA`");
+        if ((p & 0x0002) != 0) md.Add(" - `SINGLE_DATA` (shared among instances of the same program)");
+        if ((p & 0x2000) != 0) md.Add(" - `MULTIPLE_DATA` (separate for each instance of the same program)");
+        
+        md.Add("### How application runs?");
+        if ((p & 0x0008) != 0) md.Add(" - `PROTECTED_MODE_ONLY`");
+        if ((p & 0x0004) != 0) md.Add(" - `GLOBINIT` - (global initialization)");
+        
+        md.Add("### Extra details?");
+        if ((p & 0x2000) != 0) md.Add(" - `LINK_ERR` - (module has errors after linkage. Don't try to run it)");
+        if ((p & 0x8000) != 0) md.Add(" - `LIB_MODULE` (dynamically linked module)");
+        
+        md.Add("## Application Flags");
+        md.Add("This block (field) tells how windowing or not windowing wants to run");
+        var a = _manager.NeHeader.NE_AppFlags;
+        
+        if ((a & 0x0008) != 0) md.Add(" - `OS2_FAMILY` (OS/2 family application. You can see OS/2 flags section)");
+        if ((a & 0x0020) != 0) md.Add(" - `IMAGE_ERR` (OS doesn't want that you run it).");
+        if ((a & 0x0040) != 0) md.Add(" - `NON_CONFORM` (nonconforming program)");
         
         if (_manager.NeHeader.NE_FlagOthers != 0)
         {
-            // TODO: make support of OS/2 loader flags
-            md.Add("### OS/2 Module Characteristics");
+            md.Add("## OS/2 Flags");
+            md.Add("Sunflower plugin shows this section if `e_flagothers` not zero. But I also suppose if appflags has `OS2_FAMILY`" +
+                   " or `e_os` equals 0x1, what means OS/2 - you can read this section.");
+            var o = _manager.NeHeader.NE_FlagOthers;
+            if ((o & 0x0001) != 0) md.Add(" - `LONG_NAMES` (avoid FAT rule 8.3 convertion)");
+            if ((o & 0x0002) != 0) md.Add(" - `PROTECTED_MODE` (OS/2 2.0+ protected mode application)");
+            if ((o & 0x0004) != 0) md.Add(" - `PROP_FONTS` (proportional fonts)");
+            if ((o & 0x0008) != 0) md.Add(" - `GANGLOAD_AREA`");
         }
         
         Characteristics = md.ToArray();
-    }
-    
-    private static string OnlyAscii(string target)
-    {
-        // exclude special chars from string
-        return new string(target.Where(c => char.IsAscii(c) && c != '\0').ToArray());
     }
 }

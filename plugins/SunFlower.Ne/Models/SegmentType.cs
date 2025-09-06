@@ -1,5 +1,5 @@
 ﻿namespace SunFlower.Ne.Models;
-public enum NeSegmentType
+public enum SegmentType
 {
     Code = 0x0000,
     Data = 0x0001,

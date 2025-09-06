@@ -111,6 +111,10 @@ public class LxTableManager
         AddRow(ref table, nameof(header.e32_pagesum), $"0x{header.e32_pagesum:X}");
         AddRow(ref table, nameof(header.e32_datapage), $"0x{header.e32_datapage:X}");
         AddRow(ref table, nameof(header.e32_preload), $"0x{header.e32_preload:X}");
+        AddRow(ref table, nameof(header.e32_nrestab), $"0x{header.e32_nrestab:X}");
+        AddRow(ref table, nameof(header.e32_cbnrestab), $"0x{header.e32_cbnrestab:X}");
+        AddRow(ref table, nameof(header.e32_nressum), $"0x{header.e32_nressum:X}");
+        AddRow(ref table, nameof(header.e32_autodata), $"0x{header.e32_autodata:X}");
         AddRow(ref table, nameof(header.e32_debuginfo), $"0x{header.e32_debuginfo:X}");
         AddRow(ref table, nameof(header.e32_debuglen), $"0x{header.e32_debuglen:X}");
         AddRow(ref table, nameof(header.e32_instpreload), $"0x{header.e32_instpreload:X}");
@@ -257,7 +261,7 @@ public class LxTableManager
             StringBuilder contentBuilder = new();
             
             contentBuilder.AppendLine(bundle.TypeDescription);
-            contentBuilder.AppendLine($"Bundle Type: {bundle.TypeString}");
+            contentBuilder.AppendLine($" - Type={bundle.TypeString}");
             contentBuilder.AppendLine($" - Entries=`{bundle.Count}`");
             
             contentBuilder.AppendLine("\r\n");
@@ -346,7 +350,7 @@ public class LxTableManager
         var description = _manager.NonResidentNames.Count > 0 ? FlowerReport.SafeString(_manager.NonResidentNames[0].String) : "`<missing>`";
         var name = _manager.ResidentNames.Count > 0 ? FlowerReport.SafeString(_manager.ResidentNames[0].String) : "`<name_missing>`";
         md.Add("### Program Header information");
-        md.Add($"Project Name: {_manager.ResidentNames[0].String}");
+        md.Add($"Project Name: {name}");
         md.Add($"Description: \"{description}\"");
         md.Add("Target CPU: `" + GetCpuType(_manager.LxHeader.e32_cpu) + "`");
         md.Add("Target OS: `" + GetOsType(_manager.LxHeader.e32_os) + "`");
@@ -359,7 +363,7 @@ public class LxTableManager
         }
         
         if (_manager.LxHeader.e32_magic is 0x454c or 0x4c45)
-            md.Add("> ![WARNING]\r\n> Signature of FLAT EXEC header is `LX`. This FLAT EXEC binary contains **only 32-bit code** and has unknown structures for this plugin. You have a risk of corrupted bytes-interpretation.");
+            md.Add("> ![WARNING]\r\n> Signature of FLAT EXEC header is `LE`. This FLAT EXEC binary contains **16 and 32-bit code** You have a risk of corrupted bytes-interpretation.");
         
         md.Add($"\r\n### {name} Loader requirements");
         md.Add("This summary contains hexadecimal values from FLAT EXEC header.");
@@ -381,7 +385,7 @@ public class LxTableManager
         md.Add($"2. Number of Importing Modules - `{_manager.LxHeader.e32_impmodcnt}`");
         md.Add($"3. Number of Preload Pages - `{_manager.LxHeader.e32_preload}`");
         md.Add($"4. Number of Automatic Data segments - `{_manager.LxHeader.e32_autodata}`");
-        md.Add($"5. Number of Resources - `{_manager.LxHeader.e32_cbnrestab}`");
+        md.Add($"5. Number of Resources - `{_manager.LxHeader.e32_rsrccnt}`");
         md.Add($"6. Number of NonResident names - `{_manager.LxHeader.e32_cbnrestab}`");
         md.Add($"7. Number of Directives - `{_manager.LxHeader.e32_dircnt}`");
         md.Add($"8. Number of Demand Instances - `{_manager.LxHeader.e32_instdemand}`");
@@ -410,9 +414,9 @@ public class LxTableManager
         return osType switch
         {
             LeHeader.LeOsOs2 => "OS/2",
-            LeHeader.LeOsWindows => "Windows",
+            LeHeader.LeOsWindows => "Windows/286",
             LeHeader.LeOsDos4 => "DOS 4.x",
-            LeHeader.LeOsWin386 => "Windows 386",
+            LeHeader.LeOsWin386 => "Windows/386",
             _ => $"Unknown OS (0x{osType:X4})"
         };
     }

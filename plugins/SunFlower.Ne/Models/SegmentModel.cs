@@ -2,7 +2,7 @@
 
 namespace SunFlower.Ne.Models;
 
-public class NeSegmentModel(NeSegmentInfo info, uint segmentNumber, string[] chars)
+public class SegmentModel(NeSegmentInfo info, uint segmentNumber, string[] chars)
 {
     public string Type { get; set; } = info.Type;
     public string[] Characteristics { get; set; } = chars;

@@ -8,22 +8,22 @@ module FlowerReport =
     /// Shields raw ASCII string.
     /// Replaces ASCII bytes "\xx" substrings instead  
     /// </summary>
-    /// <param name="str"></param>
+    /// <param name="str">Unsafe CLR string given from ASCII</param>
     [<CompiledName "SafeString">]
     let safeString (str: string) : string =
         let sb = StringBuilder()
         
         let appendEscaped (b: byte) =
             match b with
-            | 0uy -> sb.Append(@"\0")  // NULL
-            | 9uy -> sb.Append(@"\t")  // tab
-            | 10uy -> sb.Append(@"\n") // newline
-            | 13uy -> sb.Append(@"\r") // caret return
+            | 0uy -> sb.Append(@"\{0}")
+            | 9uy -> sb.Append(@"\{t}")
+            | 10uy -> sb.Append(@"\{n}")
+            | 13uy -> sb.Append(@"\{r}")
             | 92uy -> sb.Append(@"\\") // <-- backslash warning
-            | _ when b >= 32uy && b <= 126uy -> 
+            | _ when b >= 32uy && b <= 126uy ->
                 sb.Append(char b)
             | _ -> 
-                sb.AppendFormat(@"\{0:X2}", b) // ASCII code
+                sb.AppendFormat(@"\{0:X2}", b)
 
         str
         |> Encoding.ASCII.GetBytes

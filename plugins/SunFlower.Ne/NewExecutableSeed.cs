@@ -24,6 +24,10 @@ public class NewExecutableSeed : IFlowerSeed
             {
                 BoxedResult = tableManager.Characteristics
             });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
+            {
+                BoxedResult = tableManager.Headers
+            });
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
                 BoxedResult = tableManager.Imports
@@ -38,11 +42,11 @@ public class NewExecutableSeed : IFlowerSeed
             });
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
             {
-                BoxedResult = tableManager.NamesRegions
+                BoxedResult = tableManager.EntryBundlesRegions
             });
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
             {
-                BoxedResult = tableManager.EntryBundlesRegions
+                BoxedResult = tableManager.NamesRegions
             });
             
             return 0;

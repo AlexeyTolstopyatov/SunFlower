@@ -21,6 +21,7 @@ public class PeDumpManager(string path) : UnsafeManager
     public PeDirectory[] PeDirectories { get; set; } = [];
     public PeSection[] PeSections { get; set; } = [];
     public FileSectionsInfo FileSectionsInfo { get; set; } = new();
+    public Vb5Header Vb5Header { get; set; }
     public bool Is64Bit { get; set; }
 
     /// <summary>
@@ -33,8 +34,6 @@ public class PeDumpManager(string path) : UnsafeManager
 
         FindHeaders(reader);
         FindSectionsTable(reader);
-            
-        reader.Close();
         
         FileSectionsInfo info = new()
         {
@@ -47,10 +46,16 @@ public class PeDumpManager(string path) : UnsafeManager
             Directories = PeDirectories,
             NumberOfSections = FileHeader.NumberOfSections,
             NumberOfRva = Is64Bit ? OptionalHeader.NumberOfRvaAndSizes : OptionalHeader32.NumberOfRvaAndSizes,
-            Is64Bit = Is64Bit
+            Is64Bit = Is64Bit,
+            EntryPoint = Is64Bit ? OptionalHeader.AddressOfEntryPoint : OptionalHeader32.AddressOfEntryPoint
         };
         
         FileSectionsInfo = info;
+
+        var vb5Runtime = new PeVbRuntime56Manager(info, reader);
+        Vb5Header = vb5Runtime.Vb5Header;
+        
+        reader.Close();
     }
     private void FindHeaders(BinaryReader reader)
     {
@@ -74,13 +79,8 @@ public class PeDumpManager(string path) : UnsafeManager
 
         var fileHdr = Fill<PeFileHeader>(reader);
         FileHeader = fileHdr;
-        
-        Is64Bit = fileHdr.Machine switch
-        {
-            0x8664 => true,
-            0x0200 => true,
-            _ => false 
-        };
+
+        Is64Bit = (fileHdr.Characteristics & 0x0100) == 0; // Architecture 32-bit WORD based.
 
         if (Is64Bit)
         {
@@ -97,7 +97,7 @@ public class PeDumpManager(string path) : UnsafeManager
     private void FindSectionsTable(BinaryReader reader)
     {
         List<PeSection> sections = [];
-        for (UInt32 i = 0; i < FileHeader.NumberOfSections; ++i)
+        for (uint i = 0; i < FileHeader.NumberOfSections; ++i)
         {
             sections.Add(Fill<PeSection>(reader));
         }

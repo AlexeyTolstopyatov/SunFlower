@@ -22,4 +22,5 @@ public class FileSectionsInfo
     
     public PeSection[] Sections { get; set; } = [];
     public PeDirectory[] Directories { get; set; } = [];
+    public uint EntryPoint { get; set; }
 }

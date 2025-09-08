@@ -11,11 +11,15 @@ public struct Vb5Header
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
     public Char[] VbMagic;
+    
     public UInt16 RuntimeBuild;
+    
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
     public Char[] LanguageDll;
+    
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
-    public UInt64 SecondLanguageDll;
+    public Char[] SecondLanguageDll;
+    
     public UInt16 RuntimeRevision;
     public UInt32 LanguageId;
     public UInt32 SecondLanguageId;

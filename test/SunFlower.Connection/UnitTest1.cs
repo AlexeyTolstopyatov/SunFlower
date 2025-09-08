@@ -26,10 +26,7 @@ public class Tests
     [Test]
     public void CheckoutPeImage()
     {
-        var path = @"D:\Projects\vb\Semi VB Decompiler\ApiLoader.exe";
-        PortableExecutableSeed seed = new();
-        seed.Main(path);
-        
+        var path = @"D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIFF\VBDIFF-vb6.exe";
         //DataTable table = seed.Status.Result[0];
         PeDumpManager manager = new(path);
         manager.Initialize();

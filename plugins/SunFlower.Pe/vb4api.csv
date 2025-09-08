@@ -1,4 +1,4 @@
-Address,Ordinal,Name
+Address,Ordinal,Name,undef
 F7272C5,100,ThunRTMain,undef
 F777430,101,VBDllGetClassObject,undef
 F7773E8,102,VBDllCanUnloadNow,undef

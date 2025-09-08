@@ -12,9 +12,8 @@ namespace SunFlower.Pe.Services;
 /// Licensed under MIT
 ///
 
-public class PeDumpManager(string path) : UnsafeManager, IManager
-{
-    public static PeDumpManager CreateInstance(string path) => new(path);
+public class PeDumpManager(string path) : UnsafeManager
+{ 
     public MzHeader Dos2Header { get; set; }
     public PeFileHeader FileHeader { get; set; }
     public PeOptionalHeader32 OptionalHeader32 { get; set; }
@@ -58,7 +57,7 @@ public class PeDumpManager(string path) : UnsafeManager, IManager
         var dos2 = reader.ReadUInt16();
         if (dos2 != 0x5A4D && dos2 != 0x4D5A)
         {
-            throw new InvalidOperationException("Not a DOS/2 signature");
+            throw new InvalidOperationException("Doesn't have DOS/2 signature");
         }
     
         reader.BaseStream.Position = 0;
@@ -70,12 +69,12 @@ public class PeDumpManager(string path) : UnsafeManager, IManager
         var peSignature = reader.ReadUInt32();
         if (peSignature != 0x00004550)
         {
-            throw new InvalidOperationException("Not a PE signature");
+            throw new InvalidOperationException("Doesn't have 'PE' signature");
         }
 
         var fileHdr = Fill<PeFileHeader>(reader);
         FileHeader = fileHdr;
-
+        
         Is64Bit = fileHdr.Machine switch
         {
             0x8664 => true,

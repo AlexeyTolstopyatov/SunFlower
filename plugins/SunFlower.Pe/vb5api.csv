@@ -1,4 +1,4 @@
-Address,Ordinal,Name
+Address,Ordinal,Name,undef
 74111B78,100,ThunRTMain,undef
 740F17ED,101,VBDllUnRegisterServer,undef
 740E8C69,102,VBDllCanUnloadNow,undef

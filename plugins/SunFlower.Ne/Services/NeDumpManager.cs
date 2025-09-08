@@ -36,11 +36,7 @@ public class NeDumpManager : UnsafeManager
     /// Exporting procedures without implicit ordinal in ".def" file declared
     /// </summary>
     public List<Name> ResidentNames { get; set; } = [];
-    /// <summary>
-    /// Per-segment relocation records collection
-    /// </summary>
-    public List<SegmentRelocation> SegmentRelocations { get; set; } = [];
-     
+    
     /// <summary>
     /// Segmented EXE header offset
     /// </summary>

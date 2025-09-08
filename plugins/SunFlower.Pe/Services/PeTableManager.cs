@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using SunFlower.Abstractions.Types;
 using SunFlower.Pe.Headers;
 using SunFlower.Pe.Models;
 
@@ -6,11 +7,15 @@ namespace SunFlower.Pe.Services;
 
 public class PeTableManager(PeImageModel model) : IManager
 {
+    public List<string> GeneralStrings { get; set; } = [];
     public List<DataTable> Results { get; set; } = [];
     public bool Is64Bit { get; } = (model.FileHeader.Characteristics & 0x100) == 0;
 
+    public List<Region> Regions { get; set; } = [];
+    
     public void Initialize()
     {
+        MakeCharacteristics();   
         MakeHeadersTables();
         MakeSectionsTables();
         MakeExports();
@@ -20,6 +25,116 @@ public class PeTableManager(PeImageModel model) : IManager
         
     }
 
+    private void MakeCharacteristics()
+    {
+        GeneralStrings.Add("# Image");
+        GeneralStrings.Add("This image is Windows NT linked module (Portable Executable format). Project name and description temporary unable to find. No one way to tell.");
+        GeneralStrings.Add("Instead New executable (`NE`) or Linear executables (`LX/LE`) formats, this one not holds standard fields about module.");
+        
+        // pain #1
+        var osver = Is64Bit
+            ? $"{model.OptionalHeader.MajorOperatingSystemVersion}.{model.OptionalHeader.MinorOperatingSystemVersion}"
+            : $"{model.OptionalHeader32.MajorOperatingSystemVersion}.{model.OptionalHeader32.MinorOperatingSystemVersion}";
+        var linkv = Is64Bit
+            ? $"{model.OptionalHeader.MajorLinkerVersion}.{model.OptionalHeader.MinorLinkerVersion}"
+            : $"{model.OptionalHeader32.MajorLinkerVersion}.{model.OptionalHeader32.MinorLinkerVersion}";
+        var ssver = Is64Bit
+            ? $"{model.OptionalHeader.MajorSubsystemVersion}.{model.OptionalHeader.MinorSubsystemVersion}"
+            : $"{model.OptionalHeader32.MajorSubsystemVersion}.{model.OptionalHeader32.MinorSubsystemVersion}";
+        var subsys = Is64Bit
+            ? model.OptionalHeader.Subsystem
+            : model.OptionalHeader32.Subsystem;
+        var subsysStr = subsys switch
+        {
+            0x0001 => "`NATIVE` (Windows Kernel Driver). Tells loader to not call any subsystem client for this image.",
+            0x0002 => "`WIN32_CUI` (Win32 Console Application). Tells loader, entry point is traditional `DWORD main(/*args*/)` function.`",
+            0x0003 => "`WIN32_GUI` (Win32 Windowing Application). Tells loader, entry point is a `WinMain` procedure.",
+            0x0005 => "`OS2_CUI` (OS/2 1.0+ Console Application). Tells loader not use Win32 modules. Just `DOSCALLS`, `NETAPI` instead.",
+            0x0007 => "`POSIX_CUI` (POSIX subsystem). Tells loader fully avoid Win32, to use POSIX compatible `fork`, `signal`, ... other functions and modules instead",
+            0x0008 => "`NATIVE_WIN` (Windows 9x driver or `Win32s`-linked PE). I suppose this flag tells ring-2 driver instead, like `*.DRV` NE-linked images. Or secondary I suppose, this is `Win32s` linked PE.",
+            0x0009 => "`WINCE_GUI` (Windows CE GUI) Tells loader that image have Windows CE kernel specific in code. Don't try to run it under WinNT!",
+            _ => "`?` (Unknown flag)",
+            //0x0010 => "``"
+        };
+        
+        GeneralStrings.Add("## Hardware/Software");
+        GeneralStrings.Add(" - Target OS: `Windows NT`");
+        GeneralStrings.Add($" - Expected Windows NT `{osver}`");
+        GeneralStrings.Add($" - Minimum Windows NT `{ssver}`");
+        GeneralStrings.Add($" - Linker `v.{linkv}`");
+        
+        GeneralStrings.Add("### Windows Subsystem");
+        GeneralStrings.Add("Windows NT architecture includes subsystems like scopes at the userland (or ring-3)" +
+                           "They are provide a support of I/O, net, GDI and other features, and PE module holds" +
+                           "a value, which subsystem's client will be called for running it.");
+        GeneralStrings.Add($" - `0x{subsys:X}`\n" +
+                           $" - {subsysStr}");
+        
+        GeneralStrings.Add("### Characteristics");
+        GeneralStrings.Add("File characteristics always check by loader and helps it to run application correctly.");
+        
+        var c = model.FileHeader.Characteristics;
+        
+        if ((c & 0x0001) != 0) GeneralStrings.Add(" - `image_file_relocs_stripped` Windows CE, and Windows NT and later. This indicates that the file does not contain base relocations and must therefore be loaded at its preferred base address. If the base address is not available, the loader reports an error. The default behavior of the linker is to strip base relocations from executable (EXE) files.");
+        if ((c & 0x0002) != 0) GeneralStrings.Add(" - `image_file_executable` This indicates that the image file is valid and can be run. _If this flag is not set_, it indicates a linker error.");
+        if ((c & 0x0004) != 0) GeneralStrings.Add(" - `image_file_linenums_stripped` COFF line numbers have been removed. This flag is deprecated and should be zero");
+        if ((c & 0x0008) != 0) GeneralStrings.Add(" - `image_file_local_syms_stripped` COFF symbol table entries for local symbols have been removed. This flag is deprecated and should be zero.");
+        if ((c & 0x0010) != 0) GeneralStrings.Add(" - `image_file_aggressive_ws_trim` [Obsolete]. Aggressively trim working set. This flag is deprecated for Windows 2000 and later and must be zero.");
+        if ((c & 0x0020) != 0) GeneralStrings.Add(" - `image_file_large_address_aware` Application can handle > `2-GB` addresses.");
+        if ((c & 0x0040) != 0) GeneralStrings.Add(" - `image_file_reserved` Should be zero!");
+        if ((c & 0x0080) != 0) GeneralStrings.Add(" - `image_file_bytes_reverse_lo` **Little endian:** the least significant bit (LSB) precedes the most significant bit (MSB) in memory. _This flag is deprecated and should be zero_");
+        if ((c & 0x0100) != 0) GeneralStrings.Add(" - `image_file_32bit_machine` Machine is based on a 32-bit-word architecture.");
+        if ((c & 0x0200) != 0) GeneralStrings.Add(" - `image_debug_stripped` `.debug` section missing. Or debug information removed entirely from image.");
+        if ((c & 0x0400) != 0) GeneralStrings.Add(" - `image_file_media_run_from_swap` If the image is on removable media, fully load it and copy it to the swap file.");
+        if ((c & 0x0800) != 0) GeneralStrings.Add(" - `image_net_run_from_swap` If the image is on network media, fully load it and copy it to the swap file.");
+        if ((c & 0x1000) != 0) GeneralStrings.Add(" - `image_file_system` The image file is a system file, not a user program.");
+        if ((c & 0x2000) != 0) GeneralStrings.Add(" - `image_file_dll` The image file is a dynamic-link library (`.DLL`). Such files are considered executable files for almost all purposes, although they cannot be directly run.");
+        if ((c & 0x4000) != 0) GeneralStrings.Add(" - `image_file_up_system_only` The file should be run only on a uniprocessor machine.");
+        if ((c & 0x8000) != 0) GeneralStrings.Add(" - `image_file_bytes_reverse_hi` **Big endian:** the MSB precedes the LSB in memory. _This flag is deprecated and should be zero_.");
+
+        GeneralStrings.Add("### DLL Characteristics");
+        GeneralStrings.Add("Describe any PE linked module and any PE module holds `WORD DllCharacteristics` field. Not only `.DLL`s.");
+        var d = Is64Bit
+            ? model.OptionalHeader.DllCharacteristics
+            : model.OptionalHeader32.DllCharacteristics;
+        
+        if ((d & 0x0020) != 0) GeneralStrings.Add("`image_dll_high_entropy_va` Image can handle a high entropy 64-bit virtual address space.");
+        if ((d & 0x0040) != 0) GeneralStrings.Add("`image_dll_dynamic_base` DLL can be relocated at load time.");
+        if ((d & 0x0080) != 0) GeneralStrings.Add("`image_dll_force_integrity` Code Integrity checks are enforced.");
+        if ((d & 0x0100) != 0) GeneralStrings.Add("`image_dll_nx_compat` Image is NX compatible");
+        if ((d & 0x0200) != 0) GeneralStrings.Add("`image_dll_no_isolation` Isolation aware, but do not isolate the image.");
+        if ((d & 0x0400) != 0) GeneralStrings.Add("`image_dll_no_seh` Doesn't use structured exception (SE) handling. No SE handler may be called in this image.");
+        if ((d & 0x0800) != 0) GeneralStrings.Add("`image_dll_no_bind` Don't bind the image.");
+        if ((d & 0x1000) != 0) GeneralStrings.Add("`image_dll_appcontainer` Image must execute in an AppContainer.");
+        if ((d & 0x2000) != 0) GeneralStrings.Add("`image_dll_wdm_driver` Image is WDM driver.");
+        if ((d & 0x4000) != 0) GeneralStrings.Add("`image_dll_guard_cf` Image supports Control Flow Guard.");
+        if ((d & 0x8000) != 0) GeneralStrings.Add("`image_dll_terminal_server_aware` Terminal Server aware.");
+
+        var ip = Is64Bit 
+            ? model.OptionalHeader.AddressOfEntryPoint 
+            : model.OptionalHeader32.AddressOfEntryPoint;
+        
+        GeneralStrings.Add("### Loader requirements");
+        
+        GeneralStrings.Add($"> [!TIP] \n> Address of an EntryPoint for this program is `0x{ip:X8}`");
+        GeneralStrings.Add("> The address of the entry point relative to the image base when the executable file is loaded into memory.");
+        
+        // pain #2
+        // heapsize/stacksize/win32value/.../...
+        
+    }
+
+    private void MakeClrMoreInfo()
+    {
+        // if image has CLR head -> this is a .NET image.
+        // use Assembly instance for more details.
+    }
+
+    private void MakeVbClassicMoreInfo()
+    {
+        // catch VB_HEADER -> extract wProjectInfo by pointer.
+        
+    }
     private void MakeHeadersTables()
     {
         var dosHeader = MakeDosHeader();
@@ -48,23 +163,23 @@ public class PeTableManager(PeImageModel model) : IManager
         };
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
 
-        table.Rows.Add(nameof(mz.e_sign), mz.e_sign.ToString("X"));
-        table.Rows.Add(nameof(mz.e_lastb), mz.e_lastb.ToString("X"));
-        table.Rows.Add(nameof(mz.e_fbl), mz.e_fbl.ToString("X"));
-        table.Rows.Add(nameof(mz.e_relc), mz.e_relc.ToString("X"));
-        table.Rows.Add(nameof(mz.e_pars), mz.e_pars.ToString("X"));
-        table.Rows.Add(nameof(mz.e_minep), mz.e_minep.ToString("X"));
-        table.Rows.Add(nameof(mz.e_maxep), mz.e_maxep.ToString("X"));
-        table.Rows.Add(nameof(mz.ss), mz.ss.ToString("X"));
-        table.Rows.Add(nameof(mz.sp), mz.sp.ToString("X"));
-        table.Rows.Add(nameof(mz.e_check), mz.e_check.ToString("X"));
-        table.Rows.Add(nameof(mz.ip), mz.ip.ToString("X"));
-        table.Rows.Add(nameof(mz.cs), mz.cs.ToString("X"));
-        table.Rows.Add(nameof(mz.e_reltableoff), mz.e_reltableoff.ToString("X"));
-        table.Rows.Add(nameof(mz.e_overnum), mz.e_overnum.ToString("X"));
-        table.Rows.Add(nameof(mz.e_oemid), mz.e_oemid.ToString("X"));
-        table.Rows.Add(nameof(mz.e_oeminfo), mz.e_oeminfo.ToString("X"));
-        table.Rows.Add(nameof(mz.e_lfanew), mz.e_lfanew.ToString("X"));
+        table.Rows.Add(nameof(mz.e_sign), "0x" + mz.e_sign.ToString("X"));
+        table.Rows.Add(nameof(mz.e_cblp), "0x" + mz.e_cblp.ToString("X"));
+        table.Rows.Add(nameof(mz.e_lb), "0x" + mz.e_lb.ToString("X"));
+        table.Rows.Add(nameof(mz.e_relc), "0x" + mz.e_relc.ToString("X"));
+        table.Rows.Add(nameof(mz.e_pars), "0x" + mz.e_pars.ToString("X"));
+        table.Rows.Add(nameof(mz.e_minep), "0x" + mz.e_minep.ToString("X"));
+        table.Rows.Add(nameof(mz.e_maxep), "0x" + mz.e_maxep.ToString("X"));
+        table.Rows.Add(nameof(mz.ss), "0x" + mz.ss.ToString("X"));
+        table.Rows.Add(nameof(mz.sp), "0x" + mz.sp.ToString("X"));
+        table.Rows.Add(nameof(mz.e_crc), "0x" + mz.e_crc.ToString("X"));
+        table.Rows.Add(nameof(mz.ip), "0x" + mz.ip.ToString("X"));
+        table.Rows.Add(nameof(mz.cs), "0x" + mz.cs.ToString("X"));
+        table.Rows.Add(nameof(mz.e_lfarlc), "0x" + mz.e_lfarlc.ToString("X"));
+        table.Rows.Add(nameof(mz.e_ovno), "0x" + mz.e_ovno.ToString("X"));
+        table.Rows.Add(nameof(mz.e_oemid), "0x" + mz.e_oemid.ToString("X"));
+        table.Rows.Add(nameof(mz.e_oeminfo), "0x" + mz.e_oeminfo.ToString("X"));
+        table.Rows.Add(nameof(mz.e_lfanew), "0x" + mz.e_lfanew.ToString("X"));
         
         return table;
     }
@@ -78,13 +193,13 @@ public class PeTableManager(PeImageModel model) : IManager
         };
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
 
-        table.Rows.Add(nameof(mz.Machine), mz.Machine.ToString("X"));
-        table.Rows.Add(nameof(mz.NumberOfSections), mz.NumberOfSections.ToString("X"));
-        table.Rows.Add(nameof(mz.TimeDateStamp), mz.TimeDateStamp.ToString("X"));
-        table.Rows.Add(nameof(mz.PointerToSymbolTable), mz.PointerToSymbolTable.ToString("X"));
-        table.Rows.Add(nameof(mz.NumberOfSymbols), mz.NumberOfSymbols.ToString("X"));
-        table.Rows.Add(nameof(mz.SizeOfOptionalHeader), mz.SizeOfOptionalHeader.ToString("X"));
-        table.Rows.Add(nameof(mz.Characteristics), mz.Characteristics.ToString("X"));
+        table.Rows.Add(nameof(mz.Machine), "0x" + mz.Machine.ToString("X"));
+        table.Rows.Add(nameof(mz.NumberOfSections), "0x" + mz.NumberOfSections.ToString("X"));
+        table.Rows.Add(nameof(mz.TimeDateStamp), "0x" + mz.TimeDateStamp.ToString("X"));
+        table.Rows.Add(nameof(mz.PointerToSymbolTable), "0x" + mz.PointerToSymbolTable.ToString("X"));
+        table.Rows.Add(nameof(mz.NumberOfSymbols), "0x" + mz.NumberOfSymbols.ToString("X"));
+        table.Rows.Add(nameof(mz.SizeOfOptionalHeader), "0x" + mz.SizeOfOptionalHeader.ToString("X"));
+        table.Rows.Add(nameof(mz.Characteristics), "0x" + mz.Characteristics.ToString("X"));
         
         return table;
     }
@@ -98,36 +213,36 @@ public class PeTableManager(PeImageModel model) : IManager
         };
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
 
-        table.Rows.Add(nameof(optional.Magic), optional.Magic.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorLinkerVersion), optional.MajorLinkerVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorLinkerVersion), optional.MinorLinkerVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfCode), optional.SizeOfCode.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfInitializedData), optional.SizeOfInitializedData.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfUninitializedData), optional.SizeOfUninitializedData.ToString("X"));
-        table.Rows.Add(nameof(optional.AddressOfEntryPoint), optional.AddressOfEntryPoint.ToString("X"));
-        table.Rows.Add(nameof(optional.BaseOfCode), optional.BaseOfCode.ToString("X"));
-        table.Rows.Add(nameof(optional.BaseOfData), optional.BaseOfData.ToString("X"));
-        table.Rows.Add(nameof(optional.ImageBase), optional.ImageBase.ToString("X"));
-        table.Rows.Add(nameof(optional.SectionAlignment), optional.SectionAlignment.ToString("X"));
-        table.Rows.Add(nameof(optional.FileAlignment), optional.FileAlignment.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorOperatingSystemVersion), optional.MajorOperatingSystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorOperatingSystemVersion), optional.MinorOperatingSystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorSubsystemVersion), optional.MajorSubsystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorSubsystemVersion), optional.MinorSubsystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorImageVersion), optional.MajorImageVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorImageVersion), optional.MinorImageVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.Win32VersionValue), optional.Win32VersionValue.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfImage), optional.SizeOfImage.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeaders), optional.SizeOfHeaders.ToString("X"));
-        table.Rows.Add(nameof(optional.CheckSum), optional.CheckSum.ToString("X"));
-        table.Rows.Add(nameof(optional.Subsystem), optional.Subsystem.ToString("X"));
-        table.Rows.Add(nameof(optional.DllCharacteristics), optional.DllCharacteristics.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfStackReserve), optional.SizeOfStackReserve.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfStackCommit), optional.SizeOfStackCommit.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeapReserve), optional.SizeOfHeapReserve.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeapCommit), optional.SizeOfHeapCommit.ToString("X"));
-        table.Rows.Add(nameof(optional.LoaderFlags), optional.LoaderFlags.ToString("X"));
-        table.Rows.Add(nameof(optional.NumberOfRvaAndSizes), optional.NumberOfRvaAndSizes.ToString("X"));
+        table.Rows.Add(nameof(optional.Magic), "0x" + optional.Magic.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorLinkerVersion), "0x" + optional.MajorLinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorLinkerVersion), "0x" + optional.MinorLinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfCode), "0x" + optional.SizeOfCode.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfInitializedData), "0x" + optional.SizeOfInitializedData.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfUninitializedData), "0x" + optional.SizeOfUninitializedData.ToString("X"));
+        table.Rows.Add(nameof(optional.AddressOfEntryPoint), "0x" + optional.AddressOfEntryPoint.ToString("X"));
+        table.Rows.Add(nameof(optional.BaseOfCode), "0x" + optional.BaseOfCode.ToString("X"));
+        table.Rows.Add(nameof(optional.BaseOfData), "0x" + optional.BaseOfData.ToString("X"));
+        table.Rows.Add(nameof(optional.ImageBase), "0x" + optional.ImageBase.ToString("X"));
+        table.Rows.Add(nameof(optional.SectionAlignment), "0x" + optional.SectionAlignment.ToString("X"));
+        table.Rows.Add(nameof(optional.FileAlignment), "0x" + optional.FileAlignment.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorOperatingSystemVersion), "0x" + optional.MajorOperatingSystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorOperatingSystemVersion), "0x" + optional.MinorOperatingSystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorSubsystemVersion), "0x" + optional.MajorSubsystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorSubsystemVersion), "0x" + optional.MinorSubsystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorImageVersion), "0x" + optional.MajorImageVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorImageVersion), "0x" + optional.MinorImageVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.Win32VersionValue), "0x" + optional.Win32VersionValue.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfImage), "0x" + optional.SizeOfImage.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeaders), "0x" + optional.SizeOfHeaders.ToString("X"));
+        table.Rows.Add(nameof(optional.CheckSum), "0x" + optional.CheckSum.ToString("X"));
+        table.Rows.Add(nameof(optional.Subsystem), "0x" + optional.Subsystem.ToString("X"));
+        table.Rows.Add(nameof(optional.DllCharacteristics), "0x" + optional.DllCharacteristics.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfStackReserve), "0x" + optional.SizeOfStackReserve.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfStackCommit), "0x" + optional.SizeOfStackCommit.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeapReserve), "0x" + optional.SizeOfHeapReserve.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeapCommit), "0x" + optional.SizeOfHeapCommit.ToString("X"));
+        table.Rows.Add(nameof(optional.LoaderFlags), "0x" + optional.LoaderFlags.ToString("X"));
+        table.Rows.Add(nameof(optional.NumberOfRvaAndSizes), "0x" + optional.NumberOfRvaAndSizes.ToString("X"));
         
         return table;
     }
@@ -141,36 +256,36 @@ public class PeTableManager(PeImageModel model) : IManager
         };
         table.Columns.AddRange([new DataColumn("Segment"), new DataColumn("Value")]);
 
-        table.Rows.Add(nameof(optional.Magic), optional.Magic.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorLinkerVersion), optional.MajorLinkerVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorLinkerVersion), optional.MinorLinkerVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfCode), optional.SizeOfCode.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfInitializedData), optional.SizeOfInitializedData.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfUninitializedData), optional.SizeOfUninitializedData.ToString("X"));
-        table.Rows.Add(nameof(optional.AddressOfEntryPoint), optional.AddressOfEntryPoint.ToString("X"));
-        table.Rows.Add(nameof(optional.BaseOfCode), optional.BaseOfCode.ToString("X"));
-        table.Rows.Add(nameof(optional.BaseOfData), optional.BaseOfData.ToString("X"));
-        table.Rows.Add(nameof(optional.ImageBase), optional.ImageBase.ToString("X"));
-        table.Rows.Add(nameof(optional.SectionAlignment), optional.SectionAlignment.ToString("X"));
-        table.Rows.Add(nameof(optional.FileAlignment), optional.FileAlignment.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorOperatingSystemVersion), optional.MajorOperatingSystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorOperatingSystemVersion), optional.MinorOperatingSystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorSubsystemVersion), optional.MajorSubsystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorSubsystemVersion), optional.MinorSubsystemVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MajorImageVersion), optional.MajorImageVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.MinorImageVersion), optional.MinorImageVersion.ToString("X"));
-        table.Rows.Add(nameof(optional.Win32VersionValue), optional.Win32VersionValue.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfImage), optional.SizeOfImage.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeaders), optional.SizeOfHeaders.ToString("X"));
-        table.Rows.Add(nameof(optional.CheckSum), optional.CheckSum.ToString("X"));
-        table.Rows.Add(nameof(optional.Subsystem), optional.Subsystem.ToString("X"));
-        table.Rows.Add(nameof(optional.DllCharacteristics), optional.DllCharacteristics.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfStackReserve), optional.SizeOfStackReserve.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfStackCommit), optional.SizeOfStackCommit.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeapReserve), optional.SizeOfHeapReserve.ToString("X"));
-        table.Rows.Add(nameof(optional.SizeOfHeapCommit), optional.SizeOfHeapCommit.ToString("X"));
-        table.Rows.Add(nameof(optional.LoaderFlags), optional.LoaderFlags.ToString("X"));
-        table.Rows.Add(nameof(optional.NumberOfRvaAndSizes), optional.NumberOfRvaAndSizes.ToString("X"));
+        table.Rows.Add(nameof(optional.Magic), "0x" + optional.Magic.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorLinkerVersion), "0x" + optional.MajorLinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorLinkerVersion), "0x" + optional.MinorLinkerVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfCode), "0x" + optional.SizeOfCode.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfInitializedData), "0x" + optional.SizeOfInitializedData.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfUninitializedData), "0x" + optional.SizeOfUninitializedData.ToString("X"));
+        table.Rows.Add(nameof(optional.AddressOfEntryPoint), "0x" + optional.AddressOfEntryPoint.ToString("X"));
+        table.Rows.Add(nameof(optional.BaseOfCode), "0x" + optional.BaseOfCode.ToString("X"));
+        table.Rows.Add(nameof(optional.BaseOfData), "0x" + optional.BaseOfData.ToString("X"));
+        table.Rows.Add(nameof(optional.ImageBase), "0x" + optional.ImageBase.ToString("X"));
+        table.Rows.Add(nameof(optional.SectionAlignment), "0x" + optional.SectionAlignment.ToString("X"));
+        table.Rows.Add(nameof(optional.FileAlignment), "0x" + optional.FileAlignment.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorOperatingSystemVersion), "0x" + optional.MajorOperatingSystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorOperatingSystemVersion), "0x" + optional.MinorOperatingSystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorSubsystemVersion), "0x" + optional.MajorSubsystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorSubsystemVersion), "0x" + optional.MinorSubsystemVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MajorImageVersion), "0x" + optional.MajorImageVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.MinorImageVersion), "0x" + optional.MinorImageVersion.ToString("X"));
+        table.Rows.Add(nameof(optional.Win32VersionValue), "0x" + optional.Win32VersionValue.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfImage), "0x" + optional.SizeOfImage.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeaders), "0x" + optional.SizeOfHeaders.ToString("X"));
+        table.Rows.Add(nameof(optional.CheckSum), "0x" + optional.CheckSum.ToString("X"));
+        table.Rows.Add(nameof(optional.Subsystem), "0x" + optional.Subsystem.ToString("X"));
+        table.Rows.Add(nameof(optional.DllCharacteristics), "0x" + optional.DllCharacteristics.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfStackReserve), "0x" + optional.SizeOfStackReserve.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfStackCommit), "0x" + optional.SizeOfStackCommit.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeapReserve), "0x" + optional.SizeOfHeapReserve.ToString("X"));
+        table.Rows.Add(nameof(optional.SizeOfHeapCommit), "0x" + optional.SizeOfHeapCommit.ToString("X"));
+        table.Rows.Add(nameof(optional.LoaderFlags), "0x" + optional.LoaderFlags.ToString("X"));
+        table.Rows.Add(nameof(optional.NumberOfRvaAndSizes), "0x" + optional.NumberOfRvaAndSizes.ToString("X"));
         
         return table;
     }
@@ -183,13 +298,13 @@ public class PeTableManager(PeImageModel model) : IManager
             TableName = "CLR Part"
         };
 
-        table.Rows.Add(nameof(model.CorHeader.SizeOfHead), model.CorHeader.SizeOfHead.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.MajorRuntimeVersion), model.CorHeader.MajorRuntimeVersion.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.MinorRuntimeVersion), model.CorHeader.MinorRuntimeVersion.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.MetaDataOffset), model.CorHeader.MetaDataOffset.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.LinkerFlags), model.CorHeader.LinkerFlags.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.EntryPointRva), model.CorHeader.EntryPointRva.ToString("X"));
-        table.Rows.Add(nameof(model.CorHeader.EntryPointToken), model.CorHeader.EntryPointToken.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.SizeOfHead), "0x" + model.CorHeader.SizeOfHead.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.MajorRuntimeVersion), "0x" + model.CorHeader.MajorRuntimeVersion.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.MinorRuntimeVersion), "0x" + model.CorHeader.MinorRuntimeVersion.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.MetaDataOffset), "0x" + model.CorHeader.MetaDataOffset.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.LinkerFlags), "0x" + model.CorHeader.LinkerFlags.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.EntryPointRva), "0x" + model.CorHeader.EntryPointRva.ToString("X"));
+        table.Rows.Add(nameof(model.CorHeader.EntryPointToken), "0x" + model.CorHeader.EntryPointToken.ToString("X"));
         
         return table;
     }
@@ -200,16 +315,16 @@ public class PeTableManager(PeImageModel model) : IManager
             TableName = "Sections Summary",
             Columns = 
             {
-                "Name", 
-                "VirtualAddress",
-                "VirtualSize",
-                "SizeOfRawData",
-                "*RawData",
-                "*Relocs",
-                "*Line#",
-                "#Relocs",
-                "#LineNumbers",
-                "Characteristics" 
+                "Name:s", 
+                "VirtualAddress:4",
+                "VirtualSize:4",
+                "SizeOfRawData:4",
+                "*RawData:4", // Pointer => *
+                "*Relocs:4",
+                "*Line#:4",
+                "#Relocs:2",
+                "#LineNumbers:2",
+                "Characteristics:4" 
             }
         };
         
@@ -217,19 +332,28 @@ public class PeTableManager(PeImageModel model) : IManager
         {
             sections.Rows.Add(
                 new String(dump.Name.Where(x => x != '\0').ToArray()),
-                dump.VirtualAddress.ToString("X"),
-                dump.VirtualSize.ToString("X"),
-                dump.SizeOfRawData.ToString("X"),
-                dump.PointerToRawData.ToString("X"),
-                dump.PointerToRelocations.ToString("X"),
-                dump.PointerToLinenumbers.ToString("X"),
-                dump.NumberOfRelocations.ToString("X"),
-                dump.NumberOfLinenumbers.ToString("X"),
-                dump.Characteristics.ToString("X")
+                "0x" + dump.VirtualAddress.ToString("X"),
+                "0x" + dump.VirtualSize.ToString("X"),
+                "0x" + dump.SizeOfRawData.ToString("X"),
+                "0x" + dump.PointerToRawData.ToString("X"),
+                "0x" + dump.PointerToRelocations.ToString("X"),
+                "0x" + dump.PointerToLinenumbers.ToString("X"),
+                "0x" + dump.NumberOfRelocations.ToString("X"),
+                "0x" + dump.NumberOfLinenumbers.ToString("X"),
+                "0x" + dump.Characteristics.ToString("X")
             );
         }
 
-        Results.Add(sections);
+        var content = "Each row of the section table is, in effect, a section header. " +
+                      "This table immediately follows the optional header, if any. " +
+                      "This positioning is required because the file header does not contain a direct pointer to the section table. " +
+                      "Instead, the location of the section table is determined by calculating the location of the first byte after " +
+                      "the headers. Make sure to use the size of the optional header as specified in the file header.\n\n" +
+                      "The number of entries in the section table is given by the `NumberOfSections` field in the file header. " +
+                      "Entries in the section table are numbered starting from one. " +
+                      "The code and data memory section entries are in the order chosen by the linker.";
+        
+        Regions.Add(new Region("### Sections Table", content, sections));
     }
     
     private void MakeExternToolChain()
@@ -246,24 +370,24 @@ public class PeTableManager(PeImageModel model) : IManager
         DataTable exports = new()
         {
             TableName = "Export Directory",
-            Columns = { "Name", "Value" }
+            Columns = { "Name:s", "Value:?" }
         };
 
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.Name), model.ExportTableModel.ExportDirectory.Name);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.MajorVersion), model.ExportTableModel.ExportDirectory.MajorVersion);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.MinorVersion), model.ExportTableModel.ExportDirectory.MinorVersion);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.Base), model.ExportTableModel.ExportDirectory.Base);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.AddressOfNames), model.ExportTableModel.ExportDirectory.AddressOfNames);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.AddressOfFunctions), model.ExportTableModel.ExportDirectory.AddressOfFunctions);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.NumberOfNames), model.ExportTableModel.ExportDirectory.NumberOfNames);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.NumberOfFunctions), model.ExportTableModel.ExportDirectory.NumberOfFunctions);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.AddressOfNameOrdinals), model.ExportTableModel.ExportDirectory.AddressOfNameOrdinals);
-        exports.Rows.Add(nameof(model.ExportTableModel.ExportDirectory.TimeDateStamp), model.ExportTableModel.ExportDirectory.TimeDateStamp);
+        exports.Rows.Add("Name", model.ExportTableModel.ExportDirectory.Name);
+        exports.Rows.Add("MajorVersion", model.ExportTableModel.ExportDirectory.MajorVersion);
+        exports.Rows.Add("MinorVersion", model.ExportTableModel.ExportDirectory.MinorVersion);
+        exports.Rows.Add("Base", model.ExportTableModel.ExportDirectory.Base);
+        exports.Rows.Add("NamesAddress", model.ExportTableModel.ExportDirectory.AddressOfNames);
+        exports.Rows.Add("ProceduresAddress", model.ExportTableModel.ExportDirectory.AddressOfFunctions);
+        exports.Rows.Add("Names#", model.ExportTableModel.ExportDirectory.NumberOfNames);
+        exports.Rows.Add("Procedures#", model.ExportTableModel.ExportDirectory.NumberOfFunctions);
+        exports.Rows.Add("NameOrdinalsAddress", model.ExportTableModel.ExportDirectory.AddressOfNameOrdinals);
+        exports.Rows.Add("TimeStamp", model.ExportTableModel.ExportDirectory.TimeDateStamp);
 
         DataTable functions = new()
         {
             TableName = "Exporting Functions",
-            Columns = { "Name", "Ordinal", "Address" }
+            Columns = { "Name:s", "Ordinal:2", "Address:8" }
         };
         
         foreach (var function in model.ExportTableModel.Functions)
@@ -275,7 +399,23 @@ public class PeTableManager(PeImageModel model) : IManager
             );
         }
 
-        Results.AddRange([exports, functions]);
+        var dirContent =
+            "The export symbol information begins with the export directory table, " +
+            "which describes the remainder of the export symbol information. " +
+            "The export directory table contains address information that is used to resolve imports to the " +
+            "entry points within this image.";
+
+        var procContent = "The export name table contains the actual string data that was pointed to by the export name pointer table. " +
+                          "The strings in this table are public names that other images can use to import the symbols. " +
+                          "These public export names are not necessarily the same as the private symbol names that " +
+                          "the symbols have in their own image file and source code, although they can be.\n\n" +
+                          "Every exported symbol has an ordinal value, which is just the index into the export address table. " +
+                          "Use of export names, however, is optional. Some, all, or none of the exported symbols can have export names. " +
+                          "For exported symbols that do have export names, corresponding entries in the export name pointer table and export ordinal table " +
+                          "work together to associate each name with an ordinal.";
+        
+        Regions.Add(new Region("### Exports Directory", dirContent, exports));
+        Regions.Add(new Region("### Exporting Procedures", procContent, functions));
     }
 
     private void MakeImports()
@@ -288,11 +428,11 @@ public class PeTableManager(PeImageModel model) : IManager
             TableName = "Import Names Summary",
             Columns =
             {
-                "From",
-                "Name",
-                "Ordinal",
-                "Hint",
-                "Address"
+                "Module:s",
+                "Procedure:s",
+                "Ordinal:2",
+                "Hint:2",
+                "Address:8"
             }
         };
 
@@ -304,12 +444,22 @@ public class PeTableManager(PeImageModel model) : IManager
                     import.DllName,
                     function.Name,
                     "@" + function.Ordinal,
-                    function.Hint.ToString("X"),
-                    function.Address.ToString("X")
+                    "0x" + function.Hint.ToString("X4"),
+                    "0x" + function.Address.ToString("X16")
                 );
             }
         }
 
-        Results.Add(imports);
+        var content =
+            "Usually the import information begins with the import directory table, " +
+            "which describes the remainder of the import information. " +
+            "The import directory table contains address information that is used to resolve fixup references " +
+            "to the entry points within a DLL image. The import directory table consists of an array of import directory entries, " +
+            "one entry for each DLL to which the image refers. " +
+            "The last directory entry is empty (filled with null values), " +
+            "which indicates the end of the directory table.";
+        
+        Regions.Add(new Region("### Statically Importing Procedures", content, imports));
+        
     }
 }

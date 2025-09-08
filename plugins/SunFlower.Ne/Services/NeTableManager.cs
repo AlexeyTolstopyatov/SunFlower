@@ -29,7 +29,7 @@ public class NeTableManager
     public List<Region> RelocationRegions { get; set; } = [];
     public List<Region> SegmentRegions { get; set; } = [];
     
-    public DataTable[] Headers { get; set; } = [];
+    public List<DataTable> Headers { get; set; } = [];
     public string[] Characteristics { get; set; } = [];
     public string[] Imports { get; set; } = [];
     public List<Region> ModulesRegion { get; set; } = [];

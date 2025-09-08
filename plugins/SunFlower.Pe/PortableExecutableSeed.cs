@@ -48,20 +48,19 @@ public class PortableExecutableSeed : IFlowerSeed
             PeTableManager manager = new(image);
             manager.Initialize();
             
-            FlowerSeedResult start = new(FlowerSeedEntryType.Strings)
+            FlowerSeedResult headers = new(FlowerSeedEntryType.DataTables)
             {
-                BoxedResult = new string[]
-                {
-                    "### Image structure details", 
-                    $"Target: `{new FileInfo(path).Name}`", 
-                    $"Target size: `{new FileInfo(path).Length / 1024}K`"
-                }
+                BoxedResult = manager.Results // only headers
             };
-            FlowerSeedResult tables = new(FlowerSeedEntryType.DataTables)
+            FlowerSeedResult tables = new(FlowerSeedEntryType.Regions)
             {
-                BoxedResult = manager.Results
+                BoxedResult = manager.Regions // next retranslated info
             };
-            Status.Results.Add(start);
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
+            {
+                BoxedResult = manager.GeneralStrings
+            });
+            Status.Results.Add(headers);
             Status.Results.Add(tables);
             
             Status.IsEnabled = true;

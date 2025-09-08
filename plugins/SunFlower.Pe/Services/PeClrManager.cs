@@ -11,13 +11,14 @@ namespace SunFlower.Pe.Services;
 /// 
 public class PeClrManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
+    private readonly FileSectionsInfo _info = info;
     public Cor20Header Cor20Header { get; private set; } = new();
     /// <summary>
     /// Entry Point
     /// </summary>
     public void Initialize()
     {
-        if (!IsDirectoryExists(info.Directories[14]))
+        if (!IsDirectoryExists(_info.Directories[14]))
             return;
         
         FileStream stream = new(path, FileMode.Open, FileAccess.Read);
@@ -30,7 +31,7 @@ public class PeClrManager(FileSectionsInfo info, string path) : DirectoryManager
 
     private Cor20Header FillCor20Header(BinaryReader reader)
     {
-        var corOffset = Offset(info.Directories[14].VirtualAddress);
+        var corOffset = Offset(_info.Directories[14].VirtualAddress);
         reader.BaseStream.Seek(corOffset, SeekOrigin.Begin);
         var cor = Fill<Cor20Header>(reader);
 

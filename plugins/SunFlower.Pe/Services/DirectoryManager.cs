@@ -33,7 +33,7 @@ public class DirectoryManager(FileSectionsInfo info) : UnsafeManager
     /// <param name="rva"> Required relative address </param>
     /// <returns> <see cref="PeSection"/> Which RVA belongs </returns>
     /// <exception cref="SectionNotFoundException"> If RVA not belongs to any section </exception>
-    protected PeSection Section(Int64 rva)
+    private PeSection Section(Int64 rva)
     {   // rva = {uint} 2019914798 
         // rva = {long} 2019914798 
         // RVA always 32-bit

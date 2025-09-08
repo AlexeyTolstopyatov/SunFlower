@@ -7,19 +7,19 @@ namespace SunFlower.Pe.Headers;
 public struct MzHeader
 {
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_sign;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_lastb;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_fbl;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_cblp;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_lb;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_relc;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_pars;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_minep;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_maxep;
     [MarshalAs(UnmanagedType.U2)] public UInt16 ss;
     [MarshalAs(UnmanagedType.U2)] public UInt16 sp;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_check;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_crc;
     [MarshalAs(UnmanagedType.U2)] public UInt16 ip;
     [MarshalAs(UnmanagedType.U2)] public UInt16 cs;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_reltableoff;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_overnum;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_lfarlc;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_ovno;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)] public UInt16[] e_res0x1c;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_oemid;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_oeminfo;

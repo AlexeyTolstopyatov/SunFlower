@@ -20,7 +20,8 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
             var typeValue = reader.ReadByte();
             var type = (EntryBundleType)(typeValue & 0x7F);
             var hasParamTypes = (typeValue & 0x80) != 0;
-
+            
+            
             var bundle = new EntryBundle() { Count = count, Type = type };
 
             for (var i = 0; i < count; i++)

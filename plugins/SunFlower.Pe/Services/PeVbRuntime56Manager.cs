@@ -43,8 +43,8 @@ public class PeVbRuntime56Manager : DirectoryManager
             // in IAT for @100 procedure. (name: ThunRTMain)
             
             // second thing: I don't know type of offset
-            // after entryPoint. I suppose this is an absolute.
-            _reader.BaseStream.Position += pushAddress;
+            // after entryPoint.
+            _reader.BaseStream.Position = (offset + pushAddress);
             
             header = Fill<Vb5Header>(_reader);
         }

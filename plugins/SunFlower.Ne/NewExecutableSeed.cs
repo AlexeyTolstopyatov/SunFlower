@@ -11,7 +11,7 @@ namespace SunFlower.Ne;
 public class NewExecutableSeed : IFlowerSeed
 {
     public string Seed { get; } = "Sunflower Win16-OS/2 NE IA-32";
-    public FlowerSeedStatus Status { get; set; } = new();
+    public FlowerSeedStatus Status { get; } = new();
     public int Main(string path)
     {
         try
@@ -27,10 +27,6 @@ public class NewExecutableSeed : IFlowerSeed
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
             {
                 BoxedResult = tableManager.Headers
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
-            {
-                BoxedResult = tableManager.Imports
             });
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
             {
@@ -48,7 +44,11 @@ public class NewExecutableSeed : IFlowerSeed
             {
                 BoxedResult = tableManager.NamesRegions
             });
-            
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
+            {
+                BoxedResult = tableManager.ImportRegions
+            });
+
             return 0;
         }
         catch (Exception e)

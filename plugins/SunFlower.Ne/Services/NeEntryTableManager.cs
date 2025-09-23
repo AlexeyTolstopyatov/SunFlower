@@ -7,7 +7,7 @@ public class NeEntryTableManager(BinaryReader reader, uint offset, uint bundlesC
     /// <summary>
     /// Exporting Addresses Table. I don't know what actually is that.
     /// </summary>
-    public List<NeEntryBundle> EntryBundles { get; set; } = FindEntryBundles(reader, offset, bundlesCount);
+    public List<NeEntryBundle> EntryBundles { get; } = FindEntryBundles(reader, offset, bundlesCount);
 
     private static List<NeEntryBundle> FindEntryBundles(BinaryReader reader, uint bundlesOffset, uint bundlesCount)
     {

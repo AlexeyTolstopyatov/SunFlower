@@ -1,22 +1,21 @@
 ﻿using System.Text;
 using SunFlower.Ne.Headers;
-using SunFlower.Ne.Models;
 
 namespace SunFlower.Ne.Services;
 
 public sealed class ExportOffsets(uint restab, uint nrestab, uint cbnres)
 {
-    public uint ResidentNamesOffset { get; set; } = restab;
-    public uint NonResidentNamesOffset { get; set; } = nrestab;
-    public uint NonResidentNamesCount { get; set; } = cbnres;
+    public uint ResidentNamesOffset { get; } = restab;
+    public uint NonResidentNamesOffset { get; } = nrestab;
+    public uint NonResidentNamesCount { get; } = cbnres;
 }
 
 public class NeNamesTablesManager(BinaryReader reader, ExportOffsets offsets)
 {
     private ExportOffsets _offsets = offsets;
     
-    public List<Name> ResidentNames { get; set; } = FillResidentNames(reader, offsets.ResidentNamesOffset);
-    public List<Name> NonResidentNames { get; set; } = FillNonResidentNames(reader, offsets.NonResidentNamesOffset, offsets.NonResidentNamesCount);
+    public List<Name> ResidentNames { get; } = FillResidentNames(reader, offsets.ResidentNamesOffset);
+    public List<Name> NonResidentNames { get; } = FillNonResidentNames(reader, offsets.NonResidentNamesOffset, offsets.NonResidentNamesCount);
     /// <summary>
     /// Fills resident names
     /// </summary>

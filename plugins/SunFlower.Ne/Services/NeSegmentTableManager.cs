@@ -5,7 +5,7 @@ namespace SunFlower.Ne.Services;
 
 public class NeSegmentTableManager
 {
-    public List<SegmentModel> SegmentModels { get; set; } = [];
+    public List<SegmentModel> SegmentModels { get; } = [];
     // Segments and segment relocations fills correctly and are not NULL
     // redundant warning
     
@@ -23,7 +23,7 @@ public class NeSegmentTableManager
         
         for (var i = 0; i < segcount; i++)
         {
-            var segment = new NeSegmentInfo()
+            var segment = new NeSegmentInfo
             {
                 FileOffset = reader.ReadUInt16(), // shifted
                 FileLength = reader.ReadUInt16(),
@@ -35,7 +35,8 @@ public class NeSegmentTableManager
             FillNeSegmentModel(ref segment, (uint)i + 1);
         }
         
-        foreach (var segment in SegmentModels.Where(segment => (segment.Flags & 0x0C) != 0))
+        // exclude all segment records which flags not have 0x0100 
+        foreach (var segment in SegmentModels.Where(segment => (segment.Flags & 0x0100) != 0))
         {
             if (alignment == 0)
                 alignment = 9; // <-- 2^9 = 512 (paragraph allocation)
@@ -144,8 +145,9 @@ public class NeSegmentTableManager
     private void FillNeSegmentModel(ref NeSegmentInfo segment, uint segmentNumber)
     {
         List<string> chars = [];
-
-        if ((segment.Flags & 0x0C) == 0) chars.Add("WITHIN_RELOCS");
+        
+        // 0x0100 byte mask -> relocations exists
+        if ((segment.Flags & 0x0100) == 0) chars.Add("WITHIN_RELOCS");
         if ((segment.Flags & (ushort)SegmentType.Mask) != 0) chars.Add("HAS_MASK");
         if ((segment.Flags & (ushort)SegmentType.DiscardPriority) != 0) chars.Add("DISCARDABLE");
         if ((segment.Flags & (ushort)SegmentType.Movable) != 0) chars.Add("MOVABLE_BASE");

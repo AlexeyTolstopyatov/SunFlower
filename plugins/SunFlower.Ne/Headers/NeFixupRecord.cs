@@ -33,14 +33,14 @@ public enum OsFixupType : ushort
 public class RelocationRecord
 {
     public RelocationSourceType SourceType { get; set; }
-    public RelocationFlags Flags { get; set; }
+    public RelocationFlags Flags { get; }
     public ushort Offset { get; set; }
     public bool IsAdditive => (Flags & RelocationFlags.Additive) != 0;
 }
 
 public class InternalRefRelocation : RelocationRecord
 {
-    public byte SegmentType { get; set; } // 0xFF for movable
+    public byte SegmentType { get; } // 0xFF for movable
     public ushort Target { get; set; }    // Offset or ordinal
     
     public bool IsMovable => SegmentType == 0xFF;

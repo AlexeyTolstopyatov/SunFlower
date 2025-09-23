@@ -3,15 +3,15 @@
 
 public class EntryTableModel(bool isUnused, bool isMovable, byte flags)
 {
-    public string Type { get; set; } = !isUnused
+    public string Type { get; } = !isUnused
         ? isMovable 
             ? "[MOVEABLE]" 
             : "[FIXED]"
         : "[UNUSED]";
-    public string Data { get; set; } = (flags & 0x02) != 0
+    public string Data { get; } = (flags & 0x02) != 0
         ? "[Global](Shared)"
         : "[Single]";
-    public string Entry { get; set; } = (flags & 0x01) != 0
+    public string Entry { get; } = (flags & 0x01) != 0
         ? "Export"
         : "Static";
     public ushort Offset { get; set; }

@@ -1,8 +1,6 @@
 ﻿using System.Data;
-using System.Reflection.Emit;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
-using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
 
 namespace SunFlower.Ne.Services;
@@ -21,18 +19,18 @@ public class NeTableManager
         MakeEntryPointsTable();
         MakeModuleReferencesTable();
         MakeNames();
-        MakeImports();
+        MakeImportRegions();
     }
 
-    public List<Region> NamesRegions { get; set; } = [];
+    public List<Region> NamesRegions { get; } = [];
     public List<Region> EntryBundlesRegions { get; set; } = [];
     public List<Region> RelocationRegions { get; set; } = [];
-    public List<Region> SegmentRegions { get; set; } = [];
+    public List<Region> SegmentRegions { get; } = [];
     
     public List<DataTable> Headers { get; set; } = [];
     public string[] Characteristics { get; set; } = [];
-    public string[] Imports { get; set; } = [];
-    public List<Region> ModulesRegion { get; set; } = [];
+    public List<Region> ImportRegions { get; set; } = [];
+    public List<Region> ModulesRegion { get; } = [];
 
     private void MakeHeadersTables()
     {
@@ -117,6 +115,27 @@ public class NeTableManager
         return table;
     }
 
+    private void MakeImportRegions()
+    {
+        // iterate each dictionary record
+        foreach (var importPair in _manager.ImportModels)
+        {
+            string head = $"### Resolved Imports of {FlowerReport.SafeString(importPair.Key)}";
+            string content = "16-bit Imports processor bases at per-segment relocations. " +
+                             "If segment has special bit in the byte-mask, next services will iterate preprocessed relocations records";
+            DataTable table = new()
+            {
+                Columns = { "Name", "Ordinal" }
+            };
+            
+            foreach (var import in importPair.Value)
+            {
+                table.Rows.Add(FlowerReport.SafeString(import.Procedure), import.Ordinal);
+            }
+
+            ImportRegions.Add(new(head, content, table));
+        }
+    }
     private void MakeSegmentsTable()
     {
         if (_manager.Segments.Count == 0)
@@ -260,16 +279,16 @@ public class NeTableManager
                 table.Rows.Add(
                     "0x" + rel.AddressType.ToString("X"), 
                     "0x" + rel.RelocationFlags.ToString("X"), 
-                    "0x" + rel.RelocationType, 
-                    "0x" + rel.IsAdditive,
+                    $"[{rel.RelocationType}]", 
+                    $"[{rel.IsAdditive}]",
                     "0x" + rel.OffsetInSegment.ToString("X"), 
-                    "0x" + rel.SegmentType.ToString("X"), 
+                    $"{rel.SegmentType}", 
                     "0x" + rel.Target.ToString("X"), 
-                    "0x" + rel.TargetType, 
+                    $"[{rel.TargetType}]", 
                     "0x" + rel.ModuleIndex.ToString("X"),
                     "@" + rel.Ordinal, 
                     "0x" + rel.NameOffset.ToString("X"),
-                    "0x" + rel.Fixup);
+                    rel.Fixup);
             }
             // per-segment relocation regions
             SegmentRegions.Add(new Region(head, content, table));
@@ -311,27 +330,6 @@ public class NeTableManager
         }
 
         NamesRegions.Add(new Region("### Resident And NonResident Names", content, nonres));
-    }
-
-    private void MakeImports()
-    {
-        List<string> md = [];
-        
-        md.Add("\r\n### Importing modules");
-        md.Add("All .DLL/.EXE module names which resolved successfully");
-        
-        //md.AddRange(_manager.ImportModels.Select(m => m.DllName).Select(mod => $" - `{mod}`"));
-
-        foreach (var importModel in _manager.ImportModels)
-        {
-            md.Add($" - " + FlowerReport.SafeString(importModel.DllName));
-            foreach (var function in importModel.Functions)
-            {
-                md.Add($" - " + FlowerReport.SafeString(function.Name));
-            }
-        }
-
-        Imports = md.ToArray();
     }
     private void MakeCharacteristics()
     {

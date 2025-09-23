@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using SunFlower.Le.Headers.Lx;
+﻿using SunFlower.Le.Headers.Lx;
 
 namespace SunFlower.Le.Services;
 
@@ -7,7 +6,7 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
 {
     public List<EntryBundle> EntryBundles { get; init; } = ReadEntryTable(reader, offset);
 
-    private static List<EntryBundle> ReadEntryTable(BinaryReader reader, uint entryTableOffset, [Optional] uint bundlesCount)
+    private static List<EntryBundle> ReadEntryTable(BinaryReader reader, uint entryTableOffset)
     {
         reader.BaseStream.Seek(entryTableOffset, SeekOrigin.Begin);
         var bundles = new List<EntryBundle>();
@@ -19,10 +18,8 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
 
             var typeValue = reader.ReadByte();
             var type = (EntryBundleType)(typeValue & 0x7F);
-            var hasParamTypes = (typeValue & 0x80) != 0;
             
-            
-            var bundle = new EntryBundle() { Count = count, Type = type };
+            var bundle = new EntryBundle { Count = count, Type = type };
 
             for (var i = 0; i < count; i++)
             {

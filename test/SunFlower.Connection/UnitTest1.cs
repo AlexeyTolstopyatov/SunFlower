@@ -54,7 +54,7 @@ public class Tests
     public void CheckoutNeImage()
     {
         //string path = @"D:\Анализ файлов\inst\NE\IBMCOLOR.DRV";
-        var path = @"D:\TEST\os2\SYSINST2.EXE";
+        var path = @"D:\TEST\OS2\LINK.EXE";
         SunFlower.Ne.Services.NeDumpManager manager = new(path);
         SunFlower.Ne.Services.NeTableManager tableManager = new(manager);
         

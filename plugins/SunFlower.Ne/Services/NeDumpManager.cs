@@ -1,9 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Reflection.Metadata;
-using System.Text;
-using Microsoft.VisualBasic;
-using SunFlower.Ne.Headers;
+﻿using SunFlower.Ne.Headers;
 using SunFlower.Ne.Models;
 
 namespace SunFlower.Ne.Services;
@@ -19,7 +14,7 @@ public class NeDumpManager : UnsafeManager
     /// <summary>
     /// Importing names and procedures model
     /// </summary>
-    public List<ImportModel> ImportModels { get; set; } = [];
+    public Dictionary<string, List<Import>> ImportModels { get; set; } = [];
     /// <summary>
     /// Exporting procedure names with implicit set ordinal in ".def" project file
     /// </summary>
@@ -71,24 +66,32 @@ public class NeDumpManager : UnsafeManager
         if (NeHeader.NE_ID != 0x454e && NeHeader.NE_ID != 0x4e45) // magic or cigam
             throw new InvalidOperationException("Doesn't have 'NE' signature");
 
+        var segments = new NeSegmentTableManager(reader, 
+            Offset(NeHeader.NE_SegmentsTable), 
+            NeHeader.NE_SegmentsCount,
+            NeHeader.NE_Alignment);
+        
         var exports = new NeNamesTablesManager(reader, new ExportOffsets(
             Offset(NeHeader.NE_ResidentNamesTable),
             NeHeader.NE_NonResidentNamesTable,
             NeHeader.NE_NonResidentNamesCount
         ));
+        
         var imports = new NeImportNamesManager(reader, new ImportOffsets(
-            NeHeader.NE_ImportModulesTable,
+            // other tables aren't filled yet 
+            Offset(NeHeader.NE_ImportModulesTable),
             1,
             Offset(NeHeader.NE_ModReferencesTable),
             NeHeader.NE_ModReferencesCount
-        ));
-        var segments = new NeSegmentTableManager(reader, 
-            Offset(NeHeader.NE_SegmentsTable), 
-            NeHeader.NE_SegmentsCount,
-            NeHeader.NE_Alignment);
+            ), 
+            // segment relocations contains raw pointers to imports
+            segments.SegmentModels
+        );
+        
         var entries = new NeEntryTableManager(reader, 
             Offset(NeHeader.NE_EntryTable), 
-            NeHeader.NE_EntriesCount);
+            NeHeader.NE_EntriesCount
+        );
 
         Segments = segments.SegmentModels;
         EntryBundles = entries.EntryBundles;

@@ -26,11 +26,3 @@ public struct NeSegmentInfo
         set => _type = value;
     }
 }
-
-public struct SegmentRelocation
-{
-    public ushort OffsetInSegment { get; set; }
-    public ushort Info { get; set; }
-    public byte RelocationType => (byte)((Info >> 13) & 0x07); // 13-15
-    public ushort Index => (ushort)(Info & 0x1FFF); // 0-12
-}

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Numerics;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Ne.Models;
@@ -24,9 +25,7 @@ public class NeTableManager
 
     public List<Region> NamesRegions { get; } = [];
     public List<Region> EntryBundlesRegions { get; set; } = [];
-    public List<Region> RelocationRegions { get; set; } = [];
     public List<Region> SegmentRegions { get; } = [];
-    
     public List<DataTable> Headers { get; set; } = [];
     public string[] Characteristics { get; set; } = [];
     public List<Region> ImportRegions { get; set; } = [];
@@ -85,8 +84,7 @@ public class NeTableManager
         table.Rows.Add(nameof(ne.NE_EntryTable), "0x" + ne.NE_EntryTable.ToString("X"));
         table.Rows.Add(nameof(ne.NE_EntriesCount), "0x" + ne.NE_EntriesCount.ToString("X"));
         table.Rows.Add(nameof(ne.NE_Checksum), "0x" + ne.NE_Checksum.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_ProgramFlags), "0x" + ne.NE_ProgramFlags.ToString("X"));
-        table.Rows.Add(nameof(ne.NE_AppFlags), "0x" + ne.NE_AppFlags.ToString("X"));
+        table.Rows.Add(nameof(ne.NE_Flags), "0x" + ne.NE_Flags.ToString("X"));
         table.Rows.Add(nameof(ne.NE_AutoSegment), "0x" + ne.NE_AutoSegment.ToString("X"));
         table.Rows.Add(nameof(ne.NE_Heap), "0x" + ne.NE_Heap.ToString("X"));
         table.Rows.Add(nameof(ne.NE_Stack), "0x" + ne.NE_Stack.ToString("X"));
@@ -141,18 +139,20 @@ public class NeTableManager
         if (_manager.Segments.Count == 0)
             return;
         
-        DataTable segs = new("Segments Table");
+        DataTable segs = new("Segments Table")
+        {
+            Columns =
+            {
+                FlowerReport.ForColumn("Type", typeof(string)),
+                FlowerReport.ForColumn("#Segment", typeof(uint)),
+                FlowerReport.ForColumn("Offset", typeof(ushort)),
+                FlowerReport.ForColumn("Length", typeof(ushort)),
+                FlowerReport.ForColumn("Flags", typeof(ushort)),
+                FlowerReport.ForColumn("Minimum allocation", typeof(ushort)),
+                FlowerReport.ForColumn("Flags", typeof(string))
+            }
+        };
         
-        segs.Columns.AddRange([
-            new DataColumn("Type:s"), 
-            new DataColumn("#Segment:4"), 
-            new DataColumn("Offset:2"),
-            new DataColumn("Length:2"),
-            new DataColumn("Flags:2"),
-            new DataColumn("Minimum Allocation:2"),
-            new DataColumn("Characteristics:s")
-        ]);
-
         foreach (var segmentDump in _manager.Segments)
         {
             var array = segmentDump
@@ -199,7 +199,15 @@ public class NeTableManager
             
             DataTable entries = new($"EntryTable Bundle #{counter}")
             {
-                Columns = {"Ordinal", "Offset", "Segment", "Entry", "Data type", "Entry type" }
+                Columns =
+                {
+                    FlowerReport.ForColumn("Ordinal", typeof(ushort)),
+                    FlowerReport.ForColumn("Offset", typeof(ushort)),
+                    FlowerReport.ForColumn("Segment", typeof(ushort)),
+                    FlowerReport.ForColumn("Entry", typeof(string)),
+                    FlowerReport.ForColumn("Data", typeof(string)),
+                    FlowerReport.ForColumn("Type", typeof(string))
+                }
             };
             foreach (var item in bundle.EntryPoints)
             {
@@ -226,13 +234,18 @@ public class NeTableManager
             return;
 
         var head = "### Module References";
-        var content = "The module-reference table follows the resident-name table. " +
-                      "Each entry contains an offset for the module-name string within the imported names table; " +
-                      "each entry is 2 bytes long.";
+        var content = 
+            "The module-reference table follows the resident-name table. " +
+            "Each entry contains an offset for the module-name string within the imported names table; " +
+            "each entry is 2 bytes long.";
         
         DataTable modres = new("Module References")
         {
-            Columns = { "Reference#:4", "Offset:2" }
+            Columns =
+            {
+                FlowerReport.ForColumn("Reference#", typeof(int)), 
+                FlowerReport.ForColumn("Offset", typeof(ushort))
+            }
         };
         for (var i = 0; i < _manager.ModuleReferences.Count; ++i)
         {
@@ -248,9 +261,10 @@ public class NeTableManager
     private void MakeSegmentRelocations()
     {
         var sexWithRelocations = _manager.Segments.Where(s => s.Relocations.Count > 0).Distinct().ToList();
-        var content = "The location and size of the per-segment data is defined in the segment table entry for the segment. " +
-                      "If the segment has relocation fixups, as defined in the segment table entry flags, they directly " +
-                      "follow the segment data in the file.";
+        var content = 
+            "The location and size of the per-segment data is defined in the segment table entry for the segment. " +
+            "If the segment has relocation fixups, as defined in the segment table entry flags, they directly " +
+            "follow the segment data in the file.";
         foreach (var segment in sexWithRelocations)
         {
             var head = $"### Relocations Table for Segment #{segment.SegmentNumber} ({segment.Type})";
@@ -258,18 +272,18 @@ public class NeTableManager
             {
                 Columns =
                 {
-                    "ATP:1", 
-                    "RTP:1",
-                    "RTP:s",
-                    "IsAdditive:f",
-                    "OffsetInSeg:2",
-                    "SegType:2",
-                    "Target:2",
-                    "TargetType:s",
-                    "Mod#:2",
-                    "Name:2",
-                    "Ordinal:2",
-                    "Fixup:s"
+                    FlowerReport.ForColumn("ATP", typeof(byte)),
+                    FlowerReport.ForColumn("RTP", typeof(byte)),
+                    FlowerReport.ForColumn("RTP", typeof(string)),
+                    FlowerReport.ForColumn("Additive?", typeof(bool)),
+                    FlowerReport.ForColumn("OffsetInSeg", typeof(ushort)),
+                    FlowerReport.ForColumn("SegType", typeof(ushort)),
+                    FlowerReport.ForColumn("Target", typeof(ushort)),
+                    FlowerReport.ForColumn("TargetType", typeof(string)),
+                    FlowerReport.ForColumn("Mod#", typeof(string)),
+                    FlowerReport.ForColumn("Name", typeof(ushort)),
+                    FlowerReport.ForColumn("Ordinal", typeof(ushort)),
+                    FlowerReport.ForColumn("Fixup", typeof(string))
                 }
             };
 
@@ -298,13 +312,15 @@ public class NeTableManager
     {
         if (_manager.NonResidentNames.Count == 0)
             return;
-        var content = "The resident-name table follows the resource table, " +
-                      "and contains this module's name string and resident exported procedure name strings. " +
-                      "The first string in this table is this module's name. \n\n" +
-                      "The nonresident-name table follows the entry table, and contains a " +
-                      "module description and nonresident exported procedure name strings. " +
-                      "The first string in this table is a module description. These name " +
-                      "strings are case-sensitive and are not null-terminated.";
+        var content = 
+            "The resident-name table follows the resource table, " +
+            "and contains this module's name string and resident exported procedure name strings. " +
+            "The first string in this table is this module's name. \n\n" +
+            "The nonresident-name table follows the entry table, and contains a " +
+            "module description and nonresident exported procedure name strings. " +
+            "The first string in this table is a module description. These name " +
+            "strings are case-sensitive and are not null-terminated.";
+        
         DataTable nonres = new()
         {
             Columns = { "Count", "Name", "Ordinal", "Name Table" }
@@ -351,7 +367,7 @@ public class NeTableManager
             _ => $"Unknown 0x{_manager.NeHeader.NE_OS:X}" // <-- really don't know how handle it
         };
 
-        var cpu = _manager.NeHeader.NE_ProgramFlags switch
+        var cpu = _manager.NeHeader.NE_Flags switch
         {
             var f when (f & 0x4) != 0 => "I8086",
             var f when (f & 0x5) != 0 => "I286",
@@ -376,14 +392,17 @@ public class NeTableManager
         md.Add($" - Stack=`{_manager.NeHeader.NE_Stack:X4}`");
         md.Add($" - Swap area=`{_manager.NeHeader.NE_SwapArea:X4}`");
         
-        md.Add($" - DOS/2 `CS:IP={_manager.MzHeader.cs:X}:{_manager.MzHeader.ip:X4}`");
-        md.Add($" - DOS/2 `SS:SP={_manager.MzHeader.ss:X}:{_manager.MzHeader.sp:X4}`");
+        md.Add($" - DOS/2 `CS:IP`={FlowerReport.FarHexString(_manager.MzHeader.cs, _manager.MzHeader.ip, true)}");
+        md.Add($" - DOS/2 `SS:SP`={FlowerReport.FarHexString(_manager.MzHeader.ss, _manager.MzHeader.sp, true)}");
+        
         var cs = _manager.NeHeader.NE_CsIp >> 16;
         var ip = _manager.NeHeader.NE_CsIp & 0xFFFF;
+        var ss = _manager.NeHeader.NE_SsSp >> 16;
+        var sp = _manager.NeHeader.NE_SsSp & 0xFFFF;
         
-        md.Add($" - Win16-OS/2 `CS:IP={cs:X4}:{ip:X4}` (hex)"); // <-- handle it
-        md.Add($" - Win16-OS/2 `SS:SP={_manager.NeHeader.NE_SsSp >> 16:X4}:{_manager.NeHeader.NE_SsSp & 0xFFFF:X4}` (hex)"); // <-- handle it
-        md.Add($"> ![TIP]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
+        md.Add($" - Win16-OS/2 `CS:IP`={FlowerReport.FarHexString((ushort)cs, (ushort)ip, true)}"); // <-- handle it
+        md.Add($" - Win16-OS/2 `SS:SP`={FlowerReport.FarHexString((ushort)ss, (ushort)sp, true)}"); // <-- handle it
+        md.Add($"> [!TIP]\r\n> Segmented EXE Header holds on relative EntryPoint address.\r\n> EntryPoint stores in [#{cs}](decimal) segment with 0x{ip:X} offset");
         
         md.Add("\r\n## Entities summary");
         md.Add($"1. Number of Segments - `{_manager.NeHeader.NE_SegmentsCount}`");
@@ -395,7 +414,7 @@ public class NeTableManager
         md.Add($"7. Number of Module References - `{_manager.NeHeader.NE_ModReferencesCount}`");
         
         // program flags 
-        var p = _manager.NeHeader.NE_ProgramFlags;
+        var p = _manager.NeHeader.NE_Flags;
         md.Add($"## Program Flags");
         md.Add("### How data is handled?");
         md.Add(@"
@@ -420,9 +439,10 @@ multiple instances of the notepad application.");
         
         md.Add("## Application Flags");
         md.Add("This block (field) tells how windowing or not windowing wants to run");
-        var a = _manager.NeHeader.NE_AppFlags;
         
-        if ((a & 0x0008) != 0) md.Add(" - `OS2_FAMILY` (OS/2 family application. You can see OS/2 flags section)");
+        var a = _manager.NeHeader.NE_Flags;
+        
+        if ((a & 0x0080) != 0) md.Add(" - `OS2_FAMILY` (OS/2 family application. You can see OS/2 flags section)");
         if ((a & 0x0020) != 0) md.Add(" - `IMAGE_ERR` (OS doesn't want that you run it).");
         if ((a & 0x0040) != 0) md.Add(" - `NON_CONFORM` (nonconforming program)");
         

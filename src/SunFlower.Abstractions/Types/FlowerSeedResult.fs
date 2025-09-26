@@ -40,9 +40,10 @@ type FlowerSeedEntryType =
     | Regions = 4
 
 [<Class>]
-type FlowerSeedResult(resultType: FlowerSeedEntryType) = class   
+type FlowerSeedResult(resultType: FlowerSeedEntryType, result: Object) = class   
     let mutable boxedResult : Object = 0
-    
+    new (r: FlowerSeedEntryType) =
+        FlowerSeedResult(r, 0)
     /// <summary>
     /// Stores type of Boxed result from flower's seed
     /// (external plugin result which will be dereferenced by client)
@@ -52,7 +53,7 @@ type FlowerSeedResult(resultType: FlowerSeedEntryType) = class
     /// Points to boxed result (universal .NET Object type)
     /// which must dereferenced and unboxed by following Type 
     /// </summary>
-    member public r.BoxedResult
+    member public _.BoxedResult
         with get () = boxedResult
         and set result = boxedResult <- result
     

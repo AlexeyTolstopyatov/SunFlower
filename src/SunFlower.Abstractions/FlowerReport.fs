@@ -30,3 +30,39 @@ module FlowerReport =
         |> Array.iter (appendEscaped >> ignore)
         
         $"`{sb}`"
+    [<CompiledName "ForColumn">]
+    let forColumn (str : string, t : Type) : string =
+        match t.Name with
+        | "Int32"
+        | "UInt32" -> $"`{str}:4`"
+        | "Int16"
+        | "UInt16" -> $"`{str}:2`"
+        | "Byte"
+        | "SByte" -> $"`{str}:1`"
+        | "Object"
+        | "String" -> $"`{str}:s`"
+        | "Boolean" -> $"`{str}:f`"
+        | _ -> $"`{str}:?`"
+    /// <summary>
+    /// Returns the following string format
+    /// name:type
+    /// </summary>
+    [<CompiledName "ForColumnWith">]
+    let forColumnWith (str: string, t : string) : string = 
+        $"`{str}:{t}`"
+    /// <summary>
+    /// Returns prepared string of FAR16 pointer
+    /// </summary>
+    [<CompiledName "FarHexString">]
+    let farHexString(seg: UInt16, offset: UInt16, high: bool) : string = 
+        match high with
+        | true -> $"`{seg:X4}:{offset:X4}`"
+        | false -> $"`{offset:X4}:{seg:X4}`"
+    /// <summary>
+    /// Returns prepared string of FAR32 pointer
+    /// </summary>
+    [<CompiledName "Far32HexString">]
+    let far32HexString (seg: UInt16, offset: UInt32, high: bool) = 
+        match high with
+        | true -> $"`{seg:X4}:{offset:X8}`"
+        | false -> $"`{offset:X8}:{seg:X4}`"

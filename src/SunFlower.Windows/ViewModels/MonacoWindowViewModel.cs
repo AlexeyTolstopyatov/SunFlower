@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Microsoft.Xaml.Behaviors.Core;
@@ -15,7 +16,7 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
     public MonacoWindowViewModel()
     {
         _results = [];
-        _saveResultsCommand = new ActionCommand(SaveResults);
+        SaveResultsCommand = new ActionCommand(SaveResults);
     }
     public MonacoWindowViewModel(List<IFlowerSeed> seeds)
     {
@@ -30,24 +31,23 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
             results.AddRange(seed.Status.Results);
         }
         _results = results;
-        _saveResultsCommand = new ActionCommand(SaveResults);
+        SaveResultsCommand = new ActionCommand(SaveResults);
     }
 
-    public ICommand SaveResultsCommand
-    {
-        get => _saveResultsCommand;
-        set => SetField(ref _saveResultsCommand, value);
-    }
-    private ICommand _saveResultsCommand;
+    public ICommand SaveResultsCommand { get; }
 
     private void SaveResults()
     {
         SaveFileDialog dialog = new()
         {
             Filter = "Markdown Document (*.md)|*.md|All types (*.*)|*.*",
+            ShowHiddenItems = true
         };
-        
+
         dialog.ShowDialog();
+        
+        if (string.IsNullOrEmpty(dialog.FileName)) 
+            return;
         
         File.WriteAllText(dialog.FileName, MarkdownGenerator.Generate(_results));
     }

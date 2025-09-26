@@ -1,3 +1,4 @@
+using SunFlower.Abstractions;
 using SunFlower.Le.Services;
 using SunFlower.Pe;
 using SunFlower.Pe.Services;
@@ -95,5 +96,15 @@ public class Tests
         PifDumpManager manager = new(@"C:\Users\atvlg\OneDrive\Desktop\batchbox.pif");
         
         Assert.Pass();
+    }
+    [Test]
+    public void CheckFlowerReport()
+    {
+        Assert.Pass(FlowerReport.ForColumn("offset", typeof(int)));
+    }
+    [Test]
+    public void CheckFlowerPointer()
+    {
+        Assert.Pass(FlowerReport.FarHexString(0, 15, true));
     }
 }

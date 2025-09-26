@@ -11,8 +11,7 @@ public struct NeHeader
     [MarshalAs(UnmanagedType.U2)] public ushort NE_EntryTable;
     [MarshalAs(UnmanagedType.U2)] public ushort NE_EntriesCount;
     [MarshalAs(UnmanagedType.U4)] public uint NE_Checksum;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_ProgramFlags;
-    [MarshalAs(UnmanagedType.U1)] public byte NE_AppFlags;
+    [MarshalAs(UnmanagedType.U2)] public ushort NE_Flags;
     [MarshalAs(UnmanagedType.U2)] public ushort NE_AutoSegment;
     [MarshalAs(UnmanagedType.U2)] public ushort NE_Heap;
     [MarshalAs(UnmanagedType.U2)] public ushort NE_Stack;

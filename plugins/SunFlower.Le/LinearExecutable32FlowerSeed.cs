@@ -17,13 +17,9 @@ public class LinearExecutable32FlowerSeed : IFlowerSeed
             LxDumpManager dumpManager = new(path);
             LxTableManager tableManager = new(dumpManager);
 
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
-            {
-                BoxedResult = tableManager.Characteristics
-            });
-            FlowerSeedResult imports = new(FlowerSeedEntryType.Strings)
-            {
-            };
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, tableManager.Characteristics));
+            FlowerSeedResult imports = new(FlowerSeedEntryType.Strings);
+            
             List<string> mods = ["### Imported Modules", ..tableManager.ImportedNames];
             List<string> procs = ["### Imported Procedures", ..tableManager.ImportedProcedures];
             
@@ -33,22 +29,10 @@ public class LinearExecutable32FlowerSeed : IFlowerSeed
             Status.Results.Add(imports);
             
             List<DataTable> unboxed = [..tableManager.Headers];
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
-            {
-                BoxedResult = unboxed
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.ObjectRegions
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.EntryTableRegions
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.NamesRegions
-            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables, unboxed));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.ObjectRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.EntryTableRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.NamesRegions));
             
             Status.IsEnabled = true;
             
@@ -59,6 +43,5 @@ public class LinearExecutable32FlowerSeed : IFlowerSeed
             Status.LastError = e;
             return -1;
         }
-        return 0;
     }
 }

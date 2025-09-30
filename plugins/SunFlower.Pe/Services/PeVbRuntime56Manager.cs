@@ -6,8 +6,12 @@ namespace SunFlower.Pe.Services;
 public class PeVbRuntime56Manager : DirectoryManager
 {
     public Vb5Header Vb5Header { get; }
+    public VbComData VbComData { get; }
+    public VbDesignerInfo VbDesignerInfo { get; }
+    
     private readonly FileSectionsInfo _info;
     private readonly BinaryReader _reader;
+    private long _vbanew;
 
     public PeVbRuntime56Manager(FileSectionsInfo info, BinaryReader reader) : base(info)
     {
@@ -37,16 +41,17 @@ public class PeVbRuntime56Manager : DirectoryManager
                 return header; // struct must be empty
 
             if (callOpCode != 0xE8)
-                return header; // call &@100 not found. 
+                return header; // callf @100 not found. 
             
-            // address is an offset
-            // in IAT for @100 procedure. (name: ThunRTMain)
-            
-            // second thing: I don't know type of offset
-            // after entryPoint.
-            _reader.BaseStream.Position = (offset + pushAddress);
+            _reader.BaseStream.Position = (pushAddress - _info.ImageBase); // FINALLY!!!!!!! GOD THANK YOU!!!!!
+            _vbanew = _reader.BaseStream.Position;
             
             header = Fill<Vb5Header>(_reader);
+
+            if (new string(header.VbMagic) != "VB5!")
+            {
+                header = new Vb5Header();
+            }
         }
         catch
         {

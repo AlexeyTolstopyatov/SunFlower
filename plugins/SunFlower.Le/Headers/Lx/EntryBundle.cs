@@ -4,8 +4,8 @@ public enum EntryBundleType : byte
 {
     Unused = 0,
     _16Bit = 1,
-    _32Bit = 2,
-    _286CallGate = 3,
+    _286CallGate = 2,
+    _32Bit = 3,
     Forwarder = 4
 }
 
@@ -50,7 +50,6 @@ public class EntryForwarder : Entry
     public byte Flags { get; set; }
     public ushort ModuleOrdinal { get; set; }
     public uint OffsetOrOrdinal { get; set; }
-    //public string EntryType => (Flags & 0x01) != 0 ? "[EXPORT]" : "[STATIC]";
     public string ObjectOffsets => "`virtual`";
 }
 

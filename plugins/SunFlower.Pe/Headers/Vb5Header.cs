@@ -25,8 +25,8 @@ public struct Vb5Header
     public UInt32 SecondLanguageId;
     public UInt32 SubMainAddress;
     public UInt32 ProjectDataPointer;
-    public UInt32 IntegerCtlsFlagLow;
-    public UInt32 IntegerCtlsFlagHigh;
+    public UInt32 ControlsFlagLow;
+    public UInt32 ControlsFlagHigh;
     public UInt32 ThreadFlags;
     public UInt32 ThreadCount;
     public UInt16 FormCtlsCount;

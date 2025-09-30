@@ -95,7 +95,7 @@ public partial class MainWindowViewModel
             FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
             TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
             Signature = unboxed["Sign"].ToString() ?? string.Empty;
-            Size = unboxed.Row["Size"].ToString() + "K" ?? string.Empty;
+            Size = unboxed.Row["Size"].ToString() ?? string.Empty;
 
             if (FilePath == string.Empty)
                 return; // terminate "Call Editor"
@@ -142,13 +142,11 @@ public partial class MainWindowViewModel
         FilePath = result.Path;
         TypeString = result.Type;
         Signature = result.Sign;
-        Size = result.Size + "K"; // JS fell off
+        Size = result.Size.ToString(CultureInfo.InvariantCulture); // JS fell off
         
         _registryManager
-            .SetFileName("recent")
-          //.Create()
+            .Of("recent")
             .Create(result);
-          //.OpenInWindowsNotepad();
         
         RecentTable = LoadRecentTableOnStartup(); // bad idea.
         
@@ -210,7 +208,7 @@ public partial class MainWindowViewModel
         RecentTable.Clear();
         
         _registryManager
-            .SetFileName("recent")
+            .Of("recent")
             .Create();
     }
     /// <summary>
@@ -222,14 +220,17 @@ public partial class MainWindowViewModel
     {
         try
         {
-            // typeof(file) == DataRowView
-            if (file is not DataRowView view) 
+            if (file is not DataRowView view)
                 return;
             
-            view.Row.Delete();
             _registryManager
-                .SetFileName("recent")
-                .Delete(view.Row);
+                .Of("recent")
+                .Delete(view.Row, out var isSuccess);
+            
+            view.Row.Delete();
+            
+            if (!isSuccess)
+                throw new InvalidOperationException("Couldn't delete target from file");
         }
         catch (Exception e)
         {
@@ -246,7 +247,7 @@ public partial class MainWindowViewModel
         try
         {
             _registryManager
-                .SetFileName(name.ToString()!)
+                .Of(name.ToString()!)
                 .OpenInWindowsNotepad();
         }
         catch (Exception e)

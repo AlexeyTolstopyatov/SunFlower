@@ -85,7 +85,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         Tell(nameof(LoadRecentTableOnStartup));
         DataTable result = new();
         RegistryManager.CreateInstance()
-            .SetFileName("recent")
+            .Of("recent")
             .Fill(ref result);
         
         return result;

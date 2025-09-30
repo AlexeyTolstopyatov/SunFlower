@@ -4,11 +4,11 @@ namespace SunFlower.Le.Services;
 
 public class LxEntryTableManager(BinaryReader reader, uint offset)
 {
-    public List<EntryBundle> EntryBundles { get; init; } = ReadEntryTable(reader, offset);
+    public List<EntryBundle> EntryBundles => ReadEntryTable(reader, offset);
 
     private static List<EntryBundle> ReadEntryTable(BinaryReader reader, uint entryTableOffset)
     {
-        reader.BaseStream.Seek(entryTableOffset, SeekOrigin.Begin);
+        reader.BaseStream.Position = entryTableOffset;
         var bundles = new List<EntryBundle>();
         
         while (true)
@@ -23,36 +23,51 @@ public class LxEntryTableManager(BinaryReader reader, uint offset)
 
             for (var i = 0; i < count; i++)
             {
-                Entry entry = type switch
+                Entry entry;
+                switch (type)
                 {
-                    EntryBundleType.Unused => new EntryUnused(),
-                    EntryBundleType._16Bit => new Entry16Bit
-                    {
-                        ObjectNumber = reader.ReadUInt16(),
-                        Flags = reader.ReadByte(),
-                        Offset = reader.ReadUInt16()
-                    },
-                    EntryBundleType._32Bit => new Entry32Bit
-                    {
-                        ObjectNumber = reader.ReadUInt16(),
-                        Flags = reader.ReadByte(),
-                        Offset = reader.ReadUInt32()
-                    },
-                    EntryBundleType._286CallGate => new Entry286CallGate
-                    {
-                        ObjectNumber = reader.ReadUInt16(),
-                        Flags = reader.ReadByte(),
-                        Offset = reader.ReadUInt16(),
-                        CallGateSelector = reader.ReadUInt16()
-                    },
-                    EntryBundleType.Forwarder => new EntryForwarder
-                    {
-                        Flags = reader.ReadByte(),
-                        ModuleOrdinal = reader.ReadUInt16(),
-                        OffsetOrOrdinal = reader.ReadUInt32()
-                    },
-                    _ => new EntryUnused()
-                };
+                    case EntryBundleType.Unused:
+                        reader.ReadByte();
+                        entry = new EntryUnused();
+                        break;
+                    case EntryBundleType._16Bit:
+                        entry = new Entry16Bit
+                        {
+                            ObjectNumber = reader.ReadUInt16(),
+                            Flags = reader.ReadByte(),
+                            Offset = reader.ReadUInt16()
+                        };
+                        break;
+                    case EntryBundleType._286CallGate:
+                        entry = new Entry286CallGate
+                        {
+                            ObjectNumber = reader.ReadUInt16(),
+                            Flags = reader.ReadByte(),
+                            Offset = reader.ReadUInt16(),
+                            CallGateSelector = reader.ReadUInt16()
+                        };
+                        break;
+                    case EntryBundleType._32Bit:
+                        entry = new Entry32Bit
+                        {
+                            ObjectNumber = reader.ReadUInt16(),
+                            Flags = reader.ReadByte(),
+                            Offset = reader.ReadUInt32()
+                        };
+                        break;
+                    case EntryBundleType.Forwarder:
+                        reader.ReadUInt16(); // skip wReserved
+                        entry = new EntryForwarder
+                        {
+                            Flags = reader.ReadByte(),
+                            ModuleOrdinal = reader.ReadUInt16(),
+                            OffsetOrOrdinal = reader.ReadUInt32()
+                        };
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type));
+                }
+
                 bundle.Entries.Add(entry);
             }
             bundles.Add(bundle);

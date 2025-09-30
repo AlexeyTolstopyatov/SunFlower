@@ -4,7 +4,7 @@ namespace SunFlower.Le.Services;
 
 public class LeEntryTableManager
 {
-    public List<EntryBundle> EntryBundles { get; set; } = [];
+    public List<EntryBundle> EntryBundles { get; } = [];
 
     public LeEntryTableManager(BinaryReader reader, uint offset)
     {
@@ -19,7 +19,7 @@ public class LeEntryTableManager
 
             EntryBundle bundle = new(bundleSize, bundleFlags, objectIndex);
 
-            var is32Bit = (bundleFlags & 0b00000010) != 0;
+            var is32Bit = (bundleFlags & 0x02) != 0;
 
             List<Entry> entries = [];
             for (var i = 0; i < bundleSize; i++)

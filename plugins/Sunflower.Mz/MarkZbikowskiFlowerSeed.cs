@@ -7,8 +7,8 @@ namespace Sunflower.Mz;
 [FlowerSeedContract(2, 0, 0)]
 public class MarkZbikowskiFlowerSeed : IFlowerSeed
 {
-    public string Seed { get; } = "Sunflower PC/MS-DOS MZ i8086+";
-    public FlowerSeedStatus Status { get; set; } = new();
+    public string Seed => "Sunflower PC/MS-DOS MZ i8086+";
+    public FlowerSeedStatus Status { get; } = new();
     public int Main(string path)
     {
         try
@@ -16,10 +16,7 @@ public class MarkZbikowskiFlowerSeed : IFlowerSeed
             MzDumpManager manager = new(path);
             MzTableManager tableManager = new(manager);
             
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.Regions
-            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.Regions));
 
             Status.IsEnabled = true;
         }

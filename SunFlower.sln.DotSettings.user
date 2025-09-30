@@ -4,5 +4,6 @@
     &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutNeImage&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckFlowerReport&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckFlowerPointer&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.CheckoutPeImage&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

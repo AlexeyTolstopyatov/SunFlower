@@ -68,11 +68,13 @@ public class LeDumpManager : UnsafeManager
         
         // anyway initialization
         var driver = new VxdDriverManager(reader, (uint)postHeadPosition);
+        
         if (driver.DriverHeader.LE_WindowsResOffset == 0)
             return;
         
         if (LeHeader.LE_ID != 0x584c && LeHeader.LE_ID != 0x4c58)
             return;
+        
         DriverHeader = driver.DriverHeader;
         DriverResources = driver.DriverResources;
         // DDB = driver.DDB;

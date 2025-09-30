@@ -23,7 +23,7 @@ public class MachineWordsWindowViewModel : NotifyPropertyChanged
         DataTable namesAndSizes = new();
         
         RegistryManager.CreateInstance()
-            .SetFileName("sizes")
+            .Of("sizes")
             .Fill(ref namesAndSizes);
 
         return namesAndSizes;

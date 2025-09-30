@@ -1,5 +1,7 @@
 ﻿using System.Data;
+using System.Text;
 using SunFlower.Abstractions.Types;
+using SunFlower.Abstractions;
 using SunFlower.Pe.Headers;
 using SunFlower.Pe.Models;
 
@@ -10,7 +12,7 @@ public class PeTableManager(PeImageModel model) : IManager
     public List<string> GeneralStrings { get; set; } = [];
     public List<DataTable> Results { get; set; } = [];
     public bool Is64Bit { get; } = (model.FileHeader.Characteristics & 0x100) == 0;
-
+    
     public List<Region> Regions { get; set; } = [];
     
     public void Initialize()
@@ -22,6 +24,8 @@ public class PeTableManager(PeImageModel model) : IManager
         MakeImports();
         if (model.CorHeader.SizeOfHead == 0x48)
             MakeCor20Header();
+        
+        MakeVbClassicMoreInfo();
         
     }
 
@@ -132,8 +136,50 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeVbClassicMoreInfo()
     {
-        // catch VB_HEADER -> extract wProjectInfo by pointer.
+        if (model.Vb5Header.VbMagic[0] != 'V')
+            return; // take first from VB5! avoid casting
         
+        // CAUGHT!
+        var head = "### `VB 5.0/6.0` Runtime Section";
+        var content = new StringBuilder();
+
+        content.AppendLine("If you see this section - this is already PE32 linked binary with embedded Microsoft Visual Basic runtime.");
+        content.AppendLine("This structure is a part of VB 5.0 or a VB 6.0 runtime. It depends on target DLL which `@100` requires to correct run.");
+
+        var vb = new DataTable()
+        {
+            Columns =
+            {
+                FlowerReport.ForColumnWith("Segment", "?"),
+                FlowerReport.ForColumnWith("Value", "?")
+            }
+        };
+
+        vb.Rows.Add(nameof(Vb5Header.VbMagic), FlowerReport.SafeString(new string(model.Vb5Header.VbMagic)));
+        vb.Rows.Add(nameof(Vb5Header.RuntimeBuild), "0x" + model.Vb5Header.RuntimeBuild.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.LanguageDll), FlowerReport.SafeString(new string(model.Vb5Header.LanguageDll)));
+        vb.Rows.Add(nameof(Vb5Header.SecondLanguageDll),
+            FlowerReport.SafeString(new string(model.Vb5Header.SecondLanguageDll)));
+        vb.Rows.Add(nameof(Vb5Header.RuntimeRevision), "0x" + model.Vb5Header.RuntimeRevision.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.LanguageId), "0x" + model.Vb5Header.LanguageId.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.SubMainAddress), "0x" + model.Vb5Header.SubMainAddress.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ProjectDataPointer), "0x" + model.Vb5Header.ProjectDataPointer.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ControlsFlagLow), "0x" + model.Vb5Header.ControlsFlagLow.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ControlsFlagHigh), "0x" + model.Vb5Header.ControlsFlagHigh.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ThreadFlags), "0x" + model.Vb5Header.ThreadFlags.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ThreadCount), "0x" + model.Vb5Header.ThreadCount.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.FormCtlsCount), "0x" + model.Vb5Header.FormCtlsCount.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ExternalCtlsCount), "0x" + model.Vb5Header.ExternalCtlsCount.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ThunkCount), "0x" + model.Vb5Header.ThunkCount.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.GuiTablePointer), "0x" + model.Vb5Header.GuiTablePointer.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ExternalTablePointer), "0x" + model.Vb5Header.ExternalTablePointer.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ComRegisterDataPointer), "0x" + model.Vb5Header.ComRegisterDataPointer.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ProjectDescriptionOffset), "0x" + model.Vb5Header.ProjectDescriptionOffset.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ProjectExeNameOffset), "0x" + model.Vb5Header.ProjectExeNameOffset.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ProjectHelpOffset), "0x" + model.Vb5Header.ProjectHelpOffset.ToString("X"));
+        vb.Rows.Add(nameof(Vb5Header.ProjectNameOffset), "0x" + model.Vb5Header.ProjectNameOffset.ToString("X"));
+        
+        Regions.Add(new Region(head, content.ToString(), vb));
     }
     private void MakeHeadersTables()
     {
@@ -151,7 +197,7 @@ public class PeTableManager(PeImageModel model) : IManager
             dts.Add(cor);
         }
 
-        Results.AddRange(dts);;
+        Results.AddRange(dts);
     }
 
     private DataTable MakeDosHeader()

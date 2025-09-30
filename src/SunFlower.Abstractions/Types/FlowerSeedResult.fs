@@ -33,7 +33,7 @@ type FlowerSeedEntryType =
     /// <see cref="List{String}"/> instance which contains all data
     /// </summary>
     | Strings = 3
-    /// <summary>
+    /// <summary>P
     /// List(Of <see cref="Region"/>)s.
     /// Region contains Header-string, String of content and DataTable
     /// </summary>
@@ -41,7 +41,7 @@ type FlowerSeedEntryType =
 
 [<Class>]
 type FlowerSeedResult(resultType: FlowerSeedEntryType, result: Object) = class   
-    let mutable boxedResult : Object = 0
+    let mutable boxedResult : Object = result
     new (r: FlowerSeedEntryType) =
         FlowerSeedResult(r, 0)
     /// <summary>

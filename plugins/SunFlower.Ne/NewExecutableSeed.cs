@@ -16,36 +16,15 @@ public class NewExecutableSeed : IFlowerSeed
             NeDumpManager dumpManager = new(path);
             NeTableManager tableManager = new(dumpManager);
             Status.IsEnabled = true;
-            
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
-            {
-                BoxedResult = tableManager.Characteristics
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables)
-            {
-                BoxedResult = tableManager.Headers
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.ModulesRegion
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.SegmentRegions
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.EntryBundlesRegions
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.NamesRegions
-            });
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = tableManager.ImportRegions
-            });
 
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, tableManager.Characteristics));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables, tableManager.Headers));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.ModulesRegion));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.SegmentRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.EntryBundlesRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.NamesRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.ImportRegions));
+            
             return 0;
         }
         catch (Exception e)

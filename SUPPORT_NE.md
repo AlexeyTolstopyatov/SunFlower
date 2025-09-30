@@ -15,7 +15,7 @@ possible to take little bit info about `Win16` modules (files).
 | Table of importing names | [x]    |
 | Resident Names table     | [x]    |
 | Non-resident Names table | [x]    |
-| Resources table          | []     |
+| Resources table          | [ ]    |
 | Modules reference table  | [x]    |
 | Per-segment table        | [x]    |
 

@@ -42,24 +42,17 @@ public class PortableExecutableSeed : IFlowerSeed
                 MzHeader = dumpManager.Dos2Header,
                 ExportTableModel = exportsManager.ExportTableModel,
                 ImportTableModel = importsManager.ImportTableModel,
-                CorHeader = clrManager.Cor20Header
+                CorHeader = clrManager.Cor20Header,
+                Vb5Header = dumpManager.Vb5Header
             };
 
             PeTableManager manager = new(image);
             manager.Initialize();
+
+            FlowerSeedResult headers = new(FlowerSeedEntryType.DataTables, manager.Results);
+            FlowerSeedResult tables = new(FlowerSeedEntryType.Regions, manager.Regions);
             
-            FlowerSeedResult headers = new(FlowerSeedEntryType.DataTables)
-            {
-                BoxedResult = manager.Results // only headers
-            };
-            FlowerSeedResult tables = new(FlowerSeedEntryType.Regions)
-            {
-                BoxedResult = manager.Regions // next retranslated info
-            };
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
-            {
-                BoxedResult = manager.GeneralStrings
-            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, manager.GeneralStrings));
             Status.Results.Add(headers);
             Status.Results.Add(tables);
             

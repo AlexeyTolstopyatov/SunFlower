@@ -12,4 +12,5 @@ public class PeImageModel
     public PeImportTableModel ImportTableModel { get; set; } = new();
     public PeExportTableModel ExportTableModel { get; set; } = new();
     public Cor20Header CorHeader { get; set; }
+    public Vb5Header Vb5Header { get; set; }
 }

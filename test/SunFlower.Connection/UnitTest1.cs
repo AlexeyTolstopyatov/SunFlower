@@ -4,6 +4,8 @@ using SunFlower.Pe;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
 using SunFlower.Links.Services;
+using SunFlower.Pe.Models;
+
 namespace SunFlower.Connection;
 
 public class Tests
@@ -22,12 +24,13 @@ public class Tests
             .CreateInstance()
             .LoadAllFlowerSeeds()
             .Seeds;
+        
         Assert.Pass();
     }
     [Test]
     public void CheckoutPeImage()
     {
-        var path = @"D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIFF\VBDIFF-vb6.exe";
+        var path = @"D:\TEST\VBRUN\calldlls32.exe";
         //DataTable table = seed.Status.Result[0];
         PeDumpManager manager = new(path);
         manager.Initialize();
@@ -41,8 +44,22 @@ public class Tests
         importsManager.Initialize();
         exportsManager.Initialize();
         corManager.Initialize();
-        
-        Assert.Pass();
+
+        PeTableManager tables = new PeTableManager(new PeImageModel()
+        {
+            Sections = manager.PeSections,
+            OptionalHeader = manager.OptionalHeader,
+            OptionalHeader32 = manager.OptionalHeader32,
+            FileHeader = manager.FileHeader,
+            MzHeader = manager.Dos2Header,
+            ExportTableModel = exportsManager.ExportTableModel,
+            ImportTableModel = importsManager.ImportTableModel,
+            CorHeader = corManager.Cor20Header,
+            Vb5Header = manager.Vb5Header,
+            Vb4Header = manager.Vb4Header
+        });
+        tables.Initialize();
+        Assert.Pass("VB4 Runtime structure FOUND!");
     }
     /// <summary>
     /// 99% completed.

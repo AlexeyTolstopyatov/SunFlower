@@ -34,14 +34,12 @@ public class PeVbRuntime56Manager : DirectoryManager
             var pushOpcode = _reader.ReadByte();
             var pushAddress = _reader.ReadUInt32(); // always 32-bit register.
             var callOpCode = _reader.ReadByte();
-            var callProcedure = _reader.ReadUInt32(); // always 32-bit register too.
-                                                         // VB supports only 16/32-bit code
-            // push expression equals 0x68
+            
             if (pushOpcode != 0x68)
                 return header; // struct must be empty
 
             if (callOpCode != 0xE8)
-                return header; // callf @100 not found. 
+                return header; // CALL @100 not found. 
             
             _reader.BaseStream.Position = (pushAddress - _info.ImageBase); // FINALLY!!!!!!! GOD THANK YOU!!!!!
             _vbanew = _reader.BaseStream.Position;
@@ -50,12 +48,14 @@ public class PeVbRuntime56Manager : DirectoryManager
 
             if (new string(header.VbMagic) != "VB5!")
             {
+                // strong equalization. If ASCII sequence not equal -> force uninit
                 header = new Vb5Header();
             }
         }
         catch
         {
             // ignored
+            // if something went wrong -> this file just has no VB5 runtime
         }
 
         return header;

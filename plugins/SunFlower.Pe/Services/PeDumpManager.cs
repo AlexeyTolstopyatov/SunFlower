@@ -14,14 +14,15 @@ namespace SunFlower.Pe.Services;
 
 public class PeDumpManager(string path) : UnsafeManager
 { 
-    public MzHeader Dos2Header { get; set; }
-    public PeFileHeader FileHeader { get; set; }
-    public PeOptionalHeader32 OptionalHeader32 { get; set; }
-    public PeOptionalHeader OptionalHeader { get; set; }
+    public MzHeader Dos2Header { get; private set; }
+    public PeFileHeader FileHeader { get; private set; }
+    public PeOptionalHeader32 OptionalHeader32 { get; private set; }
+    public PeOptionalHeader OptionalHeader { get; private set; }
     public PeDirectory[] PeDirectories { get; set; } = [];
-    public PeSection[] PeSections { get; set; } = [];
-    public FileSectionsInfo FileSectionsInfo { get; set; } = new();
-    public Vb5Header Vb5Header { get; set; }
+    public PeSection[] PeSections { get; private set; } = [];
+    public FileSectionsInfo FileSectionsInfo { get; private set; } = new();
+    public Vb5Header Vb5Header { get; private set; }
+    public Vb4Header Vb4Header { get; private set; }
     public bool Is64Bit { get; set; }
 
     /// <summary>
@@ -53,7 +54,10 @@ public class PeDumpManager(string path) : UnsafeManager
         FileSectionsInfo = info;
 
         var vb5Runtime = new PeVbRuntime56Manager(info, reader);
+        var vb4Runtime = new PeVbRuntime4Manager(info, reader);
+        
         Vb5Header = vb5Runtime.Vb5Header;
+        Vb4Header = vb4Runtime.Vb4Header;
         
         reader.Close();
     }
@@ -80,7 +84,7 @@ public class PeDumpManager(string path) : UnsafeManager
         var fileHdr = Fill<PeFileHeader>(reader);
         FileHeader = fileHdr;
 
-        Is64Bit = (fileHdr.Characteristics & 0x0100) == 0; // Architecture 32-bit WORD based.
+        Is64Bit = (fileHdr.Characteristics & 0x0100) == 0; // Architecture not 32-bit WORD based.
 
         if (Is64Bit)
         {

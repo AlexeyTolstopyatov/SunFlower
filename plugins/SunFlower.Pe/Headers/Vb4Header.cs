@@ -50,49 +50,49 @@ Private Type VB4HEADERType
 End Type
  */
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Vb4Header
 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
     public Char[] Signature;
-    public UInt16 CompilerVersion;
-    public UInt16 Undefined1;
-    public UInt16 Undefined2;
-    public UInt16 Undefined3;
-    public UInt16 Undefined4;
-    public UInt16 Undefined5;
-    public UInt16 Undefined6;
-    public UInt16 Undefined7;
-    public UInt16 Undefined8;
-    public UInt16 Undefined9;
-    public UInt16 Undefined10;
-    public UInt16 Undefined11;
-    public UInt16 Undefined12;
-    public UInt16 Undefined13;
-    public UInt16 Undefined14;
-    public UInt16 Undefined15;
-    public UInt16 LanguageDllId;
-    public UInt16 Undefined16;
-    public UInt16 Undefined17;
-    public UInt16 Undefined18;
-    public UInt32 SubMainAddress;
-    public UInt32 Address;
-    public UInt16 Undefined21;
-    public UInt16 Undefined22;
-    public UInt16 Undefined23;
-    public UInt16 Undefined24;
-    public UInt16 Undefined25;
-    public UInt16 Undefined26;
-    public UInt16 ExeNameLength;
-    public UInt16 ProjectNameLength;
-    public UInt16 FormsCount;
-    public UInt16 ModulesClassesCount;
-    public UInt16 ExternComponentsCount;
-    public UInt16 InEachFile176d;
-    public UInt32 GuiTableOffset;
-    public UInt32 UndefinedTableOffset;
-    public UInt32 ExternComponentTableOffset; // not 100% sure
-    public UInt32 ProjectInfoTableOffset;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 CompilerVersion;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined1;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined2;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined3;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined4;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined5;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined6;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined7;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined8;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined9;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined10;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined11;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined12;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined13;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined14;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined15;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 LanguageDllId;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined16;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined17;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined18;
+    [MarshalAs(UnmanagedType.U4)] public UInt32 SubMainAddress;
+    [MarshalAs(UnmanagedType.U4)] public UInt32 Address;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined21;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined22;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined23;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined24;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined25;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 Undefined26;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 ExeNameLength;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 ProjectNameLength;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 FormsCount;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 ModulesClassesCount;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 ExternComponentsCount;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 InEachFile176d;
+    [MarshalAs(UnmanagedType.U4)] public UInt32 GuiTableOffset;
+    [MarshalAs(UnmanagedType.U4)] public UInt32 UndefinedTableOffset;
+    [MarshalAs(UnmanagedType.U4)] public UInt32 ExternComponentTableOffset; // not 100% sure
+    [MarshalAs(UnmanagedType.U4)] public UInt32 ProjectInfoTableOffset;
 }
 [StructLayout(LayoutKind.Sequential)]
 public struct OldVb4Header

@@ -43,7 +43,8 @@ public class PortableExecutableSeed : IFlowerSeed
                 ExportTableModel = exportsManager.ExportTableModel,
                 ImportTableModel = importsManager.ImportTableModel,
                 CorHeader = clrManager.Cor20Header,
-                Vb5Header = dumpManager.Vb5Header
+                Vb5Header = dumpManager.Vb5Header,
+                Vb4Header = dumpManager.Vb4Header
             };
 
             PeTableManager manager = new(image);

@@ -26,7 +26,7 @@ public class PeTableManager(PeImageModel model) : IManager
             MakeCor20Header();
         
         MakeVbClassicMoreInfo();
-        
+        MakeVb4MoreInfo();
     }
 
     private void MakeCharacteristics()
@@ -85,7 +85,7 @@ public class PeTableManager(PeImageModel model) : IManager
         if ((c & 0x0008) != 0) GeneralStrings.Add(" - `image_file_local_syms_stripped` COFF symbol table entries for local symbols have been removed. This flag is deprecated and should be zero.");
         if ((c & 0x0010) != 0) GeneralStrings.Add(" - `image_file_aggressive_ws_trim` [Obsolete]. Aggressively trim working set. This flag is deprecated for Windows 2000 and later and must be zero.");
         if ((c & 0x0020) != 0) GeneralStrings.Add(" - `image_file_large_address_aware` Application can handle > `2-GB` addresses.");
-        if ((c & 0x0040) != 0) GeneralStrings.Add(" - `image_file_reserved` Should be zero!");
+        if ((c & 0x0040) != 0) GeneralStrings.Add(" - `image_file_reserved` **Should be zero!**");
         if ((c & 0x0080) != 0) GeneralStrings.Add(" - `image_file_bytes_reverse_lo` **Little endian:** the least significant bit (LSB) precedes the most significant bit (MSB) in memory. _This flag is deprecated and should be zero_");
         if ((c & 0x0100) != 0) GeneralStrings.Add(" - `image_file_32bit_machine` Machine is based on a 32-bit-word architecture.");
         if ((c & 0x0200) != 0) GeneralStrings.Add(" - `image_debug_stripped` `.debug` section missing. Or debug information removed entirely from image.");
@@ -128,6 +128,79 @@ public class PeTableManager(PeImageModel model) : IManager
         
     }
 
+    private void MakeVb4MoreInfo()
+    {
+        if (model.Vb4Header.ExeNameLength == 0)
+            return; // never 0
+        
+        var head = "### `Visual Basic 4.0` Runtime Section";
+        var content = 
+            "This is a section that bases on the legacy by `VBGamer 45` and `DoDi` placed here." + 
+            "I'm trying to demangle and define other undocumented leaked structure fields. for PE32 linked programs" +
+            "So, If you see this section - you must know this is a very rare artifact.";
+
+        var vb4 = new DataTable()
+        {
+            Columns =
+            {
+                FlowerReport.ForColumnWith("Field", "?"),
+                FlowerReport.ForColumnWith("Value", "?"),
+            }
+        };
+
+        vb4.Rows.Add(FlowerReport.ForColumn("Magic?", typeof(string)),
+            FlowerReport.SafeString(new string(model.Vb4Header.Signature)));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_1", typeof(ushort)), "0x" + model.Vb4Header.Undefined1.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_2", typeof(ushort)), "0x" + model.Vb4Header.Undefined2.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_3", typeof(ushort)), "0x" + model.Vb4Header.Undefined3.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_4", typeof(ushort)), "0x" + model.Vb4Header.Undefined4.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_5", typeof(ushort)), "0x" + model.Vb4Header.Undefined5.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_6", typeof(ushort)), "0x" + model.Vb4Header.Undefined6.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_7", typeof(ushort)), "0x" + model.Vb4Header.Undefined7.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_8", typeof(ushort)), "0x" + model.Vb4Header.Undefined8.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_9", typeof(ushort)), "0x" + model.Vb4Header.Undefined9.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_10",typeof(ushort)), "0x" + model.Vb4Header.Undefined10.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_11",typeof(ushort)), "0x" + model.Vb4Header.Undefined11.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_12",typeof(ushort)), "0x" + model.Vb4Header.Undefined12.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_13",typeof(ushort)), "0x" + model.Vb4Header.Undefined13.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_14",typeof(ushort)), "0x" + model.Vb4Header.Undefined14.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_15",typeof(ushort)), "0x" + model.Vb4Header.Undefined15.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("LanguageDLLId", typeof(ushort)),
+            "0x" + model.Vb4Header.LanguageDllId.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_16",typeof(ushort)), "0x" + model.Vb4Header.Undefined16.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_17",typeof(ushort)), "0x" + model.Vb4Header.Undefined17.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_18",typeof(ushort)), "0x" + model.Vb4Header.Undefined18.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("SubMainAddress", typeof(uint)),
+            "0x" + model.Vb4Header.SubMainAddress.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("Address", typeof(uint)),
+            "0x" + model.Vb4Header.Address.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_21",typeof(ushort)), "0x" + model.Vb4Header.Undefined21.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_22",typeof(ushort)), "0x" + model.Vb4Header.Undefined22.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_23",typeof(ushort)), "0x" + model.Vb4Header.Undefined23.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_24",typeof(ushort)), "0x" + model.Vb4Header.Undefined24.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_25",typeof(ushort)), "0x" + model.Vb4Header.Undefined25.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("?_26",typeof(ushort)), "0x" + model.Vb4Header.Undefined26.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ExeNameLength", typeof(ushort)),
+            "0x" + model.Vb4Header.ExeNameLength.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ProjNameLength", typeof(ushort)),
+            "0x" + model.Vb4Header.ProjectNameLength.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("FormsCount", typeof(ushort)),
+            "0x" + model.Vb4Header.FormsCount.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ModulesClassesCount", typeof(ushort)), "0x" + model.Vb4Header.ModulesClassesCount.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ExternalControlsCount", typeof(ushort)), "0x" + model.Vb4Header.ExternComponentsCount.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("Foreach file equals 0x176d", typeof(ushort)),
+            "0x" + model.Vb4Header.InEachFile176d.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("GuiTableOffset", typeof(uint)),
+            "0x" + model.Vb4Header.GuiTableOffset.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("???_TableOffset", typeof(uint)),
+            "0x" + model.Vb4Header.UndefinedTableOffset.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ExternalControlsTableOffset", typeof(uint)),
+            "0x" + model.Vb4Header.ExternComponentTableOffset.ToString("X"));
+        vb4.Rows.Add(FlowerReport.ForColumn("ProjInfoTableOffset", typeof(uint)),
+            "0x" + model.Vb4Header.ProjectInfoTableOffset.ToString("X"));
+        
+        Regions.Add(new Region(head, content, vb4));
+    }
     private void MakeClrMoreInfo()
     {
         // if image has CLR head -> this is a .NET image.
@@ -136,16 +209,18 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeVbClassicMoreInfo()
     {
-        if (model.Vb5Header.VbMagic[0] != 'V')
+        if (model.Vb5Header.ProjectExeNameOffset == 0) // never 0
             return; // take first from VB5! avoid casting
         
         // CAUGHT!
-        var head = "### `VB 5.0/6.0` Runtime Section";
+        var head = "### `Visual Basic 5.0/6.0` Runtime Section";
         var content = new StringBuilder();
 
         content.AppendLine("If you see this section - this is already PE32 linked binary with embedded Microsoft Visual Basic runtime.");
         content.AppendLine("This structure is a part of VB 5.0 or a VB 6.0 runtime. It depends on target DLL which `@100` requires to correct run.");
-
+        content.AppendLine($" - VBVM ver. `{model.Vb5Header.RuntimeBuild}.{model.Vb5Header.RuntimeRevision}`");
+        content.AppendLine($" - VBVM DLL: {FlowerReport.SafeString(new string(model.Vb5Header.LanguageDll))}");
+        
         var vb = new DataTable()
         {
             Columns =

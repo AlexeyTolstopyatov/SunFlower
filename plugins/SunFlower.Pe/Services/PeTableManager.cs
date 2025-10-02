@@ -130,8 +130,17 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeVb4MoreInfo()
     {
-        if (model.Vb4Header.ExeNameLength == 0)
-            return; // never 0
+        try
+        {
+            _ = model.Vb4Header.Signature[0]; // strictly avoid the null reference
+        }
+        catch
+        {
+            return;
+        }
+        
+        if (new string(model.Vb5Header.VbMagic) == "VB5!")
+            return; // sometimes those structs having same pointers
         
         var head = "### `Visual Basic 4.0` Runtime Section";
         var content = 
@@ -144,7 +153,7 @@ public class PeTableManager(PeImageModel model) : IManager
             Columns =
             {
                 FlowerReport.ForColumnWith("Field", "?"),
-                FlowerReport.ForColumnWith("Value", "?"),
+                FlowerReport.ForColumnWith("Value", "?")
             }
         };
 
@@ -209,7 +218,15 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeVbClassicMoreInfo()
     {
-        if (model.Vb5Header.ProjectExeNameOffset == 0) // never 0
+        try
+        {
+            _ = model.Vb5Header.VbMagic[0];
+        }
+        catch
+        {
+            return;
+        }
+        if (new string(model.Vb5Header.VbMagic) != "VB5!") // never 0
             return; // take first from VB5! avoid casting
         
         // CAUGHT!
@@ -218,7 +235,7 @@ public class PeTableManager(PeImageModel model) : IManager
 
         content.AppendLine("If you see this section - this is already PE32 linked binary with embedded Microsoft Visual Basic runtime.");
         content.AppendLine("This structure is a part of VB 5.0 or a VB 6.0 runtime. It depends on target DLL which `@100` requires to correct run.");
-        content.AppendLine($" - VBVM ver. `{model.Vb5Header.RuntimeBuild}.{model.Vb5Header.RuntimeRevision}`");
+        content.AppendLine($" - VBVM ver details. `__.__.{model.Vb5Header.RuntimeBuild}.{model.Vb5Header.RuntimeRevision}`");
         content.AppendLine($" - VBVM DLL: {FlowerReport.SafeString(new string(model.Vb5Header.LanguageDll))}");
         
         var vb = new DataTable()
@@ -484,9 +501,14 @@ public class PeTableManager(PeImageModel model) : IManager
     
     private void MakeExports()
     {
-        if (model.ExportTableModel.Functions.Count == 0)
+        try
+        {
+            _ = model.ExportTableModel.Functions.Count;
+        }
+        catch (Exception e)
+        {
             return;
-        
+        }
         
         DataTable exports = new()
         {
@@ -541,8 +563,14 @@ public class PeTableManager(PeImageModel model) : IManager
 
     private void MakeImports()
     {
-        if (model.ImportTableModel.Modules.Count == 0)
+        try
+        {
+            _ = model.ImportTableModel.Modules.Count;
+        }
+        catch (Exception e)
+        {
             return;
+        }
         
         DataTable imports = new()
         {

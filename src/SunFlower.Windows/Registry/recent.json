@@ -2,14 +2,14 @@
   {
     "Name": "WINFO16C.EXE",
     "Path": "D:\\TEST\\VBRUN\\WINFO16C.EXE",
-    "Size": "7K",
+    "Size": "7",
     "Type": "Visual Basic 4.0 (NE)",
     "Sign": "0x454E"
   },
   {
     "Name": "CALLDLLS32.EXE",
     "Path": "D:\\TEST\\VBRUN\\CALLDLLS32.EXE",
-    "Size": "11K",
+    "Size": "11",
     "Type": "Visual Basic 4.0 (PE32)",
     "Sign": "0x4550"
   }

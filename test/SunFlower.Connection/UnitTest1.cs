@@ -30,7 +30,7 @@ public class Tests
     [Test]
     public void CheckoutPeImage()
     {
-        var path = @"D:\TEST\VBRUN\calldlls32.exe";
+        var path = @"C:\Program Files\Oracle\VirtualBox\VirtualBoxVM.exe";
         //DataTable table = seed.Status.Result[0];
         PeDumpManager manager = new(path);
         manager.Initialize();
@@ -59,7 +59,7 @@ public class Tests
             Vb4Header = manager.Vb4Header
         });
         tables.Initialize();
-        Assert.Pass("VB4 Runtime structure FOUND!");
+        Assert.Pass("no null references");
     }
     /// <summary>
     /// 99% completed.

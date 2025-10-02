@@ -71,11 +71,11 @@ public class PifDumpManager : UnsafeManager
 
         var nextSectionOffset = baseSectionPosition;
         var safetyCounter = 0;
-        const int MAX_SECTIONS = 10; // avoid infinite loop
+        const int maxSections = 10; // avoid infinite loop
         
         while (nextSectionOffset > 0 && 
                nextSectionOffset < stream.Length && 
-               safetyCounter++ < MAX_SECTIONS)
+               safetyCounter++ < maxSections)
         {
             stream.Position = nextSectionOffset;
             

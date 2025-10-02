@@ -8,7 +8,7 @@ namespace SunFlower.Pe;
 /// <summary>
 /// Template of IFlowerSeed implementation.
 /// </summary>
-[FlowerSeedContract(2, 0, 0)] // <-- important flags
+[FlowerSeedContract(3, 0, 0)] // <-- important flags
 public class PortableExecutableSeed : IFlowerSeed
 {
     public string Seed => "Sunflower Windows PE32/+ IA-32(e)";

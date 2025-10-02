@@ -5,6 +5,7 @@ using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
+using SunFlower.Services;
 using SunFlower.Windows.Services;
 using SunFlower.Windows.Views;
 
@@ -28,9 +29,14 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _getAboutCommand = new ActionCommand(GetAbout);
         _getFileCommand = new Command(GetFile);
         _getRecentFileCommand = new Command(GetRecentFile);
-        _getProcessCommand = new Command(GetWin32Process);
         _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
         _getRegistryFileCommand = new Command(OpenRegFileByName);
+        _getConverterWindowCommand = new Command(_ =>
+        {
+            _windowManager.ShowUnmanaged(
+                new ConverterWindow(), 
+                title: "COR Converter");
+        });
         _getMachineWordsCommand = new Command(_ =>
         {
             _windowManager.Show(
@@ -104,8 +110,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     {
         var target = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Sunflower.Windows",
-            "WebView2Cache");
+            "Sunflower.Windows");
 
         try
         {
@@ -128,8 +133,8 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     {
         var abstractionsVer =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
-                .FileVersion ?? "NOT FOUND";
+                .FileVersion ?? "NOT FOUND!";
         
-        Tell("Installed abstractions: " + abstractionsVer);
+        Tell("abstractions FILE_VERSION: " + abstractionsVer);
     }
 }

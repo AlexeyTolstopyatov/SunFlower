@@ -28,23 +28,22 @@ public partial class MainWindowViewModel
         set => SetField(ref _getFileCommand, value);
     }
 
-    public ICommand GetProcessCommand
-    {
-        get => _getProcessCommand;
-        set => SetField(ref _getProcessCommand, value);
-    }
-
     private ICommand _getRegistryFileCommand;
 
+    public ICommand GetConverterWindowCommand
+    {
+        get => _getConverterWindowCommand;
+        set => SetField(ref _getConverterWindowCommand, value);
+    }
     public ICommand GetRegistryFileCommand
     {
         get => _getRegistryFileCommand;
         set => SetField(ref _getRegistryFileCommand, value);
     }
-
+    
+    private ICommand _getConverterWindowCommand;
     private ICommand _getFileCommand;
     private ICommand _getRecentFileCommand;
-    private ICommand _getProcessCommand;
     private ICommand _getNotImplementedGrowlCommand;
     private ICommand _getMachineWordsCommand;
     private ICommand _clearRecentFilesCommand;
@@ -165,6 +164,7 @@ public partial class MainWindowViewModel
 
     private void WriteTracing(ref FlowerSeedManager manager)
     {
+        Tell("abstractions CONTRACT_VERSION: " + manager.GetContract());
         Tell("=== Kernel tracing ===");
         foreach (var message in manager.Messages)
         {
@@ -178,14 +178,6 @@ public partial class MainWindowViewModel
             Tell(plugin.Status.LastError is null ? $"?[{plugin.Seed}] has no result." : $"![{plugin.Seed}] " + plugin.Status.LastError.Message);
         }
 
-    }
-    /// <summary>
-    /// Experimental feature (try to catch process by ID/Name)
-    /// Requires Administrator permissions
-    /// </summary>
-    private void GetWin32Process(object unused)
-    {
-        Growl.WarningGlobal("Not implemented yet!");
     }
     /// <summary>
     /// Shows notification "Not implemented yet" at Desktop

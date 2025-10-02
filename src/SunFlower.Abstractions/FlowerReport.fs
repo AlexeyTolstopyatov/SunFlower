@@ -15,15 +15,15 @@ module FlowerReport =
         
         let appendEscaped (b: byte) =
             match b with
-            | 0uy -> sb.Append(@"\{0}")
-            | 9uy -> sb.Append(@"\{t}")
-            | 10uy -> sb.Append(@"\{n}")
-            | 13uy -> sb.Append(@"\{r}")
+            | 0uy -> sb.Append("%0")
+            | 9uy -> sb.Append(@"%t")
+            | 10uy -> sb.Append(@"%n")
+            | 13uy -> sb.Append(@"%r")
             | 92uy -> sb.Append(@"\\") // <-- backslash warning
             | _ when b >= 32uy && b <= 126uy ->
                 sb.Append(char b)
             | _ -> 
-                sb.AppendFormat(@"\{0:X2}", b)
+                sb.AppendFormat(@$"%%x{b:X2}")
 
         str
         |> Encoding.ASCII.GetBytes

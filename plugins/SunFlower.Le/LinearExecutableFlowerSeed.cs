@@ -5,7 +5,7 @@ using SunFlower.Le.Services;
 
 namespace SunFlower.Le;
 
-[FlowerSeedContract(2, 1, 0)]
+[FlowerSeedContract(3, 1, 0)]
 public class LinearExecutableFlowerSeed : IFlowerSeed
 {
     public string Seed => "Sunflower Windows-OS/2 LE Any-CPU";
@@ -18,10 +18,8 @@ public class LinearExecutableFlowerSeed : IFlowerSeed
             LeDumpManager dumpManager = new(path);
             LeTableManager tableManager = new(dumpManager);
 
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
-            {
-                BoxedResult = tableManager.Characteristics
-            });
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, tableManager.Characteristics));
+            
             FlowerSeedResult imports = new(FlowerSeedEntryType.Strings);
             List<string> mods = ["### Imported Modules", ..tableManager.ImportedNames];
             List<string> procs = ["### Imported Procedures", ..tableManager.ImportedProcedures];

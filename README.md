@@ -17,8 +17,33 @@ All core plugins moved from [JellyBins](https://github.com/AlexeyTolstopyatov/je
 Main idea was an isolation of add-ons because main codebase had become
 very large. The previous project was rewritten from scratch five times, and in an undone state of parts is contained here. 
 
-### Sunflower seeds (application plugins)
+### Sunflower client
 
+User guide for client stores [here](WINDOWS.md)
+
+<img src="assets/mdbook.png">
+
+### Sunflower core "seeds" (plugins)
+
+In the package stores moved from JellyBins parts of code
+for definition the
+ - `MZ` Executables (real-mode x86 applications);
+ - `NE` segmented Executables (protected-mode x86 applications);
+ - `LE` OS/2-Windows executables; 
+ - `LX` OS/2-ArcaOS standard executables;
+ - `PE` Windows NT un/safe applications;
+ - `MS-DOS PIF files.
+
+But you sunflower gives a chance to make your own extension of it and
+run it with all plugins too.
+
+### Sunflower "seeds" (application plugins)
+
+> [!NOTE]
+> Also read the client [guide](WINDOWS.md). It has little-detailed information
+> about debugging of plugins
+
+For making new sunflower extension:
 1) Create Visual Studio solution.
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
@@ -63,8 +88,8 @@ type MyAnalyzer() =
 
 ### Supported Binary Formats
 
-In this repo `/plugins` catalog contains next core plugins for other segmented
-executable formats.
+In this repo `/plugins` catalog contains already enumerated plugins for other segmented
+executable formats. And stores little notes by me which moved from Jellybins too:
  - [New Executable (NE-16)](SUPPORT_NE.md)
  - [Linear Executable (LE-16/+ and OS/2 OMF LX)](SUPPORT_LE.md)
  - [Portable Executable (PE-32/+)](SUPPORT_PE.md)

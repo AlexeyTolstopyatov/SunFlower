@@ -4,7 +4,7 @@ using Sunflower.Mz.Services;
 
 namespace Sunflower.Mz;
 
-[FlowerSeedContract(2, 0, 0)]
+[FlowerSeedContract(3, 0, 0)]
 public class MarkZbikowskiFlowerSeed : IFlowerSeed
 {
     public string Seed => "Sunflower PC/MS-DOS MZ i8086+";

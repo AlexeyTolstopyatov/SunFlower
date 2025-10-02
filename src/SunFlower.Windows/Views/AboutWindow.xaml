@@ -6,21 +6,32 @@
         xmlns:local="clr-namespace:SunFlower.Windows.Views"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
+        Background="{DynamicResource RegionBrush}"
         Title="About" SizeToContent="WidthAndHeight">
     <Grid>
+        <Grid.Background>
+            <VisualBrush TileMode="Tile" 
+                         Viewport="0,0,20,20" 
+                         Opacity="0.5"
+                         ViewportUnits="Absolute">
+                <VisualBrush.Visual>
+                    <Rectangle Width="20" Height="20" 
+                               Fill="Transparent"
+                               Stroke="{DynamicResource BorderBrush}" 
+                               StrokeThickness="0.5"/>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="128"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <hc:ImageBlock
-            x:Name="ImageBlock"
-            Height="128"
-            Grid.Column="1"/>
         <TextBlock
             x:Name="AboutBlock"
             FontFamily="Consolas"
+            FontSize="16"
             Margin="50"
             Grid.Column="2">
             

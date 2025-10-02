@@ -15,7 +15,7 @@ open Microsoft.FSharp.Collections
 //
 // @creator: atolstopyatov2017@vk.com
 //
-[<FlowerSeedContract(2, 0, 0)>]
+[<FlowerSeedContract(3, 0, 0)>]
 type FlowerSeedManager() =
     let mutable seeds : List<IFlowerSeed> = []
     let mutable messages : CorList<string> = CorList<string>()
@@ -31,7 +31,7 @@ type FlowerSeedManager() =
     let save (str: string) : unit =
         messages.Add str
     
-    let mutable majorVersion : Int32 = 2
+    let mutable majorVersion : Int32 = 3
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
     // interface IFlowerSeedManager with
@@ -69,7 +69,8 @@ type FlowerSeedManager() =
         seeds
                 |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) 
                 |> Dictionary
-        
+    member public this.GetContract () =
+        $"{majorVersion}.{minorVersion}.{buildVersion}"
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)

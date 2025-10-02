@@ -7,8 +7,8 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Background="{StaticResource RegionBrush}"
         Title="Home"
+        Background="{DynamicResource RegionBrush}"
         Height="600"
         Width="900">
     <hc:Window.DataContext>
@@ -16,44 +16,64 @@
     </hc:Window.DataContext>
     <hc:Window.NonClientAreaContent>
         <Menu
-            HorizontalAlignment="Center"
-            Width="150">
+            HorizontalAlignment="Center">
             <MenuItem
                 HorizontalAlignment="Right"
                 HorizontalContentAlignment="Right"
                 Header="File">
                 <MenuItem
                     Command="{Binding GetFileCommand}"
-                    Header="Read executable"/>
+                    Header="Open">
+                </MenuItem>
             </MenuItem>
             
             <!--Independent tools/windows-->
             <MenuItem
                 Header="Application">
                 <MenuItem
-                    Command="{Binding GetMachineWordsCommand}"
-                    Header="Machine words window"/>
-                <MenuItem
                     Command="{Binding ClearCacheCommand}"
-                    Header="Clear Editor cache"/>
+                    Header="Clear Editor Cache"/>
                 <MenuItem
-                    Header="Clear Recent files table"
+                    Header="Clear Recent files"
                     Command="{Binding GetDeleteRecentFilesCommandCommand}"/>
+                <MenuItem
+                    Header="About"
+                    Command="{Binding GetAboutCommand}"/>
+            </MenuItem>
+            <MenuItem
+                Header="Tools">
+                <MenuItem
+                    Header="Converter"
+                    Command="{Binding GetConverterWindowCommand}"/>
+                <MenuItem
+                    Command="{Binding GetMachineWordsCommand}"
+                    Header="Custom Table"/>
                 <MenuItem
                     CommandParameter="recent"
                     Command="{Binding GetRegistryFileCommand}"
                     Header="Edit Recent files"/>
                 <MenuItem
-                    Header="Edit Sizes"
+                    Header="Edit Custom Table"
                     CommandParameter="sizes"
                     Command="{Binding GetRegistryFileCommand}"/>
-                <MenuItem
-                    Header="About"
-                    Command="{Binding GetAboutCommand}"/>
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
     <Grid>
+        <Grid.Background>
+            <VisualBrush 
+                Opacity="0.6"
+                TileMode="Tile" 
+                Viewport="0,0,20,20" 
+                ViewportUnits="Absolute">
+                <VisualBrush.Visual>
+                    <Rectangle Width="20" Height="20" 
+                               Fill="{DynamicResource RegionBrush}"
+                               Stroke="{DynamicResource BorderBrush}" 
+                               StrokeThickness="0.5"/>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.Background>
         <hc:Card
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -72,6 +92,7 @@
                     Style="{StaticResource ToggleButtonSwitch}"
                     IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/>
                 <DataGrid
+                    MinWidth="550"
                     IsReadOnly="True"
                     x:Name="RecentDataGrid"
                     MaxHeight="500"
@@ -85,12 +106,18 @@
                                 Command="{Binding GetRecentFileCommand}"/>
                         </i:EventTrigger>
                         <i:KeyTrigger
-                            Key="Delete"
-                            Modifiers="Shift">
+                            Modifiers="Shift"
+                            Key="Delete">
                             <i:InvokeCommandAction
                                 CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                 Command="{Binding ClearRecentFileCommand}"/>
-                            
+                        </i:KeyTrigger>
+                        <i:KeyTrigger
+                            Key="Space"
+                            Modifiers="Shift">
+                            <i:InvokeCommandAction
+                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                Command="{Binding GetRecentFileCommand}"/>
                         </i:KeyTrigger>
                     </i:Interaction.Triggers>
                 </DataGrid>

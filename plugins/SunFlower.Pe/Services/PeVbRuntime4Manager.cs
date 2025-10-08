@@ -9,7 +9,8 @@ public class PeVbRuntime4Manager : DirectoryManager
     private readonly BinaryReader _reader;
     private long _vbanew;
     public Vb4Header Vb4Header { get; }
-
+    public long VbOffset => _vbanew;
+    
     public PeVbRuntime4Manager(FileSectionsInfo info, BinaryReader reader) : base(info)
     {
         _info = info;
@@ -38,7 +39,7 @@ public class PeVbRuntime4Manager : DirectoryManager
                 return header;      // struct must be empty
                                     // CALL of @100 important for VB4 runtime init 
 
-            _reader.BaseStream.Position = pushAddress - imageBaseAlignment; // not works.
+            _reader.BaseStream.Position = pushAddress - imageBaseAlignment; // WORKS!
             _vbanew = pushAddress - imageBaseAlignment; // <-- holds on the position of VB runtime header start.
             
             header = Fill<Vb4Header>(_reader);

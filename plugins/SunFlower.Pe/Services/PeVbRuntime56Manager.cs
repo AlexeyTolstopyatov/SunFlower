@@ -6,9 +6,7 @@ namespace SunFlower.Pe.Services;
 public class PeVbRuntime56Manager : DirectoryManager
 {
     public Vb5Header Vb5Header { get; }
-    public VbComData VbComData { get; }
-    public VbDesignerInfo VbDesignerInfo { get; }
-    
+    public long VbOffset => _vbanew;
     private readonly FileSectionsInfo _info;
     private readonly BinaryReader _reader;
     private long _vbanew;

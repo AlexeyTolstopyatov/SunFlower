@@ -1,22 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
 namespace SunFlower.Pe.Headers;
-/// <summary>
-/// Ведущая структура которая включает в себя
-/// опционально таблицы <see cref="VbComRegistrationData"/>,
-/// <see cref="VbComRegistrationInfo"/>, <see cref="VbDesignerInfo"/>
-/// ~ЕСЛИ~ изучаемый бинарник представляет из себя ActiveX объект.
-///
-/// Боже мой, дай мне сил разобраться до логического конца
-/// в этом Microsoft наследии.
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct VbComData
-{
-    [MarshalAs(UnmanagedType.Struct)] public VbComRegistration VbComRegistrationData;
-    [MarshalAs(UnmanagedType.Struct)] public VbComRegistrationInfo VbComRegistrationInfo;
-    [MarshalAs(UnmanagedType.Struct)] public VbDesignerInfo VbDesignerInfo;
-}
 
 // COM data -> {REG-Data, REG-INFO, Designer-INFO}
 /// <summary>

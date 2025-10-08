@@ -24,7 +24,7 @@ public class PeDumpManager(string path) : UnsafeManager
     public Vb5Header Vb5Header { get; private set; }
     public Vb4Header Vb4Header { get; private set; }
     public bool Is64Bit { get; set; }
-
+    public long VbOffset { get; private set; }
     /// <summary>
     /// Starts manager in another thread
     /// </summary>
@@ -58,11 +58,18 @@ public class PeDumpManager(string path) : UnsafeManager
         
         Vb5Header = vb5Runtime.Vb5Header;
         Vb4Header = vb4Runtime.Vb4Header;
+
+        if (vb5Runtime.Vb5Header.VbMagic != null!)
+            VbOffset = vb5Runtime.VbOffset;
+
+        if (vb4Runtime.Vb4Header.Signature != null!)
+            VbOffset = vb4Runtime.VbOffset;
         
         reader.Close();
     }
     private void FindHeaders(BinaryReader reader)
     {
+        VbOffset = 0;
         var dos2 = reader.ReadUInt16();
         if (dos2 != 0x5A4D && dos2 != 0x4D5A)
         {

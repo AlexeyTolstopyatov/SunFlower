@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection.PortableExecutable;
-using System.Text;
 using Sunflower.Links.Headers;
 
 namespace SunFlower.Links.Services;

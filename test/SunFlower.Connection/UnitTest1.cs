@@ -1,6 +1,5 @@
 using SunFlower.Abstractions;
 using SunFlower.Le.Services;
-using SunFlower.Pe;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
 using SunFlower.Links.Services;
@@ -28,6 +27,31 @@ public class Tests
         Assert.Pass();
     }
     [Test]
+    public void FindVb5()
+    {
+        var path = @"D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIS3.67e\FRMS2TXT.exe";
+
+        var peManager = new PeDumpManager(path);
+        peManager.Initialize();
+        var sectionsInfo = new FileSectionsInfo
+        {
+            BaseOfCode = peManager.OptionalHeader32.BaseOfCode,
+            ImageBase = peManager.OptionalHeader32.ImageBase,
+            BaseOfData = peManager.OptionalHeader32.BaseOfData,
+            EntryPoint = peManager.OptionalHeader32.AddressOfEntryPoint,
+            FileAlignment = peManager.OptionalHeader32.FileAlignment,
+            Is64Bit = false,
+            NumberOfRva = peManager.OptionalHeader32.NumberOfRvaAndSizes,
+            NumberOfSections = peManager.FileHeader.NumberOfSections,
+            Sections = peManager.PeSections,
+            Directories = peManager.PeDirectories,
+            SectionAlignment = peManager.OptionalHeader32.SectionAlignment
+        };
+        var manager = new Vb5ProjectTablesManager(path, peManager.VbOffset, peManager.Vb5Header, sectionsInfo);
+        
+        Assert.Pass(manager.ProjectName);
+    }
+    [Test]
     public void CheckoutPeImage()
     {
         var path = @"C:\Program Files\Oracle\VirtualBox\VirtualBoxVM.exe";
@@ -45,7 +69,7 @@ public class Tests
         exportsManager.Initialize();
         corManager.Initialize();
 
-        PeTableManager tables = new PeTableManager(new PeImageModel()
+        PeImageView tables = new PeImageView(new PeImageModel()
         {
             Sections = manager.PeSections,
             OptionalHeader = manager.OptionalHeader,
@@ -56,7 +80,8 @@ public class Tests
             ImportTableModel = importsManager.ImportTableModel,
             CorHeader = corManager.Cor20Header,
             Vb5Header = manager.Vb5Header,
-            Vb4Header = manager.Vb4Header
+            Vb4Header = manager.Vb4Header,
+            Directories = manager.PeDirectories
         });
         tables.Initialize();
         Assert.Pass("no null references");

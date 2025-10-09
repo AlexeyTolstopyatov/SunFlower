@@ -24,7 +24,7 @@ public struct Vb5Header
     public UInt32 LanguageId;
     public UInt32 SecondLanguageId;
     public UInt32 SubMainAddress;
-    public UInt32 ProjectDataPointer;
+    public UInt32 ProjectDataPointer; // +
     public UInt32 ControlsFlagLow;
     public UInt32 ControlsFlagHigh;
     public UInt32 ThreadFlags;
@@ -34,9 +34,9 @@ public struct Vb5Header
     public UInt32 ThunkCount;
     public UInt32 GuiTablePointer;
     public UInt32 ExternalTablePointer;
-    public UInt32 ComRegisterDataPointer;
-    public UInt32 ProjectDescriptionOffset;
-    public UInt32 ProjectExeNameOffset;
+    public UInt32 ComRegisterDataPointer; // +
+    public UInt32 ProjectDescriptionOffset; // +
+    public UInt32 ProjectExeNameOffset; // +
     public UInt32 ProjectHelpOffset;
-    public UInt32 ProjectNameOffset;
+    public UInt32 ProjectNameOffset; // +
 }

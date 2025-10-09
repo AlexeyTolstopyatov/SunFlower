@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace SunFlower.Windows.Views;
+﻿namespace SunFlower.Windows.Views;
 
 public partial class ConverterWindow : HandyControl.Controls.Window
 {

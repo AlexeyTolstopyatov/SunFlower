@@ -5,7 +5,6 @@ using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
-using SunFlower.Services;
 using SunFlower.Windows.Services;
 using SunFlower.Windows.Views;
 

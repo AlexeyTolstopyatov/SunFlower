@@ -1,9 +1,7 @@
 ﻿using System.Data;
-using System.Drawing;
 using System.Globalization;
 using System.Windows.Input;
 using HandyControl.Controls;
-using HandyControl.Data;
 using Microsoft.Win32;
 using SunFlower.Readers;
 using SunFlower.Services;

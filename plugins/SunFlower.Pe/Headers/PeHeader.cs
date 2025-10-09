@@ -3,7 +3,7 @@
 namespace SunFlower.Pe.Headers;
 
 /* ROM Header taken from Ghidra
- *     WORD   Magic;
+ *     WORD   Magic; <-- 0x107 expected
  *     BYTE   MajorLinkerVersion;
  *     BYTE   MinorLinkerVersion;
  *     DWORD  SizeOfCode;

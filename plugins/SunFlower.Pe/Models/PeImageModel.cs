@@ -14,4 +14,5 @@ public class PeImageModel
     public Cor20Header CorHeader { get; init; }
     public Vb5Header Vb5Header { get; init; }
     public Vb4Header Vb4Header { get; init; }
+    public PeDirectory[] Directories { get; init; } = new PeDirectory[1];
 }

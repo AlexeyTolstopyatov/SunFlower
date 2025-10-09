@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="FlowerDescriptor.fs" />
         <Compile Include="FlowerReport.fs" />
         <Compile Include="FlowerSeedContractAttribute.fs" />
         <Compile Include="Types\FlowerSeedResult.fs" />
@@ -16,6 +17,7 @@
         <Compile Include="Types\FlowerReturns.fs" />
         <Compile Include="FlowerSeedStatus.fs" />
         <Compile Include="IFlowerSeed.fs" />
+        <Compile Include="AbstractStructVisualizer.fs" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,4 @@
-﻿using SunFlower.Ne.Headers;
-
-namespace SunFlower.Ne.Models;
+﻿namespace SunFlower.Ne.Models;
 
 public class SegmentRelocationModel()
 {

@@ -12,7 +12,7 @@ namespace SunFlower.Pe;
 public class PortableExecutableSeed : IFlowerSeed
 {
     public string Seed => "Sunflower Windows PE32/+ IA-32(e)";
-    public FlowerSeedStatus Status { get; set; } = new FlowerSeedStatus();
+    public FlowerSeedStatus Status { get; } = new();
     
     /// <summary>
     /// EntryPoint returns Status Table 
@@ -44,17 +44,16 @@ public class PortableExecutableSeed : IFlowerSeed
                 ImportTableModel = importsManager.ImportTableModel,
                 CorHeader = clrManager.Cor20Header,
                 Vb5Header = dumpManager.Vb5Header,
-                Vb4Header = dumpManager.Vb4Header
+                Vb4Header = dumpManager.Vb4Header,
+                Directories = dumpManager.PeDirectories
             };
 
-            PeTableManager manager = new(image);
+            PeImageView manager = new(image);
             manager.Initialize();
 
-            FlowerSeedResult headers = new(FlowerSeedEntryType.DataTables, manager.Results);
             FlowerSeedResult tables = new(FlowerSeedEntryType.Regions, manager.Regions);
             
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, manager.GeneralStrings));
-            Status.Results.Add(headers);
             Status.Results.Add(tables);
             
             Status.IsEnabled = true;

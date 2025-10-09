@@ -1,19 +1,28 @@
 ﻿using SunFlower.Pe.Headers;
+using SunFlower.Pe.Models;
 
 namespace SunFlower.Pe.Services;
 
-public class Vb5ProjectTablesManager : UnsafeManager
+public class Vb5ProjectTablesManager : DirectoryManager
 {
     public string ProjectName { get; init; }
     public string ProjectExeName { get; init; }
     public string ProjectDescription { get; init; }
+    public VbComRegistration Registration { get; init; }
+    public VbComRegistrationInfo RegistrationInfo { get; init; }
+    public Vb5ProjectInfo ProjectInfo { get; init; }
 
-    public Vb5ProjectTablesManager(string path, long vbnewOffset, Vb5Header header)
+    public Vb5ProjectTablesManager(
+        string path, 
+        long vbnewOffset, 
+        Vb5Header header, 
+        FileSectionsInfo sectionsInfo) : base(sectionsInfo)
     {
+        
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
         using var reader = new BinaryReader(stream);
 
-        // Strings 'ch follows by the header are zero-terminated (or C-strings)
+        // Strings'ch follows by the header are zero-terminated (or C-strings)
         
         var projDescriptionOffset = vbnewOffset + header.ProjectDescriptionOffset;
         var projNameOffset = vbnewOffset + header.ProjectNameOffset;
@@ -25,6 +34,16 @@ public class Vb5ProjectTablesManager : UnsafeManager
         ProjectDescription = FromCString(in reader, projDescriptionOffset);
 
         // external table
+        var lpReg = header.ComRegisterDataPointer;
+        stream.Position = lpReg;
+
+        Registration = Fill<VbComRegistration>(reader);
+        stream.Position += Registration.RegInfoOffset;
+        
+        RegistrationInfo = Fill<VbComRegistrationInfo>(reader);
+
+        stream.Position = header.ProjectDataPointer;
+        ProjectInfo = Fill<Vb5ProjectInfo>(reader);
         
     }
 

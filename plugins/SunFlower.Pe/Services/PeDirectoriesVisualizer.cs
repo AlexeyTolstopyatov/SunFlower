@@ -48,7 +48,6 @@ public class PeDirectoriesVisualizer(PeDirectory[] @struct) : AbstractStructVisu
         ""
     };
 
-    private readonly PeDirectory[] _struct = @struct;
     public override string ToString()
     {
         var content = new StringBuilder();

@@ -3,8 +3,8 @@
 public class PeImportTableModel
 { 
     // other need fields here . (structure like PeExportTableModel)
-    public List<ImportModule> Modules { get; set; }
-    
+    public List<ImportModule> Modules { get; set; } = [];
+
 }
 
 public class ImportModule

@@ -8,7 +8,6 @@ namespace SunFlower.Pe.Services;
 
 public class MzStructVisualizer(MzHeader @struct) : AbstractStructVisualizer<MzHeader>(@struct)
 {
-    private readonly MzHeader _struct = @struct;
     private readonly string _content = "### DOS 2.0+ Executable Header";
     public override DataTable ToDataTable()
     {

@@ -9,9 +9,6 @@ namespace SunFlower.Pe.Services;
 public class Vb5StructVisualizer(Vb5Header @struct) : AbstractStructVisualizer<Vb5Header>(@struct)
 {
     private readonly string _heading = "### Visual Basic 5.0/6.0 Runtime section";
-    
-    private readonly Vb5Header _struct = @struct;
-
     public override DataTable ToDataTable()
     {
         var vb = new DataTable

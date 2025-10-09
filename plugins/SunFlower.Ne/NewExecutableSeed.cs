@@ -18,12 +18,7 @@ public class NewExecutableSeed : IFlowerSeed
             Status.IsEnabled = true;
 
             Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings, tableManager.Characteristics));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.DataTables, tableManager.Headers));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.ModulesRegion));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.SegmentRegions));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.EntryBundlesRegions));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.NamesRegions));
-            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.ImportRegions));
+            Status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, tableManager.Regions));
             
             return 0;
         }

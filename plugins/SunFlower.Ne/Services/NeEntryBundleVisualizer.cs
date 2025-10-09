@@ -5,7 +5,7 @@ using SunFlower.Ne.Models;
 
 namespace SunFlower.Ne.Services;
 
-public class NeEntryBundleVisualizer(NeEntryBundle bundle, int number) : AbstractStructVisualizer<NeEntryBundle>(bundle)
+public class NeEntryBundleVisualizer(NeEntryBundle @struct, int number) : AbstractStructVisualizer<NeEntryBundle>(@struct)
 {
     public override DataTable ToDataTable()
     {
@@ -21,7 +21,7 @@ public class NeEntryBundleVisualizer(NeEntryBundle bundle, int number) : Abstrac
                 FlowerReport.ForColumn("Type", typeof(string))
             }
         };
-        foreach (var item in bundle.EntryPoints)
+        foreach (var item in _struct.EntryPoints)
         {
             entries.Rows.Add(
                 "@" + item.Ordinal,
@@ -36,8 +36,17 @@ public class NeEntryBundleVisualizer(NeEntryBundle bundle, int number) : Abstrac
         return entries;
     }
 
+    public override string ToString()
+    {
+        return new FlowerDescriptor()
+            .Line("Bundle contains EntryPoints what are the same with one of characteristics")
+            .Line("Loader of segmented executables reads entry points bundle-by bundle")
+            .Line("if bundle marked as unused, loader skips count of entries set in this bundle.")
+            .ToString();
+    }
+
     public override Region ToRegion()
     {
-        throw new NotImplementedException();
+        return new Region($"### EntryTable Bundle #{number}", ToString(), ToDataTable());
     }
 }

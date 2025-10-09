@@ -10,7 +10,6 @@ namespace SunFlower.Pe.Services;
 public class Pe32StructVisualizer(PeOptionalHeader32 @struct) : AbstractStructVisualizer<PeOptionalHeader32>(@struct)
 {
     private readonly string _content = "### Optional `PE32` Header";
-    private readonly PeOptionalHeader32 _struct = @struct;
     
     public override DataTable ToDataTable()
     {

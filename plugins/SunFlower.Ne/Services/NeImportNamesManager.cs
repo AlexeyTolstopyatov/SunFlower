@@ -50,6 +50,7 @@ public class NeImportNamesManager(BinaryReader reader, ImportOffsets offsets, Li
                 continue;
 
             Import procedure = GetImport(reader, offsets, relocation);
+            procedure.Module = moduleName;
             
             if (!importedModules.ContainsKey(moduleName))
             {
@@ -99,6 +100,9 @@ public class NeImportNamesManager(BinaryReader reader, ImportOffsets offsets, Li
     private static Import GetImport(BinaryReader reader, ImportOffsets offsets, Relocation relocation)
     {
         var procedure = new Import();
+        procedure.NameOffset = relocation.NameOffset;
+        procedure.ModuleIndex = relocation.ModuleIndex;
+        procedure.OffsetInSegment = relocation.OffsetInSegment;
         
         if (relocation.Ordinal > 0)
         {
@@ -116,7 +120,7 @@ public class NeImportNamesManager(BinaryReader reader, ImportOffsets offsets, Li
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error reading procedure name at offset {relocation.NameOffset}: {ex.Message}");
-                procedure.Procedure = $"@?{relocation.NameOffset}";
+                procedure.Procedure = $"?0x{relocation.NameOffset:X8}";
             }
         }
         else

@@ -150,7 +150,8 @@ public partial class MainWindowViewModel
         // Extensions recall
         var inst = FlowerSeedManager.CreateInstance(); 
             
-        Seeds = inst.LoadAllFlowerSeeds()
+        Seeds = inst
+            .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
         

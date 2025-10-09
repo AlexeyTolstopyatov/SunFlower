@@ -9,7 +9,6 @@ namespace SunFlower.Pe.Services;
 public class Cor20StructVisualizer(Cor20Header @struct) : AbstractStructVisualizer<Cor20Header>(@struct)
 {
     private readonly string _content = "### CLR Header";
-    private readonly Cor20Header _struct = @struct;
     
     public override DataTable ToDataTable()
     {

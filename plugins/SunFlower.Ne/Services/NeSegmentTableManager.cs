@@ -81,8 +81,9 @@ public class NeSegmentTableManager
                             RelocationType = "Internal",
                             AddressType = atp,
                             SegmentType = segmentType,
-                            TargetType = segmentType == 0xFF ? "FIXED" : "MOVABLE",
-                            Target = target
+                            TargetType = segmentType != 0xFF ? "FIXED" : "MOVABLE",
+                            Target = target,
+                            SegmentNumber = segment.SegmentNumber
                         });
                         break;
                     case RelocationFlags.ImportOrdinal:
@@ -95,9 +96,10 @@ public class NeSegmentTableManager
                             IsAdditive = isAdditive,
                             AddressType = atp,
                             RelocationFlags = relFlags,
-                            RelocationType = "Import",
+                            RelocationType = "Ordinal Import",
                             Ordinal = procOrdinal,
-                            ModuleIndex = moduleIndex
+                            ModuleIndex = moduleIndex,
+                            SegmentNumber = segment.SegmentNumber
                         });
                         break;
                     case RelocationFlags.ImportName:
@@ -111,9 +113,10 @@ public class NeSegmentTableManager
                             IsAdditive = isAdditive,
                             AddressType = atp,
                             RelocationFlags = relFlags,
-                            RelocationType = "Import",
+                            RelocationType = "Explicit Import",
                             ModuleIndex = moduleIndex2,
                             NameOffset = procNameOffset,
+                            SegmentNumber = segment.SegmentNumber
                         });
                         
                         break;
@@ -128,7 +131,8 @@ public class NeSegmentTableManager
                             AddressType = atp,
                             RelocationFlags = relFlags,
                             RelocationType = "OS Fixup",
-                            Fixup = osFixup.ToString()
+                            Fixup = osFixup.ToString(),
+                            SegmentNumber = segment.SegmentNumber
                         });
                         
                         break;

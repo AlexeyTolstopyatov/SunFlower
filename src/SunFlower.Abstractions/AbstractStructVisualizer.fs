@@ -5,11 +5,11 @@ open SunFlower.Abstractions.Types
 
 
 [<AbstractClass>]
-type AbstractStructVisualizer<'TStruct>(s : 'TStruct) =
+type AbstractStructVisualizer<'TStruct>(``struct`` : 'TStruct) =
     /// <summary>
     /// Holds the structure given from header
     /// </summary>
-    member _._struct : 'TStruct = s
+    member _._struct : 'TStruct = ``struct``
     /// <summary>
     /// Actually builds DataTable instance 
     /// </summary>

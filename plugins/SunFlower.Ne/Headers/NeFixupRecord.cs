@@ -67,6 +67,7 @@ public class OsFixupRelocation : RelocationRecord
 public class Relocation
 {
     // for every record
+    public uint SegmentNumber { get; set; }
     public byte AddressType { get; set; }
     public byte RelocationFlags { get; set; }
     public string RelocationType { get; set; } = string.Empty;

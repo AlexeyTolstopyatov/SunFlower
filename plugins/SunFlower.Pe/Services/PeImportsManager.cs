@@ -13,7 +13,7 @@ namespace SunFlower.Pe.Services;
 /// 
 public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
-    private readonly FileSectionsInfo _info = info;
+    private FileSectionsInfo _info = info;
     public PeImportTableModel ImportTableModel { get; private set; } = new();
 
     /// <summary> Deserializes bytes segment to import entries table </summary>
@@ -81,7 +81,7 @@ public class PeImportsManager(FileSectionsInfo info, string path) : DirectoryMan
         var iatRva = _info.Directories[12].VirtualAddress;
         var iatSize = _info.Directories[12].Size;
 
-        if (IsDirectoryExists(info.Directories[12])) 
+        if (IsDirectoryExists(_info.Directories[12])) 
             return new();
 
         var iatOffset = Offset(iatRva);

@@ -7,8 +7,8 @@ namespace SunFlower.Ne.Headers;
 public struct MzHeader
 {
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_sign;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_lastb;
-    [MarshalAs(UnmanagedType.U2)] public UInt16 e_fbl;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_cblp;
+    [MarshalAs(UnmanagedType.U2)] public UInt16 e_cp;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_relc;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_pars;
     [MarshalAs(UnmanagedType.U2)] public UInt16 e_minep;

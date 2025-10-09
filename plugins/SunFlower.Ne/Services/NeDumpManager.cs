@@ -97,8 +97,8 @@ public class NeDumpManager : UnsafeManager
         EntryBundles = entries.EntryBundles;
         ResidentNames = exports.ResidentNames;
         NonResidentNames = exports.NonResidentNames;
-        ImportModels = imports.ImportModels;
         ModuleReferences = imports.ModuleReferences;
+        ImportModels = imports.ImportModels;
         
         reader.Close();
     }

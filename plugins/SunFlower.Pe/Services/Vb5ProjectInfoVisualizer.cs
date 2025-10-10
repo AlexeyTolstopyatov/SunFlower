@@ -57,7 +57,7 @@ always filled by the Visual Basic 5.0+ Compiler.
  - If Native code pointer set to 0 - this is a P-Code compiled module
  - `ExternalApiDescriptor` is a call of procedure from another module. (e.g. `User32.DLL`)
 
-> ![TIP]
+> [!TIP]
 > This application compiled using {type}
 
 Strings:

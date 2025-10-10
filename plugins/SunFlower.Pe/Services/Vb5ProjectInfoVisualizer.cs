@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Text;
+using Microsoft.VisualBasic.CompilerServices;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Pe.Headers;
@@ -28,8 +29,8 @@ public class Vb5ProjectInfoVisualizer(Vb5ProjectInfo @struct) : AbstractStructVi
         dt.Rows.Add("lpThreadSpace", $"0x{_struct.ThreadSpacePointer:X8}");
         dt.Rows.Add("lpVBASEH", $"0x{_struct.VbaSEHPointer:X8}");
         dt.Rows.Add("lpNativeCode", $"0x{_struct.NativeCodePointer:X8}");
-        dt.Rows.Add("wsPrimitivePath", FlowerReport.SafeString(primitivePathUnicode));
-        dt.Rows.Add("wsProjectPath", FlowerReport.SafeString(projectPathUnicode));
+        dt.Rows.Add("wsPrimitivePath", "(here `WORD[3]`)");
+        dt.Rows.Add("wsProjectPath", "(here `WORD[256]`)");
         dt.Rows.Add("lpExternalCtlsTable", $"0x{_struct.ExternalTablePointer:X8}");
         dt.Rows.Add("dwExternalCtlsCount", $"0x{_struct.ExternalTableCount:X8}");
 
@@ -38,9 +39,15 @@ public class Vb5ProjectInfoVisualizer(Vb5ProjectInfo @struct) : AbstractStructVi
 
     public override string ToString()
     {
-        return @"
+        var primitivePathUnicode = Encoding.Unicode.GetString(_struct.PrimitivePath);
+        var projectPathUnicode = Encoding.Unicode.GetString(_struct.ProjectPath);
+        var type = _struct.NativeCodePointer > 0
+            ? "x86 instructions `NCode`"
+            : "Visual Basic pseudo code `PCode`";
+        return $@"
 > [!INFO]
 > Filled at `vba6.dll!0x0FB11783`
+
 The `ProjectInfo` structure is a structure
 always filled by the Visual Basic 5.0+ Compiler. 
  - `dwVersion` set as 0x1F4 (0d500)
@@ -48,7 +55,15 @@ always filled by the Visual Basic 5.0+ Compiler.
  - `lpCodeStart` may has `0xE9E9E9E9`
  - `lpCodeEnd` may has `0x9E9E9E9E`
  - If Native code pointer set to 0 - this is a P-Code compiled module
- - `ExternalApiDescriptor` is a call of procedure from another module. (e.g. `User32.DLL`)";
+ - `ExternalApiDescriptor` is a call of procedure from another module. (e.g. `User32.DLL`)
+
+> ![TIP]
+> This application compiled using {type}
+
+Strings:
+ - {FlowerReport.SafeString(primitivePathUnicode)}
+ - {FlowerReport.SafeString(projectPathUnicode)}
+";
     }
 
     public override Region ToRegion()

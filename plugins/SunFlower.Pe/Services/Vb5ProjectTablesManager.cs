@@ -13,12 +13,12 @@ public class VbImageInfo(string path, long offset, Vb5Header vb5Header, FileSect
 
 public class Vb5ProjectTablesManager : DirectoryManager
 {
-    public string ProjectName { get; init; }
-    public string ProjectExeName { get; init; }
-    public string ProjectDescription { get; init; }
-    public VbComRegistration Registration { get; init; }
-    public VbComRegistrationInfo RegistrationInfo { get; init; }
-    public Vb5ProjectInfo ProjectInfo { get; init; }
+    public string ProjectName { get; }
+    public string ProjectExeName { get; }
+    public string ProjectDescription { get; }
+    public VbComRegistration Registration { get; }
+    public VbComRegistrationInfo RegistrationInfo { get; }
+    public Vb5ProjectInfo ProjectInfo { get; }
 
     
     /// <summary>

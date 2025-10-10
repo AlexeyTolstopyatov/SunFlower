@@ -49,14 +49,14 @@ public class PeSectionsVisualizer(PeSection[] @struct) : AbstractStructVisualize
 
     public override string ToString()
     {
-        return "Each row of the section table is, in effect, a section header. " +
-                             "This table immediately follows the optional header, if any. " +
-                             "This positioning is required because the file header does not contain a direct pointer to the section table. " +
-                             "Instead, the location of the section table is determined by calculating the location of the first byte after " +
-                             "the headers. Make sure to use the size of the optional header as specified in the file header.\n\n" +
-                             "The number of entries in the section table is given by the `NumberOfSections` field in the file header. " +
-                             "Entries in the section table are numbered starting from one. " +
-                             "The code and data memory section entries are in the order chosen by the linker.";
+        return @"Each row of the section table is, in effect, a section header. 
+This table immediately follows the optional header, if any.
+This positioning is required because the file header does not contain a direct pointer to the section table.
+Instead, the location of the section table is determined by calculating the location of the first byte after
+the headers. Make sure to use the size of the optional header as specified in the file header.
+The number of entries in the section table is given by the `NumberOfSections` field in the file header. 
+Entries in the section table are numbered starting from one.
+The code and data memory section entries are in the order chosen by the linker.";
     }
 
     public override Region ToRegion()

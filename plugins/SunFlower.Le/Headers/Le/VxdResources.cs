@@ -41,7 +41,7 @@ public class Win32Resource
 }
 public class StringTable
 {
-    public string LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
     public Dictionary<string, string> Strings { get; set; } = new();
 }
 [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -1,39 +1,39 @@
 ﻿using System.Runtime.InteropServices;
 
 namespace SunFlower.Pe.Headers;
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct VbComRegistration
 {
-    [FieldOffset(0x00)] public UInt32 RegInfoOffset; // offset to COM interface information
-    [FieldOffset(0x04)] public UInt32 ProjectNameOffset;
-    [FieldOffset(0x08)] public UInt32 HelpDirectoryOffset;
-    [FieldOffset(0x0C)] public UInt32 ProjectDescriptionOffset;
-    [FieldOffset(0x10)] public UInt64 UuidProjectClsId;
-    [FieldOffset(0x20)] public UInt32 TypeLibraryLanguageId;
-    [FieldOffset(0x24)] public UInt16 Unknown;
-    [FieldOffset(0x26)] public UInt16 TypeLibraryMajor;
-    [FieldOffset(0x28)] public UInt16 TypeLibraryMinor;
+    public UInt32 RegInfoOffset; // offset to COM interface information
+    public UInt32 ProjectNameOffset;
+    public UInt32 HelpDirectoryOffset;
+    public UInt32 ProjectDescriptionOffset;
+    public UInt64 UuidProjectClsId;
+    public UInt32 TypeLibraryLanguageId;
+    public UInt32 Unknown;
+    public UInt16 TypeLibraryMajor;
+    public UInt16 TypeLibraryMinor;
 }
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Sequential)]
 public struct VbComRegistrationInfo
 {
-    [FieldOffset(0x00)] public UInt32 NextObjectOffset; // COM interfaces offset
-    [FieldOffset(0x04)] public UInt32 ObjectNameOffset; // offset to obj-name
-    [FieldOffset(0x08)] public UInt32 ObjectDescriptionOffset;
-    [FieldOffset(0x0C)] public UInt32 InstancingMode;
-    [FieldOffset(0x10)] public UInt32 ObjectId; // ID of current object
-    [FieldOffset(0x14)] public UInt64 UuidObject; // Class ID (CLSID) of object
-    [FieldOffset(0x24)] public UInt32 IsInterface; // If next CLSID is valid
-    [FieldOffset(0x28)] public UInt32 UuidObjectInterfaceOffset;
-    [FieldOffset(0x2C)] public UInt32 UuidEventsInterfaceOffset;
-    [FieldOffset(0x30)] public UInt32 HasEvents; // specifies if CLSID above is valid
-    [FieldOffset(0x34)] public UInt32 MiscStatus; // OLE misc flags storage
-    [FieldOffset(0x38)] public Byte ClassType;
-    [FieldOffset(0x39)] public Byte ObjectType;
-    [FieldOffset(0x3A)] public UInt16 ToolBoxBitmap32; // Control bitmap ID in Toolbox
-    [FieldOffset(0x3C)] public UInt16 DefaultIcon;
-    [FieldOffset(0x3E)] public UInt16 IsDesigner; // specifies if this obj = designer
-    [FieldOffset(0x40)] public UInt16 DesignerDataOffset;
+    public UInt32 NextObjectOffset; // COM interfaces offset
+    public UInt32 ObjectNameOffset; // offset to obj-name
+    public UInt32 ObjectDescriptionOffset;
+    public UInt32 InstancingMode;
+    public UInt32 ObjectId; // ID of current object
+    public UInt64 UuidObject; // Class ID (CLSID) of object
+    public UInt32 IsInterface; // If next CLSID is valid
+    public UInt32 UuidObjectInterfaceOffset;
+    public UInt32 UuidEventsInterfaceOffset;
+    public UInt32 HasEvents; // specifies if CLSID above is valid
+    public UInt32 MiscStatus; // OLE misc flags storage
+    public Byte ClassType;
+    public Byte ObjectType;
+    public UInt16 ToolBoxBitmap32; // Control bitmap ID in Toolbox
+    public UInt16 DefaultIcon;
+    public UInt16 IsDesigner; // specifies if this obj = designer
+    public UInt32 DesignerDataOffset;
 }
 public struct VbDesignerInfo
 {

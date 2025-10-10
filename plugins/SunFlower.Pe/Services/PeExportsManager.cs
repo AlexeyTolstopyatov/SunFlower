@@ -21,7 +21,7 @@ namespace SunFlower.Pe.Services;
 public class PeExportsManager(FileSectionsInfo info, string path) : DirectoryManager(info), IManager
 {
     private readonly FileSectionsInfo _info = info;
-    public PeExportTableModel ExportTableModel { get; private set; }
+    public PeExportTableModel ExportTableModel { get; private set; } = new();
 
     public static PeExportsManager CreateInstance(FileSectionsInfo info, string path)
     { 

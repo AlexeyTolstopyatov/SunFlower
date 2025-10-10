@@ -3,6 +3,14 @@ using SunFlower.Pe.Models;
 
 namespace SunFlower.Pe.Services;
 
+public class VbImageInfo(string path, long offset, Vb5Header vb5Header, FileSectionsInfo info)
+{
+    public FileSectionsInfo Info { get; init; } = info;
+    public string Path { get; init; } = path;
+    public Vb5Header Vb5Header { get; init; } = vb5Header;
+    public long Vb5HeaderOffset { get; init; } = offset;
+}
+
 public class Vb5ProjectTablesManager : DirectoryManager
 {
     public string ProjectName { get; init; }
@@ -12,13 +20,30 @@ public class Vb5ProjectTablesManager : DirectoryManager
     public VbComRegistrationInfo RegistrationInfo { get; init; }
     public Vb5ProjectInfo ProjectInfo { get; init; }
 
+    
+    /// <summary>
+    /// Avoid SectionNotFoundException and permanent retranslate
+    /// the VA/RVA pointers to raw positions 
+    /// </summary>
+    /// <returns></returns>
+    private long Shift(long offset)
+    {
+        // I've seen it in nightmare and this idea works for *LONG pointers...
+        return ((offset - _imageBase) < 0) switch 
+        {
+            true => _imageBase - offset,
+            false => offset - _imageBase 
+        };
+    }
+
+    private readonly long _imageBase;
     public Vb5ProjectTablesManager(
         string path, 
         long vbnewOffset, 
         Vb5Header header, 
         FileSectionsInfo sectionsInfo) : base(sectionsInfo)
     {
-        
+        _imageBase = sectionsInfo.ImageBase;
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
         using var reader = new BinaryReader(stream);
 
@@ -33,18 +58,20 @@ public class Vb5ProjectTablesManager : DirectoryManager
         ProjectExeName = FromCString(in reader, projExeNameOffset);
         ProjectDescription = FromCString(in reader, projDescriptionOffset);
 
-        // external table
-        var lpReg = header.ComRegisterDataPointer;
+        // VA/RVA pointers needs to be checked and translated before usage
+        
+        var lpReg = Shift(header.ComRegisterDataPointer);
         stream.Position = lpReg;
 
         Registration = Fill<VbComRegistration>(reader);
-        stream.Position += Registration.RegInfoOffset;
+        stream.Position = Shift(Registration.RegInfoOffset);
         
         RegistrationInfo = Fill<VbComRegistrationInfo>(reader);
 
-        stream.Position = header.ProjectDataPointer;
+        stream.Position = Shift(header.ProjectDataPointer);
         ProjectInfo = Fill<Vb5ProjectInfo>(reader);
         
+        reader.Close();
     }
 
     private string FromCString(in BinaryReader reader, long offset)

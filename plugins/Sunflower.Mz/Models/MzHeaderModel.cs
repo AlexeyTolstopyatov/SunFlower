@@ -5,7 +5,7 @@ namespace Sunflower.Mz.Models;
 public class MzHeaderModel : UnsafeManager
 {
     public MzHeader Header { get; private set; }
-    public List<uint> Relocations { get; private set; } = [];
+    public List<MzRelocation> Relocations { get; private set; } = [];
     
     public MzHeaderModel(BinaryReader reader)
     {
@@ -22,7 +22,7 @@ public class MzHeaderModel : UnsafeManager
         
         for (ushort c = 0; c < Header.e_relc; ++c)
         {
-            Relocations.Add(reader.ReadUInt32());
+            Relocations.Add(Fill<MzRelocation>(reader));
         }
         
         // That's all. 

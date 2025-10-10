@@ -52,12 +52,10 @@ public class Pe64StructVisualizer(PeOptionalHeader @struct) : AbstractStructVisu
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("This header names \"optional\" because isn't necessary for all PE linked files.")
-            .Line("Depends on ").Inline("wMagic")
-            .Line("field defines maximum word size for HEAP and STACK characteristics.")
-            .Line("Some data don't check by loader and may be empty or incorrect.")
-            .ToString();
+        return @"This header names optional because isn't necessary for all PE linked files.
+Depends on `wMagic`
+field defines maximum word size for HEAP and STACK characteristics.
+Some data don't check by loader and may be empty or incorrect.";
     }
 
     public override Region ToRegion()

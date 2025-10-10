@@ -5,7 +5,7 @@ namespace Sunflower.Mz.Services;
 public class MzDumpManager
 {
     public MzHeader Header { get; init; }
-    public List<uint> Relocations { get; init; }
+    public List<MzRelocation> Relocations { get; init; }
 
     public MzDumpManager(string path)
     {

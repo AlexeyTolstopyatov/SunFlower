@@ -3,6 +3,7 @@ using SunFlower.Le.Services;
 using SunFlower.Pe.Services;
 using SunFlower.Services;
 using SunFlower.Links.Services;
+using SunFlower.Pe;
 using SunFlower.Pe.Models;
 
 namespace SunFlower.Connection;
@@ -48,9 +49,22 @@ public class Tests
             SectionAlignment = peManager.OptionalHeader32.SectionAlignment
         };
         var manager = new Vb5ProjectTablesManager(path, peManager.VbOffset, peManager.Vb5Header, sectionsInfo);
+
+        var info = new VbImageView(peManager.Vb5Header, manager);
         
         Assert.Pass(manager.ProjectName);
     }
+    [Test]
+    public void VbPluginConnect()
+    {
+        var vb = new VisualBasicFlowerSeed();
+        var path = @"D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIS3.67e\FRMS2TXT.exe";
+
+        vb.Main(path);
+        
+        Assert.Pass();
+    }
+    
     [Test]
     public void CheckoutPeImage()
     {

@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="FlowerDescriptor.fs" />
         <Compile Include="FlowerReport.fs" />
         <Compile Include="FlowerSeedContractAttribute.fs" />
         <Compile Include="Types\FlowerSeedResult.fs" />

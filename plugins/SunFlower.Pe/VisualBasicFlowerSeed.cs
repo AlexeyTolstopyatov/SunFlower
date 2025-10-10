@@ -1,5 +1,5 @@
 ﻿using SunFlower.Abstractions;
-using SunFlower.Pe.Headers;
+using SunFlower.Abstractions.Types;
 using SunFlower.Pe.Models;
 using SunFlower.Pe.Services;
 
@@ -9,13 +9,15 @@ namespace SunFlower.Pe;
 public class VisualBasicFlowerSeed : IFlowerSeed
 {
     public string Seed => "Sunflower VisualBasic Runtime";
-    public FlowerSeedStatus Status { get; } = new();
+    public FlowerSeedStatus Status { get; private set; } = new();
     
     public int Main(string path)
     {
         try
         {
             var peManager = new PeDumpManager(path);
+            peManager.Initialize();
+            
             var sectionsInfo = new FileSectionsInfo
             {
                 BaseOfCode = peManager.OptionalHeader32.BaseOfCode,
@@ -36,8 +38,14 @@ public class VisualBasicFlowerSeed : IFlowerSeed
             var isVb5Defined = peManager.Vb5Header.VbMagic != null!;
             var isVb4Defined = peManager.Vb4Header.Signature != null!;
 
+            var status = new FlowerSeedStatus();
+            
             if (isVb5Defined)
-                FindVb5Details(peManager.VbOffset, path, peManager.Vb5Header, sectionsInfo);
+                status = FindVb5Details(peManager.VbOffset, path, peManager, sectionsInfo);
+
+            Status = status;
+            Status.IsEnabled = true;            
+            return 0;
         }
         catch (Exception e)
         {
@@ -47,11 +55,13 @@ public class VisualBasicFlowerSeed : IFlowerSeed
         return -1;
     }
 
-    private static FlowerSeedStatus FindVb5Details(long offset, string path, Vb5Header header, FileSectionsInfo info)
+    private static FlowerSeedStatus FindVb5Details(long offset, string path, PeDumpManager manager, FileSectionsInfo info)
     {
         var status = new FlowerSeedStatus();
+        
+        var data = new Vb5ProjectTablesManager(path, offset, manager.Vb5Header, info);
 
-        var data = new Vb5ProjectTablesManager(path, offset, header, info);
+        status.Results.Add(new FlowerSeedResult(FlowerSeedEntryType.Regions, new VbImageView(manager.Vb5Header, data).Regions));
         
         return status;
     }

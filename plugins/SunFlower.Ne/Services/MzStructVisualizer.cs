@@ -39,11 +39,9 @@ public class MzStructVisualizer(MzHeader @struct) : AbstractStructVisualizer<MzH
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("Intel 8086 real-mode DOS-executables")
-            .Line("always have this header for correct resources allocation.")
-            .Line("Pointer of relocation's table set at the ").Inline("0x40")
-            .ToString();
+        return  @"Intel 8086 real-mode DOS-executables
+always have this header for correct resources allocation.
+Pointer of relocation's table set at the 0x40";;
     }
 
     public override Region ToRegion()

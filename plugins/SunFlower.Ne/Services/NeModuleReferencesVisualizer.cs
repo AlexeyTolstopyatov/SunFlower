@@ -29,11 +29,9 @@ public class NeModuleReferencesVisualizer(List<ushort> @struct) : AbstractStruct
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("The module-reference table follows the resident-name table. ")
-            .Line("Each entry contains an offset for the module-name string within the imported names table; ")
-            .Line("each entry is 2 bytes long.")
-            .ToString();
+        return @"The module-reference table follows the resident-name table.
+Each entry contains an offset for the module-name string within the imported names table;
+each entry is 2 bytes long.";
     }
 
     public override Region ToRegion()

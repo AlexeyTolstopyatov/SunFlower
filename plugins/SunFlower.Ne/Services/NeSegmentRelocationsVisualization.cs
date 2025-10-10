@@ -56,14 +56,10 @@ public class NeSegmentRelocationsVisualization(SegmentModel @struct) : AbstractS
     {
         return (_struct.Relocations.Count == 0) switch
         {
-            true => new FlowerDescriptor()
-                .Line("Doesn't have own relocations table")
-                .ToString(),
-            false => new FlowerDescriptor()
-                .Line("The location and size of the per-segment data is defined in the segment table entry for the segment. ")
-                .Line("If the segment has relocation fixups, as defined in the segment table entry flags, they directly ")
-                .Line("follow the segment data in the file.")
-                .ToString()
+            true => "Doesn't have own relocations table",
+            false => @"The location and size of the per-segment data is defined in the segment table entry for the segment.
+If the segment has relocation fixups, as defined in the segment table entry flags, they directly
+follow the segment data in the file."
         };
     }
 

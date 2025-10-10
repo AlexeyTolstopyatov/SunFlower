@@ -96,7 +96,7 @@ public class NeSegmentTableManager
                             IsAdditive = isAdditive,
                             AddressType = atp,
                             RelocationFlags = relFlags,
-                            RelocationType = "Ordinal Import",
+                            RelocationType = "Import",
                             Ordinal = procOrdinal,
                             ModuleIndex = moduleIndex,
                             SegmentNumber = segment.SegmentNumber
@@ -113,7 +113,7 @@ public class NeSegmentTableManager
                             IsAdditive = isAdditive,
                             AddressType = atp,
                             RelocationFlags = relFlags,
-                            RelocationType = "Explicit Import",
+                            RelocationType = "Import",
                             ModuleIndex = moduleIndex2,
                             NameOffset = procNameOffset,
                             SegmentNumber = segment.SegmentNumber

@@ -27,21 +27,14 @@ public class NeNamesVisualizer(List<Name> @struct, bool resident) : AbstractStru
 
     public override string ToString()
     {
-        string res;
-        
-        if (resident)
-            res = new FlowerDescriptor()
-                .Line("Resident Names Table represents ordinals and Pascal-Strings of")
-                .Line("exporting functions which can be used by module while")
-                .Line("instance of this module is loaded.")
-                .ToString();
-        else
-            res = new FlowerDescriptor()
-                .Line("Non-resident names table represents ordinals and Pascal-Strings")
-                .Line("of exporting procedures or functions which unused by current module")
-                .Line("while it loaded in memory")
-                .ToString();
-
+        var res = resident 
+            ? @"Resident Names Table represents ordinals and Pascal-Strings of
+exporting functions which can be used by module while
+instance of this module is loaded." 
+            : @"Non-resident names table represents ordinals and Pascal-Strings
+of exporting procedures or functions which unused by current module
+while it loaded in memory";
+                
         return res;
     }
 

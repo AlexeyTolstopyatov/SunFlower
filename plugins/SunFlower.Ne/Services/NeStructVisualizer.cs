@@ -53,14 +53,12 @@ public class NeStructVisualizer(NeHeader @struct) : AbstractStructVisualizer<NeH
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("The New executable header is a necessary part of ")
-            .Line("every Windows or OS/2 **segmented** executable.")
-            .Line("This model of executable image allows to use external resources at runtime,")
-            .Line("running in x86 protected mode.")
-            .Line("All files marked as `NE` are 16-bit binaries and addresses of all procedures")
-            .Line("are 16-bit too.")
-            .ToString();
+        return @"The New executable header is a necessary part of
+every Windows or OS/2 **segmented** executable.
+This model of executable image allows to use external resources at runtime
+running in x86 protected mode.
+All files marked as `NE` are 16-bit binaries and addresses of all procedures
+are 16-bit too.";
     }
 
     public override Region ToRegion()

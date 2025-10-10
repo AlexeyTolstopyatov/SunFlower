@@ -38,11 +38,9 @@ public class NeEntryBundleVisualizer(NeEntryBundle @struct, int number) : Abstra
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("Bundle contains EntryPoints what are the same with one of characteristics")
-            .Line("Loader of segmented executables reads entry points bundle-by bundle")
-            .Line("if bundle marked as unused, loader skips count of entries set in this bundle.")
-            .ToString();
+        return @"Bundle contains EntryPoints what are the same with one of characteristics
+Loader of segmented executables reads entry points bundle-by bundle
+if bundle marked as unused, loader skips count of entries set in this bundle.";
     }
 
     public override Region ToRegion()

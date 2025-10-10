@@ -37,16 +37,14 @@ public class NeImportsVisualizer(Dictionary<string, List<Import>> @struct)
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("Imports defined in this table are resolved strings")
-            .Line("taken from per-segment relocations. Per-segment relocations")
-            .Line("contains offsets to the strings in other parts of executable image")
-            .Line("but real or suggested address of relocations not set")
-            .ToString();
+        return @"Imports defined in this table are resolved strings
+took from per-segment relocations. Per-segment relocations
+contains offsets to the strings in other parts of executable image
+but real or suggested address of relocations not set";
     }
 
     public override Region ToRegion()
     {
-        throw new NotImplementedException();
+        return new Region("### Imports", ToString(), ToDataTable());
     }
 }

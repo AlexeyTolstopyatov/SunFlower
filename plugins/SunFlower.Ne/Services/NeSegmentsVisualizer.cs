@@ -45,12 +45,10 @@ public class NeSegmentsVisualizer(List<SegmentModel> @struct) : AbstractStructVi
 
     public override string ToString()
     {
-        return new FlowerDescriptor()
-            .Line("The segment table contains an entry for each segment in the executable file.")
-            .Line("The number of segment table entries are defined in the segmented EXE header")
-            .Line("The first entry in the segment table is segment number 1")
-            .Line("The following is the structure of a segment table entry. ")
-            .ToString();
+        return @"The segment table contains an entry for each segment in the executable file.
+            The number of segment table entries are defined in the segmented EXE header
+            The first entry in the segment table is segment number 1
+            The following is the structure of a segment table entry. ";
     }
 
     public override Region ToRegion()

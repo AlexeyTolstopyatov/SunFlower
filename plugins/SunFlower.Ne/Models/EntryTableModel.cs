@@ -22,5 +22,5 @@ public class EntryTableModel(bool isUnused, bool isMovable, byte flags)
 
 public class NeEntryBundle
 {
-    public List<EntryTableModel> EntryPoints { get; set; }
+    public List<EntryTableModel> EntryPoints { get; set; } = [];
 }

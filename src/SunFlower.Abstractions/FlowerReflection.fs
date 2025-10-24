@@ -4,7 +4,7 @@ open System
 open System.Collections.Generic
 open System.Data
 open System.Reflection
-open Microsoft.FSharp.Collections
+open SunFlower.Abstractions
 
 module FlowerReflection = 
     // CoffeeLake 2025
@@ -37,7 +37,6 @@ module FlowerReflection =
     let get_nv_table<'TSafe> (inst: 'TSafe) : DataTable =
         let dt = new DataTable()
         dt.Columns.Add("Name", typeof<string>) |> ignore
-        dt.Columns.Add("Type", typeof<string>) |> ignore
         dt.Columns.Add("Value", typeof<string>) |> ignore
         
         let typ = typeof<'TSafe> // how to trait it like: ... where TSafe : struct 
@@ -50,10 +49,14 @@ module FlowerReflection =
         
         let get_type_enum (t: Type) =
             match t with // guards and generics
-            | _ when t = typeof<byte> -> FlowerType.U1
-            | _ when t = typeof<int16> -> FlowerType.U2
-            | _ when t = typeof<int> -> FlowerType.U4
-            | _ when t = typeof<int64> -> FlowerType.U8
+            | _ when t = typeof<Byte> -> FlowerType.U1
+            | _ when t = typeof<SByte> -> FlowerType.U1
+            | _ when t = typeof<Int16> -> FlowerType.U2
+            | _ when t = typeof<UInt16> -> FlowerType.U2
+            | _ when t = typeof<UInt16> -> FlowerType.U4
+            | _ when t = typeof<Int32> -> FlowerType.U4
+            | _ when t = typeof<Int64> -> FlowerType.U8
+            | _ when t = typeof<UInt64> -> FlowerType.U8
             | _ when t = typeof<bool> -> FlowerType.Flag
             | _ when t = typeof<string> -> FlowerType.AnyStr
             | _ when t = typeof<DateTime> -> FlowerType.AnyStr
@@ -62,10 +65,14 @@ module FlowerReflection =
         let get_value_string (value: obj) =
             match value with
             | null -> String.Empty
-            | :? int as dw -> $"0x{dw:X8}"
-            | :? int8 as b -> $"0x{b:X2}"
-            | :? int16 as w -> $"0x{w:X4}"
-            | :? int64 as qw -> $"0x{qw:X16}"
+            | :? UInt32
+            | :? Int32 as dw -> $"0x{dw:X8}"
+            | :? Byte
+            | :? SByte as b -> $"0x{b:X2}"
+            | :? UInt16
+            | :? Int16 as w -> $"0x{w:X4}"
+            | :? UInt64
+            | :? Int64 as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
             | _ -> value.ToString()
         
@@ -74,13 +81,13 @@ module FlowerReflection =
                 let value = prop.GetValue(inst)
                 let flt = get_type_enum prop.PropertyType
                 let type_str = FlowerReport.for_column_fl(prop.Name, flt)
-                dt.Rows.Add([| prop.Name; type_str; get_value_string value |]) |> ignore
+                dt.Rows.Add(type_str, get_value_string(value)) |> ignore
         
         for field in fields do
             let value = field.GetValue(inst)
-            let flt = get_type_enum field.FieldType
-            let typeString = FlowerReport.for_column_fl(field.Name, flt)
-            dt.Rows.Add([| field.Name; typeString; get_value_string value |]) |> ignore
+            let flt = get_type_enum(field.FieldType)
+            let type_str = FlowerReport.for_column_fl(field.Name, flt)
+            dt.Rows.Add(type_str, get_value_string(value)) |> ignore
         
         dt
         
@@ -96,13 +103,13 @@ module FlowerReflection =
     [<CompiledName "ListToDataTable">]
     let list_to_data_table<'TSafe> (items: IEnumerable<'TSafe>) : DataTable =
         let dt = new DataTable("CollectionData")
-        let itemType = typeof<'TSafe>
+        let item_type = typeof<'TSafe>
         
         // empty list -> empty table with columns
         if items = null || not (items.GetEnumerator().MoveNext()) then
             // make Columns using 'TSafe
-            let properties = itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
-            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let properties = item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
             
             for prop in properties do
                 if prop.CanRead then
@@ -113,10 +120,10 @@ module FlowerReflection =
         else
             let enumerator = items.GetEnumerator()
             enumerator.MoveNext() |> ignore
-            let firstItem = enumerator.Current
+            let first_item = enumerator.Current
             
-            let properties = itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
-            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let properties = item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = item_type.GetFields(BindingFlags.Public)
             
             for prop in properties do
                 if prop.CanRead then
@@ -149,5 +156,4 @@ module FlowerReflection =
                     index <- index + 1
 
             reset_and_iterate(items)
-
         dt

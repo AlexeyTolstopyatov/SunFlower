@@ -45,25 +45,25 @@ module FlowerBinarySeeker =
         | NotFound of magic: int
         | Error
 
-    let private readBytes (reader: BinaryReader) position count =
+    let private read_bytes (reader: BinaryReader) position count =
         try
             reader.BaseStream.Seek(position, SeekOrigin.Begin) |> ignore
             Some(reader.ReadBytes(count))
         with _ -> None
 
-    let private checkMZHeader (reader: BinaryReader) =
-        match readBytes reader 0L 2 with
+    let private check_mz (reader: BinaryReader) =
+        match read_bytes reader 0L 2 with
         | Some [|0x4auy; 0x5auy|] -> Found (0x5a4d, "DOS Executable (MZ)")
         | Some [|0x5auy; 0x4duy|] -> Found (0x4d5a, "DOS Executable (ZM)")
         | Some bytes when bytes.Length = 2 -> 
             NotFound (int bytes.[0] ||| (int bytes.[1] <<< 8))
         | _ -> Error
 
-    let private checkNextHeader (reader: BinaryReader) =
-        match readBytes reader 0x3CL 4 with
+    let private check_next_header (reader: BinaryReader) =
+        match read_bytes reader 0x3CL 4 with
         | Some offsetBytes when offsetBytes.Length = 4 ->
             let offset = BitConverter.ToInt32(offsetBytes, 0)
-            match readBytes reader (int64 offset) 2 with
+            match read_bytes reader (int64 offset) 2 with
             | Some [|0x50uy; 0x45uy|] -> Found (0x4550, "WinNT Executable (PE)")
             | Some [|0x45uy; 0x50uy|] -> Found (0x5045, "WinNT Executable (PE)")
             | Some [|0x45uy; 0x4euy|] -> Found (0x454e, "Win16-OS/2 1.x Executable (NE)")
@@ -77,16 +77,16 @@ module FlowerBinarySeeker =
             | _ -> Error
         | _ -> Error
 
-    let private checkELFHeader (reader: BinaryReader) =
-        match readBytes reader 0L 4 with
+    let private check_elf (reader: BinaryReader) =
+        match read_bytes reader 0L 4 with
         | Some [|0x7Fuy; 0x45uy; 0x4Cuy; 0x46uy|] -> 
             Found (0x464C457F, "ELF Executable")
         | Some bytes when bytes.Length = 4 -> 
             NotFound (BitConverter.ToInt32(bytes, 0))
         | _ -> Error
 
-    let private identifyFileType (reader: BinaryReader) =
-        let checks = [checkMZHeader; checkNextHeader; checkELFHeader]
+    let private ident_file (reader: BinaryReader) =
+        let checks = [check_mz; check_next_header; check_elf]
         
         checks
         |> List.tryPick (fun check -> 
@@ -100,7 +100,7 @@ module FlowerBinarySeeker =
         use stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)
         use reader = new BinaryReader(stream)
         
-        let (magic, fileType) = identifyFileType reader
+        let magic, fileType = ident_file reader
         let fileInfo = FileInfo(path)
         
         {

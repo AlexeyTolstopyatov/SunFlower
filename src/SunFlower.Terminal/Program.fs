@@ -25,14 +25,14 @@ module DataView =
     /// Prints dictionary as table without delimiters
     /// </summary>
     /// <param name="d"></param>
-    let printDictionary (d: Dictionary<string, string>) : unit =
+    let print_cor_dict (d: Dictionary<string, string>) : unit =
         for KeyValue(k, v) in d do
             printfn $"{k}\t{v}"
     /// Prepares and prints <see cref="DataTable"/> instance
     /// as Markdown Table
     /// </summary>
     /// <param name="table"></param>
-    let printDataTable (table: DataTable) =
+    let print_table (table: DataTable) =
         let safeToString (value: obj) =
             if Convert.IsDBNull(value) then
                 " " // Empty cell (<null> dont need anymore)
@@ -99,7 +99,7 @@ module App =
     | Help
     | Invalid of message: string
 
-    let parseArgs (args: string[]) =
+    let parse_args (args: string[]) =
         match args with
         | [| "--for"; path |] -> CheckSingle path
         | [| "--forall" |] -> CheckAll
@@ -109,23 +109,23 @@ module App =
         | [||] -> Help 
         | _ -> Invalid "Unknown key"
 
-    let showHelp () =
+    let show_help () =
         printfn "Usage:"
         printfn "  --for <path>    Compare current sunflower plugin with base"
         printfn "  --forall        Compare all plugins with base"
         printfn "  --why <path>    Compare current sunflower plugin verbose"
         printfn "  --help, -h, /?  Show this page"
 
-    let executeCommand command =
+    let exec_command command =
         match command with
         | CheckSingle path ->
             let result = FlowerCompatibility.get path
-            DataView.printDataTable result
+            DataView.print_table result
         | CheckAll ->
-            let result = FlowerCompatibility.getForAll ()
-            DataView.printDataTable result
+            let result = FlowerCompatibility.get_forall ()
+            DataView.print_table result
         | ExplainSingle path ->
-            let result = FlowerCompatibility.getVerbose path
+            let result = FlowerCompatibility.get_verbose path
                          |> Seq.toList
                          |> List.iter (printfn "%s")
             result
@@ -137,13 +137,13 @@ module App =
             with
             | ex -> printfn "Couldn't find resources"
         | Help ->
-            showHelp ()
+            show_help ()
         | Invalid message ->
             printfn "Error: %s" message
-            showHelp ()
+            show_help ()
     
     [<EntryPoint>]
     let main (args: string[]) =
-        let command = parseArgs args
-        executeCommand command
+        let command = parse_args args
+        exec_command command
         0

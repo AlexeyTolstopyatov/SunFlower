@@ -15,7 +15,7 @@ open Microsoft.FSharp.Collections
 //
 // @creator: atolstopyatov2017@vk.com
 //
-[<FlowerSeedContract(3, 0, 0)>]
+[<FlowerSeedContract(4, 0, 0)>]
 type FlowerSeedManager() =
     let mutable seeds : List<IFlowerSeed> = []
     let mutable messages : CorList<string> = CorList<string>()
@@ -31,7 +31,7 @@ type FlowerSeedManager() =
     let save (str: string) : unit =
         messages.Add str
     
-    let mutable majorVersion : Int32 = 3
+    let mutable majorVersion : Int32 = 4
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
     // interface IFlowerSeedManager with
@@ -45,7 +45,8 @@ type FlowerSeedManager() =
     ///     "CLR plugin" : "-1"
     /// }
     /// </summary>
-    member public this.GetAllInvokedFlowerSeeds(path) =
+    [<CompiledName "GetAllInvokedFlowerSeeds">]
+    member public this.forall_invoked(path) =
         // c# original ABI
         //
         // var results = new Dictionary<string, int>();
@@ -69,13 +70,15 @@ type FlowerSeedManager() =
         seeds
                 |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) 
                 |> Dictionary
-    member public this.GetContract () =
+    [<CompiledName "GetContract">]
+    member public this.get_contract () =
         $"{majorVersion}.{minorVersion}.{buildVersion}"
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
-    member public this.LoadAllFlowerSeeds () =
+    [<CompiledName "LoadAllFlowerSeeds">]
+    member public this.forall () =
         "Sunflower Kernel::LoadAllFlowerSeeds"
             |> save
         // C# core part
@@ -155,12 +158,13 @@ type FlowerSeedManager() =
     member public this.Seeds with get () = List seeds
     member public this.Messages with get () = List messages
     
-    member public this.UnloadUnusedFlowerSeeds =
+    [<CompiledName "UnloadUnusedFlowerSeeds">]
+    member public this.forall_unused_unload =
         "Sunflower Kernel::UnloadUnusedFlowerSeeds"
             |> save
         
         seeds <- seeds
-            |> List.where (fun x -> x.Status.IsResultExists)
+            |> List.where (_.Status.IsResultExists)
             |> List.distinct
             |> Seq.toList
             
@@ -170,7 +174,8 @@ type FlowerSeedManager() =
     /// by targeting file
     /// </summary>
     /// <param name="path">targeting file</param>
-    member public this.UpdateAllInvokedFlowerSeeds(path) =
+    [<CompiledName "UpdateAllInvokedFlowerSeeds">]
+    member public this.forall_update(path) =
         "Sunflower Kernel::UpdateAllInvokedFlowerSeeds"
             |> save
         try
@@ -198,5 +203,6 @@ type FlowerSeedManager() =
     /// <summary>
     /// Makes temporary instance for FlowerSeedManager
     /// </summary>
-    static member public CreateInstance () : FlowerSeedManager =
+    [<CompiledName "CreateInstance">]
+    static member public create_self () : FlowerSeedManager =
         FlowerSeedManager()

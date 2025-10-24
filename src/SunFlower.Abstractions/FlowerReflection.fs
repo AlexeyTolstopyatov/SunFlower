@@ -1,6 +1,7 @@
 ﻿namespace SunFlower.Abstractions
 
 open System
+open System.Collections.Generic
 open System.Data
 open System.Reflection
 open Microsoft.FSharp.Collections
@@ -39,7 +40,7 @@ module FlowerReflection =
         dt.Columns.Add("Type", typeof<string>) |> ignore
         dt.Columns.Add("Value", typeof<string>) |> ignore
         
-        let typ = typeof<'TSafe>
+        let typ = typeof<'TSafe> // how to trait it like: ... where TSafe : struct 
         
         let properties =
             typ.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
@@ -51,7 +52,7 @@ module FlowerReflection =
             match t with // guards and generics
             | _ when t = typeof<byte> -> FlowerType.U1
             | _ when t = typeof<int16> -> FlowerType.U2
-            | _ when t = typeof<int32> -> FlowerType.U4
+            | _ when t = typeof<int> -> FlowerType.U4
             | _ when t = typeof<int64> -> FlowerType.U8
             | _ when t = typeof<bool> -> FlowerType.Flag
             | _ when t = typeof<string> -> FlowerType.AnyStr
@@ -61,9 +62,9 @@ module FlowerReflection =
         let get_value_string (value: obj) =
             match value with
             | null -> String.Empty
+            | :? int as dw -> $"0x{dw:X8}"
             | :? int8 as b -> $"0x{b:X2}"
             | :? int16 as w -> $"0x{w:X4}"
-            | :? int32 as dw -> $"0x{dw:X8}"
             | :? int64 as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
             | _ -> value.ToString()
@@ -84,13 +85,69 @@ module FlowerReflection =
         dt
         
     /// <summary>
-    /// Function iterates list of ONLY ONE typed-object
+    /// Trait #1: Function iterates list of ONLY ONE typed-object
     /// and ignores casting from abstract-classes.
     ///
+    /// Trait #2: Target Class must be Data-class or model, not
+    /// 
     /// YOU MUST REMEMBER IT LIKE YOUR NAME.
     /// </summary>
-    /// <param name="inst"></param>
-    [<CompiledName "GetListTable">]
-    let get_list_table (inst: List<'TSafe>) =
+    /// <param name="items">COR List of objects saved after deserialization</param>
+    [<CompiledName "ListToDataTable">]
+    let list_to_data_table<'TSafe> (items: IEnumerable<'TSafe>) : DataTable =
+        let dt = new DataTable("CollectionData")
+        let itemType = typeof<'TSafe>
         
-        0
+        // empty list -> empty table with columns
+        if items = null || not (items.GetEnumerator().MoveNext()) then
+            // make Columns using 'TSafe
+            let properties = itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            
+            for prop in properties do
+                if prop.CanRead then
+                    dt.Columns.Add(prop.Name, typeof<string>) |> ignore
+            
+            for field in fields do
+                dt.Columns.Add(field.Name, typeof<string>) |> ignore
+        else
+            let enumerator = items.GetEnumerator()
+            enumerator.MoveNext() |> ignore
+            let firstItem = enumerator.Current
+            
+            let properties = itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            
+            for prop in properties do
+                if prop.CanRead then
+                    dt.Columns.Add(prop.Name, typeof<string>) |> ignore
+            
+            for field in fields do
+                dt.Columns.Add(field.Name, typeof<string>) |> ignore
+            
+            dt.Columns.Add("_Index", typeof<int>) |> ignore
+            
+            // rows with data
+            let rec reset_and_iterate (items: IEnumerable<'TSafe>) =
+                let enumerator = items.GetEnumerator()
+                let mutable index = 0
+                while enumerator.MoveNext() do
+                    let item = enumerator.Current
+                    let row = dt.NewRow()
+                    
+                    for prop in properties do
+                        if prop.CanRead then
+                            let value = prop.GetValue(item)
+                            row[prop.Name] <- if value = null then String.Empty else value.ToString()
+                    
+                    for field in fields do
+                        let value = field.GetValue(item)
+                        row[field.Name] <- if value = null then String.Empty else value.ToString()
+                    
+                    row["_Index"] <- index
+                    dt.Rows.Add(row)
+                    index <- index + 1
+
+            reset_and_iterate(items)
+
+        dt

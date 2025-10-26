@@ -2,7 +2,10 @@
 
 <img src="assets/sunflower.svg" height="128" width="128" align="right">
 
-Sunflower is an open-source, plugin-driven system designed for binary analysis. Was inspired by Ghidra, PEAnathomist, CFFExplrer, VBSemiDecompiler, and other toolkits. This is a extensible Binary Analysis idea.
+Sunflower is an open-source, plugin-driven system designed for binary analysis. 
+Was inspired by Ghidra, PEAnathomist, CFFExplrer, Semi VB Decompiler, and other toolkits. 
+Main idea of it -- make non-monolith application and avoid embedded functions. This repository contains
+just loader details and Windows client.   
 
 This repository includes 4 parts of my work:
  - Extensions Loader (F# `.net8.0`)
@@ -51,7 +54,7 @@ For making new sunflower extension:
 5) Read and learn [versioning](VERSIONING.md).
 
 ```csharp
-[FlowerContract(2, 0, 0)]
+[FlowerContract(4, 0, 0)]
 public class MyAnalyzer : IFlowerSeed {
   /// Title
   public string Name => "It shows in Connected Plugins menu";
@@ -68,7 +71,7 @@ public class MyAnalyzer : IFlowerSeed {
 If you want use F# toolchain you can implement it like this:
 
 ```fsharp
-[<FlowerContract(2,0,0)>]
+[<FlowerContract(4, 0, 0)>]
 type MyAnalyzer() =
   interface IFlowerSeed with
   /// Title
@@ -84,22 +87,17 @@ type MyAnalyzer() =
     0
 ```
 
-5) Build and Drop .DLL into `%Application%/Plugins`
+6) Build and Drop .DLL into `%Application%/Plugins`
 
 ### Supported Binary Formats
 
-In this repo `/plugins` catalog contains already enumerated plugins for other segmented
-executable formats. And stores little notes by me which moved from Jellybins too:
- - [New Executable (NE-16)](SUPPORT_NE.md)
- - [Linear Executable (LE-16/+ and OS/2 OMF LX)](SUPPORT_LE.md)
- - [Portable Executable (PE-32/+)](SUPPORT_PE.md)
- - [Program Information (MS-DOS PIF)](SUPPORT_PIF.md)
+Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repo
 
 ### An architecture problems that seriously bother me, but I can't fix them
 
  - **Stupid** Exceptions handling -
 A `Main` procedure contains exceptions handler which
-rewrites Status last error field. Loader prints this message with `--- Begin/End Exception chain ---` brakets.
+rewrites Status last error field. Loader prints this message with `-> Disabled plugins tracing` brakets.
  - Versions incompatibility - Unfortunately Sunflower plugins which are differ the foundation are **incompatible** at the moment of updating documentation.
 Any differences between foundation file version and plugins foundation calls force exit (means conflict behaviour).
 
@@ -129,21 +127,3 @@ All frameworks and toolkits
  - [Suggesting Visual Basic 4.0 internals](https://gist.github.com/AlexeyTolstopyatov/96a4d36639256fb624e32ae6153bfa11) - SemiVB Decompiler
  - [Suggesting Visual Basic 3.0 internals](https://gist.github.com/AlexeyTolstopyatov/fc19496b8b1a9a5bbb5f12c415c0c1f3) - DoDi VB Decompiler
 
-### Contributing?
-All what you need to know - pull requests
-has a free format but it would be nice if
-messages will totally documented. 
-
-> [!TIP]
-> Make sure, you've seen [versioning](VERSIONING.md) rules
-
-I will be happy if you help me improve or fix
-parts if this product. 
-
-You can write me in Telegram or my e-mail
-Those information in profile-s readme. 
-
-### Beeing honest
-
-This is my largest work at the moment of publishing readme.
-Many places have incorrect patterns or ideas, and modules have strange code-scopes. But I've done the part of it and next time this toolkit will be better /I hope/. 

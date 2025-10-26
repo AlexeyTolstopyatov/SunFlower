@@ -4,6 +4,8 @@ open System
 open System.Collections.Generic
 open System.Data
 open System.Reflection
+open System.Text
+open Microsoft.FSharp.Collections
 open SunFlower.Abstractions
 
 module FlowerReflection = 
@@ -53,11 +55,14 @@ module FlowerReflection =
             | _ when t = typeof<SByte> -> FlowerType.U1
             | _ when t = typeof<Int16> -> FlowerType.U2
             | _ when t = typeof<UInt16> -> FlowerType.U2
-            | _ when t = typeof<UInt16> -> FlowerType.U4
+            | _ when t = typeof<UInt32> -> FlowerType.U4
             | _ when t = typeof<Int32> -> FlowerType.U4
             | _ when t = typeof<Int64> -> FlowerType.U8
             | _ when t = typeof<UInt64> -> FlowerType.U8
             | _ when t = typeof<bool> -> FlowerType.Flag
+            | _ when t = typeof<Char[]> -> FlowerType.CStr
+            | _ when t = typeof<Byte[]> -> FlowerType.PascalStr
+            | _ when t = typeof<UInt16[]> -> FlowerType.BStr
             | _ when t = typeof<string> -> FlowerType.AnyStr
             | _ when t = typeof<DateTime> -> FlowerType.AnyStr
             | _ -> FlowerType.AnyStr
@@ -65,16 +70,25 @@ module FlowerReflection =
         let get_value_string (value: obj) =
             match value with
             | null -> String.Empty
-            | :? UInt32
-            | :? Int32 as dw -> $"0x{dw:X8}"
             | :? Byte
             | :? SByte as b -> $"0x{b:X2}"
             | :? UInt16
             | :? Int16 as w -> $"0x{w:X4}"
+            | :? UInt32
+            | :? Int32 as dw -> $"0x{dw:X8}"
             | :? UInt64
             | :? Int64 as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
-            | _ -> value.ToString()
+            | :? array<Char> as sz -> 
+                sz 
+                    |> String
+                    |> FlowerReport.safe_string
+            | :? array<Byte> as ps ->
+                ps
+                    |> Encoding.ASCII.GetString
+                    |> FlowerReport.safe_string
+            | _ -> 
+                value.ToString()
         
         for prop in properties do
             if prop.CanRead then

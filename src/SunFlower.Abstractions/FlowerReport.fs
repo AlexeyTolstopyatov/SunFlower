@@ -21,11 +21,12 @@ type FlowerType =
     | U2 = 2
     | U4 = 4
     | U8 = 8
-    | CStr = 3
     | ASCII = 5
+    | CStr = 3
+    | BStr = 11
+    | WStr = 13
     | PascalStr = 7
     | AnyStr = 9
-    | BStr = 11
     | Flag = 10
 
 module FlowerReport =

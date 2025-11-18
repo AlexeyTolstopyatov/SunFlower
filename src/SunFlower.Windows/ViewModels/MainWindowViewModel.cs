@@ -17,7 +17,6 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     
     public MainWindowViewModel()
     {
-        // managers
         _registryManager = RegistryManager.CreateInstance();
         _windowManager = new();
         
@@ -45,6 +44,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         });
         _callEditorCommand = new ActionCommand(CallEditor);
         _callHexViewerCommand = new ActionCommand(CallViewer);
+        _callHexEditorCommand = new ActionCommand(CallHexEditor);
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
         _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
@@ -63,7 +63,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     private List<IFlowerSeed> _loadedSeeds;
     private string _statusText;
     private ICommand _clearCacheCommand;
-
+    private ICommand _callHexEditorCommand;
     public DataTable RecentTable
     {
         get => _recentTable;

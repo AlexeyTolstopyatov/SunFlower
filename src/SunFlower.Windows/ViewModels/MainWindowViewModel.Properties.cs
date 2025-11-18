@@ -61,6 +61,11 @@ public partial class MainWindowViewModel
         }
     }
 
+    public ICommand CallHexEditorCommand
+    {
+        get => _callHexEditorCommand;
+    }
+
     public ICommand CallEditorCommand
     {
         get => _callEditorCommand;
@@ -96,9 +101,16 @@ public partial class MainWindowViewModel
         }
     }
 
+    private void CallHexEditor()
+    {
+        _windowManager.ShowUnmanaged(new HexEditorWindow
+        {
+            DataContext = new HexViewViewModel(_filePath)
+        }, false, _filePath);
+    }
     private void CallViewer()
     {
-        _windowManager.ShowUnmanaged(new HexViewerWindow()
+        _windowManager.ShowUnmanaged(new HexViewerWindow
         {
             DataContext = new HexViewViewModel(_filePath)
         }, false, _filePath);

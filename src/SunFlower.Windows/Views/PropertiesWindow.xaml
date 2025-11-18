@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
         mc:Ignorable="d"
         Background="{StaticResource RegionBrush}"
@@ -13,7 +14,16 @@
     <hc:Window.DataContext>
         <local:MainWindowViewModel/>
     </hc:Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:KeyTrigger
+            Key="Enter"
+            Modifiers="Control">
+            <i:InvokeCommandAction
+                Command="{Binding CallHexEditorCommand}"/>
+        </i:KeyTrigger>
+    </i:Interaction.Triggers>
     <Grid
+        
         Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -95,7 +105,6 @@
                 Command="{Binding CallHexViewerCommand}"
                 ToolTip="Works independent on loaded plugins"
                 Content="Call HexView">
-            
             </Button>
             <!-- Ready / Steady / GO -->
             <Button

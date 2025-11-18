@@ -5,11 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Version>3.0.0</Version>
+    <Version>4.0.0</Version>
     <Title>Sunflower Windows</Title>
     <Copyright>CoffeeLake 2024-2025</Copyright>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
     <ApplicationIcon>sunflower64.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>

@@ -56,7 +56,7 @@ module FlowerBinarySeeker =
         | Some [|0x4auy; 0x5auy|] -> Found (0x5a4d, "DOS Executable (MZ)")
         | Some [|0x5auy; 0x4duy|] -> Found (0x4d5a, "DOS Executable (ZM)")
         | Some bytes when bytes.Length = 2 -> 
-            NotFound (int bytes.[0] ||| (int bytes.[1] <<< 8))
+            NotFound (int bytes[0] ||| (int bytes[1] <<< 8))
         | _ -> Error
 
     let private check_next_header (reader: BinaryReader) =
@@ -68,12 +68,12 @@ module FlowerBinarySeeker =
             | Some [|0x45uy; 0x50uy|] -> Found (0x5045, "WinNT Executable (PE)")
             | Some [|0x45uy; 0x4euy|] -> Found (0x454e, "Win16-OS/2 1.x Executable (NE)")
             | Some [|0x4euy; 0x45uy|] -> Found (0x4e45, "Win16-OS/2 1.x Executable (NE)")
-            | Some [|0x45uy; 0x4cuy|] -> Found (0x454c, "Win32s-OS/2 2.x Executable (LE)")
-            | Some [|0x4cuy; 0x45uy|] -> Found (0x4c45, "Win32s-OS/2 2.x Executable (LE)")
+            | Some [|0x45uy; 0x4cuy|] -> Found (0x454c, "Win386-OS/2 2.x Executable (LE)")
+            | Some [|0x4cuy; 0x45uy|] -> Found (0x4c45, "Win386-OS/2 2.x Executable (LE)")
             | Some [|0x58uy; 0x4cuy|] -> Found (0x584c, "OS/2-ArcaOS Executable (LX)")
             | Some [|0x4cuy; 0x58uy|] -> Found (0x4c58, "OS/2-ArcaOS Executable (LX)")
             | Some bytes when bytes.Length = 2 -> 
-                NotFound (int bytes.[0] ||| (int bytes.[1] <<< 8))
+                NotFound (int bytes[0] ||| (int bytes[1] <<< 8))
             | _ -> Error
         | _ -> Error
 
@@ -97,7 +97,7 @@ module FlowerBinarySeeker =
 
     [<CompiledName "Get">]
     let get (path: string) : FlowerBinaryReport =
-        use stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)
+        use stream = new FileStream(path, FileMode.Open, FileAccess.Read)
         use reader = new BinaryReader(stream)
         
         let magic, fileType = ident_file reader

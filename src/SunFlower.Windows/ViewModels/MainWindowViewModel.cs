@@ -25,30 +25,29 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _statusText = string.Empty;
 
         _getAboutCommand = new ActionCommand(GetAbout);
-        _getFileCommand = new Command(GetFile);
-        _getRecentFileCommand = new Command(GetRecentFile);
-        _getNotImplementedGrowlCommand = new Command(GetNotImplementedGrowl);
-        _getRegistryFileCommand = new Command(OpenRegFileByName);
-        _getConverterWindowCommand = new Command(_ =>
-        {
-            _windowManager.ShowUnmanaged(
-                new ConverterWindow(), 
-                title: "COR Converter");
-        });
-        _getMachineWordsCommand = new Command(_ =>
-        {
-            _windowManager.Show(
-                new MachineWordsWindowViewModel(), 
-                new DataGridWindow(), 
-                title: "From Sunflower registry");
-        });
+        _getFileCommand = new ActionCommand(GetFile);
+        _getRecentFileCommand = new ActionCommand(GetRecentFileWorkspace); // <-- GetRecentFile
+        _getNotImplementedGrowlCommand = new ActionCommand(GetNotImplementedGrowl);
+        _getRegistryFileCommand = new ActionCommand(OpenRegFileByName);
         _callEditorCommand = new ActionCommand(CallEditor);
         _callHexViewerCommand = new ActionCommand(CallViewer);
         _callHexEditorCommand = new ActionCommand(CallHexEditor);
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
         _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
-        
+        _getConverterWindowCommand = new ActionCommand(_ =>
+        {
+            _windowManager.ShowUnmanaged(
+                new ConverterWindow(),
+                title: "Converter");
+        });
+        _getMachineWordsCommand = new Command(_ =>
+        {
+            _windowManager.Show(
+                new MachineWordsWindowViewModel(),
+                new DataGridWindow(),
+                title: "From Sunflower registry");
+        });
         _fileName = string.Empty;
         _filePath = string.Empty;
         _size = string.Empty;

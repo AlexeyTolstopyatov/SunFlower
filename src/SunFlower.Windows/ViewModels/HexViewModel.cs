@@ -2,12 +2,12 @@
 
 namespace SunFlower.Windows.ViewModels;
 
-public class HexViewViewModel : NotifyPropertyChanged
+public class HexViewModel : NotifyPropertyChanged
 {
-    public HexViewViewModel() : this(string.Empty) {}
-    public FileReader Reader { get; }
+    public HexViewModel() : this(string.Empty) {}
+    public FileReader? Reader { get; }
 
-    public HexViewViewModel(string filePath)
+    public HexViewModel(string filePath)
     {
         if (string.IsNullOrEmpty(filePath))
             return; // <-- ignore ViewModel requirements for 1st time

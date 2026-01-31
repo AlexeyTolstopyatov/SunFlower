@@ -9,8 +9,8 @@
         mc:Ignorable="d"
         Title="Home"
         Background="{DynamicResource RegionBrush}"
-        Height="600"
-        Width="900">
+        Height="780"
+        Width="1200">
     <hc:Window.DataContext>
         <local:MainWindowViewModel/>
     </hc:Window.DataContext>
@@ -59,28 +59,15 @@
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
-    <Grid>
-        <Grid.Background>
-            <VisualBrush 
-                Opacity="0.6"
-                TileMode="Tile" 
-                Viewport="0,0,20,20" 
-                ViewportUnits="Absolute">
-                <VisualBrush.Visual>
-                    <Rectangle Width="20" Height="20" 
-                               Fill="{DynamicResource RegionBrush}"
-                               Stroke="{DynamicResource BorderBrush}" 
-                               StrokeThickness="0.5"/>
-                </VisualBrush.Visual>
-            </VisualBrush>
-        </Grid.Background>
+    <Grid
+        Background="{DynamicResource CloudDrawingBrush}">
         <hc:Card
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Margin="20">
+            Margin="30">
             <StackPanel>
                 <TextBlock
-                    Margin="10"
+                    Margin="15"
                     FontWeight="Medium"
                     FontSize="24"
                     Text="Recent files"/>

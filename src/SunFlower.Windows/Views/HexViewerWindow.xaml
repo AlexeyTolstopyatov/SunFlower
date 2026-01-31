@@ -10,10 +10,11 @@
         Background="{StaticResource BorderBrush}"
         Title="HexViewerWindow" Height="600" Width="800">
     <hc:Window.DataContext>
-        <local:HexViewViewModel/>
+        <local:HexViewModel/>
     </hc:Window.DataContext>
     <Grid>
         <h:HexViewer
+            
             ShowAddress="True"
             FontSize="16"
             Background="{StaticResource BorderBrush}"

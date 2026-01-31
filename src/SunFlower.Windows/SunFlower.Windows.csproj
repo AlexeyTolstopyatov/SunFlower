@@ -13,7 +13,7 @@
     <ApplicationIcon>sunflower64.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HandyControl" Version="3.5.0" />
+    <PackageReference Include="HandyControl" Version="3.5.1" />
     <PackageReference Include="HexEditor.Wpf" Version="2.1.8" />
     <PackageReference Include="HexView.Wpf" Version="0.1.0" />
     <PackageReference Include="Material.Icons.WPF" Version="3.0.0-preview1.1" />
@@ -44,5 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SunFlower\SunFlower.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\cloud.png" />
+    <Resource Include="Assets\cloud.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

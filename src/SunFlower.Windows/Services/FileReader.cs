@@ -2,7 +2,7 @@
 
 namespace SunFlower.Windows.Services;
 
-public class FileReader
+public class FileReader : IDisposable
 {
     public FileStream Stream { get; private set; }
 
@@ -11,12 +11,19 @@ public class FileReader
     {
         try
         {
-            Stream = new(path, FileMode.Open, FileAccess.Read);
+            Stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
             Reader = new(Stream);
         }
-        catch
+        catch(Exception e)
         {
             // ignore
+            Console.WriteLine(e);
         }
+    }
+
+    public void Dispose()
+    {
+        Stream.Dispose();
+        Reader.Dispose();
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System.Data;
-using System.Globalization;
-using System.IO;
 using System.Windows.Input;
 using HandyControl.Controls;
-using HandyControl.Data;
 using Microsoft.Win32;
 using SunFlower.Readers;
 using SunFlower.Services;
@@ -80,6 +77,38 @@ public partial class MainWindowViewModel
     }
 
     #region Menu Callbacks
+
+    private void GetRecentFileWorkspace(object selectedRowView)
+    {
+        try
+        {
+            var unboxed = (DataRowView)selectedRowView;
+
+            FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
+            FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
+            TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
+            Signature = unboxed["Sign"].ToString() ?? string.Empty;
+            Size = unboxed.Row["Size"].ToString() ?? string.Empty;
+
+            if (FilePath == string.Empty)
+                return;
+            var workspaceVm = new WorkspaceViewModel(FilePath);
+            
+            _windowManager.Show(
+                workspaceVm,
+                new WorkspaceWindow(),
+                false,
+                string.Empty
+            );
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            Growl.ErrorGlobal(e.Message);
+        }
+    }
+    
     /// <summary>
     /// Starts PropertiesWindow for recent file
     /// </summary>
@@ -114,7 +143,7 @@ public partial class MainWindowViewModel
             return;
         }
 
-        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
+        _windowManager.Show(this, new PropertiesWindow(), title: string.Empty); // <-- change it to the Workplace Window
     }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
@@ -141,7 +170,7 @@ public partial class MainWindowViewModel
         FilePath = result.Path;
         TypeString = result.Type;
         Signature = result.Sign;
-        Size = result.Size.ToString(CultureInfo.InvariantCulture); // JS fell off
+        Size = $"{Math.Round(result.Size, 2)}K"; // JS fell off
         
         _registryManager
             .Of("recent")
@@ -162,7 +191,7 @@ public partial class MainWindowViewModel
         // Call plugins Window/Main Workspace
         _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
     }
-
+    
     private void WriteTracing(ref FlowerSeedManager manager)
     {
         Tell("abstractions CONTRACT_VERSION: " + manager.GetContract());

@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open System.IO
 open System.Reflection
-open System.Xml.Schema
 open SunFlower
 open SunFlower.Abstractions
 open Microsoft.FSharp.Collections

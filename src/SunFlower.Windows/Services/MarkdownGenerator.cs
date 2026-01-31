@@ -8,7 +8,6 @@ public static class MarkdownGenerator
     public static string Generate(IEnumerable<FlowerSeedResult> results)
     {
         StringBuilder md = new();
-        md.AppendLine("# Sunflower Report");
         md.AppendLine($"**Generated at**: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         md.AppendLine();
 
@@ -28,7 +27,7 @@ public static class MarkdownGenerator
             FlowerSeedEntryType.Strings => FormatStrings(result.BoxedResult),
             FlowerSeedEntryType.DataTables => FormatDataTables((List<DataTable>)result.BoxedResult),
             FlowerSeedEntryType.Regions => FormatRegions((List<Region>)result.BoxedResult),
-            _ => "Unsupported result type"
+            _ => $"Result type [{result.Type}] not supported yet"
         };
     }
 

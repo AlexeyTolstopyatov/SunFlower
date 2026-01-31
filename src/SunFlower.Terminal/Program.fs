@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open System.Data
 open System.IO
-open System.Net
 open SunFlower.Services
 
 //
@@ -28,6 +27,7 @@ module DataView =
     let print_cor_dict (d: Dictionary<string, string>) : unit =
         for KeyValue(k, v) in d do
             printfn $"{k}\t{v}"
+
     /// Prepares and prints <see cref="DataTable"/> instance
     /// as Markdown Table
     /// </summary>
@@ -39,74 +39,72 @@ module DataView =
             else
                 $"%O{value}"
 
-        let rows = table.Rows
-                    |> Seq.cast<DataRow>
-        let columns = table.Columns
-                    |> Seq.cast<DataColumn>
+        let rows = table.Rows |> Seq.cast<DataRow>
+        let columns = table.Columns |> Seq.cast<DataColumn>
 
         let columnWidths =
             columns
             |> Seq.map (fun col ->
                 let headerWidth = col.ColumnName.Length
-                let contentWidth = 
+
+                let contentWidth =
                     rows
                     |> Seq.map (fun row -> safeToString row[col] |> String.length)
-                    |> Seq.append [headerWidth]
+                    |> Seq.append [ headerWidth ]
                     |> Seq.max
-                (col.Ordinal, (contentWidth + 2))
-            )
+
+                (col.Ordinal, (contentWidth + 2)))
             |> Map.ofSeq
 
         let _formatString =
             columns
-            |> Seq.map (fun col -> 
+            |> Seq.map (fun col ->
                 let width = columnWidths[col.Ordinal] - 4
-                sprintf "| %%-%ds " width 
-            )
+                sprintf "| %%-%ds " width)
             |> String.concat ""
             |> fun s -> s + "|"
-            
-        columns
-            |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
-            |> String.concat " | "
-            |> printfn "| %s |"
 
         columns
-            |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
-            |> String.concat "-|-"
-            |> printfn "|-%s-|"
+        |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
+        |> String.concat " | "
+        |> printfn "| %s |"
+
+        columns
+        |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
+        |> String.concat "-|-"
+        |> printfn "|-%s-|"
 
         rows
-            |> Seq.iter (fun row ->
-                columns
-                |> Seq.map (fun col ->
-                    row[col]
-                    |> safeToString
-                    |> _.PadRight(columnWidths[col.Ordinal] - 2)
-                )
-                |> String.concat " | "
-                |> printfn "| %s |"
-            )
+        |> Seq.iter (fun row ->
+            columns
+            |> Seq.map (fun col -> row[col] |> safeToString |> _.PadRight(columnWidths[col.Ordinal] - 2))
+            |> String.concat " | "
+            |> printfn "| %s |")
+
         printfn ""
+
     ()
 
 module App =
     type Command =
-    | CheckSingle of path: string
-    | ExplainSingle of path: string
-    | Explain
-    | CheckAll
-    | Help
-    | Invalid of message: string
+        | CheckSingle of path: string
+        | ExplainSingle of path: string
+        | Explain
+        | CheckAll
+        | Help
+        | Invalid of message: string
 
     let parse_args (args: string[]) =
         match args with
         | [| "--for"; path |] -> CheckSingle path
         | [| "--forall" |] -> CheckAll
         | [| "--why"; path |] -> ExplainSingle path
-        | [| "--help" |] | [| "-h" |] | [| "/?" |] -> Help
-        | [| "--what" |] | [| "--about" |] -> Explain
-        | [||] -> Help 
+        | [| "--help" |]
+        | [| "-h" |]
+        | [| "/?" |] -> Help
+        | [| "--what" |]
+        | [| "--about" |] -> Explain
+        | [||] -> Help
         | _ -> Invalid "Unknown key"
 
     let show_help () =
@@ -125,23 +123,24 @@ module App =
             let result = FlowerCompatibility.get_forall ()
             DataView.print_table result
         | ExplainSingle path ->
-            let result = FlowerCompatibility.get_verbose path
-                         |> Seq.toList
-                         |> List.iter (printfn "%s")
+            let result =
+                FlowerCompatibility.get_verbose path |> Seq.toList |> List.iter (printfn "%s")
+
             result
             ()
         | Explain ->
             try
-                let result = File.ReadAllText (Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SunFlower.runtimeconfig.dll"))
+                let result =
+                    File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SunFlower.runtimeconfig.dll"))
+
                 printfn "%s" result
-            with
-            | ex -> printfn "Couldn't find resources"
-        | Help ->
-            show_help ()
+            with ex ->
+                printfn "Couldn't find resources"
+        | Help -> show_help ()
         | Invalid message ->
             printfn "Error: %s" message
             show_help ()
-    
+
     [<EntryPoint>]
     let main (args: string[]) =
         let command = parse_args args

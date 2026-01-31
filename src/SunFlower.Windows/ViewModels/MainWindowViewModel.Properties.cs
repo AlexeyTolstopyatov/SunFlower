@@ -105,14 +105,14 @@ public partial class MainWindowViewModel
     {
         _windowManager.ShowUnmanaged(new HexEditorWindow
         {
-            DataContext = new HexViewViewModel(_filePath)
+            DataContext = new HexViewModel(_filePath)
         }, false, _filePath);
     }
     private void CallViewer()
     {
         _windowManager.ShowUnmanaged(new HexViewerWindow
         {
-            DataContext = new HexViewViewModel(_filePath)
+            DataContext = new HexViewModel(_filePath)
         }, false, _filePath);
     }
 }

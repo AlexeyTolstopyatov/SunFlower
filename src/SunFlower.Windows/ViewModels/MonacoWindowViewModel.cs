@@ -24,7 +24,7 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
         {
             results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
             {
-                BoxedResult = new List<string> {seed.Seed}
+                BoxedResult = new List<string>{seed.Seed}
             });
             
             results.AddRange(seed.Status.Results);

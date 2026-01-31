@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="HexEditorWindow" Height="450" Width="800">
     <Window.DataContext>
-        <local:HexViewViewModel/>
+        <local:HexViewModel/>
     </Window.DataContext>
     <e:HexEditor
         FontFamily="Consolas"
@@ -17,7 +17,6 @@
         Background="{DynamicResource BorderBrush}"
         Foreground="{DynamicResource PrimaryTextBrush}"
         ReadOnlyMode="True"
-        
         Stream="{Binding Reader.Stream}">
     </e:HexEditor>
 </hc:Window>

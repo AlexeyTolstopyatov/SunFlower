@@ -55,8 +55,8 @@ public class FileModel : NotifyPropertyChanged
 public class WorkspaceViewModel : NotifyPropertyChanged
 {
     private FlowerSeedManager _manager;
-    private string _trace;
-    private string Trace
+    private string[] _trace;
+    private string[] Trace
     {
         get => _trace;
         set => SetField(ref _trace, value);
@@ -96,17 +96,25 @@ public class WorkspaceViewModel : NotifyPropertyChanged
     public ICommand OpenPluginTabCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand SwitchToStatusCommand { get; }
+    public ICommand OpenMonacoCommand { get; }
+    public ICommand OpenNotEmptyTabs { get; }
 
     public WorkspaceViewModel()
     {
-        AvailablePlugins = [];
-        Tabs = [];
+        _trace = [];
+        _tabs = [];
+        _availablePlugins = [];
+        _fileModel = new();
+        _selectedTab = new StatusTab();
+        
+        CloseTabCommand = new ActionCommand(CloseTab);
         SwitchToHexEditorCommand = new ActionCommand(OpenHexEditor);
         SwitchToHexViewerCommand = new ActionCommand(OpenHexViewer);
         SwitchToMonacoCommand = new ActionCommand(OpenMonacoReport);
-        CloseTabCommand = new ActionCommand(CloseTab);
         SwitchToStatusCommand = new ActionCommand(OpenStatusControl);
         OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenPluginTab);
+        OpenMonacoCommand = new ActionCommand(CallMonaco);
+        OpenNotEmptyTabs = new ActionCommand(OpenNotEmptyReflectionTabs);
         
         _manager = FlowerSeedManager
             .CreateInstance()
@@ -130,14 +138,19 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         };
         _manager
             .UpdateAllInvokedFlowerSeeds(path);
+        
+        Trace = _manager.Messages.ToArray();
         OpenStatusControl(); // <-- automatically open tab 
-
-        foreach (var seed in AvailablePlugins.Where(p => p.Status.Results.Count > 0))
-        {
-            OpenPluginTab(seed);
-        }
     }
 
+    private void CallMonaco()
+    {
+        // Collect analysis (ContentDialog)
+        
+        // Postmessage...
+        
+        // Open MonacoTab/MonacoWindow
+    }
     private void OpenStatusControl()
     {
         var statusTab = new StatusTab
@@ -230,14 +243,21 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         }
     }
 
+    private void OpenNotEmptyReflectionTabs()
+    {
+        foreach (var flowerSeed in AvailablePlugins.Where(f => f.Status.Results.Count > 0))
+        {
+            OpenPluginTab(flowerSeed);
+        }
+    }
     private void CloseTab(object t)
     {
         var tab = (WorkspaceTab)t;
         if (!tab.CanClose)
             return;
 
-        // if (tab is HexEditorTab h)
-        //     h.Context?.Reader.Dispose();
+        if (tab is HexViewTab h)
+            h.Context?.Reader.Dispose();
 
         Tabs.Remove(tab);
     }

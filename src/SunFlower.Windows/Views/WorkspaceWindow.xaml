@@ -35,6 +35,10 @@
             Modifiers="Alt"
             Key="Enter"
             Command="{Binding SwitchToStatusCommand}"/>
+        <KeyBinding
+            Modifiers="Control"
+            Key="R"
+            Command="{Binding OpenNotEmptyTabs}"/>
     </hc:Window.InputBindings>
     <hc:Window.NonClientAreaContent>
         <Menu HorizontalAlignment="Center">
@@ -98,8 +102,34 @@
             <MenuItem
                 Header="Kernel">
                 <MenuItem
-                    Icon="{StaticResource AllGeometry}"
-                    Header="Send to Monaco"/>
+                    Icon="{StaticResource AllGeometry}">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock 
+                                DockPanel.Dock="Left"
+                                Text="Open in Monaco Editor"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+M"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem
+                    Icon="{StaticResource NailGeometry}"
+                    Command="{Binding OpenNotEmptyTabs}">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock 
+                                DockPanel.Dock="Left"
+                                Text="Open reflection tabs"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+R"/>
+                        </DockPanel>
+                    </MenuItem.Header>    
+                </MenuItem>
                 <MenuItem
                     Icon="{StaticResource WindowRestoreGeometry}"
                     ItemsSource="{Binding AvailablePlugins, UpdateSourceTrigger=PropertyChanged}"
@@ -272,16 +302,14 @@
                                                 Text="{Binding Context.FileModel.TypeString}"/>
                                         </StackPanel>
                                     </Grid>
-                                    <TextBox
-                                        Text="{Binding Context.PluginsTrace}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        FontSize="16"
-                                        FontFamily="Jetbrains Mono"
+                                    <ListView
                                         Background="Transparent"
                                         BorderBrush="Transparent"
-                                        TextWrapping="NoWrap"
-                                        IsReadOnly="True"/>
+                                        FontSize="16"
+                                        FontFamily="Jetbrains Mono"
+                                        ItemsSource="{Binding Context.PluginsTrace}">
+                                        
+                                    </ListView>
                                 </StackPanel>
                             </DataTemplate>
                             <!--Plugins Tab...-->

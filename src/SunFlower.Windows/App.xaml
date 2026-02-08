@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
                 <ResourceDictionary Source="Drawing/HandyControlClouds.xaml"/>
-                <hc:Theme SyncWithSystem="True"></hc:Theme>
+                <hc:Theme SyncWithSystem="True"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

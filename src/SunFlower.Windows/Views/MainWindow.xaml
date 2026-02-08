@@ -26,7 +26,6 @@
                     Header="Open">
                 </MenuItem>
             </MenuItem>
-            
             <!--Independent tools/windows-->
             <MenuItem
                 Header="Application">
@@ -59,76 +58,188 @@
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
-    <Grid
-        Background="{DynamicResource CloudDrawingBrush}">
-        <hc:Card
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Margin="30">
-            <StackPanel>
+    <DockPanel>
+        <StackPanel
+            DockPanel.Dock="Left">
+            <!--About-->
+            <Grid
+                Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image
+                    Source="/Assets/sunflower256.png"/>
                 <TextBlock
-                    Margin="15"
-                    FontWeight="Medium"
-                    FontSize="24"
-                    Text="Recent files"/>
-                <ToggleButton
                     Margin="5"
-                    Width="190"
-                    ToolTip="Show side-panel with plugin tracing"
-                    Content="Plugins tracing"
-                    Style="{StaticResource ToggleButtonSwitch}"
-                    IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/>
-                <DataGrid
-                    MinWidth="550"
-                    IsReadOnly="True"
-                    x:Name="RecentDataGrid"
-                    MaxHeight="500"
-                    Margin="10"
-                    d:ItemsSource="{d:SampleData 10}"
-                    ItemsSource="{Binding RecentTable}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction 
-                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                Command="{Binding GetRecentFileCommand}"/>
-                        </i:EventTrigger>
-                        <i:KeyTrigger
-                            Modifiers="Shift"
-                            Key="Delete">
-                            <i:InvokeCommandAction
-                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                Command="{Binding ClearRecentFileCommand}"/>
-                        </i:KeyTrigger>
-                        <i:KeyTrigger
-                            Key="Space"
-                            Modifiers="Shift">
-                            <i:InvokeCommandAction
-                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                Command="{Binding GetRecentFileCommand}"/>
-                        </i:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </DataGrid>
-            </StackPanel>
-        </hc:Card>
-        <!--DropDown menu/plugins tracing bar-->
-        <hc:Drawer
-            Name="DrawerBottom" 
-            Dock="Bottom"
-            ShowMask="False">
-            <Border
-                Background="{DynamicResource RegionBrush}" 
-                Height="300" 
-                BorderThickness="0,1,0,0" 
-                BorderBrush="{DynamicResource BorderBrush}">
-                <Grid>
-                    <TextBox
-                        FontSize="16"
-                        FontFamily="Consolas"
-                        HorizontalContentAlignment="Left"
-                        VerticalContentAlignment="Top"
-                        Text="{Binding StatusText}"/>
-                </Grid>
-            </Border>
-        </hc:Drawer>
-    </Grid>
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource PrimaryTextBrush}">
+                    <Run Text="Sunflower (Windows)"/>
+                    <LineBreak/>
+                    <Run Text="v3.0.0.0"/>
+                </TextBlock>
+            </Grid>
+            <hc:SideMenu
+                Width="200"
+                DockPanel.Dock="Left">
+                <hc:SideMenuItem
+                    Command="{Binding GetFileCommand}"
+                    Header="Open">
+                    <hc:SideMenuItem.Icon>
+                        <Image
+                            Width="30"
+                            Source="/Assets/open48.png"/>
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+            
+                <!--Independent tools/windows-->
+                <hc:SideMenuItem
+                    Command="{Binding ClearCacheCommand}"
+                    Header="Clear Editor Cache">
+                    <hc:SideMenuItem.Icon>
+                        <Image
+                            Width="30"
+                            Source="/Assets/delete48.png"/>
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem
+                    Header="Clear Recent files"
+                    Command="{Binding GetDeleteRecentFilesCommandCommand}">
+                    <hc:SideMenuItem.Icon>
+                        <Image
+                            Width="30"
+                            Source="/Assets/clear48.png"/>
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem
+                    Header="Converter"
+                    Command="{Binding GetConverterWindowCommand}">
+                    <hc:SideMenuItem.Icon>
+                        <Image
+                            Width="30"
+                            Source="/Assets/convert48.png"/>
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem
+                    CommandParameter="recent"
+                    Command="{Binding GetRegistryFileCommand}"
+                    Header="Edit Recent files">
+                    <hc:SideMenuItem.Icon>
+                        <Image
+                            Width="30"
+                            Source="/Assets/edit48.png"/>
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem
+                    Command="{Binding GetMachineWordsCommand}"
+                    Header="Your Table"/>
+                <hc:SideMenuItem
+                    Header="Edit Your Table"
+                    CommandParameter="sizes"
+                    Command="{Binding GetRegistryFileCommand}"/>
+            </hc:SideMenu>
+        </StackPanel>
+        <DataGrid
+            BorderBrush="Transparent"
+            Background="{StaticResource CloudDrawingBrush}"
+            IsReadOnly="True"
+            x:Name="RecentDataGrid"
+            d:ItemsSource="{d:SampleData 10}"
+            ItemsSource="{Binding RecentTable}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction
+                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                        Command="{Binding GetRecentFileCommand}"/>
+                </i:EventTrigger>
+                <i:KeyTrigger
+                    Modifiers="Shift"
+                    Key="Delete">
+                    <i:InvokeCommandAction
+                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                        Command="{Binding ClearRecentFileCommand}"/>
+                </i:KeyTrigger>
+                <i:KeyTrigger
+                    Key="Space"
+                    Modifiers="Shift">
+                    <i:InvokeCommandAction
+                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                        Command="{Binding GetRecentFileCommand}"/>
+                </i:KeyTrigger>
+            </i:Interaction.Triggers>
+        </DataGrid>
+    </DockPanel>
+    <!-- <Grid -->
+    <!--     Background="{DynamicResource CloudDrawingBrush}"> -->
+    <!--     <hc:Card -->
+    <!--         HorizontalAlignment="Center" -->
+    <!--         VerticalAlignment="Center" -->
+    <!--         Margin="30"> -->
+    <!--         <StackPanel> -->
+    <!--             <TextBlock -->
+    <!--                 Margin="15" -->
+    <!--                 FontWeight="Medium" -->
+    <!--                 FontSize="24" -->
+    <!--                 Text="Recent files"/> -->
+    <!--             <ToggleButton -->
+    <!--                 Margin="5" -->
+    <!--                 Width="190" -->
+    <!--                 ToolTip="Show side-panel with plugin tracing" -->
+    <!--                 Content="Plugins tracing" -->
+    <!--                 Style="{StaticResource ToggleButtonSwitch}" -->
+    <!--                 IsChecked="{Binding IsOpen,ElementName=DrawerBottom}"/> -->
+    <!--             <DataGrid -->
+    <!--                 MinWidth="550" -->
+    <!--                 IsReadOnly="True" -->
+    <!--                 x:Name="RecentDataGrid" -->
+    <!--                 MaxHeight="500" -->
+    <!--                 Margin="10" -->
+    <!--                 d:ItemsSource="{d:SampleData 10}" -->
+    <!--                 ItemsSource="{Binding RecentTable}"> -->
+    <!--                 <i:Interaction.Triggers> -->
+    <!--                     <i:EventTrigger EventName="MouseDoubleClick"> -->
+    <!--                         <i:InvokeCommandAction  -->
+    <!--                             CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" -->
+    <!--                             Command="{Binding GetRecentFileCommand}"/> -->
+    <!--                     </i:EventTrigger> -->
+    <!--                     <i:KeyTrigger -->
+    <!--                         Modifiers="Shift" -->
+    <!--                         Key="Delete"> -->
+    <!--                         <i:InvokeCommandAction -->
+    <!--                             CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" -->
+    <!--                             Command="{Binding ClearRecentFileCommand}"/> -->
+    <!--                     </i:KeyTrigger> -->
+    <!--                     <i:KeyTrigger -->
+    <!--                         Key="Space" -->
+    <!--                         Modifiers="Shift"> -->
+    <!--                         <i:InvokeCommandAction -->
+    <!--                             CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" -->
+    <!--                             Command="{Binding GetRecentFileCommand}"/> -->
+    <!--                     </i:KeyTrigger> -->
+    <!--                 </i:Interaction.Triggers> -->
+    <!--             </DataGrid> -->
+    <!--         </StackPanel> -->
+    <!--     </hc:Card> -->
+    <!--     ~1~DropDown menu/plugins tracing bar@1@ -->
+    <!--     <hc:Drawer -->
+    <!--         Name="DrawerBottom"  -->
+    <!--         Dock="Bottom" -->
+    <!--         ShowMask="False"> -->
+    <!--         <Border -->
+    <!--             Background="{DynamicResource RegionBrush}"  -->
+    <!--             Height="300"  -->
+    <!--             BorderThickness="0,1,0,0"  -->
+    <!--             BorderBrush="{DynamicResource BorderBrush}"> -->
+    <!--             <Grid> -->
+    <!--                 <TextBox -->
+    <!--                     FontSize="16" -->
+    <!--                     FontFamily="Consolas" -->
+    <!--                     HorizontalContentAlignment="Left" -->
+    <!--                     VerticalContentAlignment="Top" -->
+    <!--                     Text="{Binding StatusText}"/> -->
+    <!--             </Grid> -->
+    <!--         </Border> -->
+    <!--     </hc:Drawer> -->
+    <!-- </Grid> -->
 </hc:Window>

@@ -50,5 +50,31 @@
     <Resource Include="Assets\cloud.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <None Remove="Assets\sunflower512.png" />
+    <None Remove="Assets\sunflower.svg" />
+    <None Remove="Assets\sunflower256.png" />
+    <Resource Include="Assets\sunflower256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\convert48.png" />
+    <Resource Include="Assets\convert48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\delete48.png" />
+    <Resource Include="Assets\delete48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\edit48.png" />
+    <Resource Include="Assets\edit48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\open48.png" />
+    <Resource Include="Assets\open48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\clear48.png" />
+    <Resource Include="Assets\clear48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

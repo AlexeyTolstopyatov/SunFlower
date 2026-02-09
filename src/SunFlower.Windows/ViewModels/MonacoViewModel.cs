@@ -1,23 +1,27 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Windows.Services;
+using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
-public class MonacoWindowViewModel : NotifyPropertyChanged
+public class MonacoViewModel : NotifyPropertyChanged
 {
     private readonly List<FlowerSeedResult> _results;
 
-    public MonacoWindowViewModel()
+    public MonacoViewModel()
     {
         _results = [];
         SaveResultsCommand = new ActionCommand(SaveResults);
     }
-    public MonacoWindowViewModel(List<IFlowerSeed> seeds)
+
+    public MonacoViewModel(ObservableCollection<IFlowerSeed> seeds) : this(seeds.ToList()) { }
+    public MonacoViewModel(List<IFlowerSeed> seeds)
     {
         List<FlowerSeedResult> results = [];
         foreach (var seed in seeds)
@@ -48,7 +52,7 @@ public class MonacoWindowViewModel : NotifyPropertyChanged
         if (string.IsNullOrEmpty(dialog.FileName)) 
             return;
         
-        File.WriteAllText(dialog.FileName, MarkdownGenerator.Generate(_results));
+        File.WriteAllText(dialog.FileName, MarkdownProvider.Provide(_results));
     }
     
 }

@@ -42,7 +42,7 @@ public partial class MainWindowViewModel
     private ICommand _getFileCommand;
     private ICommand _getRecentFileCommand;
     private ICommand _getNotImplementedGrowlCommand;
-    private ICommand _getMachineWordsCommand;
+    private ICommand _getYourTableCommand;
     private ICommand _clearRecentFilesCommand;
     private ICommand _clearRecentFileCommand;
     private ICommand _getAboutCommand;
@@ -64,10 +64,10 @@ public partial class MainWindowViewModel
         set => SetField(ref _clearRecentFilesCommand, value);
     }
 
-    public ICommand GetMachineWordsCommand
+    public ICommand GetYourTableCommand
     {
-        get => _getMachineWordsCommand;
-        set => SetField(ref _getMachineWordsCommand, value);
+        get => _getYourTableCommand;
+        set => SetField(ref _getYourTableCommand, value);
     }
 
     public ICommand GetNotImplementedGrowlCommand
@@ -129,12 +129,16 @@ public partial class MainWindowViewModel
                 return; // terminate "Call Editor"
 
             var inst = FlowerSeedManager.CreateInstance();
-            Seeds = inst
+            var seeds = inst
                 .LoadAllFlowerSeeds()
                 .UpdateAllInvokedFlowerSeeds(FilePath)
               //.UnloadUnusedSeeds()
                 .Seeds;
-
+            foreach (var seed in seeds)
+            {
+                Seeds.Add(seed);
+            }
+            
             WriteTracing(ref inst);
         }
         catch (Exception e)
@@ -143,7 +147,11 @@ public partial class MainWindowViewModel
             return;
         }
 
-        _windowManager.Show(this, new PropertiesWindow(), title: string.Empty); // <-- change it to the Workplace Window
+        _windowManager.Show(
+            new PropertiesViewModel(Seeds, FilePath), 
+            new PropertiesWindow(), 
+            title: 
+            string.Empty); // <-- change it to the Workplace Window
     }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
@@ -181,10 +189,13 @@ public partial class MainWindowViewModel
         // Extensions recall
         var inst = FlowerSeedManager.CreateInstance(); 
             
-        Seeds = inst
+        var seeds = inst
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
+        
+        foreach (var seed in seeds)
+            Seeds.Add(seed);
         
         WriteTracing(ref inst);
         

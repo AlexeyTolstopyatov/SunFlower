@@ -1,25 +1,22 @@
 ﻿using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows.Documents;
 using SunFlower.Windows.ViewModels.Tabs;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
-using SunFlower.Abstractions.Types;
 using SunFlower.Readers;
 using SunFlower.Services;
 using SunFlower.Windows.Services;
-using WpfHexaEditor.Core.MethodExtention;
+using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
 public class FileModel : NotifyPropertyChanged
 {
-    private string _name;
-    private string _fullName;
-    private string _size;
-    private string _signature;
-    private string _typeString;
+    private string _name = string.Empty;
+    private string _fullName = string.Empty;
+    private string _size = string.Empty;
+    private string _signature = string.Empty;
+    private string _typeString = string.Empty;
 
     public string Name
     {
@@ -54,13 +51,7 @@ public class FileModel : NotifyPropertyChanged
 
 public class WorkspaceViewModel : NotifyPropertyChanged
 {
-    private FlowerSeedManager _manager;
-    private string[] _trace;
-    private string[] Trace
-    {
-        get => _trace;
-        set => SetField(ref _trace, value);
-    }
+    private readonly FlowerSeedManager _manager;
     
     private FileModel _fileModel;
     public FileModel FileModel
@@ -101,10 +92,9 @@ public class WorkspaceViewModel : NotifyPropertyChanged
 
     public WorkspaceViewModel()
     {
-        _trace = [];
         _tabs = [];
         _availablePlugins = [];
-        _fileModel = new();
+        _fileModel = new FileModel();
         _selectedTab = new StatusTab();
         
         CloseTabCommand = new ActionCommand(CloseTab);
@@ -112,44 +102,43 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         SwitchToHexViewerCommand = new ActionCommand(OpenHexViewer);
         SwitchToMonacoCommand = new ActionCommand(OpenMonacoReport);
         SwitchToStatusCommand = new ActionCommand(OpenStatusControl);
-        OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenPluginTab);
+        OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenReflectionTab);
         OpenMonacoCommand = new ActionCommand(CallMonaco);
         OpenNotEmptyTabs = new ActionCommand(OpenNotEmptyReflectionTabs);
         
         _manager = FlowerSeedManager
             .CreateInstance()
             .LoadAllFlowerSeeds();
-        
-        foreach (var seed in _manager.Seeds)
-            AvailablePlugins.Add(seed);
     }
 
     public WorkspaceViewModel(string path) : this()
     {
-        var seeker = FlowerBinarySeeker.Get(path);
-
+        var report = FlowerBinarySeeker.Get(path);
+        
         FileModel = new FileModel
         {
-            FullName = seeker.Path,
-            Name = seeker.Name,
-            Size = $"{seeker.Size:F2}K",
-            TypeString = seeker.Type,
-            Signature = seeker.Sign,
+            FullName = report.Path,
+            Name = report.Name,
+            Size = $"{report.Size:F2}K",
+            TypeString = report.Type,
+            Signature = report.Sign
         };
+        
         _manager
             .UpdateAllInvokedFlowerSeeds(path);
-        
-        Trace = _manager.Messages.ToArray();
-        OpenStatusControl(); // <-- automatically open tab 
+
+        //OpenStatusControl(); // <-- automatically open tab 
+        foreach (var seed in _manager.Seeds)
+            AvailablePlugins.Add(seed);
     }
 
     private void CallMonaco()
     {
-        // Collect analysis (ContentDialog)
-        
-        // Postmessage...
-        
-        // Open MonacoTab/MonacoWindow
+        new WindowManager().Show(
+            new PropertiesViewModel(_availablePlugins, _fileModel.FullName), 
+            new PropertiesWindow(), 
+            title: 
+            string.Empty);
     }
     private void OpenStatusControl()
     {
@@ -160,8 +149,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
             CanClose = true,
             Context = new StatusControlViewModel
             {
-                FileModel = _fileModel,
-                PluginsTrace = Trace
+                FileModel = _fileModel
             }
         };
 
@@ -200,14 +188,14 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         {
             Title = "Analysis Report",
             Icon = "📝",
-            Plugins = CollectResults(),
+            Plugins = AvailablePlugins.ToList(),
             CanClose = true
         };
 
         OpenOrActivateTab(monacoTab);
     }
 
-    private void OpenPluginTab(IFlowerSeed p)
+    private void OpenReflectionTab(IFlowerSeed p)
     {
         var plugin = p;
     
@@ -217,7 +205,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
             plugin.Main(_fileModel.FullName);
         }
     
-        var pluginTab = new PluginTab
+        var pluginTab = new ReflectionTab
         {
             Title = plugin.Seed,
             Icon = "🔌",
@@ -247,7 +235,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
     {
         foreach (var flowerSeed in AvailablePlugins.Where(f => f.Status.Results.Count > 0))
         {
-            OpenPluginTab(flowerSeed);
+            OpenReflectionTab(flowerSeed);
         }
     }
     private void CloseTab(object t)
@@ -260,16 +248,5 @@ public class WorkspaceViewModel : NotifyPropertyChanged
             h.Context?.Reader.Dispose();
 
         Tabs.Remove(tab);
-    }
-
-    private List<FlowerSeedResult> CollectResults()
-    {
-        _manager
-            .UpdateAllInvokedFlowerSeeds(_fileModel.FullName);
-        return _manager
-            .Seeds
-            .Where(p => p.Status.IsEnabled)
-            .SelectMany(p => p.Status.Results)
-            .ToList();
     }
 }

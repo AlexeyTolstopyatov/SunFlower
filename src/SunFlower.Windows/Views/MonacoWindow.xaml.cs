@@ -1,4 +1,5 @@
-﻿using SunFlower.Abstractions;
+﻿using System.Collections.ObjectModel;
+using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
 using SunFlower.Windows.Services;
 using SunFlower.Windows.ViewModels;
@@ -7,15 +8,15 @@ namespace SunFlower.Windows.Views;
 
 public partial class MonacoWindow : HandyControl.Controls.Window
 {
-    private readonly MonacoWindowViewModel _viewModel;
-    private readonly MonacoEditorManager _monacoEditorManager;
+    public MonacoWindow(ObservableCollection<IFlowerSeed> seeds) : this(seeds.ToList()) { }
+
     public MonacoWindow(List<IFlowerSeed> seeds)
     {
         InitializeComponent();
         
-        _monacoEditorManager = new MonacoEditorManager(View2);
-        _viewModel = new MonacoWindowViewModel(seeds);
-        DataContext = _viewModel;
+        var monacoEditorManager = new MonacoEditorManager(View2);
+        var viewModel = new MonacoViewModel(seeds);
+        DataContext = viewModel;
         
         Loaded += async (s, e) => 
         {
@@ -27,15 +28,22 @@ public partial class MonacoWindow : HandyControl.Controls.Window
             {
                 results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
                 {
-                    BoxedResult = new List<string>(){seed.Seed}
+                    BoxedResult = new List<string> {seed.Seed}
                 });
+                if (seed.Status.LastError is not null)
+                {
+                    // errors occured -> write them
+                    results.Add(new FlowerSeedResult(
+                        FlowerSeedEntryType.Strings, 
+                        "```\n" + seed.Status.LastError + "\n```"));
+                }
                 foreach (var result in seed.Status.Results)
                 {
                     results.Add(result);
                 }
             }
             
-            await _monacoEditorManager.UpdateMarkdownReportAsync(results);
+            await monacoEditorManager.UpdateMarkdownReportAsync(results);
         };
     }
 }

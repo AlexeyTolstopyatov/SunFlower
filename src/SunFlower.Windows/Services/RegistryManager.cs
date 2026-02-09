@@ -42,8 +42,8 @@ public sealed class RegistryManager
             var sign = row["Sign"];
             float size = float.Parse(row["Size"].ToString() ?? "0.0");
 
-            var model = new FlowerBinaryReport((string)name, (string)path, size, (string)sign, (string)type);
-            var file = JsonConvert.DeserializeObject<List<FlowerBinaryReport>>(File.ReadAllText(_fileName));
+            var model = new FlowerFileInfo((string)name, (string)path, size, (string)sign, (string)type);
+            var file = JsonConvert.DeserializeObject<List<FlowerFileInfo>>(File.ReadAllText(_fileName));
 
             if (file is null)
             {

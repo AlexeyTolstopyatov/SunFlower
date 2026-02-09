@@ -35,7 +35,7 @@ public partial class MainWindowViewModel
         get => _signature;
         set => SetField(ref _signature, value);
     }
-    
+
     private string _fileName;
     private string _filePath;
     private string _typeString;
@@ -53,10 +53,10 @@ public partial class MainWindowViewModel
         set
         {
             _isReady = value;
-            
+
             if (Seeds.All(s => s.Status.IsEnabled))
                 SetField(ref _isReady, true);
-            else 
+            else
                 SetField(ref _isReady, false);
         }
     }
@@ -77,9 +77,10 @@ public partial class MainWindowViewModel
         get => _callHexViewerCommand;
         set => SetField(ref _callHexViewerCommand, value);
     }
+
     private ICommand _callEditorCommand;
     private ICommand _callHexViewerCommand;
-    
+
     /// <summary>
     /// Calls Monaco Editor window
     /// </summary>
@@ -108,6 +109,7 @@ public partial class MainWindowViewModel
             DataContext = new HexViewModel(_filePath)
         }, false, _filePath);
     }
+
     private void CallViewer()
     {
         _windowManager.ShowUnmanaged(new HexViewerWindow

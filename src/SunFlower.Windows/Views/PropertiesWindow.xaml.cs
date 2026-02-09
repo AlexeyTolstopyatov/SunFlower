@@ -1,4 +1,4 @@
-﻿namespace SunFlower.Windows.ViewModels;
+﻿namespace SunFlower.Windows.Views;
 
 public partial class PropertiesWindow : HandyControl.Controls.Window
 {

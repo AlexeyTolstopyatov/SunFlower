@@ -4,7 +4,7 @@ using SunFlower.Windows.ViewModels.Tree;
 
 namespace SunFlower.Windows.ViewModels.Tabs;
 
-public class PluginTab : WorkspaceTab
+public class ReflectionTab : WorkspaceTab
 {
     private FlowerSeedStatus _status;
     private ObservableCollection<ResultNode> _resultNodes;
@@ -26,7 +26,7 @@ public class PluginTab : WorkspaceTab
         set => SetField(ref _resultNodes, value);
     }
 
-    public PluginTab()
+    public ReflectionTab()
     {
         _resultNodes = [];
     }

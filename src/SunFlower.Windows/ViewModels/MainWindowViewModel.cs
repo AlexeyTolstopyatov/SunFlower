@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
@@ -23,7 +24,8 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _recentTable = LoadRecentTableOnStartup();
         _loadedSeeds = [];
         _statusText = string.Empty;
-
+        _clientVersion = string.Empty;
+        
         _getAboutCommand = new ActionCommand(GetAbout);
         _getFileCommand = new ActionCommand(GetFile);
         _getRecentFileCommand = new ActionCommand(GetRecentFileWorkspace); // <-- GetRecentFile
@@ -41,11 +43,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
                 new ConverterWindow(),
                 title: "Converter");
         });
-        _getMachineWordsCommand = new Command(_ =>
+        _getYourTableCommand = new Command(_ =>
         {
-            _windowManager.Show(
-                new MachineWordsWindowViewModel(),
-                new DataGridWindow(),
+            _windowManager.ShowUnmanaged(
+                windowInstance: new DataGridWindow(),
                 title: "From Sunflower registry");
         });
         _fileName = string.Empty;
@@ -56,13 +57,23 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         
         Tell("Windows service registered");
         TellCurrentAbstractionsVersion();
+
+        ClientVersion = "v";
     }
     
     private DataTable _recentTable;
-    private List<IFlowerSeed> _loadedSeeds;
+    private ObservableCollection<IFlowerSeed> _loadedSeeds;
     private string _statusText;
     private ICommand _clearCacheCommand;
-    private ICommand _callHexEditorCommand;
+    private readonly ICommand _callHexEditorCommand;
+    private string _clientVersion;
+    
+    public string ClientVersion
+    {
+        get => _clientVersion;
+        set => SetField(ref _clientVersion, value);
+    }
+
     public DataTable RecentTable
     {
         get => _recentTable;
@@ -79,7 +90,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         get => _clearCacheCommand;
         set => SetField(ref _clearCacheCommand, value);
     }
-    public List<IFlowerSeed> Seeds
+    public ObservableCollection<IFlowerSeed> Seeds
     {
         get => _loadedSeeds;
         set => SetField(ref _loadedSeeds, value);
@@ -132,7 +143,11 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         var abstractionsVer =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
                 .FileVersion ?? "NOT FOUND!";
+        var clientVersion =
+            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Windows.dll").FileVersion;
         
+
+        ClientVersion += clientVersion;
         Tell("abstractions FILE_VERSION: " + abstractionsVer);
     }
 }

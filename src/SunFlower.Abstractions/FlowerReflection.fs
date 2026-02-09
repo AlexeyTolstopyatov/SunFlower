@@ -100,7 +100,7 @@ module FlowerReflection =
     /// Trait #1: Function iterates list of ONLY ONE typed-object
     /// and ignores casting from abstract-classes.
     ///
-    /// Trait #2: Target Class must be Data-class or model, not
+    /// Trait #2: Target Class must be Data-class or model.
     ///
     /// YOU MUST REMEMBER IT LIKE YOUR NAME.
     /// </summary>

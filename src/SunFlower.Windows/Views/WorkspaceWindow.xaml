@@ -7,20 +7,21 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:hexa="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
         xmlns:hexv="clr-namespace:HexView.Wpf;assembly=HexView.Wpf"
-        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:views="clr-namespace:SunFlower.Windows.Views"
         xmlns:tabs="clr-namespace:SunFlower.Windows.ViewModels.Tabs"
+        xmlns:views="clr-namespace:SunFlower.Windows.Views"
+        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         x:Name="WrkWindow"
         Title="Workplace" 
         d:DesignHeight="600"
         d:DesignWidth="900"
         Background="{StaticResource RegionBrush}"
-        Height="700"
-        Width="1024">
+        Height="800"
+        Width="1200">
     <hc:Window.DataContext>
         <local:WorkspaceViewModel/>
     </hc:Window.DataContext>
+    <!--Global keybindings-->
     <hc:Window.InputBindings>
         <KeyBinding
             Key="H"
@@ -39,7 +40,12 @@
             Modifiers="Control"
             Key="R"
             Command="{Binding OpenNotEmptyTabs}"/>
+        <KeyBinding
+            Modifiers="Control"
+            Key="M"
+            Command="{Binding SwitchToMonacoCommand}"/>
     </hc:Window.InputBindings>
+    <!-- Window Menu (ubuntu 16 Unity style) -->
     <hc:Window.NonClientAreaContent>
         <Menu HorizontalAlignment="Center">
             <!-- File -> [properties, hexv, hexa]-->
@@ -102,6 +108,7 @@
             <MenuItem
                 Header="Kernel">
                 <MenuItem
+                    Command="{Binding OpenMonacoCommand}"
                     Icon="{StaticResource AllGeometry}">
                     <MenuItem.Header>
                         <DockPanel>
@@ -158,219 +165,277 @@
             </MenuItem>
         </Menu>
     </hc:Window.NonClientAreaContent>
-    <Grid
-        Background="{StaticResource CloudDrawingBrush}">
-        <TabControl
-            Padding="20"
-            Background="Transparent"
-            BorderThickness="0"
-            ItemsSource="{Binding Tabs}" 
-            SelectedItem="{Binding SelectedTab}">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            Text="{Binding Icon}" Margin="0,0,5,0"/>
-                        <TextBlock 
-                            VerticalAlignment="Center"
-                            Text="{Binding Title}"/>
-                        <Button
-                            Style="{StaticResource ButtonDashed}"
-                            hc:IconElement.Geometry="{StaticResource CloseGeometry}"
-                            Margin="5,0,0,0"
-                            Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
-                            CommandParameter="{Binding}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel
+            Margin="10">
             
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentControl 
-                        Content="{Binding}">
-                        <ContentControl.Resources>
-                            <!--HexEditor Tab-->
-                            <DataTemplate 
-                                DataType="{x:Type tabs:HexEditorTab}">
-                                <Border
-                                    BorderThickness="0"
-                                    BorderBrush="{StaticResource InfoBrush}">
-                                    <hexa:HexEditor
-                                        FontFamily="JetBrains Mono"
-                                        Stream="{Binding Context.Reader.Stream}"
-                                        AllowBuildinCtrlc="True"
-                                        AllowBuildinCtrlz="True"
-                                        HighLightColor="{StaticResource RegionBrush}"
-                                        Background="Transparent"
-                                        Foreground="{StaticResource PrimaryTextBrush}"
-                                        SelectionFirstColor="{StaticResource SecondaryTextBrush}"
-                                        SelectionSecondColor="{StaticResource PrimaryTextBrush}"
-                                        ForegroundSecondColor="{StaticResource SecondaryTextBrush}"/>
-                                </Border>
-                            </DataTemplate>
-                            <!-- HexView Tab -->
-                            <DataTemplate
-                                DataType="{x:Type tabs:HexViewTab}">
-                                <Border
-                                    BorderThickness="0"
-                                    BorderBrush="{StaticResource PrimaryBrush}">
-                                    <hexv:HexViewer
-                                        BorderBrush="Transparent"
-                                        Background="Transparent"
-                                        Foreground="{StaticResource PrimaryTextBrush}"
-                                        FontFamily="Jetbrains Mono"
-                                        FontSize="16"
-                                        DataSource="{Binding Context.Reader}">
-                                    
-                                    </hexv:HexViewer>
-                                </Border>
-                            </DataTemplate>
-                            <!-- Status Tab -->
-                            <DataTemplate
-                                DataType="{x:Type tabs:StatusTab}">
-                                <StackPanel>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel
-                                            Grid.Column="0">
-                                            <StackPanel>
-                                                <Label 
-                                                    FontSize="16"
-                                                    FontFamily="Jetbrains Mono"
-                                                    BorderBrush="Transparent"
-                                                    Background="Transparent"
-                                                    HorizontalAlignment="Left"
-                                                    Content="Path"/>
-                                                <Label
-                                                    FontSize="16"
-                                                    FontFamily="Jetbrains Mono"
-                                                    BorderBrush="Transparent"
-                                                    Background="Transparent"
-                                                    HorizontalAlignment="Left"
-                                                    Content="Size"/>
-                                                <Label
-                                                    FontSize="16"
-                                                    FontFamily="Jetbrains Mono"
-                                                    BorderBrush="Transparent"
-                                                    Background="Transparent"
-                                                    HorizontalAlignment="Left"
-                                                    Content="Magic bytes"/>
-                                                <Label
-                                                    FontSize="16"
-                                                    FontFamily="Jetbrains Mono"
-                                                    BorderBrush="Transparent"
-                                                    Background="Transparent"
-                                                    HorizontalAlignment="Left"
-                                                    Content="Defined as"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                        <StackPanel
-                                            Grid.Column="1">
-                                            <TextBox
-                                                IsReadOnly="True"
-                                                Background="Transparent"
-                                                BorderBrush="Transparent"
-                                                FontSize="16"
-                                                FontFamily="Jetbrains Mono"
-                                                Text="{Binding Context.FileModel.FullName}"/>
-                                            <TextBox
-                                                Background="Transparent"
-                                                BorderBrush="Transparent"
-                                                FontSize="16"
-                                                FontFamily="Jetbrains Mono"
-                                                IsReadOnly="True"
-                                                Text="{Binding Context.FileModel.Size}"/>
-                                            <TextBox
-                                                Background="Transparent"
-                                                BorderBrush="Transparent"
-                                                FontSize="16"
-                                                FontFamily="Jetbrains Mono"
-                                                IsReadOnly="True"
-                                                Text="{Binding Context.FileModel.Signature}"/>
-                                            <TextBox
-                                                Background="Transparent"
-                                                BorderBrush="Transparent"
-                                                FontSize="16"
-                                                FontFamily="Jetbrains Mono"
-                                                IsReadOnly="True"
-                                                Text="{Binding Context.FileModel.TypeString}"/>
-                                        </StackPanel>
-                                    </Grid>
-                                    <ListView
-                                        Background="Transparent"
-                                        BorderBrush="Transparent"
-                                        FontSize="16"
-                                        FontFamily="Jetbrains Mono"
-                                        ItemsSource="{Binding Context.PluginsTrace}">
-                                        
-                                    </ListView>
-                                </StackPanel>
-                            </DataTemplate>
-                            <!--Plugins Tab...-->
-                            <DataTemplate DataType="{x:Type tabs:PluginTab}">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    
-                                    <Border 
-                                        Grid.Row="0"
-                                        Background="{StaticResource RegionBrush}"
-                                        Padding="10"
-                                        Margin="0,0,0,10"
-                                        CornerRadius="5">
-                                        <StackPanel>
-                                            <TextBlock 
-                                                Text="Reflection"
-                                                FontSize="14"
-                                                FontWeight="Bold"
-                                                Foreground="{StaticResource PrimaryTextBrush}"/>
-                                            <TextBlock 
-                                                Text="{Binding Status.IsEnabled, StringFormat='Enabled: {0}'}"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
-                                            <TextBlock 
-                                                Text="{Binding Status.Results.Count, StringFormat='Results: {0}'}"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TreeView 
-                                        Grid.Row="1"
-                                        ItemsSource="{Binding ResultNodes}"
+            <TextBlock
+                TextWrapping="Wrap"
+                Foreground="{StaticResource PrimaryTextBrush}"
+                FontSize="20"
+                Text="{Binding FileModel.Name, FallbackValue=SafeFileName is missing}"/>
+            <TextBlock
+                TextWrapping="Wrap"
+                Foreground="{StaticResource PrimaryTextBrush}"
+                Text="{Binding FileModel.FullName, FallbackValue=Path is missing}"/>
+            <Grid
+                Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Grid.Column="0">
+                    <StackPanel>
+                        <Label
+                            BorderBrush="Transparent"
+                            Background="Transparent"
+                            HorizontalAlignment="Left"
+                            Content="Size"/>
+                        <Label
+                            BorderBrush="Transparent"
+                            Background="Transparent"
+                            HorizontalAlignment="Left"
+                            Content="Magic bytes"/>
+                        <Label
+                            BorderBrush="Transparent"
+                            Background="Transparent"
+                            HorizontalAlignment="Left"
+                            Content="Defined as"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel
+                    Grid.Column="1">
+                    <TextBox
+                        Text="{Binding FileModel.Size}"/>
+                    <TextBox
+                        Text="{Binding FileModel.Signature}"/>
+                    <TextBox
+                        Text="{Binding FileModel.TypeString}"/>
+                    <Button
+                        IsEnabled="False"
+                        HorizontalAlignment="Right"
+                        Margin="0,5"
+                        Content="Rewrite"
+                        ToolTip="Rewrite JSON record (current file in recent.json)"/>
+                </StackPanel>
+            </Grid>
+            
+        </StackPanel>
+        <Grid
+            Grid.Column="1"
+            Background="{StaticResource CloudDrawingBrush}">
+            <TabControl
+                Padding="20"
+                Background="Transparent"
+                BorderThickness="0"
+                ItemsSource="{Binding Tabs}" 
+                SelectedItem="{Binding SelectedTab}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Text="{Binding Icon}" Margin="0,0,5,0"/>
+                            <TextBlock 
+                                VerticalAlignment="Center"
+                                Text="{Binding Title}"/>
+                            <Button
+                                Style="{StaticResource ButtonDashed}"
+                                hc:IconElement.Geometry="{StaticResource CloseGeometry}"
+                                Margin="5,0,0,0"
+                                Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                                CommandParameter="{Binding}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentControl 
+                            Content="{Binding}">
+                            <ContentControl.Resources>
+                                <!--HexEditor Tab-->
+                                <DataTemplate 
+                                    DataType="{x:Type tabs:HexEditorTab}">
+                                    <Border
                                         BorderThickness="0"
-                                        Background="Transparent">
-                                        <TreeView.ItemTemplate>
-                                            <HierarchicalDataTemplate 
-                                                ItemsSource="{Binding Children}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock 
+                                        BorderBrush="{StaticResource InfoBrush}">
+                                        <hexa:HexEditor
+                                            FontFamily="Consolas"
+                                            Stream="{Binding Context.Reader.Stream}"
+                                            AllowBuildinCtrlc="True"
+                                            AllowBuildinCtrlz="True"
+                                            HighLightColor="{StaticResource RegionBrush}"
+                                            Background="Transparent"
+                                            Foreground="{StaticResource PrimaryTextBrush}"
+                                            ForegroundSecondColor="{StaticResource SecondaryTextBrush}"/>
+                                    </Border>
+                                </DataTemplate>
+                                <!-- HexView Tab -->
+                                <DataTemplate
+                                    DataType="{x:Type tabs:HexViewTab}">
+                                    <Border
+                                        BorderThickness="0"
+                                        BorderBrush="{StaticResource PrimaryBrush}">
+                                        <hexv:HexViewer
+                                            BorderBrush="Transparent"
+                                            Background="Transparent"
+                                            Foreground="{StaticResource PrimaryTextBrush}"
+                                            FontFamily="Consolas"
+                                            FontSize="16"
+                                            DataSource="{Binding Context.Reader}">
+                                        
+                                        </hexv:HexViewer>
+                                    </Border>
+                                </DataTemplate>
+                                <!-- Status Tab -->
+                                <DataTemplate
+                                    DataType="{x:Type tabs:StatusTab}">
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel
+                                                Grid.Column="0">
+                                                <StackPanel>
+                                                    <Label 
                                                         FontSize="16"
-                                                        Text="{Binding Name}"
-                                                        FontFamily="JetBrains Mono"
-                                                        Foreground="{StaticResource PrimaryTextBrush}"
-                                                        Margin="0,0,5,0"/>
-                                                    <TextBlock 
+                                                        FontFamily="Jetbrains Mono"
+                                                        BorderBrush="Transparent"
+                                                        Background="Transparent"
+                                                        HorizontalAlignment="Left"
+                                                        Content="Path"/>
+                                                    <Label
                                                         FontSize="16"
-                                                        Text="{Binding Value}"
-                                                        FontFamily="JetBrains Mono"
-                                                        Foreground="{StaticResource SecondaryTextBrush}"/>
+                                                        FontFamily="Jetbrains Mono"
+                                                        BorderBrush="Transparent"
+                                                        Background="Transparent"
+                                                        HorizontalAlignment="Left"
+                                                        Content="Size"/>
+                                                    <Label
+                                                        FontSize="16"
+                                                        FontFamily="Jetbrains Mono"
+                                                        BorderBrush="Transparent"
+                                                        Background="Transparent"
+                                                        HorizontalAlignment="Left"
+                                                        Content="Magic bytes"/>
+                                                    <Label
+                                                        FontSize="16"
+                                                        FontFamily="Jetbrains Mono"
+                                                        BorderBrush="Transparent"
+                                                        Background="Transparent"
+                                                        HorizontalAlignment="Left"
+                                                        Content="Defined as"/>
                                                 </StackPanel>
-                                            </HierarchicalDataTemplate>
-                                        </TreeView.ItemTemplate>
-                                    </TreeView>
-                                </Grid>
-                            </DataTemplate>
-                        </ContentControl.Resources>
-                    </ContentControl>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+                                            </StackPanel>
+                                            <StackPanel
+                                                Grid.Column="1">
+                                                <TextBox
+                                                    IsReadOnly="True"
+                                                    Background="Transparent"
+                                                    BorderBrush="Transparent"
+                                                    FontSize="16"
+                                                    FontFamily="Jetbrains Mono"
+                                                    Text="{Binding Context.FileModel.FullName, FallbackValue=FullName}"/>
+                                                <TextBox
+                                                    Background="Transparent"
+                                                    BorderBrush="Transparent"
+                                                    FontSize="16"
+                                                    FontFamily="Jetbrains Mono"
+                                                    IsReadOnly="True"
+                                                    Text="{Binding Context.FileModel.Size, FallbackValue=0K}"/>
+                                                <TextBox
+                                                    Background="Transparent"
+                                                    BorderBrush="Transparent"
+                                                    FontSize="16"
+                                                    FontFamily="Jetbrains Mono"
+                                                    IsReadOnly="True"
+                                                    Text="{Binding Context.FileModel.Signature, FallbackValue=?}"/>
+                                                <TextBox
+                                                    Background="Transparent"
+                                                    BorderBrush="Transparent"
+                                                    FontSize="16"
+                                                    FontFamily="Jetbrains Mono"
+                                                    IsReadOnly="True"
+                                                    Text="{Binding Context.FileModel.TypeString, FallbackValue=?}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <!--Plugins Tab...-->
+                                <DataTemplate DataType="{x:Type tabs:ReflectionTab}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <Border 
+                                            Grid.Row="0"
+                                            Background="{StaticResource RegionBrush}"
+                                            Padding="10"
+                                            Margin="0,0,0,10"
+                                            CornerRadius="5">
+                                            <StackPanel>
+                                                <TextBlock 
+                                                    Text="Reflection"
+                                                    FontSize="14"
+                                                    FontWeight="Bold"
+                                                    Foreground="{StaticResource PrimaryTextBrush}"/>
+                                                <TextBlock 
+                                                    Text="{Binding Status.IsEnabled, StringFormat='Enabled: {0}'}"
+                                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+                                                <TextBlock 
+                                                    Text="{Binding Status.Results.Count, StringFormat='Results: {0}'}"
+                                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <TreeView 
+                                            Grid.Row="1"
+                                            ItemsSource="{Binding ResultNodes}"
+                                            BorderThickness="0"
+                                            Background="Transparent">
+                                            <TreeView.ItemTemplate>
+                                                <HierarchicalDataTemplate 
+                                                    ItemsSource="{Binding Children}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock 
+                                                            FontSize="16"
+                                                            Text="{Binding Name}"
+                                                            FontFamily="Consolas"
+                                                            Foreground="{StaticResource PrimaryTextBrush}"
+                                                            Margin="0,0,5,0"/>
+                                                        <TextBlock 
+                                                            FontSize="16"
+                                                            Text="{Binding Value}"
+                                                            FontFamily="Consolas"
+                                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+                                                    </StackPanel>
+                                                </HierarchicalDataTemplate>
+                                            </TreeView.ItemTemplate>
+                                        </TreeView>
+                                    </Grid>
+                                </DataTemplate>
+                                <DataTemplate 
+                                    DataType="{x:Type tabs:MonacoTab}">
+                                    <views:MonacoControl
+                                        DataContext="{Binding UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </ContentControl.Resources>
+                        </ContentControl>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+        </Grid>
     </Grid>
 </hc:Window>

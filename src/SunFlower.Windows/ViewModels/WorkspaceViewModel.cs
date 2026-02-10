@@ -3,10 +3,8 @@ using SunFlower.Windows.ViewModels.Tabs;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
-using SunFlower.Readers;
 using SunFlower.Services;
 using SunFlower.Windows.Services;
-using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
@@ -78,7 +76,6 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         _manager
             .UpdateAllInvokedFlowerSeeds(fileModel.FullName);
 
-        //OpenStatusControl(); // <-- automatically open tab 
         foreach (var seed in _manager.Seeds)
             AvailablePlugins.Add(seed);
     }

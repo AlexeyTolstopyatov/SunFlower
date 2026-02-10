@@ -14,6 +14,15 @@ namespace SunFlower.Windows.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel
 {
+    private ICommand _getConverterWindowCommand;
+    private ICommand _getFileCommand;
+    private ICommand _getRecentFileCommand;
+    private ICommand _getNotImplementedGrowlCommand;
+    private ICommand _getYourTableCommand;
+    private ICommand _clearRecentFilesCommand;
+    private ICommand _clearRecentFileCommand;
+    private ICommand _getRegistryFileCommand;
+    
     public ICommand GetRecentFileCommand
     {
         get => _getRecentFileCommand;
@@ -24,9 +33,6 @@ public partial class MainWindowViewModel
         get => _getFileCommand;
         set => SetField(ref _getFileCommand, value);
     }
-
-    private ICommand _getRegistryFileCommand;
-
     public ICommand GetConverterWindowCommand
     {
         get => _getConverterWindowCommand;
@@ -36,21 +42,6 @@ public partial class MainWindowViewModel
     {
         get => _getRegistryFileCommand;
         set => SetField(ref _getRegistryFileCommand, value);
-    }
-    
-    private ICommand _getConverterWindowCommand;
-    private ICommand _getFileCommand;
-    private ICommand _getRecentFileCommand;
-    private ICommand _getNotImplementedGrowlCommand;
-    private ICommand _getYourTableCommand;
-    private ICommand _clearRecentFilesCommand;
-    private ICommand _clearRecentFileCommand;
-    private ICommand _getAboutCommand;
-
-    public ICommand GetAboutCommand
-    {
-        get => _getAboutCommand;
-        set => SetField(ref _getAboutCommand, value);
     }
     public ICommand ClearRecentFileCommand
     {
@@ -70,6 +61,7 @@ public partial class MainWindowViewModel
         set => SetField(ref _getYourTableCommand, value);
     }
 
+    [Forgotten]
     public ICommand GetNotImplementedGrowlCommand
     {
         get => _getNotImplementedGrowlCommand;
@@ -187,14 +179,10 @@ public partial class MainWindowViewModel
     /// Shows notification "Not implemented yet" at Desktop
     /// </summary>
     /// <param name="unused"></param>
+    [Forgotten]
     private void GetNotImplementedGrowl(object unused)
     {
         Growl.InfoGlobal("Not implemented yet");
-    }
-
-    private void GetAbout()
-    {
-        _windowManager.ShowUnmanaged(new AboutWindow(), false, "About");
     }
     /// <summary>
     /// Clear all recent files JSON list
@@ -237,7 +225,6 @@ public partial class MainWindowViewModel
     /// Opens file /in Windows Notepad/ by selected item CommandParameter
     /// </summary>
     /// <param name="name"></param>
-    [Forgotten]
     private void OpenRegFileByName(object name)
     {
         try

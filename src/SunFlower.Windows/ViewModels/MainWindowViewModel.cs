@@ -23,12 +23,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         
         _recentTable = LoadRecentTableOnStartup();
         _loadedSeeds = [];
-        _statusText = string.Empty;
         _clientVersion = string.Empty;
         
         _getFileCommand = new ActionCommand(GetFile);
-        _getRecentFileCommand = new ActionCommand(GetRecentFile); // <-- GetRecentFile
-        _getAboutCommand = new ActionCommand(GetAbout);
+        _getRecentFileCommand = new ActionCommand(GetRecentFile);
         _getNotImplementedGrowlCommand = new ActionCommand(GetNotImplementedGrowl);
         _getRegistryFileCommand = new ActionCommand(OpenRegFileByName);
         _clearCacheCommand = new ActionCommand(ClearCache);
@@ -44,7 +42,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         {
             _windowManager.ShowUnmanaged(
                 windowInstance: new DataGridWindow(),
-                title: "From Sunflower registry");
+                title: "Table");
         });
         _name = string.Empty;
         _fullName = string.Empty;
@@ -56,10 +54,9 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         TellCurrentVersion();
     }
     
-    private DataTable _recentTable;
-    private string _statusText;
-    private ICommand _clearCacheCommand;
     private string _clientVersion;
+    private ICommand _clearCacheCommand;
+    private DataTable _recentTable;
     private ObservableCollection<IFlowerSeed> _loadedSeeds;
 
     public string ClientVersion
@@ -73,12 +70,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         get => _recentTable;
         set => SetField(ref _recentTable, value);
     }
-    public string StatusText
-    {
-        get => _statusText;
-        set => SetField(ref _statusText, value);
-    }
-    
+
     public ICommand ClearCacheCommand
     {
         get => _clearCacheCommand;
@@ -122,7 +114,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     private void TellCurrentVersion()
     {
         var ver =
-            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
+            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Windows.dll")
                 .FileVersion ?? " undefined";
         
         ClientVersion += ver;

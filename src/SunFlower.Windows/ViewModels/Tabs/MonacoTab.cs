@@ -1,5 +1,4 @@
 ﻿using SunFlower.Abstractions;
-using SunFlower.Abstractions.Types;
 
 namespace SunFlower.Windows.ViewModels.Tabs;
 

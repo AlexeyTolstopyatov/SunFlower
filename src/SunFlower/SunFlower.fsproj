@@ -26,4 +26,8 @@
       <Compile Include="Readers\FlowerBinarySeeker.fs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Include="Writers\FlowerMarkdownWriter.fs" />
+    </ItemGroup>
+
 </Project>

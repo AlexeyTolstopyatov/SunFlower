@@ -1,9 +1,6 @@
 ﻿using System.Data;
-using System.Globalization;
-using System.IO;
 using System.Windows.Input;
 using HandyControl.Controls;
-using HandyControl.Data;
 using Microsoft.Win32;
 using SunFlower.Readers;
 using SunFlower.Services;
@@ -17,6 +14,15 @@ namespace SunFlower.Windows.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel
 {
+    private ICommand _getConverterWindowCommand;
+    private ICommand _getFileCommand;
+    private ICommand _getRecentFileCommand;
+    private ICommand _getNotImplementedGrowlCommand;
+    private ICommand _getYourTableCommand;
+    private ICommand _clearRecentFilesCommand;
+    private ICommand _clearRecentFileCommand;
+    private ICommand _getRegistryFileCommand;
+    
     public ICommand GetRecentFileCommand
     {
         get => _getRecentFileCommand;
@@ -27,9 +33,6 @@ public partial class MainWindowViewModel
         get => _getFileCommand;
         set => SetField(ref _getFileCommand, value);
     }
-
-    private ICommand _getRegistryFileCommand;
-
     public ICommand GetConverterWindowCommand
     {
         get => _getConverterWindowCommand;
@@ -39,21 +42,6 @@ public partial class MainWindowViewModel
     {
         get => _getRegistryFileCommand;
         set => SetField(ref _getRegistryFileCommand, value);
-    }
-    
-    private ICommand _getConverterWindowCommand;
-    private ICommand _getFileCommand;
-    private ICommand _getRecentFileCommand;
-    private ICommand _getNotImplementedGrowlCommand;
-    private ICommand _getMachineWordsCommand;
-    private ICommand _clearRecentFilesCommand;
-    private ICommand _clearRecentFileCommand;
-    private ICommand _getAboutCommand;
-
-    public ICommand GetAboutCommand
-    {
-        get => _getAboutCommand;
-        set => SetField(ref _getAboutCommand, value);
     }
     public ICommand ClearRecentFileCommand
     {
@@ -67,12 +55,13 @@ public partial class MainWindowViewModel
         set => SetField(ref _clearRecentFilesCommand, value);
     }
 
-    public ICommand GetMachineWordsCommand
+    public ICommand GetYourTableCommand
     {
-        get => _getMachineWordsCommand;
-        set => SetField(ref _getMachineWordsCommand, value);
+        get => _getYourTableCommand;
+        set => SetField(ref _getYourTableCommand, value);
     }
 
+    [Forgotten]
     public ICommand GetNotImplementedGrowlCommand
     {
         get => _getNotImplementedGrowlCommand;
@@ -80,42 +69,51 @@ public partial class MainWindowViewModel
     }
 
     #region Menu Callbacks
-    /// <summary>
-    /// Starts PropertiesWindow for recent file
-    /// </summary>
-    /// <param name="selectedRowView"></param>
+
     private void GetRecentFile(object selectedRowView)
     {
         try
         {
             var unboxed = (DataRowView)selectedRowView;
 
-            FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
-            FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
+            Name = unboxed.Row["Name"].ToString() ?? "<unknown>";
+            FullName = unboxed.Row["Path"].ToString() ?? string.Empty;
             TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
             Signature = unboxed["Sign"].ToString() ?? string.Empty;
             Size = unboxed.Row["Size"].ToString() ?? string.Empty;
 
-            if (FilePath == string.Empty)
-                return; // terminate "Call Editor"
+            var model = new FileModel
+            {
+                Name = Name,
+                FullName = FullName,
+                Size = Size,
+                Signature = Signature,
+                TypeString = TypeString
+            };
+            
+            if (FullName == string.Empty)
+            {
+                Growl.ErrorGlobal("Missing target path");
+                return;
+            }
+            
+            var workspaceVm = new WorkspaceViewModel(model);
+            
+            _windowManager.Show(
+                workspaceVm,
+                new WorkspaceWindow(),
+                false,
+                string.Empty
+            );
 
-            var inst = FlowerSeedManager.CreateInstance();
-            Seeds = inst
-                .LoadAllFlowerSeeds()
-                .UpdateAllInvokedFlowerSeeds(FilePath)
-              //.UnloadUnusedSeeds()
-                .Seeds;
-
-            WriteTracing(ref inst);
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             Growl.ErrorGlobal(e.Message);
-            return;
         }
-
-        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
     }
+    
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
     /// Starts common reader (remembers general characteristics)
@@ -137,61 +135,54 @@ public partial class MainWindowViewModel
 
         // collect data-structure
         var result = FlowerBinarySeeker.Get(dialog.FileName);
-        FileName = result.Name;
-        FilePath = result.Path;
+        Name = result.Name;
+        FullName = result.Path;
         TypeString = result.Type;
         Signature = result.Sign;
-        Size = result.Size.ToString(CultureInfo.InvariantCulture); // JS fell off
+        Size = $"{Math.Round(result.Size, 2)}K";
         
         _registryManager
             .Of("recent")
             .Create(result);
         
-        RecentTable = LoadRecentTableOnStartup(); // bad idea.
+        RecentTable = LoadRecentTableOnStartup();
         
         // Extensions recall
         var inst = FlowerSeedManager.CreateInstance(); 
-            
-        Seeds = inst
+        var seeds = inst
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
         
-        WriteTracing(ref inst);
+        foreach (var seed in seeds)
+            Seeds.Add(seed);
         
+        var model = new FileModel
+        {
+            Name = Name,
+            FullName = FullName,
+            Size = Size,
+            Signature = Signature,
+            TypeString = TypeString
+        };
+
         // Call plugins Window/Main Workspace
-        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
+        _windowManager.Show(
+            new WorkspaceViewModel(model), 
+            new WorkspaceWindow(),
+            false,
+            string.Empty
+        );
     }
-
-    private void WriteTracing(ref FlowerSeedManager manager)
-    {
-        Tell("abstractions CONTRACT_VERSION: " + manager.GetContract());
-        Tell("=== Kernel tracing ===");
-        foreach (var message in manager.Messages)
-        {
-            Tell(message);
-        }
-        
-        // information about external Exceptions
-        Tell("=== Disabled plugins tracing ===");
-        foreach (var plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
-        {
-            Tell(plugin.Status.LastError is null ? $"?[{plugin.Seed}] has no result." : $"![{plugin.Seed}] " + plugin.Status.LastError.Message);
-        }
-
-    }
+    
     /// <summary>
     /// Shows notification "Not implemented yet" at Desktop
     /// </summary>
     /// <param name="unused"></param>
+    [Forgotten]
     private void GetNotImplementedGrowl(object unused)
     {
         Growl.InfoGlobal("Not implemented yet");
-    }
-
-    private void GetAbout()
-    {
-        _windowManager.ShowUnmanaged(new AboutWindow(), false, "About");
     }
     /// <summary>
     /// Clear all recent files JSON list
@@ -234,7 +225,6 @@ public partial class MainWindowViewModel
     /// Opens file /in Windows Notepad/ by selected item CommandParameter
     /// </summary>
     /// <param name="name"></param>
-    [Forgotten]
     private void OpenRegFileByName(object name)
     {
         try

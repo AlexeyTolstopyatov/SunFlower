@@ -14,7 +14,7 @@ open System.IO
 /// <summary>
 /// Structure of common binary image report
 /// </summary>
-type FlowerBinaryReport = {
+type FlowerFileInfo = {
     /// <summary>
     /// Name of target
     /// </summary>
@@ -79,24 +79,28 @@ module FlowerBinarySeeker =
 
     let private check_elf (reader: BinaryReader) =
         match read_bytes reader 0L 4 with
-        | Some [|0x7Fuy; 0x45uy; 0x4Cuy; 0x46uy|] -> 
-            Found (0x464C457F, "ELF Executable")
-        | Some bytes when bytes.Length = 4 -> 
-            NotFound (BitConverter.ToInt32(bytes, 0))
+        | Some [|0x7Fuy; 0x45uy; 0x4Cuy; 0x46uy|] -> Found (0x464C457F, "ELF Executable")
+        | Some bytes when bytes.Length = 4 -> NotFound (BitConverter.ToInt32(bytes, 0))
         | _ -> Error
-
+    let private check_intel_rom (reader: BinaryReader) =
+        match read_bytes reader 0L 2 with
+        | Some [|0xAAuy; 0x55uy|] -> Found (0xAA55, "Intel ROM")
+        | Some [|0x55uy; 0xAAuy|] -> Found (0x55AA, "Intel ROM")
+        | Some bytes when bytes.Length = 2 -> 
+            NotFound (int bytes[0] ||| (int bytes[1] <<< 8))
+        | _ -> Error
     let private ident_file (reader: BinaryReader) =
-        let checks = [check_mz; check_next_header; check_elf]
+        let checks = [check_mz; check_next_header; check_elf; check_intel_rom]
         
         checks
         |> List.tryPick (fun check -> 
             match check reader with
             | Found (magic, desc) -> Some (magic, desc)
             | _ -> None)
-        |> Option.defaultValue (0, "Unknown")
+        |> Option.defaultValue (0, "Undefined")
 
     [<CompiledName "Get">]
-    let get (path: string) : FlowerBinaryReport =
+    let get (path: string) : FlowerFileInfo =
         use stream = new FileStream(path, FileMode.Open, FileAccess.Read)
         use reader = new BinaryReader(stream)
         

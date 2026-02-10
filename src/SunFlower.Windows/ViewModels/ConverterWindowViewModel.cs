@@ -19,7 +19,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
     private int _index = 0;
     private ICommand _updateCommand;
     private ICommand _deleteSpacingCommand;
-    private ActionCommand _reverseStringCommand;
+    private ICommand _reverseStringCommand;
     public int Index
     {
         get => _index;
@@ -35,7 +35,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
         }
     }
 
-    public ActionCommand ReverseStringCommand
+    public ICommand ReverseStringCommand
     {
         get => _reverseStringCommand;
         set => SetField(ref _reverseStringCommand, value);

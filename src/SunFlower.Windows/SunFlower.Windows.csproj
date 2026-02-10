@@ -5,15 +5,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Version>4.0.0</Version>
+    <Version>4.5.0</Version>
     <Title>Sunflower Windows</Title>
-    <Copyright>CoffeeLake 2024-2025</Copyright>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-    <FileVersion>4.0.0.0</FileVersion>
+    <Copyright>CoffeeLake 2024-2026</Copyright>
+    <AssemblyVersion>4.5.0.0</AssemblyVersion>
+    <FileVersion>4.5.0.0</FileVersion>
     <ApplicationIcon>sunflower64.ico</ApplicationIcon>
+    <Description>Client-side platform for unified Sunflower kernel</Description>
+    <PackageProjectUrl>https://github.com/AlexeyTolstopyatov/Sunflower</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HandyControl" Version="3.5.0" />
+    <PackageReference Include="HandyControl" Version="3.5.1" />
     <PackageReference Include="HexEditor.Wpf" Version="2.1.8" />
     <PackageReference Include="HexView.Wpf" Version="0.1.0" />
     <PackageReference Include="Material.Icons.WPF" Version="3.0.0-preview1.1" />
@@ -41,8 +43,51 @@
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Drawing\HandyControlClouds.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SunFlower\SunFlower.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\cloud.png" />
+    <Resource Include="Assets\cloud.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\sunflower512.png" />
+    <None Remove="Assets\sunflower.svg" />
+    <None Remove="Assets\sunflower256.png" />
+    <Resource Include="Assets\sunflower256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\convert48.png" />
+    <Resource Include="Assets\convert48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\delete48.png" />
+    <Resource Include="Assets\delete48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\edit48.png" />
+    <Resource Include="Assets\edit48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\open48.png" />
+    <Resource Include="Assets\open48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\clear48.png" />
+    <Resource Include="Assets\clear48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\fedit48.png" />
+    <Resource Include="Assets\fedit48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <None Remove="Assets\paper48.png" />
+    <Resource Include="Assets\paper48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

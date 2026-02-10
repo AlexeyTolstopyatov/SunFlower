@@ -42,8 +42,8 @@ public sealed class RegistryManager
             var sign = row["Sign"];
             float size = float.Parse(row["Size"].ToString() ?? "0.0");
 
-            var model = new FlowerBinaryReport((string)name, (string)path, size, (string)sign, (string)type);
-            var file = JsonConvert.DeserializeObject<List<FlowerBinaryReport>>(File.ReadAllText(_fileName));
+            var model = new FlowerFileInfo((string)name, (string)path, size, (string)sign, (string)type);
+            var file = JsonConvert.DeserializeObject<List<FlowerFileInfo>>(File.ReadAllText(_fileName));
 
             if (file is null)
             {
@@ -81,7 +81,7 @@ public sealed class RegistryManager
             var openedFileObj = JObject.FromObject(@struct!);
             resultList.Add(openedFileObj);
         
-            File.WriteAllText(_fileName, resultList.ToString(Formatting.Indented));
+            File.WriteAllText(_fileName, resultList.ToString(Formatting.None));
         }
         else
         {
@@ -90,7 +90,7 @@ public sealed class RegistryManager
             var openedFileObj = JObject.FromObject(@struct!);
             resultList = [openedFileObj];
 
-            File.WriteAllText(_fileName, resultList.ToString(Formatting.Indented));
+            File.WriteAllText(_fileName, resultList.ToString(Formatting.None));
         }
         return this;
     }
@@ -110,7 +110,9 @@ public sealed class RegistryManager
         }
         catch
         {
-            Of("recent").Create().Fill(ref obj); // recursive call ?
+            Of("recent")
+                .Create()
+                .Fill(ref obj);
         }
         return this;
     }

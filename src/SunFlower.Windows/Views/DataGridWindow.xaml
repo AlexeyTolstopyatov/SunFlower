@@ -9,14 +9,14 @@
         Title="MachineWordsWindow"
         SizeToContent="WidthAndHeight">
     <hc:Window.DataContext>
-        <local:MachineWordsWindowViewModel/>
+        <local:DataGridWindowViewModel/>
     </hc:Window.DataContext>
     <Grid>
         <DataGrid
             Style="{StaticResource DataGrid.Small}"
             FontSize="16"
             FontFamily="Consolas"
-            ItemsSource="{Binding MachineWordsTable}">
+            ItemsSource="{Binding Table}">
         </DataGrid>
     </Grid>
 </hc:Window>

@@ -86,9 +86,9 @@ public class MonacoEditorManager
         
         try
         {
-            var markdownContent = MarkdownGenerator.Generate(results);
+            var content = MarkdownProvider.Provide(results);
             
-            _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
+            _webView.CoreWebView2.PostWebMessageAsString(content);
         }
         catch (Exception ex)
         {
@@ -106,7 +106,7 @@ public class MonacoEditorManager
         try
         {
             // make MDBook
-            var markdownContent = MarkdownGenerator.Generate(results);
+            var markdownContent = MarkdownProvider.Provide(results);
             var escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
 
             _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
@@ -119,15 +119,5 @@ public class MonacoEditorManager
         {
             _webView.CoreWebView2.PostWebMessageAsString("showLoadingIndicator(false);");
         }
-    }
-
-    public async void SwitchDarkTheme()
-    {
-        await _webView.CoreWebView2.ExecuteScriptAsync($"editor.updateOptions({{theme:'vs-dark'}})");
-    }
-
-    public async void SwitchLightTheme()
-    {
-        await _webView.CoreWebView2.ExecuteScriptAsync("editor.updateOptions({theme:'vs-light'})");
     }
 }

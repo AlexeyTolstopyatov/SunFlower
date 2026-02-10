@@ -24,17 +24,17 @@ very large. The previous project was rewritten from scratch five times, and in a
 
 User guide for client stores [here](WINDOWS.md)
 
-<img src="assets/mdbook.png">
+![SunflowerClient](assets/title.png)
 
 ### Sunflower core "seeds" (plugins)
 
 In the package stores moved from JellyBins parts of code
 for definition the
  - `MZ` Executables (real-mode x86 applications);
- - `NE` segmented Executables (protected-mode x86 applications);
- - `LE` OS/2-Windows executables; 
+ - `NE` segmented Executables (first protected-mode x86 applications);
+ - `LE` OS/2-Windows386 executables; 
  - `LX` OS/2-ArcaOS standard executables;
- - `PE` Windows NT un/safe applications;
+ - `PE` Windows NT stndard applications;
  - `MS-DOS PIF files.
 
 But you sunflower gives a chance to make your own extension of it and
@@ -88,6 +88,9 @@ type MyAnalyzer() =
 ```
 
 6) Build and Drop .DLL into `%Application%/Plugins`
+7) Run SunFlower and see what you can!
+
+![See what you do](assets/mdbook.png)
 
 ### Supported Binary Formats
 

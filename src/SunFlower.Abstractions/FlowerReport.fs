@@ -90,8 +90,6 @@ module FlowerReport =
         | FlowerType.AnyStr -> $"`{str}:s`"
         | FlowerType.Flag -> $"`{str}:f`"
         | _ -> $"`{str}:?`"
-        
-    
     /// <summary>
     /// Returns prepared string of FAR16 pointer
     /// </summary>
@@ -108,7 +106,6 @@ module FlowerReport =
         match high with
         | true -> $"`{seg:X4}:{offset:X8}`"
         | false -> $"`{offset:X8}:{seg:X4}`"
-    
     /// <summary>
     /// Machine word retranslates to hexadecimal view like 0xDEADBABE
     /// with fixed byte-size using
@@ -120,5 +117,6 @@ module FlowerReport =
         | 1 -> $"0x{w:X2}"
         | 2 -> $"0x{w:X4}"
         | 4 -> $"0x{w:X8}"
+        | 8 -> $"0x{w:X16}"
         | _ -> $"0x{w:X}"
 

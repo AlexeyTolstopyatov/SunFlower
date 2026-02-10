@@ -3,12 +3,12 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <Version>4.0.0</Version>
-        <Title>GUIless client for Sunflower loader</Title>
+        <Version>4.5.0</Version>
+        <Title>Healthcheck of external Sunflower plugins</Title>
         <Description>Applies all connected plugins for static analysis </Description>
-        <Copyright>CoffeeLake 2025</Copyright>
-        <AssemblyVersion>4.0.0.0</AssemblyVersion>
-        <FileVersion>4.0.0.0</FileVersion>
+        <Copyright>CoffeeLake 2024-*</Copyright>
+        <AssemblyVersion>4.5.0.0</AssemblyVersion>
+        <FileVersion>4.5.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

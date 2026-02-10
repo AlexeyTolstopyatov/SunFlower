@@ -77,7 +77,7 @@
                             <TextBlock
                                 HorizontalAlignment="Left"
                                 DockPanel.Dock="Left"
-                                Text="Open in HexView control"/>
+                                Text="Open in HexView"/>
                             <TextBlock
                                 Margin="5,0"
                                 HorizontalAlignment="Right"
@@ -94,7 +94,7 @@
                             <TextBlock
                                 HorizontalAlignment="Left"
                                 DockPanel.Dock="Left"
-                                Text="Open in HexaEdtor control"/>
+                                Text="Open in HexaEdtor"/>
                             <TextBlock
                                 Margin="5,0"
                                 HorizontalAlignment="Right"
@@ -108,13 +108,14 @@
             <MenuItem
                 Header="Kernel">
                 <MenuItem
-                    Command="{Binding OpenMonacoCommand}"
+                    Command="{Binding SwitchToMonacoCommand}"
                     Icon="{StaticResource AllGeometry}">
                     <MenuItem.Header>
                         <DockPanel>
                             <TextBlock 
                                 DockPanel.Dock="Left"
-                                Text="Open in Monaco Editor"/>
+                                Text="Call Monaco"
+                                ToolTip="Send ALL Sunflower results through JS calls into Monaco"/>
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
@@ -129,7 +130,8 @@
                         <DockPanel>
                             <TextBlock 
                                 DockPanel.Dock="Left"
-                                Text="Open reflection tabs"/>
+                                Text="Open reflection tabs"
+                                ToolTip="Calls TreeView for each enabled connected plugin"/>
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
@@ -137,10 +139,36 @@
                         </DockPanel>
                     </MenuItem.Header>    
                 </MenuItem>
+                <!-- Call Monaco for one plugin -->
                 <MenuItem
                     Icon="{StaticResource WindowRestoreGeometry}"
                     ItemsSource="{Binding AvailablePlugins, UpdateSourceTrigger=PropertyChanged}"
-                    Header="Plugins">
+                    Header="Call Monaco for plugin">
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <MenuItem
+                                Icon="{StaticResource WindowRestoreGeometry}"
+                                Command="{Binding DataContext.SwitchOnePluginReportCommand, ElementName=WrkWindow}"
+                                CommandParameter="{Binding}">
+                                <MenuItem.Header>
+                                    <DockPanel>
+                                        <TextBlock 
+                                            DockPanel.Dock="Left"
+                                            Text="{Binding Seed}"/>
+                                        <TextBlock
+                                            DockPanel.Dock="Right"
+                                            Foreground="{StaticResource SecondaryTextBrush}"
+                                            Text="{Binding Status.Results.Count, StringFormat=' Items {0} ', Mode=OneWay}"/>
+                                    </DockPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+                <MenuItem
+                    Icon="{StaticResource WindowRestoreGeometry}"
+                    ItemsSource="{Binding AvailablePlugins, UpdateSourceTrigger=PropertyChanged}"
+                    Header="Reflect plugin">
                     <MenuItem.ItemTemplate>
                         <DataTemplate>
                             <MenuItem
@@ -167,7 +195,7 @@
     </hc:Window.NonClientAreaContent>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel

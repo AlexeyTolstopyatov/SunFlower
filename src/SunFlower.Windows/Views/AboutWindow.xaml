@@ -9,19 +9,6 @@
         Background="{DynamicResource RegionBrush}"
         Title="About" SizeToContent="WidthAndHeight">
     <Grid>
-        <Grid.Background>
-            <VisualBrush TileMode="Tile" 
-                         Viewport="0,0,20,20" 
-                         Opacity="0.5"
-                         ViewportUnits="Absolute">
-                <VisualBrush.Visual>
-                    <Rectangle Width="20" Height="20" 
-                               Fill="Transparent"
-                               Stroke="{DynamicResource BorderBrush}" 
-                               StrokeThickness="0.5"/>
-                </VisualBrush.Visual>
-            </VisualBrush>
-        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="128"/>
@@ -34,7 +21,6 @@
             FontSize="16"
             Margin="50"
             Grid.Column="2">
-            
         </TextBlock>
     </Grid>
 </hc:Window>

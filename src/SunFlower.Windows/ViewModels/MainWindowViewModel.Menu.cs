@@ -78,21 +78,34 @@ public partial class MainWindowViewModel
 
     #region Menu Callbacks
 
-    private void GetRecentFileWorkspace(object selectedRowView)
+    private void GetRecentFile(object selectedRowView)
     {
         try
         {
             var unboxed = (DataRowView)selectedRowView;
 
-            FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
-            FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
+            Name = unboxed.Row["Name"].ToString() ?? "<unknown>";
+            FullName = unboxed.Row["Path"].ToString() ?? string.Empty;
             TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
             Signature = unboxed["Sign"].ToString() ?? string.Empty;
             Size = unboxed.Row["Size"].ToString() ?? string.Empty;
 
-            if (FilePath == string.Empty)
+            var model = new FileModel
+            {
+                Name = Name,
+                FullName = FullName,
+                Size = Size,
+                Signature = Signature,
+                TypeString = TypeString
+            };
+            
+            if (FullName == string.Empty)
+            {
+                Growl.ErrorGlobal("Missing target path");
                 return;
-            var workspaceVm = new WorkspaceViewModel(FilePath);
+            }
+            
+            var workspaceVm = new WorkspaceViewModel(model);
             
             _windowManager.Show(
                 workspaceVm,
@@ -109,50 +122,6 @@ public partial class MainWindowViewModel
         }
     }
     
-    /// <summary>
-    /// Starts PropertiesWindow for recent file
-    /// </summary>
-    /// <param name="selectedRowView"></param>
-    private void GetRecentFile(object selectedRowView)
-    {
-        try
-        {
-            var unboxed = (DataRowView)selectedRowView;
-
-            FileName = unboxed.Row["Name"].ToString() ?? "<unknown>";
-            FilePath = unboxed.Row["Path"].ToString() ?? string.Empty;
-            TypeString = unboxed.Row["Type"].ToString() ?? string.Empty;
-            Signature = unboxed["Sign"].ToString() ?? string.Empty;
-            Size = unboxed.Row["Size"].ToString() ?? string.Empty;
-
-            if (FilePath == string.Empty)
-                return; // terminate "Call Editor"
-
-            var inst = FlowerSeedManager.CreateInstance();
-            var seeds = inst
-                .LoadAllFlowerSeeds()
-                .UpdateAllInvokedFlowerSeeds(FilePath)
-              //.UnloadUnusedSeeds()
-                .Seeds;
-            foreach (var seed in seeds)
-            {
-                Seeds.Add(seed);
-            }
-            
-            WriteTracing(ref inst);
-        }
-        catch (Exception e)
-        {
-            Growl.ErrorGlobal(e.Message);
-            return;
-        }
-
-        _windowManager.Show(
-            new PropertiesViewModel(Seeds, FilePath), 
-            new PropertiesWindow(), 
-            title: 
-            string.Empty); // <-- change it to the Workplace Window
-    }
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
     /// Starts common reader (remembers general characteristics)
@@ -174,21 +143,20 @@ public partial class MainWindowViewModel
 
         // collect data-structure
         var result = FlowerBinarySeeker.Get(dialog.FileName);
-        FileName = result.Name;
-        FilePath = result.Path;
+        Name = result.Name;
+        FullName = result.Path;
         TypeString = result.Type;
         Signature = result.Sign;
-        Size = $"{Math.Round(result.Size, 2)}K"; // JS fell off
+        Size = $"{Math.Round(result.Size, 2)}K";
         
         _registryManager
             .Of("recent")
             .Create(result);
         
-        RecentTable = LoadRecentTableOnStartup(); // bad idea.
+        RecentTable = LoadRecentTableOnStartup();
         
         // Extensions recall
         var inst = FlowerSeedManager.CreateInstance(); 
-            
         var seeds = inst
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
@@ -197,29 +165,24 @@ public partial class MainWindowViewModel
         foreach (var seed in seeds)
             Seeds.Add(seed);
         
-        WriteTracing(ref inst);
-        
+        var model = new FileModel
+        {
+            Name = Name,
+            FullName = FullName,
+            Size = Size,
+            Signature = Signature,
+            TypeString = TypeString
+        };
+
         // Call plugins Window/Main Workspace
-        _windowManager.Show(this, new PropertiesWindow(), title: FilePath);
+        _windowManager.Show(
+            new WorkspaceViewModel(model), 
+            new WorkspaceWindow(),
+            false,
+            string.Empty
+        );
     }
     
-    private void WriteTracing(ref FlowerSeedManager manager)
-    {
-        Tell("abstractions CONTRACT_VERSION: " + manager.GetContract());
-        Tell("=== Kernel tracing ===");
-        foreach (var message in manager.Messages)
-        {
-            Tell(message);
-        }
-        
-        // information about external Exceptions
-        Tell("=== Disabled plugins tracing ===");
-        foreach (var plugin in Seeds.Where(plugin => !plugin.Status.IsEnabled))
-        {
-            Tell(plugin.Status.LastError is null ? $"?[{plugin.Seed}] has no result." : $"![{plugin.Seed}] " + plugin.Status.LastError.Message);
-        }
-
-    }
     /// <summary>
     /// Shows notification "Not implemented yet" at Desktop
     /// </summary>

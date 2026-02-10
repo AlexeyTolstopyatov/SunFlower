@@ -10,45 +10,6 @@ using SunFlower.Windows.Views;
 
 namespace SunFlower.Windows.ViewModels;
 
-public class FileModel : NotifyPropertyChanged
-{
-    private string _name = string.Empty;
-    private string _fullName = string.Empty;
-    private string _size = string.Empty;
-    private string _signature = string.Empty;
-    private string _typeString = string.Empty;
-
-    public string Name
-    {
-        get => _name;
-        set => SetField(ref _name, value);
-    }
-
-    public string FullName
-    {
-        get => _fullName;
-        set => SetField(ref _fullName, value);
-    }
-
-    public string Size
-    {
-        get => _size;
-        set => SetField(ref _size, value);
-    }
-
-    public string Signature
-    {
-        get => _signature;
-        set => SetField(ref _signature, value);
-    }
-
-    public string TypeString
-    {
-        get => _typeString;
-        set => SetField(ref _typeString, value);
-    }
-}
-
 public class WorkspaceViewModel : NotifyPropertyChanged
 {
     private readonly FlowerSeedManager _manager;
@@ -87,7 +48,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
     public ICommand OpenPluginTabCommand { get; }
     public ICommand CloseTabCommand { get; }
     public ICommand SwitchToStatusCommand { get; }
-    public ICommand OpenMonacoCommand { get; }
+    public ICommand SwitchOnePluginReportCommand { get; }
     public ICommand OpenNotEmptyTabs { get; }
 
     public WorkspaceViewModel()
@@ -102,43 +63,24 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         SwitchToHexViewerCommand = new ActionCommand(OpenHexViewer);
         SwitchToMonacoCommand = new ActionCommand(OpenMonacoReport);
         SwitchToStatusCommand = new ActionCommand(OpenStatusControl);
-        OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenReflectionTab);
-        OpenMonacoCommand = new ActionCommand(CallMonaco);
+        SwitchOnePluginReportCommand = new DelegateCommand<IFlowerSeed>(OnePluginMonacoReport);
         OpenNotEmptyTabs = new ActionCommand(OpenNotEmptyReflectionTabs);
+        OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenReflectionTab);
         
         _manager = FlowerSeedManager
             .CreateInstance()
             .LoadAllFlowerSeeds();
     }
 
-    public WorkspaceViewModel(string path) : this()
+    public WorkspaceViewModel(FileModel fileModel) : this()
     {
-        var report = FlowerBinarySeeker.Get(path);
-        
-        FileModel = new FileModel
-        {
-            FullName = report.Path,
-            Name = report.Name,
-            Size = $"{report.Size:F2}K",
-            TypeString = report.Type,
-            Signature = report.Sign
-        };
-        
+        FileModel = fileModel;
         _manager
-            .UpdateAllInvokedFlowerSeeds(path);
+            .UpdateAllInvokedFlowerSeeds(fileModel.FullName);
 
         //OpenStatusControl(); // <-- automatically open tab 
         foreach (var seed in _manager.Seeds)
             AvailablePlugins.Add(seed);
-    }
-
-    private void CallMonaco()
-    {
-        new WindowManager().Show(
-            new PropertiesViewModel(_availablePlugins, _fileModel.FullName), 
-            new PropertiesWindow(), 
-            title: 
-            string.Empty);
     }
     private void OpenStatusControl()
     {
@@ -155,7 +97,6 @@ public class WorkspaceViewModel : NotifyPropertyChanged
 
         OpenOrActivateTab(statusTab);
     }
-
     private void OpenHexEditor()
     {
         var hexTab = new HexEditorTab
@@ -182,6 +123,19 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         OpenOrActivateTab(hexTab);
     }
 
+    private void OnePluginMonacoReport(IFlowerSeed s)
+    {
+        var monacoTab = new MonacoTab
+        {
+            Title = $"{s.Seed} - Report",
+            Icon = "📝",
+            Plugins = [s],
+            CanClose = true
+        };
+
+        OpenOrActivateTab(monacoTab);
+    }
+    
     private void OpenMonacoReport()
     {
         var monacoTab = new MonacoTab

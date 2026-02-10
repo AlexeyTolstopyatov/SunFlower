@@ -26,14 +26,11 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         _statusText = string.Empty;
         _clientVersion = string.Empty;
         
-        _getAboutCommand = new ActionCommand(GetAbout);
         _getFileCommand = new ActionCommand(GetFile);
-        _getRecentFileCommand = new ActionCommand(GetRecentFileWorkspace); // <-- GetRecentFile
+        _getRecentFileCommand = new ActionCommand(GetRecentFile); // <-- GetRecentFile
+        _getAboutCommand = new ActionCommand(GetAbout);
         _getNotImplementedGrowlCommand = new ActionCommand(GetNotImplementedGrowl);
         _getRegistryFileCommand = new ActionCommand(OpenRegFileByName);
-        _callEditorCommand = new ActionCommand(CallEditor);
-        _callHexViewerCommand = new ActionCommand(CallViewer);
-        _callHexEditorCommand = new ActionCommand(CallHexEditor);
         _clearCacheCommand = new ActionCommand(ClearCache);
         _clearRecentFilesCommand = new ActionCommand(ClearRecentFiles);
         _clearRecentFileCommand = new ActionCommand(ClearRecentFile);
@@ -49,25 +46,22 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
                 windowInstance: new DataGridWindow(),
                 title: "From Sunflower registry");
         });
-        _fileName = string.Empty;
-        _filePath = string.Empty;
+        _name = string.Empty;
+        _fullName = string.Empty;
         _size = string.Empty;
         _typeString = string.Empty;
         _signature = string.Empty;
-        
-        Tell("Windows service registered");
-        TellCurrentAbstractionsVersion();
 
         ClientVersion = "v";
+        TellCurrentVersion();
     }
     
     private DataTable _recentTable;
-    private ObservableCollection<IFlowerSeed> _loadedSeeds;
     private string _statusText;
     private ICommand _clearCacheCommand;
-    private readonly ICommand _callHexEditorCommand;
     private string _clientVersion;
-    
+    private ObservableCollection<IFlowerSeed> _loadedSeeds;
+
     public string ClientVersion
     {
         get => _clientVersion;
@@ -97,22 +91,12 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
     }
     private DataTable LoadRecentTableOnStartup()
     {
-        Tell(nameof(LoadRecentTableOnStartup));
         DataTable result = new();
         RegistryManager.CreateInstance()
             .Of("recent")
             .Fill(ref result);
         
         return result;
-    }
-    /// <summary>
-    /// Pushes message to MainWindow status-box
-    /// </summary>
-    /// <param name="phrase"></param>
-    private void Tell(string phrase)
-    {
-        var text = "-> " + phrase + "\r\n";
-        StatusText += text;
     }
     
     private void ClearCache()
@@ -133,21 +117,14 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         }
     }
     /// <summary>
-    /// Plugins have specified interface which helps to communicate
-    /// with main loader module.
-    /// This method shows information about installed
-    /// foundation DLL version.
+    /// Windows Client version
     /// </summary>
-    private void TellCurrentAbstractionsVersion()
+    private void TellCurrentVersion()
     {
-        var abstractionsVer =
+        var ver =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Abstractions.dll")
-                .FileVersion ?? "NOT FOUND!";
-        var clientVersion =
-            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Windows.dll").FileVersion;
+                .FileVersion ?? " undefined";
         
-
-        ClientVersion += clientVersion;
-        Tell("abstractions FILE_VERSION: " + abstractionsVer);
+        ClientVersion += ver;
     }
 }

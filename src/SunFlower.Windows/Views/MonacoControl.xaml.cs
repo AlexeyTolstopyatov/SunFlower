@@ -7,12 +7,12 @@ using SunFlower.Windows.ViewModels.Tabs;
 namespace SunFlower.Windows.Views;
 public partial class MonacoControl : UserControl
 {
-    private readonly MonacoEditorManager _editorManager;
+    private readonly MonacoManager _manager;
         
     public MonacoControl()
     {
         InitializeComponent();
-        _editorManager = new MonacoEditorManager(View2);
+        _manager = new MonacoManager(View2);
         
         Loaded += async (_, _) => await InitializeMonacoAsync();
     }
@@ -50,6 +50,6 @@ public partial class MonacoControl : UserControl
         
     public async Task UpdateContent(List<FlowerSeedResult> results)
     {
-        await _editorManager.UpdateMarkdownReportAsync(results);
+        await _manager.UpdateMarkdownReportAsync(results);
     }
 }

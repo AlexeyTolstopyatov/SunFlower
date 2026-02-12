@@ -100,7 +100,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         {
             Title = "Hexa Editor",
             Icon = "🔍",
-            Context = new(_fileModel.FullName),
+            Context = new HexViewModel(_fileModel.FullName),
             CanClose = true
         };
 

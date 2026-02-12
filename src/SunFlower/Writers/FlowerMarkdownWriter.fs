@@ -12,6 +12,7 @@ open System
 open System.Collections.Generic
 open System.Data
 open Microsoft.FSharp.Core
+open SunFlower.Abstractions.Types
 
 // Module abstract ends. Result of IFlowerSeed interface into collection of results
 // supports some casts:
@@ -52,7 +53,7 @@ let format_table(table: DataTable): string =
         buffer.Add s
     let rows = table.Rows |> Seq.cast<DataRow>
     let columns = table.Columns |> Seq.cast<DataColumn>
-
+    
     let columnWidths =
         columns
         |> Seq.map (fun col ->
@@ -66,19 +67,20 @@ let format_table(table: DataTable): string =
 
             (col.Ordinal, (contentWidth + 2)))
         |> Map.ofSeq
-
+    // Draw Headers
+    // | Head:s | Example:sz |
     columns
         |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
         |> String.concat " | "
         |> sprintf "| %s |"
         |> add
-    
+    // |--------|------------|
     columns
         |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
         |> String.concat "-|-"
         |> sprintf "|-%s-|"
         |> add
-    
+    // Draw values
     rows
         |> Seq.iter (fun row ->
             columns
@@ -88,4 +90,67 @@ let format_table(table: DataTable): string =
             |> add)
 
     String.Join('\n', buffer)
-
+    
+/// <summary>
+/// Returns sum of strings divided by new line escape character
+/// <example language="FSharp">
+/// <code>
+/// let content = "Let's build a markdown list"
+///     |+ " - Use operator reloads"
+///     |+ " - Don't forget about global defined operators"
+///     |+ " - hihi"
+/// </code>
+/// </example>
+/// </summary>
+/// <param name="a"></param>
+/// <param name="b"></param>
+let private (|+) (a: String) (b: String) =
+   a + b + "\n"
+    
+/// <summary>
+/// Makes a simple "Papers Section". The Region container
+/// contains Header, Content what describes the object
+/// and table what helps to analyse this object.
+/// </summary>
+/// <param name="reg">Given by FlowerResult collection unboxed result</param>
+[<CompiledName "FormatRegion">]
+let format_reg(reg: Region) =
+    ""
+        |+ reg.Head
+        |+ reg.Content
+        |+ format_table reg.Table
+        |+ "\n"
+// **Remove the format_reg in 4.5.1+ releases** \\ 
+/// <summary>
+/// Makes a simple "Papers Section". The region container
+/// contains Header, Content, chat must to describe target
+/// object and table what represents you information about this target.
+/// </summary>
+/// <param name="reg">Current region given+unboxed from FlowerResult collection</param>
+/// <param name="header_level">Markdown Heading level</param>
+[<CompiledName "FormatRegionSmartHeader">]
+let format_reg2 (reg: Region, header_level: int) =
+    "#"
+        |> String.replicate header_level // <-- Header declaration must be separated by the value 
+        |+ $" {reg.Head}"
+        |+ reg.Content
+        |+ format_table reg.Table
+        |+ "\n"
+/// <summary>
+/// Transforms all Regions collection into one Markdown written next 
+/// 
+/// Warning: The Writers algorithm will be rewritten next time
+/// Reason: FlowerResults contains boxed values and unboxing mechanism
+/// couldn't be one-typed. (FlowerResult collection can contain different
+/// typed entries)
+/// <example>
+/// <code>
+/// [Strings, Bytes, Region, Region, Strings]
+/// </code>
+/// </example>
+/// </summary>
+/// <param name="list"></param>
+[<CompiledName "FormatRegions">]
+let rec format_regs(list: 'TIteratable) = 
+    
+    0

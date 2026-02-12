@@ -38,7 +38,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
                 new ConverterWindow(),
                 title: "Converter");
         });
-        _getYourTableCommand = new Command(_ =>
+        _getYourTableCommand = new ActionCommand(_ =>
         {
             _windowManager.ShowUnmanaged(
                 windowInstance: new DataGridWindow(),

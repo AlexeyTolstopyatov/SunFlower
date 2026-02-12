@@ -1,5 +1,8 @@
+using System.Data;
 using SunFlower.Abstractions;
+using SunFlower.Abstractions.Types;
 using SunFlower.Services;
+using SunFlower.Writers;
 
 namespace SunFlower.Connection;
 
@@ -70,5 +73,25 @@ public class Tests
     public void CheckFlowerPointer()
     {
         Assert.Pass(FlowerReport.FarHexString(0, 15, true));
+    }
+
+    [Test]
+    public void FormatRegion()
+    {
+        Assert.Pass(FlowerMarkdownWriter.FormatRegion(
+            new Region(
+                "# header", // <-- 1.0 - 4.5 kernel API
+                "Some instructions how to live", 
+                new DataTable()
+            ))
+        );
+        
+        Assert.Pass(FlowerMarkdownWriter.FormatRegionSmartHeader(
+            new Region(
+                "header",
+                "Some instructions how to live", 
+                new DataTable()), // <-- 4.5.1+ kernel API
+            3 // <-- level of the markdown header
+        ));
     }
 }

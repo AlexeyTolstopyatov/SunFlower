@@ -6,12 +6,12 @@ using System.IO;
 using System.Windows;
 
 namespace SunFlower.Windows.Services;
-public class MonacoEditorManager
+public class MonacoManager
 {
     private readonly WebView2 _webView;
     private bool _isWebViewInitialized;
 
-    public MonacoEditorManager(WebView2 webView)
+    public MonacoManager(WebView2 webView)
     {
         _webView = webView ?? throw new ArgumentNullException(nameof(webView));
         InitializeAsync();
@@ -27,7 +27,7 @@ public class MonacoEditorManager
 
     private void WebMessageReceivedHandler(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
     {
-        Debug.WriteLine($"WebMessage received: {e.TryGetWebMessageAsString()}");
+        Console.WriteLine($"WebMessage received: {e.TryGetWebMessageAsString()}");
     }
 
     private async void InitializeAsync()
@@ -78,7 +78,7 @@ public class MonacoEditorManager
     {
         if (!_isWebViewInitialized || _webView.CoreWebView2 == null)
         {
-            Debug.WriteLine("WebView2 not ready. Retrying in 500ms...");
+            Console.WriteLine("WebView not ready. Retrying in 500ms...");
             await Task.Delay(500);
             await UpdateMarkdownReportAsync(results);
             return;
@@ -93,31 +93,6 @@ public class MonacoEditorManager
         catch (Exception ex)
         {
             MessageBox.Show($"Error updating report: {ex.Message}");
-        }
-    }
-    
-    public async Task UpdateMarkdownReportAsync(IEnumerable<FlowerSeedResult> results)
-    {
-        if (!_isWebViewInitialized || _webView.CoreWebView2 == null)
-            return;
-        
-        await _webView.CoreWebView2.ExecuteScriptAsync("showLoadingIndicator(true);");
-        
-        try
-        {
-            // make MDBook
-            var markdownContent = MarkdownProvider.Provide(results);
-            var escapedContent = System.Web.HttpUtility.JavaScriptStringEncode(markdownContent);
-
-            _webView.CoreWebView2.PostWebMessageAsString(markdownContent);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error updating report: {ex.Message}");
-        }
-        finally
-        {
-            _webView.CoreWebView2.PostWebMessageAsString("showLoadingIndicator(false);");
         }
     }
 }

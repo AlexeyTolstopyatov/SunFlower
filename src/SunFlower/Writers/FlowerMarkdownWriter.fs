@@ -5,7 +5,7 @@
 // into the text document.
 //
 // @creator: atolstopyatov2017@vk.com
-//   
+//
 module SunFlower.Writers.FlowerMarkdownWriter
 
 open System
@@ -30,30 +30,31 @@ open SunFlower.Abstractions.Types
 ///  - String
 /// </summary>
 [<CompiledName "FormatStrings">]
-let format_str(lines: obj): string =
-   match lines with
+let format_str (lines: obj) : string =
+    match lines with
     | :? IEnumerable<String> as e -> "\n" + String.Join("\n", e) + "\n"
     | :? String as s -> s
     | _ -> $"\n`bad cast of this line {lines.GetType()}`\n"
+
 /// <summary>
 /// Cast of DataTable into Markdown table for the document
-/// NULL-contained fields will be empty strings-paddings in the table 
+/// NULL-contained fields will be empty strings-paddings in the table
 /// </summary>
 /// <param name="table">target table</param>
 [<CompiledName "FormatTable">]
-let format_table(table: DataTable): string =
+let format_table (table: DataTable) : string =
     let buffer: List<string> = List<string>()
-    
+
     let safeToString (value: obj) =
         if Convert.IsDBNull(value) then
             " " // Empty cell (<null> dont need anymore)
         else
             $"%O{value}"
-    let add(s: string) =
-        buffer.Add s
+
+    let add (s: string) = buffer.Add s
     let rows = table.Rows |> Seq.cast<DataRow>
     let columns = table.Columns |> Seq.cast<DataColumn>
-    
+
     let columnWidths =
         columns
         |> Seq.map (fun col ->
@@ -70,43 +71,50 @@ let format_table(table: DataTable): string =
     // Draw Headers
     // | Head:s | Example:sz |
     columns
-        |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
-        |> String.concat " | "
-        |> sprintf "| %s |"
-        |> add
+    |> Seq.map (fun col -> col.ColumnName.PadRight(columnWidths[col.Ordinal] - 2))
+    |> String.concat " | "
+    |> sprintf "| %s |"
+    |> add
     // |--------|------------|
     columns
-        |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
-        |> String.concat "-|-"
-        |> sprintf "|-%s-|"
-        |> add
+    |> Seq.map (fun col -> String('-', columnWidths[col.Ordinal] - 2))
+    |> String.concat "-|-"
+    |> sprintf "|-%s-|"
+    |> add
     // Draw values
     rows
-        |> Seq.iter (fun row ->
-            columns
-            |> Seq.map (fun col -> row[col] |> safeToString |> _.PadRight(columnWidths[col.Ordinal] - 2))
-            |> String.concat " | "
-            |> sprintf "| %s |"
-            |> add)
+    |> Seq.iter (fun row ->
+        columns
+        |> Seq.map (fun col -> row[col] |> safeToString |> _.PadRight(columnWidths[col.Ordinal] - 2))
+        |> String.concat " | "
+        |> sprintf "| %s |"
+        |> add)
 
     String.Join('\n', buffer)
-    
+
 /// <summary>
 /// Returns sum of strings divided by new line escape character
 /// <example language="FSharp">
 /// <code>
 /// let content = "Let's build a markdown list"
-///     |+ " - Use operator reloads"
-///     |+ " - Don't forget about global defined operators"
-///     |+ " - hihi"
+///     |+ " - Item1"
+///     |+ " - Item2"
+///     |+ " - Item3"
+/// {EOL}
+/// </code>
+/// This variable stores string:
+/// <code>
+/// Let's build a markdown list
+///  - Item1
+///  - Item2
+///  - Item3
 /// </code>
 /// </example>
 /// </summary>
 /// <param name="a"></param>
 /// <param name="b"></param>
-let private (|+) (a: String) (b: String) =
-   a + b + "\n"
-    
+let private (|+) (a: String) (b: String) = a + b + "\n"
+
 /// <summary>
 /// Makes a simple "Papers Section". The Region container
 /// contains Header, Content what describes the object
@@ -114,13 +122,9 @@ let private (|+) (a: String) (b: String) =
 /// </summary>
 /// <param name="reg">Given by FlowerResult collection unboxed result</param>
 [<CompiledName "FormatRegion">]
-let format_reg(reg: Region) =
-    ""
-        |+ reg.Head
-        |+ reg.Content
-        |+ format_table reg.Table
-        |+ "\n"
-// **Remove the format_reg in 4.5.1+ releases** \\ 
+let format_reg (reg: Region) =
+    "" |+ reg.Head |+ reg.Content |+ format_table reg.Table |+ "\n"
+// **Remove the format_reg in 4.5.1+ releases** \\
 /// <summary>
 /// Makes a simple "Papers Section". The region container
 /// contains Header, Content, chat must to describe target
@@ -130,15 +134,15 @@ let format_reg(reg: Region) =
 /// <param name="header_level">Markdown Heading level</param>
 [<CompiledName "FormatRegionSmartHeader">]
 let format_reg2 (reg: Region, header_level: int) =
-    "#"
-        |> String.replicate header_level // <-- Header declaration must be separated by the value 
-        |+ $" {reg.Head}"
-        |+ reg.Content
-        |+ format_table reg.Table
-        |+ "\n"
+    "#" |> String.replicate header_level // <-- Header declaration must be separated by the value
+    |+ $" {reg.Head}"
+    |+ reg.Content
+    |+ format_table reg.Table
+    |+ "\n"
+
 /// <summary>
-/// Transforms all Regions collection into one Markdown written next 
-/// 
+/// Transforms all Regions collection into one Markdown written next
+///
 /// Warning: The Writers algorithm will be rewritten next time
 /// Reason: FlowerResults contains boxed values and unboxing mechanism
 /// couldn't be one-typed. (FlowerResult collection can contain different
@@ -151,6 +155,26 @@ let format_reg2 (reg: Region, header_level: int) =
 /// </summary>
 /// <param name="list"></param>
 [<CompiledName "FormatRegions">]
-let rec format_regs(list: 'TIteratable) = 
-    
-    0
+let format_regs (list: IEnumerable<Region>) =
+    let regs = list |> Seq.map format_reg
+
+    String.Join("\n", regs)
+
+/// <summary>
+/// Transforms all Regions collection into one Markdown written next
+///
+/// Warning: The Writers algorithm will be rewritten next time
+/// Reason: FlowerResults contains boxed values and unboxing mechanism
+/// couldn't be one-typed. (FlowerResult collection can contain different
+/// typed entries)
+/// </summary>
+/// <param name="list"></param>
+[<CompiledName "FormatTables">]
+let format_tables (list: IEnumerable<DataTable>) =
+    let regs = list |> Seq.map format_table
+
+    String.Join("\n", regs)
+
+[<CompiledName "Write">]
+let write (results: IEnumerable<FlowerSeedResult>) = "" |+ $"Generated at: {DateTime.Now}"
+// iterate items like

@@ -1,4 +1,4 @@
-﻿namespace SunFlower.Services
+﻿namespace SunFlower.Kernel.Services
 
 //
 // CoffeeLake 2024-2025

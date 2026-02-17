@@ -6,7 +6,7 @@
 //
 // @creator: atolstopyatov2017@vk.com
 //
-module SunFlower.Writers.FlowerMarkdownWriter
+module SunFlower.Kernel.Writers.FlowerMarkdownWriter
 
 open System
 open System.Collections.Generic

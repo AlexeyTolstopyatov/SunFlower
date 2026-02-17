@@ -1,10 +1,10 @@
-﻿namespace SunFlower.Services
+﻿namespace SunFlower.Kernel.Services
 
 open System
 open System.Collections.Generic
 open System.IO
 open System.Reflection
-open SunFlower
+open SunFlower.Kernel
 open SunFlower.Abstractions
 open Microsoft.FSharp.Collections
 

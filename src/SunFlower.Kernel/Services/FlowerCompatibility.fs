@@ -1,11 +1,11 @@
-﻿namespace SunFlower.Services
+﻿namespace SunFlower.Kernel.Services
 
 open System
 open System.Data
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core
-open SunFlower
+open SunFlower.Kernel
 open SunFlower.Abstractions
 
 //

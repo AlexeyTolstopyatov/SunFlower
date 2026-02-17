@@ -23,7 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\SunFlower.Terminal\SunFlower.Terminal.fsproj" />
-      <ProjectReference Include="..\..\src\SunFlower\SunFlower.fsproj" />
+      <ProjectReference Include="..\..\src\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
     </ItemGroup>
 
 </Project>

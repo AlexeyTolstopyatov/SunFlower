@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunFlower.Windows", "src\Su
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Abstractions", "src\SunFlower.Abstractions\SunFlower.Abstractions.fsproj", "{533AEE8E-0D88-48E1-8FAA-8856F743B104}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower", "src\SunFlower\SunFlower.fsproj", "{CD4E162D-926A-42F1-906F-F135B7871BF2}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Kernel", "src\SunFlower.Kernel\SunFlower.Kernel.fsproj", "{CD4E162D-926A-42F1-906F-F135B7871BF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

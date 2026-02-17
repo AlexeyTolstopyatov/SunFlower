@@ -2,8 +2,8 @@
 using System.Windows.Input;
 using HandyControl.Controls;
 using Microsoft.Win32;
-using SunFlower.Readers;
-using SunFlower.Services;
+using SunFlower.Kernel.Readers;
+using SunFlower.Kernel.Services;
 using SunFlower.Windows.Attributes;
 using SunFlower.Windows.Views;
 

@@ -3,7 +3,7 @@ using SunFlower.Windows.ViewModels.Tabs;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using SunFlower.Abstractions;
-using SunFlower.Services;
+using SunFlower.Kernel.Services;
 using SunFlower.Windows.Services;
 
 namespace SunFlower.Windows.ViewModels;

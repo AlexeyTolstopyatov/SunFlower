@@ -1,8 +1,8 @@
 using System.Data;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
-using SunFlower.Services;
-using SunFlower.Writers;
+using SunFlower.Kernel.Services;
+using SunFlower.Kernel.Writers;
 
 namespace SunFlower.Connection;
 

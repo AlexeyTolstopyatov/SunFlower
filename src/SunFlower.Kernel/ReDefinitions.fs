@@ -1,4 +1,4 @@
-﻿namespace SunFlower
+﻿namespace SunFlower.Kernel
 
 // This is a once module what you can legal copy //
 

@@ -1,4 +1,4 @@
-﻿namespace SunFlower.Readers
+﻿namespace SunFlower.Kernel.Readers
 
 open System
 open System.IO

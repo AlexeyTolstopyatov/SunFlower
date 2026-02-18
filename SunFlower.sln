@@ -14,6 +14,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Abstractions", "s
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Kernel", "src\SunFlower.Kernel\SunFlower.Kernel.fsproj", "{CD4E162D-926A-42F1-906F-F135B7871BF2}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower", "src\SunFlower\SunFlower.fsproj", "{6C7F0049-B4BA-4234-B826-79ABF5973424}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,7 @@ Global
 		{E973C340-3C8B-471D-A6B9-CE76C151D738} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
 		{533AEE8E-0D88-48E1-8FAA-8856F743B104} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
 		{CD4E162D-926A-42F1-906F-F135B7871BF2} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
+		{6C7F0049-B4BA-4234-B826-79ABF5973424} = {4F203762-8AF3-432A-BC7F-A1DBEFECFD3F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7CE1CDE6-91FF-4E8F-8213-DFEC1790B084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,5 +50,9 @@ Global
 		{CD4E162D-926A-42F1-906F-F135B7871BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD4E162D-926A-42F1-906F-F135B7871BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD4E162D-926A-42F1-906F-F135B7871BF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C7F0049-B4BA-4234-B826-79ABF5973424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7F0049-B4BA-4234-B826-79ABF5973424}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C7F0049-B4BA-4234-B826-79ABF5973424}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7F0049-B4BA-4234-B826-79ABF5973424}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Compile Include="Models\FileInfoModel.fs" />
+        <Compile Include="Models\PluginInfoModel.fs" />
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
@@ -41,6 +42,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Registry\recent.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     
 </Project>

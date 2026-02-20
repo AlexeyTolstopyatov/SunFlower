@@ -105,46 +105,65 @@
                         <Image Source="/Assets/convert48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <!--
+                    Menu -> Call to Kernel
+                    
+                    Bound keys: Ctrl+K to the parent control (Window)
+                    Calls the new shell session with target SunFlower.Terminal .NET
+                    assembly 
+                -->
+                <MenuItem>
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Call to Kernel"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+K"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/paper48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </Menu>
         </StackPanel>
         <Grid
             Background="{StaticResource CloudTileBrush}"
             Grid.Column="1">
             <ListBox
+                ItemsSource="{Binding Recent}"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 SelectionMode="Single"
                 Margin="20">
-                <ListBoxItem>
-                    <ListBoxItem.Content>
-                        <WrapPanel>
-                            <Image Source="/Assets/convert48.png"/>
-                            <StackPanel
-                                VerticalAlignment="Center">
-                                <TextBlock
-                                    Text="LabVIEW runtime.dll"/>
-                                <TextBlock
-                                    Text="Portable Executable (Windows NT)"
-                                    Foreground="{StaticResource SecondaryTextBrush}"/>
-                            </StackPanel>
-                        </WrapPanel>
-                    </ListBoxItem.Content>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <ListBoxItem.Content>
-                        <WrapPanel>
-                            <Image Source="/Assets/convert48.png"/>
-                            <StackPanel
-                                VerticalAlignment="Center">
-                                <TextBlock
-                                    Text="DOSCALL1.dll"/>
-                                <TextBlock
-                                    Text="Linear Executable (Win386 - OS/2)"
-                                    Foreground="{StaticResource SecondaryTextBrush}"/>
-                            </StackPanel>
-                        </WrapPanel>
-                    </ListBoxItem.Content>
-                </ListBoxItem>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ListBoxItem>
+                            <ListBoxItem.ContextFlyout>
+                                <Flyout
+                                    Content="{Binding Type}"/>
+                            </ListBoxItem.ContextFlyout>
+                            <ListBoxItem.Content>
+                                <WrapPanel>
+                                    <Image 
+                                        Source="/Assets/convert48.png"/>
+                                    <StackPanel
+                                        VerticalAlignment="Center">
+                                        <TextBlock
+                                            Text="{Binding Name}"/>
+                                        <TextBlock
+                                            Text="{Binding Path}"
+                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+                                    </StackPanel>
+                                </WrapPanel>
+                            </ListBoxItem.Content>
+                        </ListBoxItem>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
     </Grid>

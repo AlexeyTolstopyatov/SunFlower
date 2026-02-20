@@ -2,7 +2,12 @@
 
 open System
 open SunFlower.Kernel.Readers
-
+// CoffeeLake (C) 2026-*
+// MIT
+//
+// This code contains abstraction under the Sunflower kernel
+// Middleware fully copies the by-value SunFlower.Kernel.FlowerFileInfo
+// datatype. Uses by high-level (client) entities 
 [<Class>]
 type FileInfoModel(seeker: FlowerFileInfo) =
     /// <summary>

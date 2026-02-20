@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Models\"/>
+        <Compile Include="Models\FileInfoModel.fs" />
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
@@ -38,4 +38,9 @@
         <HintPath>..\..\..\HandyControls\src\Avalonia\HandyControl_Avalonia\bin\Debug\net7.0\HandyControl.dll</HintPath>
       </Reference>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
+    </ItemGroup>
+    
 </Project>

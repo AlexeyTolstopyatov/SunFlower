@@ -1,6 +1,10 @@
 ﻿namespace SunFlower.ViewModels
 
+open SunFlower.Models
+
 type MainWindowViewModel() =
     inherit ViewModelBase()
 
-    member this.Greeting = "Welcome to Avalonia!"
+    member this.Version: string = "5.0.0.0"
+    member this.Recent: List<FileInfoModel> = []
+    

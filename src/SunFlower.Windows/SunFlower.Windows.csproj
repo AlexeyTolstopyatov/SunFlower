@@ -53,7 +53,7 @@
   <ItemGroup>
     <None Remove="Assets\cloud.png" />
     <Resource Include="Assets\cloud.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <None Remove="Assets\sunflower512.png" />
     <None Remove="Assets\sunflower.svg" />

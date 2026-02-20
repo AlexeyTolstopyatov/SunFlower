@@ -3,21 +3,149 @@
         xmlns:vm="using:SunFlower.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d" 
         x:Class="SunFlower.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
+        Background="{StaticResource RegionBrush}"
         d:DesignWidth="600" 
         d:DesignHeight="480"
-        Width="600"
-        Height="480"
         x:DataType="vm:MainWindowViewModel">
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) -->
+        <!-- 
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) 
+        -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-    
-    <Grid>
-        <Button Content="Base"/>
+    <!--
+        Leftside - Loaded Components information
+        (icon + SunFlower version)
+        List of loaded components|contract version
+        
+        RightSide - DataTable of recent files
+        
+        NonClientArea - Menu from WPF (open, converter, ...)
+    -->
+    <Grid
+        ColumnDefinitions="250,*">
+        <StackPanel
+            Grid.Column="0"
+            Background="{StaticResource RegionBrush}">
+            <Grid
+                Margin="10"
+                ColumnDefinitions="64,*">
+                <Image
+                    HorizontalAlignment="Left"
+                    Source="/Assets/sunflower256.png"
+                    Width="64"/>
+                <StackPanel
+                    Margin="10,30"
+                    Grid.Column="1">
+                    <TextBlock 
+                        Text="SunFlower"/>
+                    <TextBlock
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="{Binding Version, FallbackValue=5.0.0.0}"/>
+                </StackPanel>
+            </Grid>
+            <!--
+                Menu items here fixed and no data models bound here
+                This is a simple menu instance which represents startup actions
+            -->
+            <Menu>
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <!--
+                    Menu -> Open
+                    
+                    Bound keys: Ctrl+N to the parent control (Window)
+                    Calls new file Opening dialog before main Workspace will be initialized 
+                -->
+                <MenuItem>
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Open"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+N"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/open48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <!--
+                    Menu -> Convert
+                    
+                    Bound keys: Ctrl+W to the parent control (Window)
+                    Calls the Converter window (converts various data types) 
+                -->
+                <MenuItem>
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Convert"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+W"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/convert48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+        <Grid
+            Background="{StaticResource CloudTileBrush}"
+            Grid.Column="1">
+            <ListBox
+                Background="Transparent"
+                BorderBrush="Transparent"
+                SelectionMode="Single"
+                Margin="20">
+                <ListBoxItem>
+                    <ListBoxItem.Content>
+                        <WrapPanel>
+                            <Image Source="/Assets/convert48.png"/>
+                            <StackPanel
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    Text="LabVIEW runtime.dll"/>
+                                <TextBlock
+                                    Text="Portable Executable (Windows NT)"
+                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                        </WrapPanel>
+                    </ListBoxItem.Content>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <ListBoxItem.Content>
+                        <WrapPanel>
+                            <Image Source="/Assets/convert48.png"/>
+                            <StackPanel
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    Text="DOSCALL1.dll"/>
+                                <TextBlock
+                                    Text="Linear Executable (Win386 - OS/2)"
+                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                        </WrapPanel>
+                    </ListBoxItem.Content>
+                </ListBoxItem>
+            </ListBox>
+        </Grid>
     </Grid>
 </Window>

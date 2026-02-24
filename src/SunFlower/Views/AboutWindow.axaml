@@ -1,0 +1,108 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SunFlower.ViewModels"
+        mc:Ignorable="d"
+        Width="800"
+        Height="450"
+        SizeToContent="Height"
+        d:DesignWidth="600" 
+        d:DesignHeight="480"
+        x:DataType="{x:Type vm:AboutViewModel}"
+        Background="{DynamicResource RegionBrush}"
+        CanMinimize="False"
+        CanMaximize="False"
+        Icon="/Assets/sunflower256.png"
+        x:Class="SunFlower.Views.AboutWindow"
+        Title="SunFlower - About">
+    <Window.DataContext>
+        <vm:AboutViewModel/>
+    </Window.DataContext>
+    <Grid
+        ColumnDefinitions="250, *"
+        Background="{StaticResource CloudTileBrush}">
+        <!--Minimal panel with common information-->
+        <StackPanel
+            Background="{DynamicResource RegionBrush}">
+            <Grid
+                Margin="10"
+                ColumnDefinitions="64, *">
+                <Image
+                    HorizontalAlignment="Left"
+                    Source="/Assets/sunflower256.png"
+                    Width="64"/>
+                <StackPanel
+                    Margin="10,30"
+                    Grid.Column="1">
+                    <TextBlock 
+                        Text="SunFlower"/>
+                    <TextBlock
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="{Binding}"/>
+                </StackPanel>
+            </Grid>
+            <TextBlock
+                TextWrapping="WrapWithOverflow"
+                Margin="10"
+                Text="{Binding AboutText}"/>
+        </StackPanel>
+        <!--Connected plugins-->
+        <ItemsControl
+            Grid.Column="1"
+            Margin="10,10"
+            ItemsSource="{Binding SystemTable}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <!-- Expander (name.dll    1.2.0.0) -->
+                    <Expander
+                        BorderBrush="Transparent">
+                        <Expander.Header>
+                            <Grid
+                                ColumnDefinitions="Auto, *">
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding Name}"/>
+                                <TextBlock
+                                    Text="{Binding Version}"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Grid.Column="1"/>
+                            </Grid>
+                        </Expander.Header>
+                        <StackPanel>
+                            <ListBox
+                                SelectionMode="Toggle"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                ItemsSource="{Binding Contracts}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <ListBoxItem>
+                                            <WrapPanel>
+                                                <Image 
+                                                    Source="/Assets/convert48.png"/>
+                                                <StackPanel
+                                                    VerticalAlignment="Center">
+                                                    <TextBlock
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding Item1}"/>
+                                                    <TextBlock
+                                                        HorizontalAlignment="Left"
+                                                        Text="{Binding Item2}"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                                </StackPanel>
+                                            </WrapPanel>
+                                        </ListBoxItem>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>
+

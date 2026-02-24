@@ -1,22 +1,21 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:SunFlower.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
         mc:Ignorable="d" 
         x:Class="SunFlower.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="{StaticResource RegionBrush}"
         d:DesignWidth="600" 
         d:DesignHeight="480"
-        x:DataType="vm:MainWindowViewModel">
+        x:DataType="viewModels:MainWindowViewModel">
     <Design.DataContext>
         <!-- 
             This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) 
         -->
-        <vm:MainWindowViewModel/>
+        <viewModels:MainWindowViewModel/>
     </Design.DataContext>
     <!--
         Leftside - Loaded Components information
@@ -129,42 +128,33 @@
                         <Image Source="/Assets/paper48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <!--
+                    Menu -> About
+                    
+                    Calls the About control with DLLs metadata and
+                    bound contracts of all plugins in the /Plugins directory
+                -->
+                <MenuItem
+                    ToggleType="CheckBox"
+                    Click="OpenAboutClick">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="About"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/sunflower256.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </Menu>
         </StackPanel>
         <Grid
             Background="{StaticResource CloudTileBrush}"
             Grid.Column="1">
-            <ListBox
-                ItemsSource="{Binding Recent}"
-                Background="Transparent"
-                BorderBrush="Transparent"
-                SelectionMode="Single"
-                Margin="20">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <ListBoxItem>
-                            <ListBoxItem.ContextFlyout>
-                                <Flyout
-                                    Content="{Binding Type}"/>
-                            </ListBoxItem.ContextFlyout>
-                            <ListBoxItem.Content>
-                                <WrapPanel>
-                                    <Image 
-                                        Source="/Assets/convert48.png"/>
-                                    <StackPanel
-                                        VerticalAlignment="Center">
-                                        <TextBlock
-                                            Text="{Binding Name}"/>
-                                        <TextBlock
-                                            Text="{Binding Path}"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
-                                    </StackPanel>
-                                </WrapPanel>
-                            </ListBoxItem.Content>
-                        </ListBoxItem>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            
         </Grid>
     </Grid>
 </Window>

@@ -1,0 +1,7 @@
+﻿Sunflower is a reverse engineering framework based on ".NET".
+Having hybrid architecture, Sunflower is fully splitting functional
+to calling assemblies and "Flower"-interfaces instead of embedding them
+in the client or kernel applications.
+
+Sunflower plugins represents static analysis in general,
+but support of ".NET 8.0" from the plugin-side extends this functional.

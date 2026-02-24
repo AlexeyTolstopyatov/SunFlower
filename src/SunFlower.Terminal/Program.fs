@@ -120,11 +120,11 @@ module App =
             let result = FlowerCompatibility.get path
             DataView.print_table result
         | CheckAll ->
-            let result = FlowerCompatibility.get_forall ()
+            let result = FlowerCompatibility.getForAll ()
             DataView.print_table result
         | ExplainSingle path ->
             let result =
-                FlowerCompatibility.get_verbose path |> Seq.toList |> List.iter (printfn "%s")
+                FlowerCompatibility.getAndExplain path |> Seq.toList |> List.iter (printfn "%s")
 
             result
             ()

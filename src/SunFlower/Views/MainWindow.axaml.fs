@@ -2,6 +2,7 @@ namespace SunFlower.Views
 
 open Avalonia
 open Avalonia.Controls
+open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
 
 type MainWindow() as this = 
@@ -14,3 +15,6 @@ type MainWindow() as this =
         this.AttachDevTools()
 #endif
         AvaloniaXamlLoader.Load(this)
+    
+    member this.OpenAboutClick(_: obj, _: RoutedEventArgs) =
+        AboutWindow().Show()

@@ -12,7 +12,6 @@ open SunFlower.Abstractions
 
 [<Class>]
 type PluginInfoModel() =
-        
     member this.Instance: string = "?"
     member this.Contract: string = "?"
     

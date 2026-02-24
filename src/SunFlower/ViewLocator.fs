@@ -19,4 +19,4 @@ type ViewLocator() =
                 else
                     downcast Activator.CreateInstance(typ)
                 
-        member this.Match(data) = data :? ViewModelBase
+        member this.Match(data) = data :? AvaloniaViewModel

@@ -5,7 +5,7 @@
         xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
         mc:Ignorable="d" 
         x:Class="SunFlower.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/sunflower256.png"
         Background="{StaticResource RegionBrush}"
         d:DesignWidth="600" 
         d:DesignHeight="480"
@@ -59,10 +59,11 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
                 <!--
-                    Menu -> Open
+                    Menu -> Import
                     
-                    Bound keys: Ctrl+N to the parent control (Window)
-                    Calls new file Opening dialog before main Workspace will be initialized 
+                    JUST ADDS file into "Recent files" collection.
+                    From the selected item in "Recent files" you can see
+                    main workspace window.   
                 -->
                 <MenuItem>
                     <MenuItem.Header>
@@ -70,7 +71,7 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="Open"/>
+                                Text="Import"/>
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
@@ -149,12 +150,15 @@
                         <Image Source="/Assets/sunflower256.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                
             </Menu>
         </StackPanel>
         <Grid
             Background="{StaticResource CloudTileBrush}"
             Grid.Column="1">
-            
+            <ContentControl>
+                
+            </ContentControl>
         </Grid>
     </Grid>
 </Window>

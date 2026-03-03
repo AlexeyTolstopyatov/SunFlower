@@ -12,3 +12,5 @@ open SunFlower.Kernel.Services
 let getPluginsTable(): CorList<FlowerVersionInfo> =
     FlowerCompatibility.getFlowerVersionInfoList()
 
+let getRecentFiles() =
+    0

@@ -8,14 +8,13 @@ open SunFlower.Kernel.Services
 open SunFlower.Services
 
 [<Class>]
-type AboutViewModel() as this =
+type AboutViewModel() =
     inherit AvaloniaViewModel()
     let mutable systemTable: CorList<FlowerVersionInfo> = CorList()
     let mutable aboutText: string = ""
     do
         systemTable <- StartupService.getPluginsTable()
-        this.SystemTable <- StartupService.getPluginsTable()
-        aboutText <- File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", "about.txt"))
+        aboutText   <- File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", "about.txt"))
         ()
     
     member this.SystemTable

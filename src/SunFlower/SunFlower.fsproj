@@ -4,19 +4,24 @@
         <TargetFramework>net8.0</TargetFramework>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>7.0</LangVersion>
+        <Version>5.0.0</Version>
+        <AssemblyVersion>5.0.0.0</AssemblyVersion>
+        <FileVersion>5.0.0.0</FileVersion>
     </PropertyGroup>
     <!-- Headers -->
     <ItemGroup>
+        <Compile Include="Views\RecentControl.axaml.fs" />
         <Compile Include="Services\StartupService.fs" />
-        <Compile Include="Models\FileInfoModel.fs" />
-        <Compile Include="Models\PluginInfoModel.fs" />
+        <Compile Include="Services\JsonService.fs" />
+        <Folder Include="Models\" />
     </ItemGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
         <Compile Include="ViewModels\AvaloniaViewModel.fs" />
         <Compile Include="ViewModels\AboutViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
+        <Compile Include="ViewModels\RecentViewModel.fs" />
         <Compile Include="Views\AboutWindow.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
         <Compile Include="ViewLocator.fs" />

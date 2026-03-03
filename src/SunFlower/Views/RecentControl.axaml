@@ -1,0 +1,63 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SunFlower.Views.RecentControl"
+             x:DataType="{x:Type viewModels:RecentViewModel}">
+    <UserControl.DataContext>
+        <viewModels:RecentViewModel/>
+    </UserControl.DataContext>
+    <ListBox
+        SelectionMode="Single"
+        Margin="10"
+        Background="Transparent"
+        BorderBrush="Transparent"
+        ItemsSource="{Binding Recent}">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <ListBoxItem>
+                    <ListBoxItem.ContextFlyout>
+                        <Flyout>
+                            <Menu
+                                Opacity="0.9">
+                                <MenuItem
+                                    Header="{Binding Size}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Assets/avalonia-logo.ico"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </Menu>
+                        </Flyout>
+                    </ListBoxItem.ContextFlyout>
+                    <Grid
+                        ColumnDefinitions="48, Auto">
+                        <Image 
+                            Source="/Assets/file48.png"/>
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Grid.Column="1">
+                            <TextBlock 
+                                Text="{Binding Name}"/>
+                            <Grid
+                                ColumnDefinitions="Auto, Auto">
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Text="{Binding Path}"/>
+                                <TextBlock
+                                    Padding="2,0"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Text="{Binding Type}"
+                                />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </ListBoxItem>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

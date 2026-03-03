@@ -39,12 +39,12 @@
                         Text="SunFlower"/>
                     <TextBlock
                         Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="{Binding}"/>
+                        Text="Connected modules"/>
                 </StackPanel>
             </Grid>
             <TextBlock
                 TextWrapping="WrapWithOverflow"
-                Margin="10"
+                Margin="20"
                 Text="{Binding AboutText}"/>
         </StackPanel>
         <!--Connected plugins-->

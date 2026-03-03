@@ -59,7 +59,7 @@ module FlowerCompatibility =
     /// <summary>
     /// Checks if a plugin version is compatible with manager
     /// </summary>
-    let private isCompatible (pluginAttr: FlowerSeedContractAttribute) (managerMajor, managerMinor, _) =
+    let private isCompatible (pluginAttr: FlowerSeedContractAttribute) (managerMajor, _, _) =
         // Basic compatibility check: same major version
         pluginAttr.MajorVersion = managerMajor
     
@@ -161,8 +161,8 @@ module FlowerCompatibility =
         let managerVersion = getKernelContract()
         
         // Add manager info
-        let (major, minor, build) = managerVersion
-        table.Rows.Add($"{major}.{minor}.{build}", "SunFlower Kernel", true) |> ignore
+        let major, minor, build = managerVersion
+        table.Rows.Add($"{major}.{minor}.{build}", "Kernel", true) |> ignore
         //table.Rows.Add("", "", true) |> ignore  // Empty separator row
         
         // Process all assemblies in Plugins directory
@@ -210,7 +210,6 @@ module FlowerCompatibility =
             strings.Add($"Load error: {Path.GetFileName(path)}")
             strings.Add($"\tDetails: {ex.Message}")
         
-        
         strings
 
     [<CompiledName "GetForAllList">]
@@ -218,7 +217,7 @@ module FlowerCompatibility =
         // Collect metadata about Abstractions, Kernel, 
         // nested plugins into /Plugins directory.
         let list = CorList<FlowerVersionInfo>()
-        let (major, minor, build) = getKernelContract()
+        let major, minor, build = getKernelContract()
         let kernelVersionInfo = FileVersionInfo
                                     .GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Kernel.dll")
 
@@ -248,7 +247,3 @@ module FlowerCompatibility =
         | false -> ()
         // Return not-null list anyway. Nullable objects denied here
         list
-
-        
-
-        

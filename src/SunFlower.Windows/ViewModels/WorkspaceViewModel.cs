@@ -11,7 +11,7 @@ namespace SunFlower.Windows.ViewModels;
 public class WorkspaceViewModel : NotifyPropertyChanged
 {
     private readonly FlowerSeedManager _manager;
-    
+
     private FileModel _fileModel;
     public FileModel FileModel
     {
@@ -55,7 +55,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         _availablePlugins = [];
         _fileModel = new FileModel();
         _selectedTab = new StatusTab();
-        
+
         CloseTabCommand = new ActionCommand(CloseTab);
         SwitchToHexEditorCommand = new ActionCommand(OpenHexEditor);
         SwitchToHexViewerCommand = new ActionCommand(OpenHexViewer);
@@ -64,7 +64,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
         SwitchOnePluginReportCommand = new DelegateCommand<IFlowerSeed>(OnePluginMonacoReport);
         OpenNotEmptyTabs = new ActionCommand(OpenNotEmptyReflectionTabs);
         OpenPluginTabCommand = new DelegateCommand<IFlowerSeed>(OpenReflectionTab);
-        
+
         _manager = FlowerSeedManager
             .CreateInstance()
             .LoadAllFlowerSeeds();
@@ -132,7 +132,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
 
         OpenOrActivateTab(monacoTab);
     }
-    
+
     private void OpenMonacoReport()
     {
         var monacoTab = new MonacoTab
@@ -149,13 +149,13 @@ public class WorkspaceViewModel : NotifyPropertyChanged
     private void OpenReflectionTab(IFlowerSeed p)
     {
         var plugin = p;
-    
+
         // Load plugin if not loaded
         if (plugin.Status?.Results == null || !plugin.Status.Results.Any())
         {
             plugin.Main(_fileModel.FullName);
         }
-    
+
         var pluginTab = new ReflectionTab
         {
             Title = plugin.Seed,
@@ -163,7 +163,7 @@ public class WorkspaceViewModel : NotifyPropertyChanged
             Status = plugin.Status!,
             CanClose = true
         };
-    
+
         OpenOrActivateTab(pluginTab);
     }
 

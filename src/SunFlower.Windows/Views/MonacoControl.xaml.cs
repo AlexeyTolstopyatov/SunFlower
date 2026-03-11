@@ -8,15 +8,15 @@ namespace SunFlower.Windows.Views;
 public partial class MonacoControl : UserControl
 {
     private readonly MonacoManager _manager;
-        
+
     public MonacoControl()
     {
         InitializeComponent();
         _manager = new MonacoManager(View2);
-        
+
         Loaded += async (_, _) => await InitializeMonacoAsync();
     }
-        
+
     private async Task InitializeMonacoAsync()
     {
         if (DataContext is not MonacoTab tab)
@@ -24,10 +24,10 @@ public partial class MonacoControl : UserControl
             Growl.ErrorGlobal($"Unexpected DataContext: {DataContext}");
             return;
         }
-        
+
         List<FlowerSeedResult> results = [];
         Console.WriteLine($"Opening [{tab.Id}]");
-        
+
         foreach (var seed in tab.Plugins)
         {
             results.Add(new FlowerSeedResult(FlowerSeedEntryType.Strings)
@@ -47,7 +47,7 @@ public partial class MonacoControl : UserControl
 
         await UpdateContent(results);
     }
-        
+
     public async Task UpdateContent(List<FlowerSeedResult> results)
     {
         await _manager.UpdateMarkdownReportAsync(results);

@@ -35,13 +35,13 @@ public class WindowManager : NotifyPropertyChanged
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(windowInstance);
-        
+
         if (OpenedWindowsDictionary.TryGetValue(viewModel, out var openWindow))
         {
             ((TView)openWindow).Activate();
             return;
         }
-        
+
         windowInstance = new()
         {
             DataContext = viewModel
@@ -49,14 +49,14 @@ public class WindowManager : NotifyPropertyChanged
 
         windowInstance.Title = title;
         windowInstance.Closed += (s, e) => OpenedWindowsDictionary.Remove(viewModel);
-        
+
         OpenedWindowsDictionary.Add(viewModel, windowInstance);
-        
+
         if (!isDialog)
             windowInstance.Show();
         else
             windowInstance.ShowDialog();
-        
+
     }
     /// <summary>
     /// Force shows window
@@ -79,7 +79,7 @@ public class WindowManager : NotifyPropertyChanged
     /// <typeparam name="TView">expected type of window</typeparam>
     public void Close<TView>(object viewModel) where TView : Window, new()
     {
-        if (!OpenedWindowsDictionary.TryGetValue(viewModel, out var window)) 
+        if (!OpenedWindowsDictionary.TryGetValue(viewModel, out var window))
             return;
 
         ((TView)window).Close();

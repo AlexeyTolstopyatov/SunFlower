@@ -15,16 +15,16 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
 {
     private readonly RegistryManager _registryManager;
     private readonly WindowManager _windowManager;
-    
+
     public MainWindowViewModel()
     {
         _registryManager = RegistryManager.CreateInstance();
         _windowManager = new();
-        
+
         _recentTable = LoadRecentTableOnStartup();
         _loadedSeeds = [];
         _clientVersion = string.Empty;
-        
+
         _getFileCommand = new ActionCommand(GetFile);
         _getRecentFileCommand = new ActionCommand(GetRecentFile);
         _getNotImplementedGrowlCommand = new ActionCommand(GetNotImplementedGrowl);
@@ -53,7 +53,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         ClientVersion = "v";
         TellCurrentVersion();
     }
-    
+
     private string _clientVersion;
     private ICommand _clearCacheCommand;
     private DataTable _recentTable;
@@ -87,10 +87,10 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         RegistryManager.CreateInstance()
             .Of("recent")
             .Fill(ref result);
-        
+
         return result;
     }
-    
+
     private void ClearCache()
     {
         var target = Path.Combine(
@@ -116,7 +116,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         var ver =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Windows.dll")
                 .FileVersion ?? " undefined";
-        
+
         ClientVersion += ver;
     }
 }

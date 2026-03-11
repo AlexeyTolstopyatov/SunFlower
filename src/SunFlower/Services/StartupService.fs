@@ -5,7 +5,6 @@
 // module API 
 module SunFlower.Services.StartupService
 
-open System.Data
 open SunFlower.Kernel
 open SunFlower.Kernel.Services
 

@@ -11,7 +11,7 @@ public class DataGridWindowViewModel : NotifyPropertyChanged
     }
 
     private DataTable _table;
-    
+
     public DataTable Table
     {
         get => _table;
@@ -21,7 +21,7 @@ public class DataGridWindowViewModel : NotifyPropertyChanged
     private DataTable ReadTable()
     {
         DataTable t = new();
-        
+
         RegistryManager
             .CreateInstance()
             .Of("sizes")

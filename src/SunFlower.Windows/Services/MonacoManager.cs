@@ -15,8 +15,8 @@ public class MonacoManager
     {
         _webView = webView ?? throw new ArgumentNullException(nameof(webView));
         InitializeAsync();
-        
-        _webView.CoreWebView2InitializationCompleted += (s, e) => 
+
+        _webView.CoreWebView2InitializationCompleted += (s, e) =>
         {
             if (e.IsSuccess)
             {
@@ -34,7 +34,7 @@ public class MonacoManager
     {
         await InitializeWebView2();
     }
-    
+
     private async Task InitializeWebView2()
     {
         try
@@ -49,8 +49,8 @@ public class MonacoManager
 
             await _webView.EnsureCoreWebView2Async(env);
             _isWebViewInitialized = true;
-            
-            _webView.CoreWebView2.NavigationCompleted += (s, e) => 
+
+            _webView.CoreWebView2.NavigationCompleted += (s, e) =>
             {
                 if (e.IsSuccess)
                 {
@@ -83,11 +83,11 @@ public class MonacoManager
             await UpdateMarkdownReportAsync(results);
             return;
         }
-        
+
         try
         {
             var content = MarkdownProvider.Provide(results);
-            
+
             _webView.CoreWebView2.PostWebMessageAsString(content);
         }
         catch (Exception ex)

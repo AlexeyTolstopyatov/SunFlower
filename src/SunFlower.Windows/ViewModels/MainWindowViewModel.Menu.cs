@@ -22,7 +22,7 @@ public partial class MainWindowViewModel
     private ICommand _clearRecentFilesCommand;
     private ICommand _clearRecentFileCommand;
     private ICommand _getRegistryFileCommand;
-    
+
     public ICommand GetRecentFileCommand
     {
         get => _getRecentFileCommand;
@@ -90,15 +90,15 @@ public partial class MainWindowViewModel
                 Signature = Signature,
                 TypeString = TypeString
             };
-            
+
             if (FullName == string.Empty)
             {
                 Growl.ErrorGlobal("Missing target path");
                 return;
             }
-            
+
             var workspaceVm = new WorkspaceViewModel(model);
-            
+
             _windowManager.Show(
                 workspaceVm,
                 new WorkspaceWindow(),
@@ -113,7 +113,7 @@ public partial class MainWindowViewModel
             Growl.ErrorGlobal(e.Message);
         }
     }
-    
+
     /// <summary>
     /// Calls <see cref="OpenFileDialog"/> instance and,
     /// Starts common reader (remembers general characteristics)
@@ -140,23 +140,23 @@ public partial class MainWindowViewModel
         TypeString = result.Type;
         Signature = result.Sign;
         Size = $"{Math.Round(result.Size, 2)}K";
-        
+
         _registryManager
             .Of("recent")
             .Create(result);
-        
+
         RecentTable = LoadRecentTableOnStartup();
-        
+
         // Extensions recall
-        var inst = FlowerSeedManager.CreateInstance(); 
+        var inst = FlowerSeedManager.CreateInstance();
         var seeds = inst
             .LoadAllFlowerSeeds()
             .UpdateAllInvokedFlowerSeeds(dialog.FileName)
             .Seeds;
-        
+
         foreach (var seed in seeds)
             Seeds.Add(seed);
-        
+
         var model = new FileModel
         {
             Name = Name,
@@ -168,13 +168,13 @@ public partial class MainWindowViewModel
 
         // Call plugins Window/Main Workspace
         _windowManager.Show(
-            new WorkspaceViewModel(model), 
+            new WorkspaceViewModel(model),
             new WorkspaceWindow(),
             false,
             string.Empty
         );
     }
-    
+
     /// <summary>
     /// Shows notification "Not implemented yet" at Desktop
     /// </summary>
@@ -190,7 +190,7 @@ public partial class MainWindowViewModel
     private void ClearRecentFiles()
     {
         RecentTable.Clear();
-        
+
         _registryManager
             .Of("recent")
             .Create();
@@ -206,13 +206,13 @@ public partial class MainWindowViewModel
         {
             if (file is not DataRowView view)
                 return;
-            
+
             _registryManager
                 .Of("recent")
                 .Delete(view.Row, out var isSuccess);
-            
+
             view.Row.Delete();
-            
+
             if (!isSuccess)
                 throw new InvalidOperationException("Couldn't delete target from file");
         }

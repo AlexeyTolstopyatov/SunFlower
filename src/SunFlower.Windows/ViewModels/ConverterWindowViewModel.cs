@@ -13,7 +13,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
         _deleteSpacingCommand = new ActionCommand(DeleteSpacing);
         _reverseStringCommand = new ActionCommand(ReverseString);
     }
-    
+
     private string _bytes = string.Empty;
     private string _target = string.Empty;
     private int _index = 0;
@@ -55,7 +55,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
         get => _bytes;
         set => SetField(ref _bytes, value);
     }
-    
+
 
     private void Update()
     {
@@ -84,7 +84,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
     {
         if (ascii.Length % 2 != 0)
             return "";
-        
+
         string a;
         try
         {
@@ -97,7 +97,7 @@ public class ConverterWindowViewModel : NotifyPropertyChanged
         {
             a = e.Message;
         }
-        
+
         return a;
     }
 }

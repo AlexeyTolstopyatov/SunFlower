@@ -4,7 +4,7 @@ namespace SunFlower.Windows.ViewModels;
 
 public class HexViewModel : NotifyPropertyChanged
 {
-    public HexViewModel() : this(string.Empty) {}
+    public HexViewModel() : this(string.Empty) { }
     public FileReader? Reader { get; }
 
     public HexViewModel(string filePath)

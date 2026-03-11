@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
+        xmlns:views="clr-namespace:SunFlower.Views"
         mc:Ignorable="d" 
         x:Class="SunFlower.Views.MainWindow"
         Icon="/Assets/sunflower256.png"
@@ -18,13 +19,11 @@
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
     <!--
-        Leftside - Loaded Components information
+        Left side - Loaded Components information
         (icon + SunFlower version)
         List of loaded components|contract version
         
-        RightSide - DataTable of recent files
-        
-        NonClientArea - Menu from WPF (open, converter, ...)
+        Right Side - DataTable of recent files
     -->
     <Grid
         ColumnDefinitions="250,*">
@@ -65,7 +64,8 @@
                     From the selected item in "Recent files" you can see
                     main workspace window.   
                 -->
-                <MenuItem>
+                <MenuItem
+                    Command="{Binding SwitchOpening}">
                     <MenuItem.Header>
                         <DockPanel>
                             <TextBlock
@@ -81,14 +81,36 @@
                     <MenuItem.Icon>
                         <Image Source="/Assets/open48.png"/>
                     </MenuItem.Icon>
+                    
                 </MenuItem>
+                
+                <MenuItem
+                    Command="{Binding SwitchRecent}">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Recent"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+N"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/fedit48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                
                 <!--
                     Menu -> Convert
                     
                     Bound keys: Ctrl+W to the parent control (Window)
                     Calls the Converter window (converts various data types) 
                 -->
-                <MenuItem>
+                <MenuItem
+                    Command="{Binding SwitchOpening}">
                     <MenuItem.Header>
                         <DockPanel>
                             <TextBlock
@@ -150,14 +172,26 @@
                         <Image Source="/Assets/sunflower256.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                
             </Menu>
         </StackPanel>
         <Grid
             Background="{StaticResource CloudTileBrush}"
             Grid.Column="1">
-            <ContentControl>
-                
+            <!--
+                Binding at the View-side: Depending on given view model
+                from the ViewModel middleware -> Draw the View same type
+            -->
+            <ContentControl 
+                Content="{Binding CurrentViewModel.Value, UpdateSourceTrigger=PropertyChanged}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="{x:Type viewModels:RecentViewModel}">
+                        <views:RecentControl/>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type viewModels:ConsoleArgsViewModel}">
+                        <views:ConsoleArgsControl/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
             </ContentControl>
         </Grid>
     </Grid>

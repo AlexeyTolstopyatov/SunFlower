@@ -14,7 +14,7 @@ public class PropertiesViewModel : NotifyPropertyChanged
         _path = path;
     }
 
-    public PropertiesViewModel(): this([], "nothing to see") { }
+    public PropertiesViewModel() : this([], "nothing to see") { }
 
     public ObservableCollection<IFlowerSeed> Plugins
     {

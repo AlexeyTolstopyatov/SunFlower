@@ -11,19 +11,28 @@
     </PropertyGroup>
     <!-- Headers -->
     <ItemGroup>
-        <Compile Include="Views\RecentControl.axaml.fs" />
         <Compile Include="Services\StartupService.fs" />
         <Compile Include="Services\JsonService.fs" />
-        <Folder Include="Models\" />
+        <Compile Include="Models\RecentModel.fs" />
     </ItemGroup>
+    
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
         <Compile Include="ViewModels\AvaloniaViewModel.fs" />
+        <Compile Include="ViewModels\ConsoleArgsViewModel.fs" />
+        <Compile Include="ViewModels\RecentViewModel.fs" />
         <Compile Include="ViewModels\AboutViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
-        <Compile Include="ViewModels\RecentViewModel.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <Compile Include="Views\AboutWindow.axaml.fs" />
+        <Compile Include="Views\RecentControl.axaml.fs" />
+        <Compile Include="Views\ConsoleArgsControl.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
         <Compile Include="ViewLocator.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="Program.fs" />
@@ -45,7 +54,7 @@
 
     <ItemGroup>
       <Reference Include="HandyControl">
-        <HintPath>..\..\..\HandyControls\src\Avalonia\HandyControl_Avalonia\bin\Debug\net7.0\HandyControl.dll</HintPath>
+        <HintPath>..\..\external\HandyControl.dll</HintPath>
       </Reference>
     </ItemGroup>
 

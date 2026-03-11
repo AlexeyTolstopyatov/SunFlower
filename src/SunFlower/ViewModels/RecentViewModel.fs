@@ -1,20 +1,12 @@
 ﻿namespace SunFlower.ViewModels
 
-open CommunityToolkit.Mvvm.ComponentModel
-open SunFlower.Kernel
-open SunFlower.Kernel.Readers
-open SunFlower.Services
+open SunFlower.Models
 
 type RecentViewModel() =
     inherit AvaloniaViewModel()
-    let mutable _files: CorList<FlowerFileInfo> = CorList()
     
-    do
-        _files <- JsonService.load "recent"
-                  |> List.toArray
-                  |> CorList 
-        
-    [<ObservableProperty>]
+    let mutable _model = RecentModel()
+    
     member this.Recent
-        with get () = _files
-        and set x = this.SetProperty(ref _files, x) |> ignore
+        with get () = _model.Recent
+        and set x = this.SetProperty(ref _model.Recent, x) |> ignore

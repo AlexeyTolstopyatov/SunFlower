@@ -11,7 +11,7 @@ public sealed class RegistryManager
 {
     private string _fileName;
     public static RegistryManager CreateInstance() => new(string.Empty);
-    
+
     /// <param name="fileName"> JUST file name. Without path and extension. </param>
     private RegistryManager(string fileName)
     {
@@ -31,7 +31,7 @@ public sealed class RegistryManager
         File.WriteAllText(_fileName, "[]");
         return this;
     }
-    
+
     public RegistryManager Delete(DataRow row, out bool success)
     {
         if (File.Exists(_fileName))
@@ -72,21 +72,21 @@ public sealed class RegistryManager
     public RegistryManager Create<T>(T @struct)
     {
         JArray resultList;
-        
+
         if (File.Exists(_fileName))
         {
             var recentJson = File.ReadAllText(_fileName);
             resultList = JArray.Parse(recentJson);
-            
+
             var openedFileObj = JObject.FromObject(@struct!);
             resultList.Add(openedFileObj);
-        
+
             File.WriteAllText(_fileName, resultList.ToString(Formatting.Indented));
         }
         else
         {
             File.CreateText(_fileName);
-            
+
             var openedFileObj = JObject.FromObject(@struct!);
             resultList = [openedFileObj];
 
@@ -101,7 +101,7 @@ public sealed class RegistryManager
     /// <returns></returns>
     public RegistryManager Fill<T>(ref T obj)
     {
-        if (obj == null) 
+        if (obj == null)
             throw new ArgumentNullException(nameof(obj));
 
         try

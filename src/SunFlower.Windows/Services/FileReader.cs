@@ -14,7 +14,7 @@ public class FileReader : IDisposable
             Stream = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
             Reader = new(Stream);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // ignore
             Console.WriteLine(e);

@@ -13,10 +13,16 @@
         <viewModels:ConverterViewModel/>
     </UserControl.DataContext>
     <Grid
-        ColumnDefinitions="300,*"
+        ColumnDefinitions="250,*"
         HorizontalAlignment="Left"
         VerticalAlignment="Stretch">
-        <!-- Intel machine words -->
+        <!-- 
+            Stack panel of Converters-Expanders
+            
+            Machine words
+            ASCII bytes/strings
+            Unicode bytes/strings
+         -->
         <StackPanel
             Margin="10"
             Grid.Column="1">
@@ -123,7 +129,7 @@
                                             UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Grid>
-            </Expander>    
+            </Expander>
             <Expander
                 Header="Hexadecimal/String -> Unicodes"
                 Margin="10, 0"
@@ -157,8 +163,12 @@
                                             UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Grid>
-            </Expander>   
+            </Expander>
         </StackPanel>
+        <!--
+            Converter panel: help page & main converter field:
+            binding of AnyTypeText
+        -->
         <StackPanel
             Grid.Column="0"
             Background="{DynamicResource RegionBrush}">
@@ -175,7 +185,7 @@
                 <LineBreak/>
             </TextBlock>
             <TextBox
-                Margin="10,0"
+                Margin="20,0"
                 Text="{Binding AnyTypeText, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock
                 TextWrapping="Wrap"

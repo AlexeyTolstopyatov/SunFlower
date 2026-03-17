@@ -6,7 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:SunFlower.Windows.ViewModels"
         mc:Ignorable="d"
-        Background="{StaticResource ReverseTextBrush}"
+        Background="{StaticResource RegionBrush}"
         Title="Selected Image dialog" 
         MaxWidth="300"
         SizeToContent="WidthAndHeight">

@@ -15,10 +15,13 @@
         <Compile Include="Services\JsonService.fs" />
         <Compile Include="Models\RecentModel.fs" />
     </ItemGroup>
-    
+    <ItemGroup>
+        <Compile Include="Converter\DataConverters.fs" />
+    </ItemGroup>
     <ItemGroup>
         <Compile Include="ViewModels\AvaloniaViewModel.fs" />
         <Compile Include="ViewModels\ConsoleArgsViewModel.fs" />
+        <Compile Include="ViewModels\ConverterViewModel.fs" />
         <Compile Include="ViewModels\RecentViewModel.fs" />
         <Compile Include="ViewModels\AboutViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
@@ -27,6 +30,7 @@
     <ItemGroup>
         <Compile Include="Views\AboutWindow.axaml.fs" />
         <Compile Include="Views\RecentControl.axaml.fs" />
+        <Compile Include="Views\ConverterControl.axaml.fs" />
         <Compile Include="Views\ConsoleArgsControl.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
     </ItemGroup>
@@ -40,7 +44,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.12" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
         <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />

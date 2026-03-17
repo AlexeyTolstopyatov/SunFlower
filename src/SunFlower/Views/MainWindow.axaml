@@ -10,6 +10,8 @@
         Background="{StaticResource RegionBrush}"
         d:DesignWidth="600" 
         d:DesignHeight="480"
+        Width="1024"
+        Height="500"
         x:DataType="viewModels:MainWindowViewModel">
     <Design.DataContext>
         <!-- 
@@ -81,7 +83,6 @@
                     <MenuItem.Icon>
                         <Image Source="/Assets/open48.png"/>
                     </MenuItem.Icon>
-                    
                 </MenuItem>
                 
                 <MenuItem
@@ -102,7 +103,6 @@
                         <Image Source="/Assets/fedit48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                
                 <!--
                     Menu -> Convert
                     
@@ -110,7 +110,7 @@
                     Calls the Converter window (converts various data types) 
                 -->
                 <MenuItem
-                    Command="{Binding SwitchOpening}">
+                    Command="{Binding SwitchConverter}">
                     <MenuItem.Header>
                         <DockPanel>
                             <TextBlock
@@ -190,6 +190,10 @@
                     
                     <DataTemplate DataType="{x:Type viewModels:ConsoleArgsViewModel}">
                         <views:ConsoleArgsControl/>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type viewModels:ConverterViewModel}">
+                        <views:ConverterControl/>
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

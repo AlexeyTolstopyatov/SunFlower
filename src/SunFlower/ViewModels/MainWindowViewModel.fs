@@ -32,4 +32,5 @@ type MainWindowViewModel() =
         this.CurrentViewModel <- Some(RecentViewModel())
     member this.SwitchOpening() =
         this.CurrentViewModel <- Some(ConsoleArgsViewModel())
-        
+    member this.SwitchConverter() =
+        this.CurrentViewModel <- Some(ConverterViewModel())

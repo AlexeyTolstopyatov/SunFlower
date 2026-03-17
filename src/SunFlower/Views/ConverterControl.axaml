@@ -1,0 +1,137 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
+             xmlns:c="clr-namespace:SunFlower.Converter"
+             mc:Ignorable="d" 
+             xmlns:hc="clr-namespace:HandyControl.Controls;assembly=HandyControl"
+             d:DesignWidth="800" 
+             d:DesignHeight="450"
+             x:DataType="{x:Type viewModels:ConverterViewModel}"
+             x:Class="SunFlower.Views.ConverterControl">
+    <UserControl.DataContext>
+        <viewModels:ConverterViewModel/>
+    </UserControl.DataContext>
+    <Grid
+        Margin="30"
+        ColumnDefinitions="250,60,200,200"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
+        <StackPanel>
+            
+            <TextBox
+                Text="{Binding AnyTypeText, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock
+                TextWrapping="WrapWithOverflow"
+                Text="Input of the converter is a decimal numbers sequence or string"/>
+            
+            <!-- Intel machine words -->
+            <Grid
+                Margin="0,10"
+                ColumnDefinitions="Auto, *">
+                <StackPanel>
+                    <TextBox
+                        IsReadOnly="True"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Text="BYTE"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Text="WORD"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Text="DWORD"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Text="QWORD"/>
+
+                </StackPanel>
+                <StackPanel
+                    Grid.Column="1">
+                    <TextBox
+                        IsReadOnly="True"
+                        Text="{Binding AnyTypeText, 
+                                Mode=OneWay, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                Converter={x:Static c:DataConverters.UInt8Converter},
+                                StringFormat='0x{0:X2}',
+                                FallbackValue=0x00}"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Text="{Binding AnyTypeText, 
+                                Mode=OneWay, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                Converter={x:Static c:DataConverters.UInt16Converter},
+                                StringFormat='0x{0:X4}',
+                                FallbackValue=0x0000}"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Text="{Binding AnyTypeText, 
+                                Mode=OneWay,
+                                Converter={x:Static c:DataConverters.UInt32Converter}, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                StringFormat='0x{0:X8}',
+                                FallbackValue=0x00000000}"/>
+                    <TextBox
+                        IsReadOnly="True"
+                        Text="{Binding AnyTypeText, 
+                                Mode=OneWay, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                Converter={x:Static c:DataConverters.UInt64Converter},
+                                StringFormat='0x{0:X16}',
+                                FallbackValue=0x0000000000000000}"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1">
+            <TextBox
+                IsReadOnly="True"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Text="ASCII"/>
+            <TextBox
+                IsReadOnly="True"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Text="Unicode"/>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="2">
+            <TextBox
+                IsReadOnly="True"
+                Text="{Binding AnyTypeText, 
+                                Converter={x:Static c:DataConverters.AsciiBytesConverter}, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                Mode=OneWay}"/>
+            <TextBox
+                IsReadOnly="True"
+                Text="{Binding AnyTypeText,
+                                Converter={x:Static c:DataConverters.UnicodeBytesConverter},
+                                UpdateSourceTrigger=PropertyChanged,
+                                Mode=OneWay}"/>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="3">
+            <TextBox
+                IsReadOnly="True"
+                Text="{Binding AnyTypeText, 
+                                Converter={x:Static c:DataConverters.AsciiBytesConverter}, 
+                                UpdateSourceTrigger=PropertyChanged,
+                                Mode=OneWay}"/>
+            <TextBox
+                IsReadOnly="True"
+                Text="{Binding AnyTypeText,
+                                Converter={x:Static c:DataConverters.UnicodeBytesConverter},
+                                UpdateSourceTrigger=PropertyChanged,
+                                Mode=OneWay}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

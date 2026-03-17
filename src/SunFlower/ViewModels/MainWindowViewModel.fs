@@ -1,5 +1,6 @@
 ﻿namespace SunFlower.ViewModels
 
+open Avalonia.Controls
 open CommunityToolkit.Mvvm.ComponentModel
 // CoffeeLake (C) 2026-*
 // MIT
@@ -12,7 +13,7 @@ open CommunityToolkit.Mvvm.ComponentModel
 //      -> Deserialize JSON manifest at the startup (async)
 //      -> About information window (Flower/Seeds statuslines)
 //      ->
-type MainWindowViewModel() =
+type MainWindowViewModel() as this =
     inherit AvaloniaViewModel()
     [<ObservableProperty>]
     let mutable _currentViewModel: AvaloniaViewModel option = None
@@ -34,3 +35,4 @@ type MainWindowViewModel() =
         this.CurrentViewModel <- Some(ConsoleArgsViewModel())
     member this.SwitchConverter() =
         this.CurrentViewModel <- Some(ConverterViewModel())
+    

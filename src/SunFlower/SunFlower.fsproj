@@ -8,6 +8,7 @@
         <Version>5.0.0</Version>
         <AssemblyVersion>5.0.0.0</AssemblyVersion>
         <FileVersion>5.0.0.0</FileVersion>
+        <ApplicationIcon>app5.ico</ApplicationIcon>
     </PropertyGroup>
     <!-- Headers -->
     <ItemGroup>
@@ -33,6 +34,7 @@
         <Compile Include="Views\ConverterControl.axaml.fs" />
         <Compile Include="Views\ConsoleArgsControl.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
+        <Compile Include="Views\WorkspaceWindow.axaml.fs" />
     </ItemGroup>
     
     <ItemGroup>
@@ -69,5 +71,9 @@
       <Content Include="Registry\recent.json;Registry\about.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="app5.ico" />
     </ItemGroup>
 </Project>

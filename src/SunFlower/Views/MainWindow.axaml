@@ -67,7 +67,7 @@
                     main workspace window.   
                 -->
                 <MenuItem
-                    Command="{Binding SwitchOpening}">
+                    Click="OpenDialog">
                     <MenuItem.Header>
                         <DockPanel>
                             <TextBlock
@@ -83,6 +83,7 @@
                     <MenuItem.Icon>
                         <Image Source="/Assets/open48.png"/>
                     </MenuItem.Icon>
+                    
                 </MenuItem>
                 
                 <MenuItem
@@ -125,30 +126,6 @@
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Image Source="/Assets/convert48.png"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <!--
-                    Menu -> Call to Kernel
-                    
-                    Bound keys: Ctrl+K to the parent control (Window)
-                    Calls the new shell session with target SunFlower.Terminal .NET
-                    assembly 
-                -->
-                <MenuItem>
-                    <MenuItem.Header>
-                        <DockPanel>
-                            <TextBlock
-                                Padding="1, 0, 5, 0"
-                                DockPanel.Dock="Left"
-                                Text="Call to Kernel"/>
-                            <TextBlock
-                                DockPanel.Dock="Right"
-                                Foreground="{StaticResource SecondaryTextBrush}"
-                                Text="Ctrl+K"/>
-                        </DockPanel>
-                    </MenuItem.Header>
-                    <MenuItem.Icon>
-                        <Image Source="/Assets/paper48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--

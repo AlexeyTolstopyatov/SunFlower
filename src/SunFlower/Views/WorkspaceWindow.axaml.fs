@@ -14,4 +14,3 @@ type WorkspaceWindow() as this =
         // this.AttachDevTools()
         #endif
         AvaloniaXamlLoader.Load(this)
-    

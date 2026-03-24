@@ -8,8 +8,5 @@ module SunFlower.Services.StartupService
 open SunFlower.Kernel
 open SunFlower.Kernel.Services
 
-let getPluginsTable(): CorList<FlowerVersionInfo> =
+let getPluginsTable(): CorList<FlowerVersionInfo> = 
     FlowerCompatibility.getFlowerVersionInfoList()
-
-let getRecentFiles() =
-    0

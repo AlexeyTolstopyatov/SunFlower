@@ -100,7 +100,7 @@ public partial class MainWindowViewModel : NotifyPropertyChanged
         try
         {
             if (Directory.Exists(target))
-                Directory.Delete(target);
+                Directory.Delete(target, true);
         }
         catch (Exception e)
         {

@@ -47,9 +47,8 @@ type MainWindow() as this =
                            |> Seq.map (fun file -> FlowerBinarySeeker.get file.Path.AbsolutePath)
                            |> Seq.toList
         // Append tail to the deserialized file information list
-        let updated = fileInfos @ newFileInfos
-        do! JsonService.saveAsync "recent" updated
-        
+        do! fileInfos @ newFileInfos
+                           |> JsonService.saveAsync "recent"
         let vm = this.DataContext :?> MainWindowViewModel
         do! vm.UpdateRecentContext() // fixme: UpdateRecentContext calls Switches
                                      // instead of correct UI handling

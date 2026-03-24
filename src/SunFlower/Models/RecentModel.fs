@@ -11,7 +11,6 @@ type RecentModel() =
     do
         // Don't lose context -> run it synchronously
         _files <- JsonService.load "recent"
-                  |> seq
                   |> ObservableCollection<FlowerFileInfo>
         
     [<ObservableProperty>]

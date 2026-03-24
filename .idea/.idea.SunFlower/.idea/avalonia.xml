@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="src/SunFlower/App.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Drawing/CloudsBrush.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Drawing/CloudsStyle.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/TestControl.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/AboutWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/ConsoleArgsControl.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/ConverterControl.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/MainWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/RecentControl.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/WorkspaceWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
+      </map>
+    </option>
+  </component>
+</project>

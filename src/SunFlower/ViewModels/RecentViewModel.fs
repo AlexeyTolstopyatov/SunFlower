@@ -2,7 +2,9 @@
 
 open System
 open CommunityToolkit.Mvvm.ComponentModel
+open SunFlower.Kernel.Readers
 open SunFlower.Models
+open SunFlower.Services
 
 type RecentViewModel() =
     inherit AvaloniaViewModel()
@@ -19,3 +21,14 @@ type RecentViewModel() =
         and set x =
             _model.Recent <- x
             this.OnPropertyChanged()
+    
+    member this.RemoveItemAsync(item: FlowerFileInfo) = task {
+        match this.Recent.Contains(item) with
+        | false -> return ()
+        | true ->
+        this.Recent.Remove(item)
+            |> ignore
+        do! this.Recent
+            |> Seq.toList
+            |> JsonService.saveAsync "recent"
+    }

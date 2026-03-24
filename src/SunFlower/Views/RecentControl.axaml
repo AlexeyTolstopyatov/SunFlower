@@ -17,20 +17,58 @@
         ItemsSource="{Binding Recent, UpdateSourceTrigger=PropertyChanged}">
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <ListBoxItem>
-                    <ListBoxItem.ContextFlyout>
-                        <Flyout>
-                            <Menu
-                                Opacity="0.9">
-                                <MenuItem
-                                    Header="{Binding Size}">
-                                    <MenuItem.Icon>
-                                        <Image Source="/Assets/avalonia-logo.ico"/>
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </Menu>
-                        </Flyout>
-                    </ListBoxItem.ContextFlyout>
+                <ListBoxItem
+                    DoubleTapped="Open">
+                    <!-- Bound Context menu actions for each point in list -->
+                    <ListBoxItem.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem>
+                                <MenuItem.Header>
+                                    <TextBlock>
+                                        <Run Text="Open"/>
+                                        <Run Text="Enter/Return" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                    </TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="/Assets/app48.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem>
+                                <MenuItem.Header>
+                                    <TextBlock>
+                                        <Run Text="Remove from list"/>
+                                        <Run Foreground="{StaticResource SecondaryTextBrush}" Text="Delete"/>
+                                    </TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="/Assets/clear48.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem>
+                                <MenuItem.Header>
+                                    <TextBlock>
+                                        <Run Text="Remove from FS too"/>
+                                        <Run Foreground="{StaticResource SecondaryTextBrush}" Text="Shift+Delete"/>
+                                    </TextBlock>
+                                </MenuItem.Header>
+                                <MenuItem.Icon>
+                                    <Image Source="/Assets/delete48.png"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBoxItem.ContextMenu>
+                    <!-- Key shortcuts for each element -->
+                    <ListBoxItem.KeyBindings>
+                        <KeyBinding 
+                            Gesture="Enter"
+                            CommandParameter="{Binding}"/>
+                        <KeyBinding
+                            Gesture="Delete"
+                            CommandParameter="{Binding}"/>
+                        <KeyBinding
+                            Gesture="Shift+Delete"
+                            CommandParameter="{Binding}"/>
+                    </ListBoxItem.KeyBindings>
                     <Grid
                         ColumnDefinitions="48, Auto">
                         <Image 

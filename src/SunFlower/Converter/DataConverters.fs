@@ -17,8 +17,8 @@ module DataConverters =
         | s when s.Length % 2 <> 0 -> "?"
         | s ->
             let asciiSequence =
-                Array.init (hex.Length / 2) (fun idx ->
-                    let start = idx * 2
+                Array.init (hex.Length / 2) (fun i ->
+                    let start = i * 2
                     let pair = hex.Substring(start, 2)
                     // Convert from base 16 & cast the resulting byte
                     let b = Convert.ToByte(pair, 16)
@@ -35,7 +35,7 @@ module DataConverters =
         match hex with
         | s when String.IsNullOrEmpty(s) -> ""
         | s when s.Length % 4 <> 0 -> "?"
-        | s ->
+        | _ ->
             let unicodeSequence =
                 Array.init (hex.Length / 2) (fun idx ->
                     let start = idx * 2
@@ -47,32 +47,40 @@ module DataConverters =
             Encoding.Unicode.GetString(unicodeSequence)
     /// <summary>
     /// Converts (trim) given string into 1-byte integer
-    /// Throws ArgumentException if size of given integer
+    /// Doesn't throw ArgumentException if size of given integer
     /// (converted from string) out of range
     /// </summary>
     let UInt8Converter: IValueConverter =
-        FuncValueConverter<string, byte>(fun i -> Convert.ToByte i)
+        FuncValueConverter<string, byte>(fun i ->
+            try Convert.ToByte i
+            with _ -> 0 |> byte)
     /// <summary>
     /// Converts given string into 2-byte integer 
-    /// Throws ArgumentException if size of given integer
+    /// Doesn't throw ArgumentException if size of given integer
     /// (converted from string) out of range
     /// </summary>
     let UInt16Converter: IValueConverter =
-        FuncValueConverter<string, uint16>(fun i -> Convert.ToUInt16 i)
+        FuncValueConverter<string, uint16>(fun i ->
+            try Convert.ToUInt16 i
+            with _ -> 0 |> uint16)
     /// <summary>
     /// Converts given string into 4-byte integer
-    /// Throws ArgumentException if size of given integer
+    /// Doesn't throw ArgumentException if size of given integer
     /// (converted from string) out of range
     /// </summary>
     let UInt32Converter: IValueConverter =
-        FuncValueConverter<string, uint32>(fun i -> Convert.ToUInt32 i)
+        FuncValueConverter<string, uint32>(fun i ->
+            try Convert.ToUInt32 i
+            with _ -> 0 |> uint32)
     /// <summary>
     /// Converts given string into 8-byte integer
-    /// Throws ArgumentException if size of given integer
+    /// Doesn't throw ArgumentException if size of given integer
     /// (converted from string) out of range
     /// </summary>
     let UInt64Converter: IValueConverter =
-        FuncValueConverter<string, uint64>(fun i -> Convert.ToUInt64 i)
+        FuncValueConverter<string, uint64>(fun i ->
+            try Convert.ToUInt64 i
+            with _ -> 0 |> uint64)
     /// <summary>
     /// Converts given string into sequence of ASCII codes
     /// Doesn't throw any exceptions, because any argument
@@ -103,6 +111,6 @@ module DataConverters =
     /// is bad. (Unicode characters must be grouped by 2-pairs) 
     /// </summary>
     let UnicodeStringConverter: IValueConverter =
-        FuncValueConverter<string, string>(fun i -> unicodeBytesToString i)
+        FuncValueConverter<string, string>(unicodeBytesToString) 
     
     

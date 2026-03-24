@@ -1,9 +1,6 @@
 ﻿namespace SunFlower.Views
 
-open Avalonia.Controls
-open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
-open Avalonia.Platform.Storage
 
 type WorkspaceWindow() as this =
     inherit Avalonia.Controls.Window()
@@ -12,6 +9,9 @@ type WorkspaceWindow() as this =
         
     member private this.InitializeComponent() =
         #if DEBUG
-        AvaloniaXamlLoader.Load(this)
+        // Avalonia hotbar toolkit appears when $Debug
+        // configuration is set up  
+        // this.AttachDevTools()
         #endif
+        AvaloniaXamlLoader.Load(this)
     

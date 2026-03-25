@@ -30,7 +30,7 @@ open SunFlower.Abstractions.Types
 ///  - String
 /// </summary>
 [<CompiledName "FormatStrings">]
-let format_str (lines: obj) : string =
+let formatStrings (lines: obj) : string =
     match lines with
     | :? IEnumerable<String> as e -> "\n" + String.Join("\n", e) + "\n"
     | :? String as s -> s
@@ -42,7 +42,7 @@ let format_str (lines: obj) : string =
 /// </summary>
 /// <param name="table">target table</param>
 [<CompiledName "FormatTable">]
-let format_table (table: DataTable) : string =
+let formatTable (table: DataTable) : string =
     let buffer: List<string> = List<string>()
 
     let safeToString (value: obj) =
@@ -122,8 +122,8 @@ let private (|+) (a: String) (b: String) = a + b + "\n"
 /// </summary>
 /// <param name="reg">Given by FlowerResult collection unboxed result</param>
 [<CompiledName "FormatRegion">]
-let format_reg (reg: Region) =
-    "" |+ reg.Head |+ reg.Content |+ format_table reg.Table |+ "\n"
+let formatRegion (reg: Region) =
+    "" |+ reg.Head |+ reg.Content |+ formatTable reg.Table |+ "\n"
 // **Remove the format_reg in 4.5.1+ releases** \\
 /// <summary>
 /// Makes a simple "Papers Section". The region container
@@ -133,11 +133,11 @@ let format_reg (reg: Region) =
 /// <param name="reg">Current region given+unboxed from FlowerResult collection</param>
 /// <param name="header_level">Markdown Heading level</param>
 [<CompiledName "FormatRegionSmartHeader">]
-let format_reg2 (reg: Region, header_level: int) =
+let formatRegionSmartHeader (reg: Region, header_level: int) =
     "#" |> String.replicate header_level // <-- Header declaration must be separated by the value
     |+ $" {reg.Head}"
     |+ reg.Content
-    |+ format_table reg.Table
+    |+ formatTable reg.Table
     |+ "\n"
 
 /// <summary>
@@ -155,8 +155,8 @@ let format_reg2 (reg: Region, header_level: int) =
 /// </summary>
 /// <param name="list"></param>
 [<CompiledName "FormatRegions">]
-let format_regs (list: IEnumerable<Region>) =
-    let regs = list |> Seq.map format_reg
+let formatRegions (list: IEnumerable<Region>) =
+    let regs = list |> Seq.map formatRegion
 
     String.Join("\n", regs)
 
@@ -170,11 +170,12 @@ let format_regs (list: IEnumerable<Region>) =
 /// </summary>
 /// <param name="list"></param>
 [<CompiledName "FormatTables">]
-let format_tables (list: IEnumerable<DataTable>) =
-    let regs = list |> Seq.map format_table
+let formatTables (list: IEnumerable<DataTable>) =
+    let regs = list |> Seq.map formatTable
 
     String.Join("\n", regs)
 
 [<CompiledName "Write">]
-let write (results: IEnumerable<FlowerSeedResult>) = "" |+ $"Generated at: {DateTime.Now}"
+let write (results: IEnumerable<FlowerSeedResult>) =
+    "" |+ $"Generated at: {DateTime.Now}"
 // iterate items like

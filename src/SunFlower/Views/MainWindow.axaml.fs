@@ -22,12 +22,18 @@ type MainWindow() as this =
         this.AttachDevTools()
 #endif
         AvaloniaXamlLoader.Load(this)
-    
+    /// <summary>
+    /// Opens another window with loaded Sunflower plugins
+    /// and short information about client 
+    /// </summary>
     member this.OpenAboutClick(_: obj, _: RoutedEventArgs) =
         // TODO:
         // Move AboutWindow construct into MainWindow->AboutControl
         AboutWindow().Show()
-    
+    /// <summary>
+    /// Appends selected item(s) into global recent files collection
+    /// and updates UI listbox items collection 
+    /// </summary>
     member this.ImportAsync() = task {
         // Platform independent logic: Avalonia represents services
         // what uses different platform native functions
@@ -38,13 +44,16 @@ type MainWindow() as this =
         // Call Avalonia services -> make an OpenFileDialog instance   
         let! storage = topLevel.StorageProvider.OpenFilePickerAsync(options)
         match storage.Count with
-        | 0 -> ()
+        | 0 -> return ()
         | _ ->
         // One or more files defined in storage container
         // Read recent.json async
         let! fileInfos = JsonService.loadAsync<FlowerFileInfo> "recent"
+        // Avalonia storage provider contains readonly collection
+        // Path of selected item is System.Uri typed.
+        // Absolute/Relative paths are coded but here extremely needed raw string of absolute path 
         let newFileInfos = storage
-                           |> Seq.map (fun file -> FlowerBinarySeeker.get file.Path.AbsolutePath)
+                           |> Seq.map (fun file -> FlowerBinarySeeker.get file.Path.LocalPath)
                            |> Seq.toList
         // Append tail to the deserialized file information list
         do! fileInfos @ newFileInfos
@@ -53,7 +62,9 @@ type MainWindow() as this =
         do! vm.UpdateRecentContext() // fixme: UpdateRecentContext calls Switches
                                      // instead of correct UI handling
     }
-    
+    /// <summary>
+    /// Calls Avalonia services to open system GUI opening dialog
+    /// </summary>
     member private this.OpenDialog(_: obj, _: RoutedEventArgs) =
         // Call OpenFileDialogAsync with no awaits
         // Looking for Failures

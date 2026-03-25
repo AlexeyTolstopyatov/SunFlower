@@ -13,4 +13,4 @@ module Say =
     // CorDllMain already exists
     let hello name =
         
-        printfn "Hello %s" name
+        printfn $"Hello %s{name}"

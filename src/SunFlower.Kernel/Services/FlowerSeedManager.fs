@@ -30,7 +30,7 @@ type FlowerSeedManager() =
     let save (str: string) : unit =
         messages.Add str
     
-    let mutable majorVersion : Int32 = 4
+    let mutable majorVersion : Int32 = 5
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
     // interface IFlowerSeedManager with
@@ -45,7 +45,7 @@ type FlowerSeedManager() =
     /// }
     /// </summary>
     [<CompiledName "GetAllInvokedFlowerSeeds">]
-    member public this.forall_invoked(path) =
+    member public this.getAllInvokedFlowerSeeds(path) =
         // c# original ABI
         //
         // var results = new Dictionary<string, int>();
@@ -70,52 +70,16 @@ type FlowerSeedManager() =
                 |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) 
                 |> Dictionary
     [<CompiledName "GetContract">]
-    member public this.get_contract () =
+    member public this.getContract () =
         $"{majorVersion}.{minorVersion}.{buildVersion}"
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
     [<CompiledName "LoadAllFlowerSeeds">]
-    member public this.forall () =
+    member public this.loadAllFlowerSeeds () =
         "Sunflower Kernel::LoadAllFlowerSeeds"
             |> save
-        // C# core part
-        // if (!Directory.Exists(seedPath))
-        // {
-        //     Debug.WriteLine("Plugins directory not found");
-        //     return this;
-        // }
-
-        // foreach (var dllPath in Directory.EnumerateFiles(seedPath, "*.dll", SearchOption.AllDirectories))
-        // {
-        //     try
-        //     {
-        //         var assembly = Assembly.LoadFrom(dllPath);
-                
-        //         foreach (var type in assembly.GetTypes())
-        //         {
-        //             if (!typeof(IFlowerSeed).IsAssignableFrom(type))
-        //             {
-        //                 Debug.WriteLine($"Type {type} not assigned from {nameof(IFlowerSeed)}");
-        //                 continue;
-        //             }
-                    
-        //             // IFlowerSeed instance
-        //             var plugin = (IFlowerSeed)Activator.CreateInstance(type)!;
-                        
-        //             // Add to hashset
-        //             Seeds.Add(plugin);
-        //             Debug.WriteLine($"Loaded plugin: {plugin.Seed}");
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Debug.WriteLine($"Error loading {dllPath}: {ex.Message}");
-        //     }
-        // }
-
-        // F# rewritten part
         let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
         let parentType = typeof<IFlowerSeed>
         
@@ -158,7 +122,7 @@ type FlowerSeedManager() =
     member public this.Messages with get () = List messages
     
     [<CompiledName "UnloadUnusedFlowerSeeds">]
-    member public this.forall_unused_unload =
+    member public this.unloadUnusedFlowerSeeds =
         "Sunflower Kernel::UnloadUnusedFlowerSeeds"
             |> save
         
@@ -174,7 +138,7 @@ type FlowerSeedManager() =
     /// </summary>
     /// <param name="path">targeting file</param>
     [<CompiledName "UpdateAllInvokedFlowerSeeds">]
-    member public this.forall_update(path) =
+    member public this.updateAllInvokedFlowerSeeds(path) =
         "Sunflower Kernel::UpdateAllInvokedFlowerSeeds"
             |> save
         try
@@ -203,5 +167,5 @@ type FlowerSeedManager() =
     /// Makes temporary instance for FlowerSeedManager
     /// </summary>
     [<CompiledName "CreateInstance">]
-    static member public create_self () : FlowerSeedManager =
+    static member public createInstance () : FlowerSeedManager =
         FlowerSeedManager()

@@ -1,6 +1,8 @@
 ﻿namespace SunFlower.Views
 
+open System
 open Avalonia.Controls
+open Avalonia.Input
 open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
 open SunFlower.Kernel.Readers
@@ -15,8 +17,8 @@ type RecentControl() as this =
     member private this.InitializeComponent() =
         AvaloniaXamlLoader.Load(this)
         
-    member this.Open (file: obj, _: RoutedEventArgs) =
+    member this.Open (listBoxed: obj, _: RoutedEventArgs) =
         // Open Workspace sunflower window with given file
-        let _fileInfo = file :?> FlowerFileInfo
+        let listBox = listBoxed :?> ListBox
         
-        -1
+        ()

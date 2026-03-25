@@ -12,7 +12,6 @@
     </PropertyGroup>
     <!-- Headers -->
     <ItemGroup>
-        <Compile Include="Services\StartupService.fs" />
         <Compile Include="Services\JsonService.fs" />
         <Compile Include="Models\RecentModel.fs" />
     </ItemGroup>

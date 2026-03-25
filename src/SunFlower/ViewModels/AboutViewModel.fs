@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Threading.Tasks
 open CommunityToolkit.Mvvm.ComponentModel
 open SunFlower.Kernel
 open SunFlower.Kernel.Services
@@ -13,15 +14,12 @@ type AboutViewModel() =
     let mutable systemTable: CorList<FlowerVersionInfo> = CorList()
     let mutable aboutText: string = ""
     do
-        systemTable <- StartupService.getPluginsTable()
-        aboutText   <- File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", "about.txt"))
-        ()
+        systemTable <- FlowerCompatibility.getFlowerVersionInfoList()
+        aboutText <- File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", "about.txt"))
     
     member this.SystemTable
         with get(): CorList<FlowerVersionInfo> = systemTable
-    [<ObservableProperty>]
-    member this.SystemTable
-        with set x =
+        and set x =
             this.SetProperty(ref(systemTable), x)
             |> Console.WriteLine
     [<ObservableProperty>]    

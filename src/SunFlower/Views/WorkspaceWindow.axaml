@@ -2,15 +2,94 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight" 
+        xmlns:vm="clr-namespace:SunFlower.ViewModels"
+        xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
         mc:Ignorable="d" 
-        d:DesignWidth="800" d:DesignHeight="450"
+        Background="{DynamicResource RegionBrush}"
+        d:DesignWidth="600" d:DesignHeight="600"
         x:Class="SunFlower.Views.WorkspaceWindow"
-        Title="WorkspaceWindow">
+        x:DataType="{x:Type vm:WorkspaceViewModel}"
+        Title="{Binding Source}">
+    <Window.DataContext>
+        <vm:WorkspaceViewModel/>
+    </Window.DataContext>
     <Grid
-        ColumnDefinitions="50, 150, *">
+        RowDefinitions="5*, *"
+        Background="{StaticResource CloudTileBrush}">
+        <Grid
+            Margin="30,50"
+            Background="{DynamicResource RegionBrush}">
+            <md:MarkdownScrollViewer
+                Markdown="{Binding Source}">
+                <md:MarkdownScrollViewer.Styles>
+                    <Style Selector="ctxt|CCode">
+                        <Style.Setters>
+                            <Setter Property="CornerRadius"        Value="5"/>
+                            <Setter Property="BorderBrush"         Value="{DynamicResource BorderBrush}"/>
+                            <Setter Property="BorderThickness"     Value="1"/>
+                            
+                            <Setter Property="Padding"             Value="2"/>
+                            <Setter Property="MonospaceFontFamily" Value="Consolas" />
+                            <Setter Property="Foreground"          Value="{DynamicResource PrimaryTextBrush}" />
+                            <Setter Property="Background"          Value="{DynamicResource RegionBrush}" />
+                        </Style.Setters>
+                    </Style>
+                    
+                    <Style Selector="Border.CodeBlock">
+                        <Style.Setters>
+                            <Setter Property="CornerRadius"    Value="5"/>
+                            <Setter Property="Padding"         Value="2"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Margin"          Value="5"/>
+                            <Setter Property="BorderBrush"     Value="{DynamicResource BorderBrush}"/>
+                            <Setter Property="Background"      Value="{DynamicResource RegionBrush}"/>
+                        </Style.Setters>
+                    </Style>
+                    
+                    <Style Selector="TextBlock.CodeBlock">
+                        <Style.Setters>
+                            <Setter Property="Foreground"      Value="{DynamicResource PrimaryTextBrush}"/>
+                            <Setter Property="Padding"         Value="2"/>
+                            <Setter Property="Margin"          Value="50,0"/>
+                            <Setter Property="FontFamily"      Value="Consolas"/>
+                        </Style.Setters>
+                    </Style>
+                    
+                    <Style Selector="Border.Blockquote">
+                        <Setter Property="Background"          Value="{DynamicResource RegionBrush}" />
+                        <Setter Property="BorderBrush"         Value="{DynamicResource BorderBrush}" />
+                        <Setter Property="Padding"             Value="2"/>
+                        <Setter Property="BorderThickness"     Value="1"/>
+                        <Setter Property="CornerRadius"        Value="5"/>
+                    </Style>
+                    
+                    <Style Selector="ctxt|CTextBlock.Heading1">
+                        <!-- <Setter Property="FontSize"   Value="16"/> -->
+                        <Setter Property="FontFamily" Value="Sans Serif"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    </Style>
+                    <Style Selector="ctxt|CTextBlock.Heading2">
+                        <!-- <Setter Property="FontSize"   Value="16"/> -->
+                        <Setter Property="FontFamily" Value="Sans Serif"/>
+                        <Setter Property="FontWeight" Value="DemiBold"/>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    </Style>
+                    <Style Selector="ctxt|CTextBlock.Heading3">
+                        <!-- <Setter Property="FontSize"   Value="10"/> -->
+                        <Setter Property="FontFamily" Value="Sans Serif"/>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    </Style>
+                    
+                </md:MarkdownScrollViewer.Styles>
+            </md:MarkdownScrollViewer>
+        </Grid>
         <ListBox
-            BorderBrush="Transparent">
-            
+            Grid.Row="1"
+            SelectionMode="Toggle"
+            BorderBrush="Transparent"
+            ItemsSource="{Binding Messages}">
         </ListBox>
     </Grid>
 </Window>

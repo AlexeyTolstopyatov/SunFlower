@@ -1,6 +1,5 @@
 ﻿namespace SunFlower.ViewModels
 
-open System
 open CommunityToolkit.Mvvm.ComponentModel
 
 [<Class>]

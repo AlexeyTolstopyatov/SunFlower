@@ -18,7 +18,6 @@ open Microsoft.FSharp.Collections
 type FlowerSeedManager() =
     let mutable seeds : List<IFlowerSeed> = []
     let mutable messages : CorList<string> = CorList<string>()
-    
     /// <summary>
     /// Writes message to Kernel messages storage (CorList of strings)
     ///
@@ -30,7 +29,7 @@ type FlowerSeedManager() =
     let save (str: string) : unit =
         messages.Add str
     
-    let mutable majorVersion : Int32 = 5
+    let mutable majorVersion : Int32 = 4
     let mutable minorVersion : Int32 = 0
     let mutable buildVersion : Int32 = 0
     // interface IFlowerSeedManager with
@@ -64,7 +63,7 @@ type FlowerSeedManager() =
         // }
         
         // rewritten to F# 
-        $"Sunflower Kernel::GetAllInvokedFlowerSeeds"
+        "::GetAllInvokedFlowerSeeds"
                 |> save
         seeds
                 |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) 
@@ -78,7 +77,7 @@ type FlowerSeedManager() =
     /// </summary>
     [<CompiledName "LoadAllFlowerSeeds">]
     member public this.loadAllFlowerSeeds () =
-        "Sunflower Kernel::LoadAllFlowerSeeds"
+        "::LoadAllFlowerSeeds"
             |> save
         let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
         let parentType = typeof<IFlowerSeed>
@@ -122,8 +121,8 @@ type FlowerSeedManager() =
     member public this.Messages with get () = List messages
     
     [<CompiledName "UnloadUnusedFlowerSeeds">]
-    member public this.unloadUnusedFlowerSeeds =
-        "Sunflower Kernel::UnloadUnusedFlowerSeeds"
+    member public this.unloadUnusedFlowerSeeds() =
+        "::UnloadUnusedFlowerSeeds"
             |> save
         
         seeds <- seeds
@@ -139,7 +138,7 @@ type FlowerSeedManager() =
     /// <param name="path">targeting file</param>
     [<CompiledName "UpdateAllInvokedFlowerSeeds">]
     member public this.updateAllInvokedFlowerSeeds(path) =
-        "Sunflower Kernel::UpdateAllInvokedFlowerSeeds"
+        "::UpdateAllInvokedFlowerSeeds"
             |> save
         try
             seeds
@@ -149,7 +148,7 @@ type FlowerSeedManager() =
                 |> ignore )
         with
         | kernel ->
-            $"Sunflower Kernel::STOP\r\n >> {kernel |> string}"
+            $"::STOP\r\n >> {kernel |> string}"
                 |> save
         
         this

@@ -10,7 +10,9 @@
     
     <Application.Styles>
         <StyleInclude Source="avares://HandyControl/Themes/Theme.axaml"/>
-        <!--<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>-->
+        <StyleInclude Source="avares://AvaMark/Styles/Fluent.axaml"/>
+        <!-- <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml"/> -->
+        
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>

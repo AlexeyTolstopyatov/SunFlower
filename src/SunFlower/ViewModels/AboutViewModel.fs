@@ -2,11 +2,9 @@
 
 open System
 open System.IO
-open System.Threading.Tasks
 open CommunityToolkit.Mvvm.ComponentModel
 open SunFlower.Kernel
 open SunFlower.Kernel.Services
-open SunFlower.Services
 
 [<Class>]
 type AboutViewModel() =

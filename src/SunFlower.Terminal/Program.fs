@@ -7,7 +7,7 @@ open System.IO
 open SunFlower.Kernel.Services
 
 //
-// CoffeeLake (C) 2024-2025
+// CoffeeLake (C) 2024-2025-2026
 // This module particular belongs JellyBins
 // Licensed under MIT
 //

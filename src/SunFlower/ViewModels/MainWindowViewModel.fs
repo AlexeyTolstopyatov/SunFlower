@@ -2,7 +2,6 @@
 
 open System
 open System.Threading.Tasks
-open Avalonia.Controls
 open CommunityToolkit.Mvvm.ComponentModel
 // CoffeeLake (C) 2026-*
 // MIT
@@ -15,7 +14,7 @@ open CommunityToolkit.Mvvm.ComponentModel
 //      -> Deserialize JSON manifest at the startup (async)
 //      -> About information window (Flower/Seeds statuslines)
 //      ->
-type MainWindowViewModel() as this =
+type MainWindowViewModel() =
     inherit AvaloniaViewModel()
     [<ObservableProperty>]
     let mutable _currentViewModel: AvaloniaViewModel option = None

@@ -123,7 +123,7 @@ let private (|+) (a: String) (b: String) = a + b + "\n"
 /// <param name="reg">Given by FlowerResult collection unboxed result</param>
 [<CompiledName "FormatRegion">]
 let formatRegion (reg: Region) =
-    "" |+ reg.Head |+ reg.Content |+ formatTable reg.Table |+ "\n"
+    "" |+ reg.Head |+ "\n" |+ reg.Content |+ "\n" |+ formatTable reg.Table |+ "\n"
 // **Remove the format_reg in 4.5.1+ releases** \\
 /// <summary>
 /// Makes a simple "Papers Section". The region container
@@ -158,7 +158,7 @@ let formatRegionSmartHeader (reg: Region, header_level: int) =
 let formatRegions (list: IEnumerable<Region>) =
     let regs = list |> Seq.map formatRegion
 
-    String.Join("\n", regs)
+    String.Join("\n", regs) |+ "\n"
 
 /// <summary>
 /// Transforms all Regions collection into one Markdown written next
@@ -173,9 +173,16 @@ let formatRegions (list: IEnumerable<Region>) =
 let formatTables (list: IEnumerable<DataTable>) =
     let regs = list |> Seq.map formatTable
 
-    String.Join("\n", regs)
+    String.Join("\n", regs) |+ "\n"
 
 [<CompiledName "Write">]
 let write (results: IEnumerable<FlowerSeedResult>) =
-    "" |+ $"Generated at: {DateTime.Now}"
-// iterate items like
+    let mutable acc = "" |+ $"Generated at: {DateTime.Now}"
+    for i in results do
+        match i.BoxedResult with
+        | :? IEnumerable<Region> as regs -> acc <- acc |+ formatRegions regs |+ "\n"
+        | :? IEnumerable<String> as strs -> acc <- acc |+ formatStrings strs |+ "\n"
+        | :? IEnumerable<DataTable> as dts -> acc <- acc |+ formatTables dts |+ "\n"
+        | unknown -> acc <- acc |+ $"```\n{unknown.GetType}\n```\n\n"
+    
+    acc

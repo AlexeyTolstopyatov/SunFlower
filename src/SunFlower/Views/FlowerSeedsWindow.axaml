@@ -9,15 +9,15 @@
         SizeToContent="Height"
         d:DesignWidth="600" 
         d:DesignHeight="480"
-        x:DataType="{x:Type vm:AboutViewModel}"
+        x:DataType="{x:Type vm:FlowerSeedsViewModel}"
         Background="{DynamicResource RegionBrush}"
         CanMinimize="False"
         CanMaximize="False"
         Icon="/Assets/sunflower256.png"
-        x:Class="SunFlower.Views.AboutWindow"
-        Title="SunFlower - About">
+        x:Class="SunFlower.Views.FlowerSeedsWindow"
+        Title="Sunflower - Connected plugins">
     <Window.DataContext>
-        <vm:AboutViewModel/>
+        <vm:FlowerSeedsViewModel/>
     </Window.DataContext>
     <Grid
         ColumnDefinitions="250, *"

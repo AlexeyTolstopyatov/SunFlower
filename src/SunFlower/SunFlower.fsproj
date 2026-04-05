@@ -12,6 +12,7 @@
     </PropertyGroup>
     <!-- Headers -->
     <ItemGroup>
+        
         <Compile Include="Services\JsonService.fs" />
         <Compile Include="Models\RecentModel.fs" />
     </ItemGroup>
@@ -20,27 +21,27 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ViewModels\AvaloniaViewModel.fs" />
+        <Compile Include="ViewModels\WorkspaceViewModel.fs" />
+        <Compile Include="WorkspaceViewModelFactory.fs" />
+        <Compile Include="WindowLocatorFactory.fs" />
         <Compile Include="ViewModels\ConsoleArgsViewModel.fs" />
         <Compile Include="ViewModels\ConverterViewModel.fs" />
         <Compile Include="ViewModels\RecentViewModel.fs" />
-        <Compile Include="ViewModels\AboutViewModel.fs" />
+        <Compile Include="ViewModels\FlowerSeedsViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
-        <Compile Include="ViewModels\WorkspaceViewModel.fs" />
-        <Compile Include="ViewModels\WorkspaceViewModelFactory.fs" />
     </ItemGroup>
     
     <ItemGroup>
-        <Compile Include="Views\AboutWindow.axaml.fs" />
+        <Compile Include="Views\WorkspaceWindow.axaml.fs" />
+        <Compile Include="Views\FlowerSeedsWindow.axaml.fs" />
         <Compile Include="Views\RecentControl.axaml.fs" />
         <Compile Include="Views\ConverterControl.axaml.fs" />
         <Compile Include="Views\ConsoleArgsControl.axaml.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
-        <Compile Include="Views\WorkspaceWindow.axaml.fs" />
     </ItemGroup>
     
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-        <Compile Include="ViewLocator.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>

@@ -85,7 +85,12 @@
                     </MenuItem.Icon>
                     
                 </MenuItem>
-                
+                <!--
+                    Menu -> Recent
+                    
+                    Switches embedded view to RecentControl view.
+                    Other functions defined in control   
+                -->
                 <MenuItem
                     Command="{Binding SwitchRecent}">
                     <MenuItem.Header>
@@ -129,9 +134,9 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--
-                    Menu -> About
+                    Menu -> Connections
                     
-                    Calls the About control with DLLs metadata and
+                    Calls the FlowerSeeds(Control/Window) with DLLs metadata and
                     bound contracts of all plugins in the /Plugins directory
                 -->
                 <MenuItem
@@ -142,7 +147,7 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="About"/>
+                                Text="Connections"/>
                         </DockPanel>
                     </MenuItem.Header>
                     <MenuItem.Icon>

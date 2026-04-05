@@ -5,7 +5,7 @@ open Avalonia.Controls
 open Avalonia.Markup.Xaml
 
 [<Class>]
-type AboutWindow() as this =
+type FlowerSeedsWindow() as this =
     inherit Window()
 
     do

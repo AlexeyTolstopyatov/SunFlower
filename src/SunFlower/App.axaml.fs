@@ -2,7 +2,6 @@ namespace SunFlower
 
 open System
 open System.IO
-open System.Threading.Tasks
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Markup.Xaml

@@ -12,15 +12,14 @@ open SunFlower.ViewModels
 
 type MainWindow() as this = 
     inherit Window()
-
     do this.InitializeComponent()
 
     member private this.InitializeComponent() =
-#if DEBUG
+        #if DEBUG
         // Avalonia hotbar toolkit appears when $Debug
         // configuration is set up  
         this.AttachDevTools()
-#endif
+        #endif
         AvaloniaXamlLoader.Load(this)
     /// <summary>
     /// Opens another window with loaded Sunflower plugins
@@ -29,7 +28,7 @@ type MainWindow() as this =
     member this.OpenAboutClick(_: obj, _: RoutedEventArgs) =
         // TODO:
         // Move AboutWindow construct into MainWindow->AboutControl
-        AboutWindow().Show()
+        FlowerSeedsWindow().Show()
     /// <summary>
     /// Appends selected item(s) into global recent files collection
     /// and updates UI listbox items collection 
@@ -58,9 +57,15 @@ type MainWindow() as this =
         // Append tail to the deserialized file information list
         do! fileInfos @ newFileInfos
                            |> JsonService.saveAsync "recent"
-        let vm = this.DataContext :?> MainWindowViewModel
-        do! vm.UpdateRecentContext() // fixme: UpdateRecentContext calls Switches
-                                     // instead of correct UI handling
+        // Make sure that data context bound correct
+        match this.DataContext with
+        | :? MainWindowViewModel as ctx -> do! ctx.UpdateRecentContext()
+        | anotherCtx ->
+            #if DEBUG
+            $"Incorrect binding: \"{anotherCtx.GetType()}\", expected \"MainWindowViewModel\" " |> Console.Error.WriteLine
+            #else
+            $"Incorrect binding. Nothing to do" |> Console.Error.WriteLine
+            #endif
     }
     /// <summary>
     /// Calls Avalonia services to open system GUI opening dialog
@@ -79,4 +84,3 @@ type MainWindow() as this =
             with e -> "Avalonia can't open dialog" |> Console.Error.WriteLine
             #endif
         } |> Async.AwaitTask |> Async.Start
-        ()

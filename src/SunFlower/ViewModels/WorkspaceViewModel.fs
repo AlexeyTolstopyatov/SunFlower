@@ -16,12 +16,7 @@ type WorkspaceViewModel(sourceList, messages) =
             FlowerMarkdownWriter.write _sourceList[0].Status.Results
     member this.SourceList with get() = _sourceList
     member this.Messages with get() = _messages
-    // 7 years in .NET and I still know nothing...
-    // Constructor must initialize object once in single thread without any asynchronous calls
-    // That's why I got undefined behavior here.
-    //
-    // To Avoid it, current VM constructor must initialize in another thread
-    // without any UI calls from there.
+    
     new() =
         WorkspaceViewModel(ObservableCollection(), [||])
         

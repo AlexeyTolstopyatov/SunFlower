@@ -61,10 +61,3 @@ type RecentViewModel() =
         
         File.Delete item.Path
     }
-    member this.OpenItem(item: FlowerFileInfo) =
-        // fixme: Костыли блять заебали уже внатуре
-        let viewModel = WorkspaceViewModelFactory.createWorkspace(item.Path)
-        let workspace = WindowLocatorFactory.locateWindow(viewModel) :?> Window
-        
-        workspace.DataContext <- viewModel
-        workspace.Show() 

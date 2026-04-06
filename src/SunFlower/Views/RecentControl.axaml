@@ -20,8 +20,8 @@
         <ListBox.ContextMenu>
             <ContextMenu>
                 <MenuItem
+                    Click="Open"
                     CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}"
-                    Command="{Binding OpenItem}"
                     HotKey="Enter">
                     <MenuItem.Header>
                         <TextBlock>

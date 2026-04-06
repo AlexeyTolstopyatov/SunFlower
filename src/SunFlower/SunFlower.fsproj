@@ -22,13 +22,12 @@
     <ItemGroup>
         <Compile Include="ViewModels\AvaloniaViewModel.fs" />
         <Compile Include="ViewModels\WorkspaceViewModel.fs" />
-        <Compile Include="WorkspaceViewModelFactory.fs" />
-        <Compile Include="WindowLocatorFactory.fs" />
         <Compile Include="ViewModels\ConsoleArgsViewModel.fs" />
         <Compile Include="ViewModels\ConverterViewModel.fs" />
         <Compile Include="ViewModels\RecentViewModel.fs" />
         <Compile Include="ViewModels\FlowerSeedsViewModel.fs" />
         <Compile Include="ViewModels\MainWindowViewModel.fs" />
+        <Compile Include="ViewModels\WorkspaceViewModelFactory.fs" />
     </ItemGroup>
     
     <ItemGroup>

@@ -12,7 +12,7 @@
     <Style.Setters>
       <Setter Property="FontFamily" Value="Sans Serif"/>
       <Setter Property="FontSize"   Value="14" />
-      <Setter Property="FontWeight" Value="Black"/>
+      <Setter Property="FontWeight" Value="Medium"/>
     </Style.Setters>
   </Style>
 
@@ -20,7 +20,7 @@
     <Style.Setters>
       <Setter Property="FontSize"   Value="30" />
       <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-      <Setter Property="FontWeight" Value="Black" />
+      <Setter Property="FontWeight" Value="Medium" />
     </Style.Setters>
   </Style>
 
@@ -28,7 +28,7 @@
     <Style.Setters>
       <Setter Property="FontSize"   Value="20" />
       <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-      <Setter Property="FontWeight" Value="Black" />
+      <Setter Property="FontWeight" Value="Medium" />
     </Style.Setters>
   </Style>
 
@@ -36,7 +36,7 @@
     <Style.Setters>
       <Setter Property="FontSize"   Value="20" />
       <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="FontWeight" Value="Medium" />
     </Style.Setters>
   </Style>
 
@@ -44,7 +44,7 @@
     <Style.Setters>
       <Setter Property="FontSize"   Value="14" />
       <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="FontWeight" Value="Medium" />
     </Style.Setters>
   </Style>
   <Style Selector="ctxt|CCode">

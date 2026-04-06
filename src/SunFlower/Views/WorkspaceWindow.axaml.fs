@@ -10,7 +10,7 @@ open Avalonia.Platform.Storage
 open SunFlower.ViewModels
 
 type WorkspaceWindow() as this =
-    inherit Avalonia.Controls.Window()
+    inherit Window()
     do
         this.InitializeComponent()
         

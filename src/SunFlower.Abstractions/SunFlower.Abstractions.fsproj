@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="FlowerAttribute.fs" />
         <Compile Include="FlowerReport.fs" />
         <Compile Include="FlowerReflection.fs" />
         <Compile Include="FlowerSeedContractAttribute.fs" />

@@ -4,8 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SunFlower.ViewModels"
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
-        xmlns:mdstyle="clr-namespace:Markdown.Avalonia"
-        xmlns:avalonia="https://github.com/whistyun/Markdown.Avalonia.Tight"
         mc:Ignorable="d" 
         Background="{DynamicResource RegionBrush}"
         d:DesignWidth="600" d:DesignHeight="600"
@@ -50,8 +48,7 @@
                                 BorderBrush="Transparent"
                                 Margin="10,0"
                                 SelectedIndex="{Binding SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                            </ComboBox>
+                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                         </Grid>
                         <TextBlock 
                             TextWrapping="Wrap"
@@ -65,7 +62,7 @@
                     </StackPanel>
                 </Expander>
                 <Expander
-                    Margin="10,5,10,10"
+                    Margin="10,5,10,5"
                     Header="File"
                     IsExpanded="True">
                     <StackPanel>
@@ -79,12 +76,12 @@
                             <Button
                                 Click="SaveDialog"
                                 Content="Save Text"/>
-                            <Button
-                                Click="SavePdfDialog"
-                                Content="Render PDF"/>
-                            <Button 
-                                
-                                Content="Render webpage"/>
+                            <!-- <Button -->
+                            <!--     Click="SavePdfDialog" -->
+                            <!--     Content="Render PDF"/> -->
+                            <!-- <Button  -->
+                            <!--      -->
+                            <!--     Content="Render webpage"/> -->
                         </WrapPanel>
                     </StackPanel>
                 </Expander>
@@ -94,9 +91,7 @@
         <GridSplitter
             Background="{DynamicResource DefaultBrush}"
             ResizeDirection="Columns"
-            Grid.Column="1">
-            
-        </GridSplitter>
+            Grid.Column="1" />
         <!-- <Thumb -->
         <!--     Grid.Column="1" -->
         <!--     x:Name="SplitterThumb" -->
@@ -109,7 +104,6 @@
         <!--         </ControlTemplate> -->
         <!--     </Thumb.Template> -->
         <!-- </Thumb> -->
-        
         <mdxaml:MarkdownScrollViewer
             Grid.Column="2"
             SaveScrollValueWhenContentUpdated="True"

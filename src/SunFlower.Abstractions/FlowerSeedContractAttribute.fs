@@ -1,12 +1,12 @@
 ﻿namespace SunFlower.Abstractions
 open System
 
-///
-/// CoffeeLake 2025
-/// this code licensed under (see GitHub repo) license
-///
-/// @creator: atolstopyatov2017@vk.com
-///
+//
+// CoffeeLake 2025
+// this code licensed under (see GitHub repo) license
+//
+// @creator: atolstopyatov2017@vk.com
+//
 
 /// <summary>
 /// Version contract between plugin-kernel sides

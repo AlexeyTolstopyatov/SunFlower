@@ -79,7 +79,7 @@ type MyAnalyzer() =
 6) Build and Drop .DLL into `%Application%/Plugins`
 7) Run SunFlower and see what you can!
 
-![See the result](assets/mdbook.png)
+![Sunflower at the archVM](assets/vmware_screenshot.png)
 
 ### Supported Binary Formats
 

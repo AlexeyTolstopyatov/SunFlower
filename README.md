@@ -7,25 +7,20 @@ Was inspired by PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same too
 Main idea of it - make non-monolith application and avoid embedded functions. This repository contains
 just loader details and the client.   
 
-This repository includes 4 parts of my work:
- - Extensions Loader (`.net8.0`)
- - Terminal Client (`.net8.0`)
- - Avalonia Client (`.net8.0`)
+This repository includes tree parts of my work:
+ - Base definitions (`abstractions`) 
+ - Plugins manager (`kernel`)
+ - Avalonia Client (`client`)
 
 > [!NOTE]
-> Sources of plugins contains in [SunFlower.Plugins] repository
+> Sources of plugins contains in [SunFlower.Plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repository
 > and not depend on this reporsitory life
 
-### Sunflower client
-
-User guide for client stores [here](WINDOWS.md)
-
-![SunflowerClient](assets/title.png)
+![Sunflower client](assets/title.png)
 
 ### Sunflower core "seeds" (plugins)
 
-In the package stores moved from JellyBins parts of code
-for definition the
+In releases always will be represented plugins for definition
  - `MZ` Executables (real-mode x86 applications);
  - `NE` segmented Executables (first protected-mode x86 applications);
  - `LE` OS/2-Windows386 executables; 
@@ -43,7 +38,7 @@ For making new sunflower extension:
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
 4) Follow this template
-5) Read and learn [versioning](VERSIONING.md).
+5) Read documents at the end of "README".
 
 ```csharp
 [Flower(SeedTarget.Data)]
@@ -84,7 +79,7 @@ type MyAnalyzer() =
 6) Build and Drop .DLL into `%Application%/Plugins`
 7) Run SunFlower and see what you can!
 
-![See what you do](assets/mdbook.png)
+![See the result](assets/mdbook.png)
 
 ### Supported Binary Formats
 
@@ -95,21 +90,23 @@ Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower
  - **Stupid** Exceptions handling -
 A `Main` procedure contains exceptions handler which
 rewrites Status last error field. Loader prints all stack frames of calling assembly;
- - Versions incompatibility - Unfortunately Sunflower plugins which are differ the foundation are **incompatible** at the moment of updating documentation.
+ - Versions incompatibility - Unfortunately Sunflower plugins which are differ the foundation are **incompatible**.
 Any differences between foundation file version and plugins foundation calls force exit (means conflict behaviour).
 
 ### Frameworks And other external toolchain
 
-Despite the fact that the loader's core uses only the capabilities of `.NET` Core platform, and bundled with the loader's main plugins are written from scratch without the use of external tools, the window application `Sunflower.Windows.exe` uses many different add-ons to be more comfortable and modern. 
-
 All frameworks and toolkits
- - Avalonia XPF `.net8.0` - Foundation crossplatform client
+ - Avalonia XPF `.net8.0` - Foundation of crossplatform client
  - `.NET 8.0` - Foundation of everything
- - [HandyControls](https://github.com/HandyOrg/HandyControl) `3.4.0` - better Window controls / little MVVM experience
+ - [HandyControls](https://github.com/HandyOrg/HandyControl) - better Window controls / little MVVM experience
  - [Markdown.Avalonia](https://github.com/whistyun/Markdown.Avalonia) instead of Monaco Editor and JavaScript bindings
-
 
 > [!TIP]
 > At the moment of publishing Sunflower the `HandyControl`s not supports
 > Avalonia. In the `/external` directory exists experimental assembly of 
 > HandyControls for Avalonia.
+
+### Documents
+ - [Plugins development notes](ABSTRACT.md) - first stages & abstractions application
+ - [Client-Kernel communication notes](KERNEL.md) - how the SunFlower kernel works
+ - [Versioning notes](VERSIONING.md)

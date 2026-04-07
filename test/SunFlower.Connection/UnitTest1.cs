@@ -1,8 +1,8 @@
 using System.Data;
 using SunFlower.Abstractions;
 using SunFlower.Abstractions.Types;
-using SunFlower.Services;
-using SunFlower.Writers;
+using SunFlower.Kernel.Services;
+using SunFlower.Kernel.Writers;
 
 namespace SunFlower.Connection;
 
@@ -48,7 +48,7 @@ public class Tests
         List<TestableClass> list = [new TestableClass(), new TestableClass()];
 
         var dts = FlowerReflection.ListToDataTable(list);
-        
+
         Assert.Pass();
     }
     /// <summary>
@@ -61,7 +61,7 @@ public class Tests
             .CreateInstance()
             .LoadAllFlowerSeeds()
             .Seeds;
-        
+
         Assert.Pass();
     }
     [Test]
@@ -81,15 +81,15 @@ public class Tests
         Assert.Pass(FlowerMarkdownWriter.FormatRegion(
             new Region(
                 "# header", // <-- 1.0 - 4.5 kernel API
-                "Some instructions how to live", 
+                "Some instructions how to live",
                 new DataTable()
             ))
         );
-        
+
         Assert.Pass(FlowerMarkdownWriter.FormatRegionSmartHeader(
             new Region(
                 "header",
-                "Some instructions how to live", 
+                "Some instructions how to live",
                 new DataTable()), // <-- 4.5.1+ kernel API
             3 // <-- level of the markdown header
         ));

@@ -1,33 +1,87 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>4.0.0</Version>
-        <AssemblyVersion>4.0.0</AssemblyVersion>
-        <FileVersion>4.0.0</FileVersion>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <LangVersion>7.0</LangVersion>
+        <Version>5.0.0</Version>
+        <AssemblyVersion>5.0.0.0</AssemblyVersion>
+        <FileVersion>5.0.0.0</FileVersion>
+        <ApplicationIcon>app5.ico</ApplicationIcon>
     </PropertyGroup>
-
+    <!-- Headers -->
     <ItemGroup>
-        <Compile Include="ReDefinitions.fs" />
+        
+        <Compile Include="Services\JsonService.fs" />
+        <Compile Include="Models\RecentModel.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Converter\DataConverters.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="ViewModels\AvaloniaViewModel.fs" />
+        <Compile Include="ViewModels\WorkspaceViewModel.fs" />
+        <Compile Include="ViewModels\ConsoleArgsViewModel.fs" />
+        <Compile Include="ViewModels\ConverterViewModel.fs" />
+        <Compile Include="ViewModels\RecentViewModel.fs" />
+        <Compile Include="ViewModels\FlowerSeedsViewModel.fs" />
+        <Compile Include="ViewModels\MainWindowViewModel.fs" />
+        <Compile Include="ViewModels\WorkspaceViewModelFactory.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Compile Include="Views\WorkspaceWindow.axaml.fs" />
+        <Compile Include="Views\FlowerSeedsWindow.axaml.fs" />
+        <Compile Include="Views\RecentControl.axaml.fs" />
+        <Compile Include="Views\ConverterControl.axaml.fs" />
+        <Compile Include="Views\ConsoleArgsControl.axaml.fs" />
+        <Compile Include="Views\MainWindow.axaml.fs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+        <Compile Include="App.axaml.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+        <PackageReference Include="Avalonia" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="AvaMark" Version="0.2.1" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
+        <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2" />
+        <PackageReference Include="MarkdownAIRender" Version="0.1.13" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Services\IFlowerSeedManager.fs" />
-      <Compile Include="Services\FlowerSeedManager.fs" />
-      <Compile Include="Services\FlowerCompatibility.fs" />
+      <Reference Include="Avalonia.Controls">
+        <HintPath>C:\Users\atvlg\.nuget\packages\avalonia\11.3.12\ref\net8.0\Avalonia.Controls.dll</HintPath>
+      </Reference>
+      <Reference Include="HandyControl">
+        <HintPath>..\..\external\HandyControl.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Readers\FlowerBinarySeeker.fs" />
+      <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Writers\FlowerMarkdownWriter.fs" />
+      <Content Include="Registry\recent.json;Registry\about.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="app5.ico" />
+    </ItemGroup>
 </Project>

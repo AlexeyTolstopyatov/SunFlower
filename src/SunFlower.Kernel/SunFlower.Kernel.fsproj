@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Version>5.0.0</Version>
+        <AssemblyVersion>4.0.0</AssemblyVersion>
+        <FileVersion>4.0.0</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="ReDefinitions.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Services\IFlowerSeedManager.fs" />
+      <Compile Include="Services\FlowerSeedManager.fs" />
+      <Compile Include="Services\FlowerCompatibility.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Readers\FlowerBinarySeeker.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Writers\FlowerMarkdownWriter.fs" />
+    </ItemGroup>
+
+</Project>

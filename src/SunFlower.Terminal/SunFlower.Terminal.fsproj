@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SunFlower\SunFlower.fsproj" />
+      <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,117 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SunFlower.ViewModels"
+        xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+        mc:Ignorable="d" 
+        Background="{DynamicResource RegionBrush}"
+        d:DesignWidth="600" d:DesignHeight="600"
+        x:Class="SunFlower.Views.WorkspaceWindow"
+        x:DataType="{x:Type vm:WorkspaceViewModel}"
+        Title="{Binding Path}">
+    <Window.DataContext>
+        <vm:WorkspaceViewModel/>
+    </Window.DataContext>
+    <Grid
+        x:Name="WorkspaceGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="250" MaxWidth="400" />
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid
+            Background="{StaticResource CloudTileBrush}">
+            <StackPanel>
+                <!-- Panel of plugins/tools -->
+                <Expander
+                    IsExpanded="True"
+                    Header="Plugin state"
+                    Margin="10, 10,10,0">
+                    <StackPanel>
+                        <TextBlock
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Margin="10"
+                            TextWrapping="WrapWithOverflow">
+                            Depending on selected item in the following combo box 
+                            results renders at the right side and state of connection will
+                            be shown here below
+                        </TextBlock>
+                        <Grid
+                            ColumnDefinitions="Auto, *">
+                            <Label
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                Content="Plugin: "/>
+                            <ComboBox
+                                Grid.Column="1"
+                                BorderBrush="Transparent"
+                                Margin="10,0"
+                                SelectedIndex="{Binding SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        </Grid>
+                        <TextBlock 
+                            TextWrapping="Wrap"
+                            Margin="10"
+                            Text="{Binding SourceExceptionMessage}"/>
+                        <TextBlock
+                            TextWrapping="Wrap"
+                            FontFamily="Consolas"
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="{Binding SourceException}"/>
+                    </StackPanel>
+                </Expander>
+                <Expander
+                    Margin="10,5,10,5"
+                    Header="File"
+                    IsExpanded="True">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="10"
+                            TextWrapping="Wrap"
+                            Foreground="{DynamicResource SecondaryTextBrush}">
+                            Available actions with current markdown document
+                        </TextBlock>
+                        <WrapPanel>
+                            <Button
+                                Click="SaveDialog"
+                                Content="Save Text"/>
+                            <!-- <Button -->
+                            <!--     Click="SavePdfDialog" -->
+                            <!--     Content="Render PDF"/> -->
+                            <!-- <Button  -->
+                            <!--      -->
+                            <!--     Content="Render webpage"/> -->
+                        </WrapPanel>
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
+        </Grid>
+        
+        <GridSplitter
+            Background="{DynamicResource DefaultBrush}"
+            ResizeDirection="Columns"
+            Grid.Column="1" />
+        <!-- <Thumb -->
+        <!--     Grid.Column="1" -->
+        <!--     x:Name="SplitterThumb" -->
+        <!--     DragDelta="ResizeWestEast" -->
+        <!--     Cursor="SizeWestEast"  -->
+        <!--     HorizontalAlignment="Stretch"> -->
+        <!--     <Thumb.Template> -->
+        <!--         <ControlTemplate> -->
+        <!--             <Rectangle Fill="{StaticResource BorderBrush}" /> -->
+        <!--         </ControlTemplate> -->
+        <!--     </Thumb.Template> -->
+        <!-- </Thumb> -->
+        <mdxaml:MarkdownScrollViewer
+            Grid.Column="2"
+            SaveScrollValueWhenContentUpdated="True"
+            Margin="50,20"
+            Markdown="{Binding Source, UpdateSourceTrigger=PropertyChanged}">
+            <mdxaml:MarkdownScrollViewer.Styles>
+                <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml"/>
+            </mdxaml:MarkdownScrollViewer.Styles>
+        </mdxaml:MarkdownScrollViewer>
+    </Grid>
+</Window>

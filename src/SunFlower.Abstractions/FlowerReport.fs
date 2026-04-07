@@ -36,7 +36,7 @@ module FlowerReport =
     /// </summary>
     /// <param name="str">Unsafe CLR string given from ASCII</param>
     [<CompiledName "SafeString">]
-    let safe_string (str: string) : string =
+    let safeString (str: string) : string =
         let sb = StringBuilder()
         
         let appendEscaped (b: byte) =
@@ -57,7 +57,7 @@ module FlowerReport =
         
         $"`{sb}`"
     [<CompiledName "ForColumn">]
-    let for_column (str : string, t : Type) : string =
+    let forColumn (str : string, t : Type) : string =
         match t.Name with
         | "Int32"
         | "UInt32" -> $"`{str}:4`"
@@ -74,10 +74,10 @@ module FlowerReport =
     /// name:type
     /// </summary>
     [<CompiledName "ForColumnStr">]
-    let for_column_str (str: string, t : string) : string = 
+    let forColumnStr (str: string, t : string) : string = 
         $"`{str}:{t}`"
     [<CompiledName "ForColumnFl">]
-    let for_column_fl (str: string, t: FlowerType) =
+    let forColumnFl (str: string, t: FlowerType) =
         match t with
         | FlowerType.U1 -> $"`{str}:1`"
         | FlowerType.U2 -> $"`{str}:2`"
@@ -94,7 +94,7 @@ module FlowerReport =
     /// Returns prepared string of FAR16 pointer
     /// </summary>
     [<CompiledName "FarHexString">]
-    let far_hex_string(seg: UInt16, offset: UInt16, high: bool) : string = 
+    let farHexString(seg: UInt16, offset: UInt16, high: bool) : string = 
         match high with
         | true -> $"`{seg:X4}:{offset:X4}`"
         | false -> $"`{offset:X4}:{seg:X4}`"
@@ -102,16 +102,16 @@ module FlowerReport =
     /// Returns prepared string of FAR32 pointer
     /// </summary>
     [<CompiledName "Far32HexString">]
-    let far32_hex_string (seg: UInt16, offset: UInt32, high: bool) = 
+    let far32HexString (seg: UInt16, offset: UInt32, high: bool) = 
         match high with
         | true -> $"`{seg:X4}:{offset:X8}`"
         | false -> $"`{offset:X8}:{seg:X4}`"
     /// <summary>
-    /// Machine word retranslates to hexadecimal view like 0xDEADBABE
+    /// Machine word translates into hexadecimal view like 0xDEADBABE
     /// with fixed byte-size using
     /// </summary>
     [<CompiledName "WordToString">]
-    let word_to_string (v: string, size: Int32) : string = 
+    let wordToString (v: string, size: Int32) : string = 
         let w = Convert.ToUInt64 v
         match size with
         | 1 -> $"0x{w:X2}"

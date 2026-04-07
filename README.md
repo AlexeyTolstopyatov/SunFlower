@@ -3,33 +3,24 @@
 <img src="assets/sunflower.svg" height="128" width="128" align="right">
 
 Sunflower is an open-source, plugin-driven system designed for binary analysis. 
-Was inspired by Ghidra, PEAnathomist, CFFExplrer, Semi VB Decompiler, and other toolkits. 
-Main idea of it -- make non-monolith application and avoid embedded functions. This repository contains
-just loader details and Windows client.   
+Was inspired by PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same toolkits. 
+Main idea of it - make non-monolith application and avoid embedded functions. This repository contains
+just loader details and the client.   
 
-This repository includes 4 parts of my work:
- - Extensions Loader (F# `.net8.0`)
- - Core Plugins (moved JellyBins parts)
- - Terminal Client (F# `.net8.0`)
- - [Windowed Client](WINDOWS.md) (C# `.net8.0` / JavaScript)
-    - Native part (`PINVOKE`/`FFI` usages/`Win32 API` base/...)
-    - Monaco Editor bindings
+This repository includes tree parts of my work:
+ - Base definitions (`abstractions`) 
+ - Plugins manager (`kernel`)
+ - Avalonia Client (`client`)
 
-All core plugins moved from [JellyBins](https://github.com/AlexeyTolstopyatov/jellybins) ~(JellyBins obsolete)~
+> [!NOTE]
+> Sources of plugins contains in [SunFlower.Plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repository
+> and not depend on this reporsitory life
 
-Main idea was an isolation of add-ons because main codebase had become
-very large. The previous project was rewritten from scratch five times, and in an undone state of parts is contained here. 
-
-### Sunflower client
-
-User guide for client stores [here](WINDOWS.md)
-
-![SunflowerClient](assets/title.png)
+![Sunflower client](assets/title.png)
 
 ### Sunflower core "seeds" (plugins)
 
-In the package stores moved from JellyBins parts of code
-for definition the
+In releases always will be represented plugins for definition
  - `MZ` Executables (real-mode x86 applications);
  - `NE` segmented Executables (first protected-mode x86 applications);
  - `LE` OS/2-Windows386 executables; 
@@ -42,19 +33,16 @@ run it with all plugins too.
 
 ### Sunflower "seeds" (application plugins)
 
-> [!NOTE]
-> Also read the client [guide](WINDOWS.md). It has little-detailed information
-> about debugging of plugins
-
 For making new sunflower extension:
 1) Create Visual Studio solution.
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
 4) Follow this template
-5) Read and learn [versioning](VERSIONING.md).
+5) Read documents at the end of "README".
 
 ```csharp
-[FlowerContract(4, 0, 0)]
+[Flower(SeedTarget.Data)]
+[FlowerContract(5, 0, 0)]
 public class MyAnalyzer : IFlowerSeed {
   /// Title
   public string Name => "It shows in Connected Plugins menu";
@@ -71,7 +59,8 @@ public class MyAnalyzer : IFlowerSeed {
 If you want use F# toolchain you can implement it like this:
 
 ```fsharp
-[<FlowerContract(4, 0, 0)>]
+[<Flower(SeedTarget.Code)>]
+[<FlowerContract(5, 0, 0)>]
 type MyAnalyzer() =
   interface IFlowerSeed with
   /// Title
@@ -90,7 +79,7 @@ type MyAnalyzer() =
 6) Build and Drop .DLL into `%Application%/Plugins`
 7) Run SunFlower and see what you can!
 
-![See what you do](assets/mdbook.png)
+![See the result](assets/mdbook.png)
 
 ### Supported Binary Formats
 
@@ -100,33 +89,24 @@ Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower
 
  - **Stupid** Exceptions handling -
 A `Main` procedure contains exceptions handler which
-rewrites Status last error field. Loader prints this message with `-> Disabled plugins tracing` brakets.
- - Versions incompatibility - Unfortunately Sunflower plugins which are differ the foundation are **incompatible** at the moment of updating documentation.
+rewrites Status last error field. Loader prints all stack frames of calling assembly;
+ - Versions incompatibility - Unfortunately Sunflower plugins which are differ the foundation are **incompatible**.
 Any differences between foundation file version and plugins foundation calls force exit (means conflict behaviour).
 
 ### Frameworks And other external toolchain
 
-Despite the fact that the loader's core uses only the capabilities of `.NET` Core platform, and bundled with the loader's main plugins are written from scratch without the use of external tools, the window application `Sunflower.Windows.exe` uses many different add-ons to be more comfortable and modern. 
-
 All frameworks and toolkits
- - WPF `.net-windows7.0` - Foundation of Windowed client
+ - Avalonia XPF `.net8.0` - Foundation of crossplatform client
  - `.NET 8.0` - Foundation of everything
- - [HandyControls](https://github.com/HandyOrg/HandyControl) `3.4.0` - better Window controls / little MVVM experience
- - [Microsoft WPF Behaviours](https://github.com/microsoft/XamlBehaviorsWpf) - The MVVM experience
- - [Monaco](https://github.com/microsoft/monaco-editor) `0.52` - All flower-extension results in one document 
- - [Monaco-Markdown](https://github.com/trofimander/monaco-markdown) - Highlighting extension for Markdown documents
- - Win32 bindings - `OpenFileDialog` / `SaveFileDialog` bindings
- - [Microsoft Web View](https://github.com/MicrosoftEdge/WebView2Browser) - Toolkit for Monaco editor support.
- - [HexView](https://github.com/fjeremic/HexView.Wpf) - Hexadecimal view of file
+ - [HandyControls](https://github.com/HandyOrg/HandyControl) - better Window controls / little MVVM experience
+ - [Markdown.Avalonia](https://github.com/whistyun/Markdown.Avalonia) instead of Monaco Editor and JavaScript bindings
 
-### Documents and Sources
- - DoDi's VB Decompiler sources (MIT)
- - VBGamer45 - Semi VB Decompiler sources (MIT) 
- - Ghidra part of utils source (Apache-2.0 license)
- - Microsoft NE Segmented EXE format
- - OS/2 OMF (Object Module Format) docs
- - [Microsoft PE Format](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format)
- - [Microsoft DOS PIF Web Archive copy](https://web.archive.org/web/20220214185118/http://www.smsoft.ru/en/pifdoc.htm)
- - [Suggesting Visual Basic 4.0 internals](https://gist.github.com/AlexeyTolstopyatov/96a4d36639256fb624e32ae6153bfa11) - SemiVB Decompiler
- - [Suggesting Visual Basic 3.0 internals](https://gist.github.com/AlexeyTolstopyatov/fc19496b8b1a9a5bbb5f12c415c0c1f3) - DoDi VB Decompiler
+> [!TIP]
+> At the moment of publishing Sunflower the `HandyControl`s not supports
+> Avalonia. In the `/external` directory exists experimental assembly of 
+> HandyControls for Avalonia.
 
+### Documents
+ - [Plugins development notes](ABSTRACT.md) - first stages & abstractions application
+ - [Client-Kernel communication notes](KERNEL.md) - how the SunFlower kernel works
+ - [Versioning notes](VERSIONING.md)

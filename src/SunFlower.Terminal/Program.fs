@@ -4,10 +4,10 @@ open System
 open System.Collections.Generic
 open System.Data
 open System.IO
-open SunFlower.Services
+open SunFlower.Kernel.Services
 
 //
-// CoffeeLake (C) 2024-2025
+// CoffeeLake (C) 2024-2025-2026
 // This module particular belongs JellyBins
 // Licensed under MIT
 //
@@ -24,7 +24,7 @@ module DataView =
     /// Prints dictionary as table without delimiters
     /// </summary>
     /// <param name="d"></param>
-    let print_cor_dict (d: Dictionary<string, string>) : unit =
+    let printDictionary (d: Dictionary<string, string>) : unit =
         for KeyValue(k, v) in d do
             printfn $"{k}\t{v}"
 
@@ -32,7 +32,7 @@ module DataView =
     /// as Markdown Table
     /// </summary>
     /// <param name="table"></param>
-    let print_table (table: DataTable) =
+    let printTable (table: DataTable) =
         let safeToString (value: obj) =
             if Convert.IsDBNull(value) then
                 " " // Empty cell (<null> dont need anymore)
@@ -94,7 +94,7 @@ module App =
         | Help
         | Invalid of message: string
 
-    let parse_args (args: string[]) =
+    let parse (args: string[]) =
         match args with
         | [| "--for"; path |] -> CheckSingle path
         | [| "--forall" |] -> CheckAll
@@ -107,24 +107,24 @@ module App =
         | [||] -> Help
         | _ -> Invalid "Unknown key"
 
-    let show_help () =
+    let printHelp () =
         printfn "Usage:"
         printfn "  --for <path>    Compare current sunflower plugin with base"
         printfn "  --forall        Compare all plugins with base"
         printfn "  --why <path>    Compare current sunflower plugin verbose"
         printfn "  --help, -h, /?  Show this page"
 
-    let exec_command command =
+    let execute command =
         match command with
         | CheckSingle path ->
             let result = FlowerCompatibility.get path
-            DataView.print_table result
+            DataView.printTable result
         | CheckAll ->
-            let result = FlowerCompatibility.get_forall ()
-            DataView.print_table result
+            let result = FlowerCompatibility.getForAll ()
+            DataView.printTable result
         | ExplainSingle path ->
             let result =
-                FlowerCompatibility.get_verbose path |> Seq.toList |> List.iter (printfn "%s")
+                FlowerCompatibility.getAndExplain path |> Seq.toList |> List.iter (printfn "%s")
 
             result
             ()
@@ -133,16 +133,16 @@ module App =
                 let result =
                     File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SunFlower.runtimeconfig.dll"))
 
-                printfn "%s" result
+                printfn $"%s{result}"
             with ex ->
                 printfn "Couldn't find resources"
-        | Help -> show_help ()
+        | Help -> printHelp ()
         | Invalid message ->
-            printfn "Error: %s" message
-            show_help ()
+            printfn $"Error: %s{message}"
+            printHelp ()
 
     [<EntryPoint>]
     let main (args: string[]) =
-        let command = parse_args args
-        exec_command command
+        let command = parse args
+        execute command
         0

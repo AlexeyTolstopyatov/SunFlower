@@ -1,0 +1,184 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
+        xmlns:views="clr-namespace:SunFlower.Views"
+        mc:Ignorable="d" 
+        x:Class="SunFlower.Views.MainWindow"
+        Icon="/Assets/sunflower256.png"
+        Background="{StaticResource RegionBrush}"
+        d:DesignWidth="600" 
+        d:DesignHeight="480"
+        Width="1024"
+        Height="500"
+        x:DataType="viewModels:MainWindowViewModel">
+    <Design.DataContext>
+        <!-- 
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) 
+        -->
+        <viewModels:MainWindowViewModel/>
+    </Design.DataContext>
+    <!--
+        Left side - Loaded Components information
+        (icon + SunFlower version)
+        List of loaded components|contract version
+        
+        Right Side - DataTable of recent files
+    -->
+    <Grid
+        ColumnDefinitions="250,*">
+        <StackPanel
+            Grid.Column="0"
+            Background="{StaticResource RegionBrush}">
+            <Grid
+                Margin="10"
+                ColumnDefinitions="64,*">
+                <Image
+                    HorizontalAlignment="Left"
+                    Source="/Assets/sunflower256.png"
+                    Width="64"/>
+                <StackPanel
+                    Margin="10,30"
+                    Grid.Column="1">
+                    <TextBlock 
+                        Text="SunFlower"/>
+                    <TextBlock
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="{Binding Version, FallbackValue=5.0.0.0}"/>
+                </StackPanel>
+            </Grid>
+            <!--
+                Menu items here fixed and no data models bound here
+                This is a simple menu instance which represents startup actions
+            -->
+            <Menu>
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <!--
+                    Menu -> Import
+                    
+                    JUST ADDS file into "Recent files" collection.
+                    From the selected item in "Recent files" you can see
+                    main workspace window.   
+                -->
+                <MenuItem
+                    Click="OpenDialog">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Import"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+N"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/open48.png"/>
+                    </MenuItem.Icon>
+                    
+                </MenuItem>
+                <!--
+                    Menu -> Recent
+                    
+                    Switches embedded view to RecentControl view.
+                    Other functions defined in control   
+                -->
+                <MenuItem
+                    Command="{Binding SwitchRecent}">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Recent"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+N"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/fedit48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <!--
+                    Menu -> Convert
+                    
+                    Bound keys: Ctrl+W to the parent control (Window)
+                    Calls the Converter window (converts various data types) 
+                -->
+                <MenuItem
+                    Command="{Binding SwitchConverter}">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Convert"/>
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="Ctrl+W"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/convert48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <!--
+                    Menu -> Connections
+                    
+                    Calls the FlowerSeeds(Control/Window) with DLLs metadata and
+                    bound contracts of all plugins in the /Plugins directory
+                -->
+                <MenuItem
+                    ToggleType="CheckBox"
+                    Click="OpenAboutClick">
+                    <MenuItem.Header>
+                        <DockPanel>
+                            <TextBlock
+                                Padding="1, 0, 5, 0"
+                                DockPanel.Dock="Left"
+                                Text="Connections"/>
+                        </DockPanel>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/sunflower256.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+        <Grid
+            Background="{StaticResource CloudTileBrush}"
+            Grid.Column="1">
+            <!--
+                Binding at the View-side: Depending on given view model
+                from the ViewModel middleware -> Draw the View same type
+            -->
+            <ContentControl 
+                Content="{Binding CurrentViewModel.Value, UpdateSourceTrigger=PropertyChanged}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="{x:Type viewModels:RecentViewModel}">
+                        <views:RecentControl/>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type viewModels:ConsoleArgsViewModel}">
+                        <views:ConsoleArgsControl/>
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type viewModels:ConverterViewModel}">
+                        <views:ConverterControl/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
+        </Grid>
+    </Grid>
+</Window>

@@ -77,21 +77,21 @@ module FlowerReflection =
             | :? UInt64
             | :? Int64 as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
-            | :? array<Char> as sz -> sz |> String |> FlowerReport.safe_string
-            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safe_string
+            | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
+            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
             | _ -> value.ToString()
 
         for prop in properties do
             if prop.CanRead then
                 let value = prop.GetValue(inst)
                 let flt = get_type_enum prop.PropertyType
-                let type_str = FlowerReport.for_column_fl (prop.Name, flt)
+                let type_str = FlowerReport.forColumnFl (prop.Name, flt)
                 dt.Rows.Add(type_str, get_value_string(value)) |> ignore
 
         for field in fields do
             let value = field.GetValue(inst)
             let flt = get_type_enum(field.FieldType)
-            let type_str = FlowerReport.for_column_fl (field.Name, flt)
+            let type_str = FlowerReport.forColumnFl (field.Name, flt)
             dt.Rows.Add(type_str, get_value_string(value)) |> ignore
 
         dt
@@ -118,9 +118,9 @@ module FlowerReflection =
             | :? UInt64
             | :? Int64 as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
-            | :? String as str -> str |> FlowerReport.safe_string
-            | :? array<Char> as sz -> sz |> String |> FlowerReport.safe_string
-            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safe_string
+            | :? String as str -> str |> FlowerReport.safeString
+            | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
+            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
             | _ -> value.ToString()
         
         let dt = new DataTable("CollectionData")

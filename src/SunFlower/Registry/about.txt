@@ -1,0 +1,6 @@
+﻿This window contains nested list of loaded assemblies and plugins.
+Sunflower Plugins are implements special interface for communication
+with other parts of kernel and client.
+
+Roots (list items) are external DLLs (a.k.a flowers) and nested 
+elements inside them are instantiated plugins (a.k.a. sunflower seeds)

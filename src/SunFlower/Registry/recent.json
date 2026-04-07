@@ -1,0 +1,16 @@
+﻿[
+  {
+    "Name": "DOSCALL1.DLL",
+    "Path": "D:\\TEST\\MS_OS220\\DOSCALL1.DLL",
+    "Size": 60,
+    "Sign": "0x4c45",
+    "Type": "Linear Executable (Win386-OS/2)"
+  },
+  {
+    "Name": "BDCALL32.DLL",
+    "Path": "D:\\TEST\\ECS\\BDCALL32.DLL",
+    "Size": 7,
+    "Sign": "0x5845",
+    "Type": "Linear Executable (OS/2-ArcaOS)"
+  }
+]

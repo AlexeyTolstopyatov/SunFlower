@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Add Resources Here -->
+    <!-- 
+        o:Freeze="True"
+    -->
+    <ImageBrush 
+        x:Key="CloudTileBrush"
+        TileMode="Tile"
+        Opacity="0.1"
+        Stretch="UniformToFill"
+        DestinationRect="0,0,157,157"
+        Source="/Assets/cloud.png"/>
+</ResourceDictionary>

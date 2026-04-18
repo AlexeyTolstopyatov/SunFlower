@@ -7,7 +7,7 @@
         Width="800"
         Height="450"
         SizeToContent="Height"
-        d:DesignWidth="600" 
+        d:DesignWidth="600"
         d:DesignHeight="480"
         x:DataType="{x:Type vm:FlowerSeedsViewModel}"
         Background="{DynamicResource RegionBrush}"
@@ -17,7 +17,7 @@
         x:Class="SunFlower.Views.FlowerSeedsWindow"
         Title="Sunflower - Connected plugins">
     <Window.DataContext>
-        <vm:FlowerSeedsViewModel/>
+        <vm:FlowerSeedsViewModel />
     </Window.DataContext>
     <Grid
         ColumnDefinitions="250, *"
@@ -31,21 +31,21 @@
                 <Image
                     HorizontalAlignment="Left"
                     Source="/Assets/sunflower256.png"
-                    Width="64"/>
+                    Width="64" />
                 <StackPanel
                     Margin="10,30"
                     Grid.Column="1">
-                    <TextBlock 
-                        Text="SunFlower"/>
+                    <TextBlock
+                        Text="SunFlower" />
                     <TextBlock
                         Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="Connected modules"/>
+                        Text="Connected modules" />
                 </StackPanel>
             </Grid>
             <TextBlock
                 TextWrapping="WrapWithOverflow"
                 Margin="20"
-                Text="{Binding AboutText}"/>
+                Text="{Binding AboutText}" />
         </StackPanel>
         <!--Connected plugins-->
         <ItemsControl
@@ -62,8 +62,8 @@
                                 ColumnDefinitions="Auto, *">
                                 <TextBlock
                                     HorizontalAlignment="Left">
-                                    <Run Text="{Binding Name}"/>
-                                    <Run Text="{Binding Version}" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                    <Run Text="{Binding Name}" />
+                                    <Run Text="{Binding Version}" Foreground="{DynamicResource SecondaryTextBrush}" />
                                 </TextBlock>
                             </Grid>
                         </Expander.Header>
@@ -77,18 +77,18 @@
                                     <DataTemplate>
                                         <ListBoxItem>
                                             <WrapPanel>
-                                                <Image 
-                                                    Source="/Assets/convert48.png"/>
+                                                <Image
+                                                    Source="/Assets/convert48.png" />
                                                 <StackPanel
                                                     VerticalAlignment="Center">
                                                     <TextBlock
                                                         VerticalAlignment="Center"
-                                                        Text="{Binding Item1}"/>
+                                                        Text="{Binding Item1}" />
                                                     <TextBlock
                                                         HorizontalAlignment="Left"
                                                         Text="{Binding Item2}"
                                                         VerticalAlignment="Center"
-                                                        Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                                        Foreground="{DynamicResource SecondaryTextBrush}" />
                                                 </StackPanel>
                                             </WrapPanel>
                                         </ListBoxItem>
@@ -102,4 +102,3 @@
         </ItemsControl>
     </Grid>
 </Window>
-

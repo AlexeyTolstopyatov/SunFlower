@@ -4,21 +4,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SunFlower.ViewModels"
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
-        mc:Ignorable="d" 
+        mc:Ignorable="d"
         Background="{DynamicResource RegionBrush}"
         d:DesignWidth="600" d:DesignHeight="600"
         x:Class="SunFlower.Views.WorkspaceWindow"
         x:DataType="{x:Type vm:WorkspaceViewModel}"
         Title="{Binding Path}">
     <Window.DataContext>
-        <vm:WorkspaceViewModel/>
+        <vm:WorkspaceViewModel />
     </Window.DataContext>
     <Grid
         x:Name="WorkspaceGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="250" MaxWidth="400" />
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid
             Background="{StaticResource CloudTileBrush}">
@@ -33,7 +33,7 @@
                             Foreground="{DynamicResource SecondaryTextBrush}"
                             Margin="10"
                             TextWrapping="WrapWithOverflow">
-                            Depending on selected item in the following combo box 
+                            Depending on selected item in the following combo box
                             results renders at the right side and state of connection will
                             be shown here below
                         </TextBlock>
@@ -42,7 +42,7 @@
                             <Label
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                Content="Plugin: "/>
+                                Content="Plugin: " />
                             <ComboBox
                                 Grid.Column="1"
                                 BorderBrush="Transparent"
@@ -50,15 +50,15 @@
                                 SelectedIndex="{Binding SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                 ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                         </Grid>
-                        <TextBlock 
+                        <TextBlock
                             TextWrapping="Wrap"
                             Margin="10"
-                            Text="{Binding SourceExceptionMessage}"/>
+                            Text="{Binding SourceExceptionMessage}" />
                         <TextBlock
                             TextWrapping="Wrap"
                             FontFamily="Consolas"
                             Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="{Binding SourceException}"/>
+                            Text="{Binding SourceException}" />
                     </StackPanel>
                 </Expander>
                 <Expander
@@ -75,7 +75,7 @@
                         <WrapPanel>
                             <Button
                                 Click="SaveDialog"
-                                Content="Save Text"/>
+                                Content="Save Text" />
                             <!-- <Button -->
                             <!--     Click="SavePdfDialog" -->
                             <!--     Content="Render PDF"/> -->
@@ -87,7 +87,7 @@
                 </Expander>
             </StackPanel>
         </Grid>
-        
+
         <GridSplitter
             Background="{DynamicResource DefaultBrush}"
             ResizeDirection="Columns"
@@ -110,7 +110,7 @@
             Margin="50,20"
             Markdown="{Binding Source, UpdateSourceTrigger=PropertyChanged}">
             <mdxaml:MarkdownScrollViewer.Styles>
-                <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml"/>
+                <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
             </mdxaml:MarkdownScrollViewer.Styles>
         </mdxaml:MarkdownScrollViewer>
     </Grid>

@@ -5,12 +5,12 @@
              xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
              xmlns:c="clr-namespace:SunFlower.Converter"
              mc:Ignorable="d"
-             d:DesignWidth="800" 
+             d:DesignWidth="800"
              d:DesignHeight="450"
              x:DataType="{x:Type viewModels:ConverterViewModel}"
              x:Class="SunFlower.Views.ConverterControl">
     <UserControl.DataContext>
-        <viewModels:ConverterViewModel/>
+        <viewModels:ConverterViewModel />
     </UserControl.DataContext>
     <Grid
         ColumnDefinitions="250,*"
@@ -40,22 +40,22 @@
                             IsReadOnly="True"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            Text="BYTE"/>
+                            Text="BYTE" />
                         <TextBox
                             IsReadOnly="True"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            Text="WORD"/>
+                            Text="WORD" />
                         <TextBox
                             IsReadOnly="True"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            Text="DWORD"/>
+                            Text="DWORD" />
                         <TextBox
                             IsReadOnly="True"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            Text="QWORD"/>
+                            Text="QWORD" />
 
                     </StackPanel>
                     <StackPanel
@@ -68,7 +68,7 @@
                                     UpdateSourceTrigger=PropertyChanged,
                                     Converter={x:Static c:DataConverters.UInt8Converter},
                                     StringFormat='0x{0:X2}',
-                                    FallbackValue=0x00}"/>
+                                    FallbackValue=0x00}" />
                         <TextBox
                             IsReadOnly="True"
                             Text="{Binding AnyTypeText, 
@@ -76,7 +76,7 @@
                                     UpdateSourceTrigger=PropertyChanged,
                                     Converter={x:Static c:DataConverters.UInt16Converter},
                                     StringFormat='0x{0:X4}',
-                                    FallbackValue=0x0000}"/>
+                                    FallbackValue=0x0000}" />
                         <TextBox
                             IsReadOnly="True"
                             Text="{Binding AnyTypeText, 
@@ -84,7 +84,7 @@
                                     Converter={x:Static c:DataConverters.UInt32Converter}, 
                                     UpdateSourceTrigger=PropertyChanged,
                                     StringFormat='0x{0:X8}',
-                                    FallbackValue=0x00000000}"/>
+                                    FallbackValue=0x00000000}" />
                         <TextBox
                             IsReadOnly="True"
                             Text="{Binding AnyTypeText, 
@@ -92,7 +92,7 @@
                                     UpdateSourceTrigger=PropertyChanged,
                                     Converter={x:Static c:DataConverters.UInt64Converter},
                                     StringFormat='0x{0:X16}',
-                                    FallbackValue=0x0000000000000000}"/>
+                                    FallbackValue=0x0000000000000000}" />
                     </StackPanel>
                 </Grid>
             </Expander>
@@ -108,11 +108,11 @@
                         <TextBox
                             BorderBrush="Transparent"
                             Background="Transparent"
-                            Text="Bytes"/>
+                            Text="Bytes" />
                         <TextBox
                             BorderBrush="Transparent"
                             Background="Transparent"
-                            Text="String"/>
+                            Text="String" />
                     </StackPanel>
                     <StackPanel
                         Margin="5"
@@ -121,12 +121,12 @@
                             Text="{Binding AnyTypeText, 
                                             Converter={x:Static c:DataConverters.AsciiBytesConverter},
                                             Mode=OneWay,
-                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                            UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox
                             Text="{Binding AnyTypeText,
                                             Converter={x:Static c:DataConverters.AsciiStringConverter},
                                             Mode=OneWay,
-                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                            UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </Grid>
             </Expander>
@@ -142,11 +142,11 @@
                         <TextBox
                             BorderBrush="Transparent"
                             Background="Transparent"
-                            Text="Bytes"/>
+                            Text="Bytes" />
                         <TextBox
                             BorderBrush="Transparent"
                             Background="Transparent"
-                            Text="String"/>
+                            Text="String" />
                     </StackPanel>
                     <StackPanel
                         Margin="5"
@@ -155,12 +155,12 @@
                             Text="{Binding AnyTypeText, 
                                             Converter={x:Static c:DataConverters.UnicodeBytesConverter},
                                             Mode=OneWay,
-                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                            UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox
                             Text="{Binding AnyTypeText,
                                             Converter={x:Static c:DataConverters.UnicodeStringConverter},
                                             Mode=OneWay,
-                                            UpdateSourceTrigger=PropertyChanged}"/>
+                                            UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </Grid>
             </Expander>
@@ -175,27 +175,27 @@
             <TextBlock
                 Margin="10"
                 TextWrapping="WrapWithOverflow">
-                <Run Text="Usage"/>
-                <LineBreak/>
-                <Run Text="1. Write in the bottom field expression what need to convert;"/>
-                <LineBreak/>
-                <Run Text="2. Leftside cards names have requirements what argument they are expected;"/>
-                <LineBreak/>
-                <Run Text="3. Application converts expression automatically."/>
-                <LineBreak/>
+                <Run Text="Usage" />
+                <LineBreak />
+                <Run Text="1. Write in the bottom field expression what need to convert;" />
+                <LineBreak />
+                <Run Text="2. Leftside cards names have requirements what argument they are expected;" />
+                <LineBreak />
+                <Run Text="3. Application converts expression automatically." />
+                <LineBreak />
             </TextBlock>
             <TextBox
                 Margin="20,0"
-                Text="{Binding AnyTypeText, UpdateSourceTrigger=PropertyChanged}"/>
+                Text="{Binding AnyTypeText, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock
                 TextWrapping="Wrap"
                 Margin="10,5"
                 Foreground="{DynamicResource SecondaryTextBrush}">
-                <Run Text="Hexadecimal -> Expression is a hexadecimal integer"/>
-                <LineBreak/>
-                <Run Text="Decimal -> Expression is positive decimal integer"/>
-                <LineBreak/>
-                <Run Text="String -> Free expression (any text)"/>
+                <Run Text="Hexadecimal -> Expression is a hexadecimal integer" />
+                <LineBreak />
+                <Run Text="Decimal -> Expression is positive decimal integer" />
+                <LineBreak />
+                <Run Text="String -> Free expression (any text)" />
             </TextBlock>
         </StackPanel>
     </Grid>

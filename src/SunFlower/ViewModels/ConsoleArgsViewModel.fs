@@ -3,8 +3,3 @@
 [<Class>]
 type ConsoleArgsViewModel() =
     inherit AvaloniaViewModel()
-    
-    
-        
-        
-

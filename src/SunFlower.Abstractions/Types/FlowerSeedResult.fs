@@ -8,11 +8,10 @@ open System
 ///
 /// @creator: atolstopyatov2017@vk.com
 ///
-
 ///
 /// Main type mask for boxed data
 /// You can unbox System.Object result using this enumerator
-/// 
+///
 [<Flags>]
 type FlowerSeedEntryType =
     /// <summary>
@@ -40,22 +39,22 @@ type FlowerSeedEntryType =
     | Regions = 4
 
 [<Class>]
-type FlowerSeedResult(resultType: FlowerSeedEntryType, result: Object) = class   
-    let mutable boxedResult : Object = result
-    new (r: FlowerSeedEntryType) =
-        FlowerSeedResult(r, 0)
-    /// <summary>
-    /// Stores type of Boxed result from flower's seed
-    /// (external plugin result which will be dereferenced by client)
-    /// </summary>
-    member val public Type = resultType
-    /// <summary>
-    /// Points to boxed result (universal .NET Object type)
-    /// which must dereferenced and unboxed by following Type 
-    /// </summary>
-    member public _.BoxedResult
-        with get () = boxedResult
-        and set result = boxedResult <- result
-    
+type FlowerSeedResult(resultType: FlowerSeedEntryType, result: Object) =
+    class
+        let mutable boxedResult: Object = result
+        new(r: FlowerSeedEntryType) = FlowerSeedResult(r, 0)
+        /// <summary>
+        /// Stores type of Boxed result from flower's seed
+        /// (external plugin result which will be dereferenced by client)
+        /// </summary>
+        member val public Type = resultType
+
+        /// <summary>
+        /// Points to boxed result (universal .NET Object type)
+        /// which must dereferenced and unboxed by following Type
+        /// </summary>
+        member public _.BoxedResult
+            with get () = boxedResult
+            and set result = boxedResult <- result
+
     end
-    

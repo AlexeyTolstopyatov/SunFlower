@@ -178,11 +178,12 @@ let formatTables (list: IEnumerable<DataTable>) =
 [<CompiledName "Write">]
 let write (results: IEnumerable<FlowerSeedResult>) =
     let mutable acc = "" |+ $"Generated at: {DateTime.Now}"
+
     for i in results do
         match i.BoxedResult with
         | :? IEnumerable<Region> as regs -> acc <- acc |+ formatRegions regs |+ "\n"
         | :? IEnumerable<String> as strs -> acc <- acc |+ formatStrings strs |+ "\n"
         | :? IEnumerable<DataTable> as dts -> acc <- acc |+ formatTables dts |+ "\n"
         | unknown -> acc <- acc |+ $"```\n{unknown.GetType}\n```\n\n"
-    
+
     acc

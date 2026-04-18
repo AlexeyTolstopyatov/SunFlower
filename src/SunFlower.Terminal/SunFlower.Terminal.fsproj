@@ -5,7 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Version>4.0.0</Version>
         <Title>GUIless client for Sunflower loader</Title>
-        <Description>Applies all connected plugins for static analysis </Description>
+        <Description>Applies all connected plugins for static analysis</Description>
         <Copyright>CoffeeLake 2025</Copyright>
         <AssemblyVersion>4.0.0.0</AssemblyVersion>
         <FileVersion>4.0.0.0</FileVersion>
@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
+        <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj"/>
     </ItemGroup>
 
 </Project>

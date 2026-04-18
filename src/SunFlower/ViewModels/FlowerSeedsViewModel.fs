@@ -11,15 +11,14 @@ type FlowerSeedsViewModel() =
     inherit AvaloniaViewModel()
     let mutable systemTable: CorList<FlowerVersionInfo> = CorList()
     let mutable aboutText: string = ""
+
     do
-        systemTable <- FlowerCompatibility.getFlowerVersionInfoList()
+        systemTable <- FlowerCompatibility.getFlowerVersionInfoList ()
         aboutText <- File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", "about.txt"))
-    
+
     member this.SystemTable
-        with get(): CorList<FlowerVersionInfo> = systemTable
-        and set x =
-            this.SetProperty(ref systemTable, x)
-            |> ignore
-    [<ObservableProperty>]    
-    member this.AboutText
-        with get(): string = aboutText
+        with get (): CorList<FlowerVersionInfo> = systemTable
+        and set x = this.SetProperty(ref systemTable, x) |> ignore
+
+    [<ObservableProperty>]
+    member this.AboutText: string = aboutText

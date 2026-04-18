@@ -3,9 +3,9 @@
 open System
 open System.Text
 // SunFlower datatypes declared like machine word sizes
-//      :1 | BYTE   | byte/sbyte   | 
-//      :2 | WORD   | UInt16/Int16 | 
-//      :4 | DWORD  | UInt32/Int32 | 
+//      :1 | BYTE   | byte/sbyte   |
+//      :2 | WORD   | UInt16/Int16 |
+//      :4 | DWORD  | UInt32/Int32 |
 //      :8 | QWORD  | UInt64/Int64 |
 //      :s | <'Any> | String       | Any type of string (e.g. NET String)
 //      :s_| BYTE[] | Char[]       | NON-Terminated ASCII string
@@ -32,13 +32,13 @@ type FlowerType =
 module FlowerReport =
     /// <summary>
     /// Shields raw ASCII string.
-    /// Replaces ASCII bytes "\xx" substrings instead  
+    /// Replaces ASCII bytes "\xx" substrings instead
     /// </summary>
     /// <param name="str">Unsafe CLR string given from ASCII</param>
     [<CompiledName "SafeString">]
     let safeString (str: string) : string =
         let sb = StringBuilder()
-        
+
         let appendEscaped (b: byte) =
             match b with
             | 0uy -> sb.Append("%0")
@@ -46,18 +46,15 @@ module FlowerReport =
             | 10uy -> sb.Append(@"%n")
             | 13uy -> sb.Append(@"%r")
             | 92uy -> sb.Append(@"\\") // <-- backslash warning
-            | _ when b >= 32uy && b <= 126uy ->
-                sb.Append(char b)
-            | _ -> 
-                sb.AppendFormat(@$"%%x{b:X2}")
+            | _ when b >= 32uy && b <= 126uy -> sb.Append(char b)
+            | _ -> sb.AppendFormat(@$"%%x{b:X2}")
 
-        str
-        |> Encoding.ASCII.GetBytes
-        |> Array.iter (appendEscaped >> ignore)
-        
+        str |> Encoding.ASCII.GetBytes |> Array.iter (appendEscaped >> ignore)
+
         $"`{sb}`"
+
     [<CompiledName "ForColumn">]
-    let forColumn (str : string, t : Type) : string =
+    let forColumn (str: string, t: Type) : string =
         match t.Name with
         | "Int32"
         | "UInt32" -> $"`{str}:4`"
@@ -69,13 +66,14 @@ module FlowerReport =
         | "String" -> $"`{str}:s`" // <-- I don't know type of string what become UTF-16
         | "Boolean" -> $"`{str}:f`"
         | _ -> $"`{str}:?`"
+
     /// <summary>
     /// Returns the following string format
     /// name:type
     /// </summary>
     [<CompiledName "ForColumnStr">]
-    let forColumnStr (str: string, t : string) : string = 
-        $"`{str}:{t}`"
+    let forColumnStr (str: string, t: string) : string = $"`{str}:{t}`"
+
     [<CompiledName "ForColumnFl">]
     let forColumnFl (str: string, t: FlowerType) =
         match t with
@@ -90,33 +88,36 @@ module FlowerReport =
         | FlowerType.AnyStr -> $"`{str}:s`"
         | FlowerType.Flag -> $"`{str}:f`"
         | _ -> $"`{str}:?`"
+
     /// <summary>
     /// Returns prepared string of FAR16 pointer
     /// </summary>
     [<CompiledName "FarHexString">]
-    let farHexString(seg: UInt16, offset: UInt16, high: bool) : string = 
+    let farHexString (seg: UInt16, offset: UInt16, high: bool) : string =
         match high with
         | true -> $"`{seg:X4}:{offset:X4}`"
         | false -> $"`{offset:X4}:{seg:X4}`"
+
     /// <summary>
     /// Returns prepared string of FAR32 pointer
     /// </summary>
     [<CompiledName "Far32HexString">]
-    let far32HexString (seg: UInt16, offset: UInt32, high: bool) = 
+    let far32HexString (seg: UInt16, offset: UInt32, high: bool) =
         match high with
         | true -> $"`{seg:X4}:{offset:X8}`"
         | false -> $"`{offset:X8}:{seg:X4}`"
+
     /// <summary>
     /// Machine word translates into hexadecimal view like 0xDEADBABE
     /// with fixed byte-size using
     /// </summary>
     [<CompiledName "WordToString">]
-    let wordToString (v: string, size: Int32) : string = 
+    let wordToString (v: string, size: Int32) : string =
         let w = Convert.ToUInt64 v
+
         match size with
         | 1 -> $"0x{w:X2}"
         | 2 -> $"0x{w:X4}"
         | 4 -> $"0x{w:X8}"
         | 8 -> $"0x{w:X16}"
         | _ -> $"0x{w:X}"
-

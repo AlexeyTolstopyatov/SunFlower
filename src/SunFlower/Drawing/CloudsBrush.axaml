@@ -4,11 +4,11 @@
     <!-- 
         o:Freeze="True"
     -->
-    <ImageBrush 
+    <ImageBrush
         x:Key="CloudTileBrush"
         TileMode="Tile"
         Opacity="0.1"
         Stretch="UniformToFill"
         DestinationRect="0,0,157,157"
-        Source="/Assets/cloud.png"/>
+        Source="/Assets/cloud.png" />
 </ResourceDictionary>

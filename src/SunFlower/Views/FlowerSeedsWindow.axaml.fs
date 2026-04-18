@@ -8,12 +8,11 @@ open Avalonia.Markup.Xaml
 type FlowerSeedsWindow() as this =
     inherit Window()
 
-    do
-        this.InitializeComponent()
+    do this.InitializeComponent()
 
     member private this.InitializeComponent() =
-        #if DEBUG
+#if DEBUG
         this.AttachDevTools()
-        #endif
+#endif
 
         AvaloniaXamlLoader.Load(this)

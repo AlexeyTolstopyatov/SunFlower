@@ -4,11 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:SunFlower.ViewModels"
         xmlns:views="clr-namespace:SunFlower.Views"
-        mc:Ignorable="d" 
+        mc:Ignorable="d"
         x:Class="SunFlower.Views.MainWindow"
         Icon="/Assets/sunflower256.png"
         Background="{StaticResource RegionBrush}"
-        d:DesignWidth="600" 
+        d:DesignWidth="600"
         d:DesignHeight="480"
         Width="1024"
         Height="500"
@@ -18,7 +18,7 @@
             This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) 
         -->
-        <viewModels:MainWindowViewModel/>
+        <viewModels:MainWindowViewModel />
     </Design.DataContext>
     <!--
         Left side - Loaded Components information
@@ -38,15 +38,15 @@
                 <Image
                     HorizontalAlignment="Left"
                     Source="/Assets/sunflower256.png"
-                    Width="64"/>
+                    Width="64" />
                 <StackPanel
                     Margin="10,30"
                     Grid.Column="1">
-                    <TextBlock 
-                        Text="SunFlower"/>
+                    <TextBlock
+                        Text="SunFlower" />
                     <TextBlock
                         Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="{Binding Version, FallbackValue=5.0.0.0}"/>
+                        Text="{Binding Version, FallbackValue=5.0.0.0}" />
                 </StackPanel>
             </Grid>
             <!--
@@ -56,7 +56,7 @@
             <Menu>
                 <Menu.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel/>
+                        <StackPanel />
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
                 <!--
@@ -73,17 +73,17 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="Import"/>
+                                Text="Import" />
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
-                                Text="Ctrl+N"/>
+                                Text="Ctrl+N" />
                         </DockPanel>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/open48.png"/>
+                        <Image Source="/Assets/open48.png" />
                     </MenuItem.Icon>
-                    
+
                 </MenuItem>
                 <!--
                     Menu -> Recent
@@ -98,15 +98,15 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="Recent"/>
+                                Text="Recent" />
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
-                                Text="Ctrl+N"/>
+                                Text="Ctrl+N" />
                         </DockPanel>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/fedit48.png"/>
+                        <Image Source="/Assets/fedit48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--
@@ -122,15 +122,15 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="Convert"/>
+                                Text="Convert" />
                             <TextBlock
                                 DockPanel.Dock="Right"
                                 Foreground="{StaticResource SecondaryTextBrush}"
-                                Text="Ctrl+W"/>
+                                Text="Ctrl+W" />
                         </DockPanel>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/convert48.png"/>
+                        <Image Source="/Assets/convert48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--
@@ -147,11 +147,11 @@
                             <TextBlock
                                 Padding="1, 0, 5, 0"
                                 DockPanel.Dock="Left"
-                                Text="Connections"/>
+                                Text="Connections" />
                         </DockPanel>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/sunflower256.png"/>
+                        <Image Source="/Assets/sunflower256.png" />
                     </MenuItem.Icon>
                 </MenuItem>
             </Menu>
@@ -163,19 +163,19 @@
                 Binding at the View-side: Depending on given view model
                 from the ViewModel middleware -> Draw the View same type
             -->
-            <ContentControl 
+            <ContentControl
                 Content="{Binding CurrentViewModel.Value, UpdateSourceTrigger=PropertyChanged}">
                 <ContentControl.DataTemplates>
                     <DataTemplate DataType="{x:Type viewModels:RecentViewModel}">
-                        <views:RecentControl/>
+                        <views:RecentControl />
                     </DataTemplate>
-                    
+
                     <DataTemplate DataType="{x:Type viewModels:ConsoleArgsViewModel}">
-                        <views:ConsoleArgsControl/>
+                        <views:ConsoleArgsControl />
                     </DataTemplate>
-                    
+
                     <DataTemplate DataType="{x:Type viewModels:ConverterViewModel}">
-                        <views:ConverterControl/>
+                        <views:ConverterControl />
                     </DataTemplate>
                 </ContentControl.DataTemplates>
             </ContentControl>

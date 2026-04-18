@@ -86,13 +86,13 @@ module FlowerReflection =
                 let value = prop.GetValue(inst)
                 let flt = get_type_enum prop.PropertyType
                 let type_str = FlowerReport.forColumnFl (prop.Name, flt)
-                dt.Rows.Add(type_str, get_value_string(value)) |> ignore
+                dt.Rows.Add(type_str, get_value_string (value)) |> ignore
 
         for field in fields do
             let value = field.GetValue(inst)
-            let flt = get_type_enum(field.FieldType)
+            let flt = get_type_enum (field.FieldType)
             let type_str = FlowerReport.forColumnFl (field.Name, flt)
-            dt.Rows.Add(type_str, get_value_string(value)) |> ignore
+            dt.Rows.Add(type_str, get_value_string (value)) |> ignore
 
         dt
 
@@ -106,7 +106,7 @@ module FlowerReflection =
     /// </summary>
     /// <param name="items">COR List of objects saved after deserialization</param>
     [<CompiledName "ListToDataTable">]
-    let list_to_data_table<'T> (items: IEnumerable<'T>): DataTable =
+    let list_to_data_table<'T> (items: IEnumerable<'T>) : DataTable =
         let get_value_string (value: obj) =
             match value with
             | :? Byte
@@ -122,18 +122,18 @@ module FlowerReflection =
             | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
             | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
             | _ -> value.ToString()
-        
+
         let dt = new DataTable("CollectionData")
         let item_type = typeof<'T>
-        
+
         let get_underlying_type (typ: Type) =
             if typ.IsGenericType && typ.GetGenericTypeDefinition() = typedefof<Option<_>> then
                 typ.GetGenericArguments().[0]
             else
                 typ
-        
+
         // First item columns construct
-        let first_item = 
+        let first_item =
             if items <> null then
                 Some(items.GetEnumerator().MoveNext())
             else
@@ -141,12 +141,11 @@ module FlowerReflection =
 
         match first_item with
         | Some(item) ->
-            let properties = 
+            let properties =
                 item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
                 |> Array.filter (_.CanRead)
 
-            let fields = 
-                item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
             for prop in properties do
                 let column_type = get_underlying_type prop.PropertyType
@@ -161,36 +160,32 @@ module FlowerReflection =
             items
             |> Seq.iteri (fun index item ->
                 let row = dt.NewRow()
-                
+
                 for prop in properties do
                     try
                         let value = prop.GetValue(item)
-                        row[prop.Name] <- get_value_string(value)
-                    with
-                    | ex -> 
+                        row[prop.Name] <- get_value_string (value)
+                    with ex ->
                         row[prop.Name] <- DBNull.Value
                         printfn $"Error reading property %s{prop.Name}: %s{ex.Message}"
-                
+
                 for field in fields do
                     try
                         let value = field.GetValue(item)
-                        row[field.Name] <- get_value_string(value)
-                    with
-                    | ex -> 
+                        row[field.Name] <- get_value_string (value)
+                    with ex ->
                         row[field.Name] <- DBNull.Value
                         printfn $"Error reading field %s{field.Name}: %s{ex.Message}"
-                
+
                 row["#"] <- index
-                dt.Rows.Add(row)
-            )
-        
+                dt.Rows.Add(row))
+
         | None ->
-            let properties = 
+            let properties =
                 item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
                 |> Array.filter (_.CanRead)
 
-            let fields = 
-                item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
             for prop in properties do
                 let column_type = get_underlying_type prop.PropertyType

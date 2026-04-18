@@ -18,10 +18,9 @@ public struct TestableStruct
 
 public class TestableClass
 {
+    public ulong NotPointer = 0x7FFA;
     public uint DataType { get; } = 0;
     public string Name { get; set; } = "CLASS_NAME";
-
-    public UInt64 NotPointer = 0x7FFA;
 }
 
 public class Tests
@@ -45,30 +44,33 @@ public class Tests
         //var testc = new TestableClass();
         //var dt = FlowerReflection.GetNameValueTable(testc);
         //Terminal.DataView.print_table(dt);
-        List<TestableClass> list = [new TestableClass(), new TestableClass()];
+        List<TestableClass> list = [new(), new()];
 
         var dts = FlowerReflection.ListToDataTable(list);
 
         Assert.Pass();
     }
+
     /// <summary>
-    /// Passed. Binding complete
+    ///     Passed. Binding complete
     /// </summary>
     [Test]
     public void ConnectPlugin()
     {
-        var results = FlowerSeedManager
+        var results = FluentFlowerManager
             .CreateInstance()
             .LoadAllFlowerSeeds()
             .Seeds;
 
         Assert.Pass();
     }
+
     [Test]
     public void CheckFlowerReport()
     {
         Assert.Pass(FlowerReport.ForColumn("offset", typeof(int)));
     }
+
     [Test]
     public void CheckFlowerPointer()
     {

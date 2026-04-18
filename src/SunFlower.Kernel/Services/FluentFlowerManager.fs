@@ -15,28 +15,27 @@ open Microsoft.FSharp.Collections
 // @creator: atolstopyatov2017@vk.com
 //
 [<FlowerSeedContract(4, 0, 0)>]
-type FlowerSeedManager() =
-    let mutable seeds : List<IFlowerSeed> = []
-    let mutable messages : CorList<string> = CorList<string>()
+type FluentFlowerManager() =
+    let mutable seeds: List<IFlowerSeed> = []
+    let mutable messages: CorList<string> = CorList<string>()
     /// <summary>
     /// Writes message to Kernel messages storage (CorList of strings)
     ///
     /// Client can read this storage and make
     /// a verbose output or current user.
-    /// 
+    ///
     /// </summary>
     /// <param name="str"></param>
-    let save (str: string) : unit =
-        messages.Add str
-    
-    let mutable majorVersion : Int32 = 4
-    let mutable minorVersion : Int32 = 0
-    let mutable buildVersion : Int32 = 0
+    let save (str: string) : unit = messages.Add str
+
+    let mutable majorVersion: Int32 = 4
+    let mutable minorVersion: Int32 = 0
+    let mutable buildVersion: Int32 = 0
     // interface IFlowerSeedManager with
     /// <summary>
     /// Executes all seeds and returns status table
     /// for every seed. Throws child exception chain!!!
-    /// 
+    ///
     /// {
     ///     "Title" : "Main actual result"
     ///     "PE32/+ plugin" : "0"
@@ -45,92 +44,71 @@ type FlowerSeedManager() =
     /// </summary>
     [<CompiledName "GetAllInvokedFlowerSeeds">]
     member public this.getAllInvokedFlowerSeeds(path) =
-        // c# original ABI
-        //
-        // var results = new Dictionary<string, int>();
-        // foreach (var plugin in Seeds)
-        // {
-        //     try
-        //     {
-        //         // Main invoke
-        //         var result = plugin.Main(targetingFile);
-        //         results.Add(plugin.Seed, result);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Debug.WriteLine($"Plugin {plugin.Seed} failed: {ex.Message} \n\n {plugin} \n");
-        //     }
-        // }
-        
-        // rewritten to F# 
-        "::GetAllInvokedFlowerSeeds"
-                |> save
-        seeds
-                |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) 
-                |> Dictionary
+        "::GetAllInvokedFlowerSeeds" |> save
+        seeds |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) |> Dictionary
+
     [<CompiledName "GetContract">]
-    member public this.getContract () =
+    member public this.getContract() =
         $"{majorVersion}.{minorVersion}.{buildVersion}"
+
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
     [<CompiledName "LoadAllFlowerSeeds">]
-    member public this.loadAllFlowerSeeds () =
-        "::LoadAllFlowerSeeds"
-            |> save
-        let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+    member public this.loadAllFlowerSeeds() =
+        "::LoadAllFlowerSeeds" |> save
+        let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
         let parentType = typeof<IFlowerSeed>
-        
-        seeds <- Directory.GetFiles(dllPath, "*.dll")
+
+        seeds <-
+            Directory.GetFiles(dllPath, "*.dll")
             |> Seq.collect (fun file ->
                 try
                     let assembly = Assembly.LoadFrom(file)
                     assembly.GetTypes()
-                with _ -> [||])
-            |> Seq.filter (fun t ->
-                t.IsClass &&
-                not t.IsAbstract &&
-                t.IsAssignableTo(parentType))
+                with _ ->
+                    [||])
+            |> Seq.filter (fun t -> t.IsClass && not t.IsAbstract && t.IsAssignableTo(parentType))
             // Attribute
             |> Seq.choose (fun t ->
                 let attr = t.GetCustomAttribute<FlowerSeedContractAttribute>() // .ctor????
+
                 try
                     if attr.MajorVersion = majorVersion then
                         try
                             if attr.MinorVersion <> minorVersion then
                                 $"[!]: {t.Name}#{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion} differs with {majorVersion}.{minorVersion}.{buildVersion}"
                                 |> save
-                               
+
                             Activator.CreateInstance(t) :?> IFlowerSeed |> Some
-                        with _ -> None
-                    else None
-                with
-                | stop ->
+                        with _ ->
+                            None
+                    else
+                        None
+                with stop ->
                     $"\r\n >> {t.Name} thrown an error {stop} " |> save
-                    None
-            )
+                    None)
             |> Seq.toList
+
         this
+
     /// <summary>
     /// Pointer to storage of all loaded
     /// and initialized (activated)
     /// sunflower plugins interfaces
-    /// </summary>    
-    member public this.Seeds with get () = List seeds
-    member public this.Messages with get () = List messages
-    
+    /// </summary>
+    member public this.Seeds = List seeds
+    member public this.Messages = List messages
+
     [<CompiledName "UnloadUnusedFlowerSeeds">]
     member public this.unloadUnusedFlowerSeeds() =
-        "::UnloadUnusedFlowerSeeds"
-            |> save
-        
-        seeds <- seeds
-            |> List.where (_.Status.IsResultExists)
-            |> List.distinct
-            |> Seq.toList
-            
+        "::UnloadUnusedFlowerSeeds" |> save
+
+        seeds <- seeds |> List.where (_.Status.IsResultExists) |> List.distinct |> Seq.toList
+
         this
+
     /// <summary>
     /// Updates <see cref="Seeds"/> collection
     /// by targeting file
@@ -138,21 +116,15 @@ type FlowerSeedManager() =
     /// <param name="path">targeting file</param>
     [<CompiledName "UpdateAllInvokedFlowerSeeds">]
     member public this.updateAllInvokedFlowerSeeds(path) =
-        "::UpdateAllInvokedFlowerSeeds"
-            |> save
+        "::UpdateAllInvokedFlowerSeeds" |> save
+
         try
-            seeds
-            |> Seq.toList
-            |> List.iter (fun x ->
-                x.Main path
-                |> ignore )
-        with
-        | kernel ->
-            $"::STOP\r\n >> {kernel |> string}"
-                |> save
-        
+            seeds |> Seq.toList |> List.iter (fun x -> x.Main path |> ignore)
+        with kernel ->
+            $"::STOP\r\n >> {kernel |> string}" |> save
+
         this
-    
+
     /// <summary>
     /// F# makes more strongly inherit process
     /// than C#. This is a Seeds { set; } property
@@ -161,10 +133,9 @@ type FlowerSeedManager() =
     /// </summary>
     member private this.SeedsInit
         with set s = seeds <- s
-        
+
     /// <summary>
     /// Makes temporary instance for FlowerSeedManager
     /// </summary>
     [<CompiledName "CreateInstance">]
-    static member public createInstance () : FlowerSeedManager =
-        FlowerSeedManager()
+    static member public createInstance() : FluentFlowerManager = FluentFlowerManager()

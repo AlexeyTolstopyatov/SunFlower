@@ -14,17 +14,13 @@
             ColumnDefinitions="*, Auto">
             <TextBox
                 Text="/usr/bin/*dotnet"
-                FontFamily="Consolas">
-            
-            </TextBox>
+                FontFamily="Consolas" />
             <Button
                 Content="Run"
-                Grid.Column="1">
-            </Button>
+                Grid.Column="1" />
         </Grid>
         <TextBlock
             TextWrapping="WrapWithOverflow"
-            Text="Also, calling Sunflower from a command line, next following argument will be file what needs to open">
-        </TextBlock>
+            Text="Also, calling Sunflower from a command line, next following argument will be file what needs to open" />
     </StackPanel>
 </UserControl>

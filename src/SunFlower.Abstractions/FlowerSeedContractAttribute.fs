@@ -1,4 +1,5 @@
 ﻿namespace SunFlower.Abstractions
+
 open System
 
 //
@@ -14,14 +15,11 @@ open System
 [<Class>]
 [<AttributeUsage(AttributeTargets.Class)>]
 type FlowerSeedContractAttribute(major: int, minor: int, build: int) =
-    inherit Attribute() with
-    
-    let mutable majorVersion : Int32 = major
-    let mutable minorVersion : Int32 = minor
-    let mutable buildVersion : Int32 = build
-    
-    new() =
-        FlowerSeedContractAttribute(1, 3, 0)
+    inherit Attribute()
+
+    let mutable majorVersion: Int32 = major
+    let mutable minorVersion: Int32 = minor
+    let mutable buildVersion: Int32 = build
     /// <summary>
     /// See Microsoft versioning specification
     /// Major means global changes in software
@@ -47,4 +45,3 @@ type FlowerSeedContractAttribute(major: int, minor: int, build: int) =
     /// 1.3.2 - fix of .1 internal panic
     /// </summary>
     member val BuildVersion = buildVersion with get, set
-    

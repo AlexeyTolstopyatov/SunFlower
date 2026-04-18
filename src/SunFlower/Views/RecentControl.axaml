@@ -7,7 +7,7 @@
              x:Class="SunFlower.Views.RecentControl"
              x:DataType="{x:Type viewModels:RecentViewModel}">
     <UserControl.DataContext>
-        <viewModels:RecentViewModel/>
+        <viewModels:RecentViewModel />
     </UserControl.DataContext>
     <ListBox
         x:Name="RecentList"
@@ -25,12 +25,12 @@
                     HotKey="Enter">
                     <MenuItem.Header>
                         <TextBlock>
-                            <Run Text="Open"/>
-                            <Run Text="Enter" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <Run Text="Open" />
+                            <Run Text="Enter" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </TextBlock>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/app48.png"/>
+                        <Image Source="/Assets/app48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem
@@ -39,12 +39,12 @@
                     CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}">
                     <MenuItem.Header>
                         <TextBlock>
-                            <Run Text="Remove"/>
-                            <Run Text="Delete" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <Run Text="Remove" />
+                            <Run Text="Delete" Foreground="{DynamicResource SecondaryTextBrush}" />
                         </TextBlock>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/clear48.png"/>
+                        <Image Source="/Assets/clear48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem
@@ -52,11 +52,11 @@
                     CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}">
                     <MenuItem.Header>
                         <TextBlock>
-                            <Run Text="Remove File"/>
+                            <Run Text="Remove File" />
                         </TextBlock>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <Image Source="/Assets/delete48.png"/>
+                        <Image Source="/Assets/delete48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
@@ -66,26 +66,25 @@
                 <ListBoxItem>
                     <Grid
                         ColumnDefinitions="48, Auto">
-                        <Image 
-                            Source="/Assets/file48.png"/>
+                        <Image
+                            Source="/Assets/file48.png" />
                         <StackPanel
                             VerticalAlignment="Center"
                             Grid.Column="1">
-                            <TextBlock 
-                                Text="{Binding Name}"/>
+                            <TextBlock
+                                Text="{Binding Name}" />
                             <Grid
                                 ColumnDefinitions="Auto, Auto">
                                 <TextBlock
                                     Grid.Column="0"
                                     HorizontalAlignment="Left"
                                     Foreground="{DynamicResource SecondaryTextBrush}"
-                                    Text="{Binding Path}"/>
+                                    Text="{Binding Path}" />
                                 <TextBlock
                                     Padding="2,0"
                                     Grid.Column="1"
                                     HorizontalAlignment="Right"
-                                    Text="{Binding Type}"
-                                />
+                                    Text="{Binding Type}" />
                             </Grid>
                         </StackPanel>
                     </Grid>

@@ -12,5 +12,5 @@ type CorList<'Any> = System.Collections.Generic.List<'Any>
 module Say =
     // CorDllMain already exists
     let hello name =
-        
+
         printfn $"Hello %s{name}"

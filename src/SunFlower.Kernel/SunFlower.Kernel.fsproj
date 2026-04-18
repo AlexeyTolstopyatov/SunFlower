@@ -9,25 +9,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="ReDefinitions.fs" />
+        <Compile Include="ReDefinitions.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+        <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Services\IFlowerSeedManager.fs" />
-      <Compile Include="Services\FlowerSeedManager.fs" />
-      <Compile Include="Services\FlowerCompatibility.fs" />
+        <Compile Include="Services\IFlowerSeedManager.fs"/>
+        <Compile Include="Services\FluentFlowerManager.fs"/>
+        <Compile Include="Services\FlowerCompatibility.fs"/>
+        <Compile Include="Services\FlowerManager.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Readers\FlowerBinarySeeker.fs" />
+        <Compile Include="Readers\FlowerBinarySeeker.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="Writers\FlowerMarkdownWriter.fs" />
+        <Compile Include="Writers\FlowerMarkdownWriter.fs"/>
     </ItemGroup>
 
 </Project>

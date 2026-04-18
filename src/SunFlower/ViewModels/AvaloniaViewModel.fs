@@ -9,4 +9,3 @@ open CommunityToolkit.Mvvm.ComponentModel
 [<AbstractClass>]
 type AvaloniaViewModel() =
     inherit ObservableObject()
-    

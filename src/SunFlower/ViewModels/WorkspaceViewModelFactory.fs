@@ -11,8 +11,8 @@ let createWorkspace (path: string) =
     // All unloaded plugins have reasons which described in kernel "Messages"
     let seeds =
         manager
-            .loadAllFlowerSeeds()
-            .updateAllInvokedFlowerSeeds(path)
+            .initAll()
+            .updateAll(path)
             //.unloadUnusedFlowerSeeds()
             .Seeds
         |> ObservableCollection

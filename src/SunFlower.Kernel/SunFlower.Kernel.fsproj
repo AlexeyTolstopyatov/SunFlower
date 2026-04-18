@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Services\IFlowerSeedManager.fs"/>
         <Compile Include="Services\FluentFlowerManager.fs"/>
         <Compile Include="Services\FlowerCompatibility.fs"/>
         <Compile Include="Services\FlowerManager.fs"/>

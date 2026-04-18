@@ -7,13 +7,14 @@ open System.Reflection
 open SunFlower.Kernel
 open SunFlower.Abstractions
 open Microsoft.FSharp.Collections
-
 //
-// CoffeeLake 2024-2025
-// This code licensed under MIT. Please see GitHub repo documentation
-//
+// CoffeeLake 2024-*
+// This code licensed under MIT. Please see GitHub repo documentation.
 // @creator: atolstopyatov2017@vk.com
 //
+///
+/// SunFlower plugins manager with Fluent API for C#/VB.net client side
+/// 
 [<FlowerSeedContract(4, 0, 0)>]
 type FluentFlowerManager() =
     let mutable seeds: List<IFlowerSeed> = []
@@ -55,8 +56,8 @@ type FluentFlowerManager() =
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
-    [<CompiledName "LoadAllFlowerSeeds">]
-    member public this.loadAllFlowerSeeds() =
+    [<CompiledName "InitAll">]
+    member public this.initAll() =
         "::LoadAllFlowerSeeds" |> save
         let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
         let parentType = typeof<IFlowerSeed>
@@ -101,8 +102,8 @@ type FluentFlowerManager() =
     member public this.Seeds = List seeds
     member public this.Messages = List messages
 
-    [<CompiledName "UnloadUnusedFlowerSeeds">]
-    member public this.unloadUnusedFlowerSeeds() =
+    [<CompiledName "UnloadUnused">]
+    member public this.unloadUnused() =
         "::UnloadUnusedFlowerSeeds" |> save
 
         seeds <- seeds |> List.where (_.Status.IsResultExists) |> List.distinct |> Seq.toList
@@ -114,8 +115,8 @@ type FluentFlowerManager() =
     /// by targeting file
     /// </summary>
     /// <param name="path">targeting file</param>
-    [<CompiledName "UpdateAllInvokedFlowerSeeds">]
-    member public this.updateAllInvokedFlowerSeeds(path) =
+    [<CompiledName "UpdateAll">]
+    member public this.updateAll(path) =
         "::UpdateAllInvokedFlowerSeeds" |> save
 
         try

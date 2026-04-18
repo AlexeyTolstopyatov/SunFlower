@@ -71,7 +71,39 @@ module FlowerManager =
     /// <param name="path"></param>
     [<CompiledName "SetLocation">]
     let setLocation (path: string) = { instance with SeedsPath = path }
-
+    /// <summary>
+    /// Activate plugin and put it in the loaded plugins collection
+    /// </summary>
+    /// <param name="path">Target .NET Assembly location</param>
+    /// <param name="isOk">True if plugin loaded successfully</param>
+    [<CompiledName "Activate">]
+    let activate (path: string) (isOk: bool outref) =
+        isOk <- false
+        
+        /// Get types or an empty list if load failed
+        let tryGetTypes =
+            try
+                Assembly.LoadFile(path).GetTypes()
+            with | _ -> [||]
+        
+        let isAssignable (t: Type) =
+            let flowerType = typeof<IFlowerSeed>
+            t.IsAssignableTo flowerType && not t.IsAbstract && t.IsClass
+        
+        let havingContext (t: Type) =
+            let flowerContract = t.GetCustomAttribute<FlowerSeedContractAttribute>()
+            let flowerTarget = t.GetCustomAttribute<FlowerAttribute>()
+            try
+                
+            with
+            | e ->
+                // Send message to the sky
+                e.Message |> Console.Error.WriteLine
+                None
+            ()
+            
+        isOk <- true // <-- loaded correctly 
+        instance
     /// <summary>
     /// Try to load plugins from <c>SeedsPath</c> directory
     /// </summary>

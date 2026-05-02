@@ -7,10 +7,11 @@ Was inspired by PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same too
 Main idea of it - make non-monolith application and avoid embedded functions. This repository contains
 just loader details and the client.   
 
-This repository includes tree parts of my work:
+This repository includes following parts of my work:
  - Base definitions (`abstractions`) 
  - Plugins manager (`kernel`)
- - Avalonia Client (`client`)
+ - Avalonia client (`client`)
+ - Disassembler support (`dasm`)
 
 > [!NOTE]
 > Sources of plugins contains in [SunFlower.Plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repository
@@ -80,7 +81,7 @@ type MyAnalyzer() =
 7) Run SunFlower and see what you can!
 
 ![Sunflower at the archVM](assets/vmware_screenshot.png)
-
+![Sunflower at the Windows platform](assets/light.png)
 ### Supported Binary Formats
 
 Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repo

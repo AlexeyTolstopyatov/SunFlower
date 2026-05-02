@@ -301,13 +301,18 @@ module internal Decoder =
             let operands = effectiveOp.operands
             let firstToken = operands[0]
             let isByte = firstToken.EndsWith("b")
-            let regSize = if isByte then 1 else 2
+            // let regSize = if isByte then 1 else 2
 
             let regName (r: byte) =
                 let idx = int r
                 if isByte then reg8Names[idx] else reg16Names[idx]
 
-            let regStr = regName reg
+            let hasSegReg = effectiveOp.operands |> List.exists (fun t -> t.Contains("S"))
+            let regStr =
+                if hasSegReg then
+                    segNames[int reg]
+                else
+                    regName reg // AL/AX...
             let mutable idxAfterRm = idx
 
             let rmStrOpt =
@@ -343,6 +348,7 @@ module internal Decoder =
                 let getOperand (token: string) =
                     if token.Contains("E") then rmStr
                     elif token.Contains("G") then regStr
+                    elif token.Contains("S") then regStr
                     else token
 
                 let opStrings =

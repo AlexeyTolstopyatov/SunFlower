@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Core\Operation.fs" />
+        <Compile Include="Core\Decoder.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="opcodes8086.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="move.ps1">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Compile Include="I8086Decoder.fs" />
+      <Compile Include="I80186Decoder.fs" />
+      <Compile Include="FlowerDecoder.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.8.0" />
+    </ItemGroup>
+
+</Project>

@@ -4,6 +4,7 @@ open System
 open System.Text
 open Avalonia.Data.Converters
 open Microsoft.FSharp.Core
+open SunFlower.Abstractions
 
 module DataConverters =
     /// <summary>
@@ -128,3 +129,4 @@ module DataConverters =
     /// </summary>
     let UnicodeStringConverter: IValueConverter =
         FuncValueConverter<string, string>(unicodeBytesToString)
+    

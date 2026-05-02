@@ -116,24 +116,14 @@ let formatTable (table: DataTable) : string =
 let private (|+) (a: String) (b: String) = a + b + "\n"
 
 /// <summary>
-/// Makes a simple "Papers Section". The Region container
-/// contains Header, Content what describes the object
-/// and table what helps to analyse this object.
-/// </summary>
-/// <param name="reg">Given by FlowerResult collection unboxed result</param>
-[<CompiledName "FormatRegion">]
-let formatRegion (reg: Region) =
-    "" |+ reg.Head |+ "\n" |+ reg.Content |+ "\n" |+ formatTable reg.Table |+ "\n"
-// **Remove the format_reg in 4.5.1+ releases** \\
-/// <summary>
 /// Makes a simple "Papers Section". The region container
-/// contains Header, Content, chat must to describe target
+/// contains Header, Content, chat must describe target
 /// object and table what represents you information about this target.
 /// </summary>
 /// <param name="reg">Current region given+unboxed from FlowerResult collection</param>
 /// <param name="header_level">Markdown Heading level</param>
-[<CompiledName "FormatRegionSmartHeader">]
-let formatRegionSmartHeader (reg: Region, header_level: int) =
+[<CompiledName "FormatRegion">]
+let formatRegion (reg: Region) (header_level: int) =
     "#" |> String.replicate header_level // <-- Header declaration must be separated by the value
     |+ $" {reg.Head}"
     |+ reg.Content
@@ -156,7 +146,7 @@ let formatRegionSmartHeader (reg: Region, header_level: int) =
 /// <param name="list"></param>
 [<CompiledName "FormatRegions">]
 let formatRegions (list: IEnumerable<Region>) =
-    let regs = list |> Seq.map formatRegion
+    let regs = list |> Seq.map (fun reg -> formatRegion reg 3)
 
     String.Join("\n", regs) |+ "\n"
 
@@ -171,7 +161,8 @@ let formatRegions (list: IEnumerable<Region>) =
 /// <param name="list"></param>
 [<CompiledName "FormatTables">]
 let formatTables (list: IEnumerable<DataTable>) =
-    let regs = list |> Seq.map formatTable
+    let regs = list
+               |> Seq.map formatTable
 
     String.Join("\n", regs) |+ "\n"
 

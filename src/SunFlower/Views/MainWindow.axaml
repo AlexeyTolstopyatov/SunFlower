@@ -12,6 +12,7 @@
         d:DesignHeight="480"
         Width="1024"
         Height="500"
+        Title="Sunflower"
         x:DataType="viewModels:MainWindowViewModel">
     <Design.DataContext>
         <!-- 

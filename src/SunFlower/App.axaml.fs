@@ -27,7 +27,7 @@ type App() =
                 match File.Exists target with
                 | true ->
                     desktop.MainWindow <-
-                        WorkspaceWindow(DataContext = WorkspaceViewModelFactory.createWorkspace (target))
+                        WorkspaceWindow(DataContext = WorkspaceViewModelFactory.createWorkspace target)
                 | false ->
                     $"Not found \"{target}\". Aborted" |> Console.Error.WriteLine
                     Environment.Exit -1

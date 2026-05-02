@@ -8,16 +8,16 @@ open SunFlower.Kernel
 open SunFlower.Abstractions
 open Microsoft.FSharp.Collections
 //
-// CoffeeLake 2024-*
+// CoffeeLake 2025-*
 // This code licensed under MIT. Please see GitHub repo documentation.
 // @creator: atolstopyatov2017@vk.com
 //
 ///
 /// SunFlower plugins manager with Fluent API for C#/VB.net client side
 /// 
-[<FlowerSeedContract(4, 0, 0)>]
+[<FlowerSeedContract(5, 0, 0)>]
 type FluentFlowerManager() =
-    let mutable seeds: List<IFlowerSeed> = []
+    let mutable seeds: List<FlowerSeedData> = []
     let mutable messages: CorList<string> = CorList<string>()
     /// <summary>
     /// Writes message to Kernel messages storage (CorList of strings)
@@ -28,10 +28,15 @@ type FluentFlowerManager() =
     /// </summary>
     /// <param name="str"></param>
     let save (str: string) : unit = messages.Add str
-
-    let mutable majorVersion: Int32 = 4
-    let mutable minorVersion: Int32 = 0
-    let mutable buildVersion: Int32 = 0
+    
+    let fromParentMetadata () =
+        let parent = typeof<FluentFlowerManager>
+        let version = parent.GetCustomAttribute<FlowerSeedContractAttribute> ()
+        
+        Version (version.MajorVersion, version.MinorVersion, version.BuildVersion)
+    
+    let mutable parentVersion = Version()
+    do parentVersion <- fromParentMetadata ()
     // interface IFlowerSeedManager with
     /// <summary>
     /// Executes all seeds and returns status table
@@ -43,22 +48,19 @@ type FluentFlowerManager() =
     ///     "CLR plugin" : "-1"
     /// }
     /// </summary>
-    [<CompiledName "GetAllInvokedFlowerSeeds">]
-    member public this.getAllInvokedFlowerSeeds(path) =
-        "::GetAllInvokedFlowerSeeds" |> save
-        seeds |> Seq.map (fun x -> KeyValuePair(x.Seed, x.Main path)) |> Dictionary
+    [<CompiledName "GetAll">]
+    member public this.getAll(path) =
+        seeds |> Seq.map (fun x -> KeyValuePair(x.seed.Seed, x.seed.Main path)) |> Dictionary
 
     [<CompiledName "GetContract">]
-    member public this.getContract() =
-        $"{majorVersion}.{minorVersion}.{buildVersion}"
+    member public this.getContract() = parentVersion |> string
 
     /// <summary>
     /// Loads sunflower plugins from filesystem
     /// (needed directory: .../Plugins)
     /// </summary>
-    [<CompiledName "InitAll">]
-    member public this.initAll() =
-        "::LoadAllFlowerSeeds" |> save
+    [<CompiledName "ActivateAll">]
+    member public this.activateAll() =
         let dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
         let parentType = typeof<IFlowerSeed>
 
@@ -71,24 +73,27 @@ type FluentFlowerManager() =
                 with _ ->
                     [||])
             |> Seq.filter (fun t -> t.IsClass && not t.IsAbstract && t.IsAssignableTo(parentType))
-            // Attribute
             |> Seq.choose (fun t ->
                 let attr = t.GetCustomAttribute<FlowerSeedContractAttribute>() // .ctor????
 
                 try
-                    if attr.MajorVersion = majorVersion then
+                    if attr.MajorVersion = parentVersion.Major then
                         try
-                            if attr.MinorVersion <> minorVersion then
-                                $"[!]: {t.Name}#{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion} differs with {majorVersion}.{minorVersion}.{buildVersion}"
-                                |> save
-
-                            Activator.CreateInstance(t) :?> IFlowerSeed |> Some
-                        with _ ->
+                            if attr.MinorVersion <> parentVersion.Minor then
+                                $"[!]: {t.Name}#{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion} differs with {parentVersion.Minor}.{parentVersion.Minor}.{parentVersion.Revision}"
+                                |> Console.Error.WriteLine
+                            let target = t.GetCustomAttribute<FlowerAttribute>()
+                            let seed = Activator.CreateInstance(t) :?> IFlowerSeed
+                            Some { seed = seed
+                                   kind = target.Target
+                                   version = Version(attr.MajorVersion, attr.MinorVersion, attr.BuildVersion) }
+                        with e ->
+                            e.Message |> Console.Error.WriteLine
                             None
                     else
                         None
                 with stop ->
-                    $"\r\n >> {t.Name} thrown an error {stop} " |> save
+                    $"\r\n >> {t.Name} thrown an error {stop} " |> Console.Error.WriteLine
                     None)
             |> Seq.toList
 
@@ -104,10 +109,7 @@ type FluentFlowerManager() =
 
     [<CompiledName "UnloadUnused">]
     member public this.unloadUnused() =
-        "::UnloadUnusedFlowerSeeds" |> save
-
-        seeds <- seeds |> List.where (_.Status.IsResultExists) |> List.distinct |> Seq.toList
-
+        seeds <- seeds |> List.where _.seed.Status.IsResultExists |> List.distinct |> Seq.toList
         this
 
     /// <summary>
@@ -117,12 +119,10 @@ type FluentFlowerManager() =
     /// <param name="path">targeting file</param>
     [<CompiledName "UpdateAll">]
     member public this.updateAll(path) =
-        "::UpdateAllInvokedFlowerSeeds" |> save
-
         try
-            seeds |> Seq.toList |> List.iter (fun x -> x.Main path |> ignore)
+            seeds |> Seq.toList |> List.iter (fun x -> x.seed.Main path |> ignore)
         with kernel ->
-            $"::STOP\r\n >> {kernel |> string}" |> save
+            $"::STOP\r\n >> {kernel |> string}" |> Console.Error.WriteLine
 
         this
 

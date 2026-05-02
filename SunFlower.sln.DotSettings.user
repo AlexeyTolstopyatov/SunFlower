@@ -1,5 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CLocals_005CHandyControls_005Csrc_005CAvalonia_005CHandyControl_005FAvalonia_005Cbin_005CDebug_005Cnet7_002E0_005CHandyControl_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AEventHandler_002Ecs_002Fl_003AC_0021_003FUsers_003Fatvlg_003FAppData_003FRoaming_003FJetBrains_003FRider2026_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F8f779d9303604d539517de15b58c8ecbc90908_003F46_003F3a616bd6_003FEventHandler_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATextEditor_002Ecs_002Fl_003AC_0021_003FUsers_003Fatvlg_003FAppData_003FRoaming_003FJetBrains_003FRider2026_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F2126af66ba6c458eafca63ba30dcac5ba4c00_003F45_003F2ccf49cd_003FTextEditor_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	
 	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">//
 // CoffeeLake (C) ${CurrentDate.Year}
@@ -7,16 +9,14 @@
 // This module represents &lt;what&gt;
 // @creator: atolstopyatov2017@vk.com
 //</s:String>
+	<s:String x:Key="/Default/dotCover/Editor/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\atvlg\AppData\Local\JetBrains\Rider2026.1\resharper-host\temp\Rider\vAny\CoverageData\_SunFlower.-559039464\Snapshot\snapshot.utdcvr</s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\atvlg\.nuget\packages\avalonia.controls.markdown\11.3.2\lib\net8.0\Avalonia.Controls.Documents.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\atvlg\.nuget\packages\avamark\0.2.1\lib\net6.0\AvaMark.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EFeature_002EServices_002ECodeCleanup_002EFileHeader_002EFileHeaderSettingsMigrate/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=29f45ba4_002D9f15_002D4ac3_002D90f0_002Dfb2ab9516a52/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestTables" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.TestTables&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::7CE1CDE6-91FF-4E8F-8213-DFEC1790B084::net8.0::SunFlower.Connection.Tests.FormatRegion&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	

@@ -86,13 +86,13 @@ module FlowerReflection =
                 let value = prop.GetValue(inst)
                 let flt = get_type_enum prop.PropertyType
                 let type_str = FlowerReport.forColumnFl (prop.Name, flt)
-                dt.Rows.Add(type_str, get_value_string (value)) |> ignore
+                dt.Rows.Add(type_str, get_value_string value) |> ignore
 
         for field in fields do
             let value = field.GetValue(inst)
-            let flt = get_type_enum (field.FieldType)
+            let flt = get_type_enum field.FieldType
             let type_str = FlowerReport.forColumnFl (field.Name, flt)
-            dt.Rows.Add(type_str, get_value_string (value)) |> ignore
+            dt.Rows.Add(type_str, get_value_string value) |> ignore
 
         dt
 
@@ -143,7 +143,7 @@ module FlowerReflection =
         | Some(item) ->
             let properties =
                 item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
-                |> Array.filter (_.CanRead)
+                |> Array.filter _.CanRead
 
             let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
@@ -164,7 +164,7 @@ module FlowerReflection =
                 for prop in properties do
                     try
                         let value = prop.GetValue(item)
-                        row[prop.Name] <- get_value_string (value)
+                        row[prop.Name] <- get_value_string value
                     with ex ->
                         row[prop.Name] <- DBNull.Value
                         printfn $"Error reading property %s{prop.Name}: %s{ex.Message}"
@@ -172,7 +172,7 @@ module FlowerReflection =
                 for field in fields do
                     try
                         let value = field.GetValue(item)
-                        row[field.Name] <- get_value_string (value)
+                        row[field.Name] <- get_value_string value
                     with ex ->
                         row[field.Name] <- DBNull.Value
                         printfn $"Error reading field %s{field.Name}: %s{ex.Message}"
@@ -183,7 +183,7 @@ module FlowerReflection =
         | None ->
             let properties =
                 item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
-                |> Array.filter (_.CanRead)
+                |> Array.filter _.CanRead
 
             let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 

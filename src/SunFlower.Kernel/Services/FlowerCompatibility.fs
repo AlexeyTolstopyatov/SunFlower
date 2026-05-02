@@ -138,7 +138,7 @@ module FlowerCompatibility =
         let managerVersion = getKernelContract ()
 
         // Add manager info
-        let (major, minor, build) = managerVersion
+        let major, minor, build = managerVersion
         table.Rows.Add($"{major}.{minor}.{build}", "Sunflower Kernel", true) |> ignore
         table.Rows.Add("", "", true) |> ignore
 
@@ -216,7 +216,6 @@ module FlowerCompatibility =
         // nested plugins into /Plugins directory.
         let list = CorList<FlowerVersionInfo>()
         let major, minor, build = getKernelContract ()
-
         let kernelVersionInfo =
             FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Kernel.dll")
 
@@ -246,7 +245,7 @@ module FlowerCompatibility =
         match Directory.Exists root with
         | true ->
             Directory.GetFiles(root, "*.dll")
-            |> Array.iter (fun i -> list.Add(tryGetFlowerVersionInfo (i)))
+            |> Array.iter (fun i -> list.Add(tryGetFlowerVersionInfo i))
         | false -> ()
         // Return not-null list anyway. Nullable objects denied here
         list

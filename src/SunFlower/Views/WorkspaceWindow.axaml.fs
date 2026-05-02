@@ -2,12 +2,15 @@
 
 open System
 open System.IO
+open Avalonia
 open Avalonia.Controls
-open Avalonia.Input
 open Avalonia.Interactivity
 open Avalonia.Markup.Xaml
 open Avalonia.Platform.Storage
+open AvaloniaEdit
+open AvaloniaEdit.TextMate
 open SunFlower.ViewModels
+open TextMateSharp.Grammars
 
 type WorkspaceWindow() as this =
     inherit Window()
@@ -20,17 +23,14 @@ type WorkspaceWindow() as this =
         // this.AttachDevTools()
 #endif
         AvaloniaXamlLoader.Load(this)
-
-    member this.ResizeWestEast(t: obj, e: VectorEventArgs) =
-        // Resize C# logic but F# couldn't see named controls...
-        // double delta = e.Vector.X;
-        //
-        // var leftColumn = MainGrid.ColumnDefinitions[0];
-        // double newWidth = leftColumn.Width.Value + delta;
-        //
-        // newWidth = Math.Max(250, Math.Min(400, newWidth));
-        // leftColumn.Width = new GridLength(newWidth, GridUnitType.Pixel);
-        //
+        
+    member this.LoadAssemblyGrammar(t: obj, e: RoutedEventArgs) =
+        let editor = this.FindControl<TextEditor>("SourceEditor")
+        let path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AT&T.JSON-tmLanguage") // was ""
+        
+        let options = RegistryOptions(ThemeName.KimbieDark)
+        let textMateInstallation = editor.InstallTextMate(options)
+        textMateInstallation.SetGrammarFile(path)
         ()
 
     member this.ExportAsync() =

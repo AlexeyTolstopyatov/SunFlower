@@ -26,9 +26,7 @@ public class TestableClass
 public class Tests
 {
     [SetUp]
-    public void Setup()
-    {
-    }
+    public void Setup() { }
 
     [Test]
     public void TestTables()
@@ -59,10 +57,10 @@ public class Tests
     {
         var results = FluentFlowerManager
             .CreateInstance()
-            .LoadAllFlowerSeeds()
+            .ActivateAll()
             .Seeds;
-
-        Assert.Pass();
+        // Passed if loaded plugins more than 0.
+        Assert.AreNotEqual(results.Count, 0);
     }
 
     [Test]
@@ -82,18 +80,10 @@ public class Tests
     {
         Assert.Pass(FlowerMarkdownWriter.FormatRegion(
             new Region(
-                "# header", // <-- 1.0 - 4.5 kernel API
-                "Some instructions how to live",
-                new DataTable()
-            ))
-        );
-
-        Assert.Pass(FlowerMarkdownWriter.FormatRegionSmartHeader(
-            new Region(
                 "header",
                 "Some instructions how to live",
-                new DataTable()), // <-- 4.5.1+ kernel API
-            3 // <-- level of the markdown header
+                new DataTable()), 
+            3
         ));
     }
 }

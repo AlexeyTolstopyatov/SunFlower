@@ -3,7 +3,6 @@
 open System.Data
 open SunFlower.Abstractions.Types
 
-
 [<AbstractClass>]
 type AbstractStructVisualizer<'TStruct>(``struct``: 'TStruct) =
     /// <summary>

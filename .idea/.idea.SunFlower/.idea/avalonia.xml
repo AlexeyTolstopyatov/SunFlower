@@ -15,6 +15,8 @@
         <entry key="src/SunFlower/Views/FlowerSeedsWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
         <entry key="src/SunFlower/Views/MainWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
         <entry key="src/SunFlower/Views/RecentControl.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/SourceTemplateSelector.axaml" value="src/SunFlower/SunFlower.fsproj" />
+        <entry key="src/SunFlower/Views/TextEditor.axaml" value="src/SunFlower/SunFlower.fsproj" />
         <entry key="src/SunFlower/Views/WorkspaceWindow.axaml" value="src/SunFlower/SunFlower.fsproj" />
       </map>
     </option>

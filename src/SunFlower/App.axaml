@@ -6,10 +6,10 @@
 
     <!-- XAML bindings -->
     <Application.Styles>
+        <FluentTheme/>
         <StyleInclude Source="avares://HandyControl/Themes/Theme.axaml" />
-        <StyleInclude Source="avares://AvaMark/Styles/Fluent.axaml" />
-
-        <!-- <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml"/> -->
+        <StyleInclude Source="avares://AvaloniaHex/Themes/Fluent/AvaloniaHex.axaml"/>
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     </Application.Styles>
     <!-- Sunflower resources -->
     <Application.Resources>

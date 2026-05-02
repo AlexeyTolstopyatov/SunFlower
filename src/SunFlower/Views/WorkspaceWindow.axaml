@@ -4,6 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SunFlower.ViewModels"
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+        xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:converter="clr-namespace:SunFlower.Converter"
+        xmlns:views="clr-namespace:SunFlower.Views"
+        xmlns:avaloniaHex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+        xmlns:rendering="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
         mc:Ignorable="d"
         Background="{DynamicResource RegionBrush}"
         d:DesignWidth="600" d:DesignHeight="600"
@@ -16,9 +21,11 @@
     <Grid
         x:Name="WorkspaceGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MinWidth="250" MaxWidth="400" />
+            <ColumnDefinition MinWidth="250" MaxWidth="400" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition MinWidth="200" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
         <Grid
             Background="{StaticResource CloudTileBrush}">
@@ -48,8 +55,28 @@
                                 BorderBrush="Transparent"
                                 Margin="10,0"
                                 SelectedIndex="{Binding SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <Run 
+                                                Text="{Binding seed.Seed}"/>
+                                            <Run 
+                                                Text="{Binding seed.Status.Results.Count, StringFormat='Loaded={0}'}" 
+                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </Grid>
+                        <TextBlock
+                            Margin="10">
+                            <Run Text="Target" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            <Run Text="{Binding SourceKind}"/>
+                            <LineBreak/>
+                            <Run Text="Version" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            <Run Text="{Binding SourceVersion}"/>
+                        </TextBlock>
                         <TextBlock
                             TextWrapping="Wrap"
                             Margin="10"
@@ -87,31 +114,48 @@
                 </Expander>
             </StackPanel>
         </Grid>
-
         <GridSplitter
             Background="{DynamicResource DefaultBrush}"
             ResizeDirection="Columns"
             Grid.Column="1" />
-        <!-- <Thumb -->
-        <!--     Grid.Column="1" -->
-        <!--     x:Name="SplitterThumb" -->
-        <!--     DragDelta="ResizeWestEast" -->
-        <!--     Cursor="SizeWestEast"  -->
-        <!--     HorizontalAlignment="Stretch"> -->
-        <!--     <Thumb.Template> -->
-        <!--         <ControlTemplate> -->
-        <!--             <Rectangle Fill="{StaticResource BorderBrush}" /> -->
-        <!--         </ControlTemplate> -->
-        <!--     </Thumb.Template> -->
-        <!-- </Thumb> -->
-        <mdxaml:MarkdownScrollViewer
-            Grid.Column="2"
-            SaveScrollValueWhenContentUpdated="True"
-            Margin="50,20"
-            Markdown="{Binding Source, UpdateSourceTrigger=PropertyChanged}">
-            <mdxaml:MarkdownScrollViewer.Styles>
-                <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
-            </mdxaml:MarkdownScrollViewer.Styles>
-        </mdxaml:MarkdownScrollViewer>
+        <!-- Depending on SeedTarget will be various view controls-->
+        <Grid
+            Grid.Column="2">
+            <mdxaml:MarkdownScrollViewer
+                IsVisible="{Binding PreferRender, UpdateSourceTrigger=PropertyChanged}"
+                SaveScrollValueWhenContentUpdated="True"
+                Margin="50,20"
+                Markdown="{Binding Source, UpdateSourceTrigger=PropertyChanged}">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+            <avaloniaEdit:TextEditor
+                Loaded="LoadAssemblyGrammar"
+                x:Name="SourceEditor"
+                IsVisible="{Binding !PreferRender, UpdateSourceTrigger=PropertyChanged}"
+                Margin="10,20"
+                FontSize="12"
+                FontFamily="Consolas,Cascadia Code,Menlo,Monospace,JetBrains Mono Medium"
+                Document="{Binding SourceDocument, UpdateSourceTrigger=PropertyChanged, FallbackValue='No source'}">
+            </avaloniaEdit:TextEditor>
+        </Grid>
+        <GridSplitter
+            Background="{DynamicResource DefaultBrush}"
+            ResizeDirection="Columns"
+            Grid.Column="3" />
+        <avaloniaHex:HexEditor
+            Grid.Column="4"
+            Padding="10"
+            Background="Transparent"
+            Document="{Binding BinaryDocument}"
+            FontFamily="Consolas,JetBrains Mono,Monospace,monospace">
+            <!-- Define columns to display -->
+            <avaloniaHex:HexEditor.Columns>
+                <rendering:OffsetColumn/>
+                <rendering:HexColumn UseDynamicHeader="True"/>
+                <rendering:AsciiColumn />
+            </avaloniaHex:HexEditor.Columns>
+        </avaloniaHex:HexEditor>
     </Grid>
 </Window>

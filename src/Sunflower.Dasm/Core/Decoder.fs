@@ -350,7 +350,6 @@ module internal Decoder =
                     elif token.Contains("G") then regStr
                     elif token.Contains("S") then regStr
                     else token
-
                 let opStrings =
                     operands
                     |> List.mapi (fun i tok ->

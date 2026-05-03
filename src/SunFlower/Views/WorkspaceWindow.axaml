@@ -14,7 +14,7 @@
         d:DesignWidth="600" d:DesignHeight="600"
         x:Class="SunFlower.Views.WorkspaceWindow"
         x:DataType="{x:Type vm:WorkspaceViewModel}"
-        Title="{Binding Path}">
+        Title="{Binding SourceModel.Path}">
     <Window.DataContext>
         <vm:WorkspaceViewModel />
     </Window.DataContext>
@@ -22,9 +22,9 @@
         x:Name="WorkspaceGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="250" MaxWidth="400" />
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="3" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="3"/>
             <ColumnDefinition MinWidth="200" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
         <Grid
@@ -54,8 +54,8 @@
                                 Grid.Column="1"
                                 BorderBrush="Transparent"
                                 Margin="10,0"
-                                SelectedIndex="{Binding SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                ItemsSource="{Binding SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                SelectedIndex="{Binding SourceModel.SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                ItemsSource="{Binding SourceModel.SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock>
@@ -72,20 +72,20 @@
                         <TextBlock
                             Margin="10">
                             <Run Text="Target" Foreground="{StaticResource SecondaryTextBrush}"/>
-                            <Run Text="{Binding SourceKind}"/>
+                            <Run Text="{Binding SourceModel.SourceKind}"/>
                             <LineBreak/>
                             <Run Text="Version" Foreground="{StaticResource SecondaryTextBrush}"/>
-                            <Run Text="{Binding SourceVersion}"/>
+                            <Run Text="{Binding SourceModel.SourceVersion}"/>
                         </TextBlock>
                         <TextBlock
                             TextWrapping="Wrap"
                             Margin="10"
-                            Text="{Binding SourceExceptionMessage}" />
+                            Text="{Binding SourceModel.SourceExceptionMessage}" />
                         <TextBlock
                             TextWrapping="Wrap"
                             FontFamily="Consolas"
                             Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="{Binding SourceException}" />
+                            Text="{Binding SourceModel.SourceException}" />
                     </StackPanel>
                 </Expander>
                 <Expander
@@ -101,8 +101,11 @@
                         </TextBlock>
                         <WrapPanel>
                             <Button
-                                Click="SaveDialog"
+                                Click="SaveText"
                                 Content="Save Text" />
+                            <Button
+                                Click="SaveBinary"
+                                Content="Save Binary"/>
                             <!-- <Button -->
                             <!--     Click="SavePdfDialog" -->
                             <!--     Content="Render PDF"/> -->
@@ -122,10 +125,10 @@
         <Grid
             Grid.Column="2">
             <mdxaml:MarkdownScrollViewer
-                IsVisible="{Binding PreferRender, UpdateSourceTrigger=PropertyChanged}"
+                IsVisible="{Binding SourceModel.OpenInMarkdownRender, UpdateSourceTrigger=PropertyChanged}"
                 SaveScrollValueWhenContentUpdated="True"
                 Margin="50,20"
-                Markdown="{Binding Source, UpdateSourceTrigger=PropertyChanged}">
+                Markdown="{Binding SourceModel.Source, UpdateSourceTrigger=PropertyChanged}">
                 <mdxaml:MarkdownScrollViewer.Styles>
                     <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
                 </mdxaml:MarkdownScrollViewer.Styles>
@@ -133,22 +136,24 @@
             <avaloniaEdit:TextEditor
                 Loaded="LoadAssemblyGrammar"
                 x:Name="SourceEditor"
-                IsVisible="{Binding !PreferRender, UpdateSourceTrigger=PropertyChanged}"
+                IsVisible="{Binding !SourceModel.OpenInMarkdownRender, UpdateSourceTrigger=PropertyChanged}"
                 Margin="10,20"
                 FontSize="12"
                 FontFamily="Consolas,Cascadia Code,Menlo,Monospace,JetBrains Mono Medium"
-                Document="{Binding SourceDocument, UpdateSourceTrigger=PropertyChanged, FallbackValue='No source'}">
+                Document="{Binding SourceModel.Document, UpdateSourceTrigger=PropertyChanged, FallbackValue='No source'}">
             </avaloniaEdit:TextEditor>
         </Grid>
         <GridSplitter
-            Background="{DynamicResource DefaultBrush}"
+            Background="{DynamicResource RegionBrush}"
             ResizeDirection="Columns"
             Grid.Column="3" />
+        
         <avaloniaHex:HexEditor
+            x:Name="BinaryEditor"
             Grid.Column="4"
             Padding="10"
             Background="Transparent"
-            Document="{Binding BinaryDocument}"
+            Document="{Binding File}"
             FontFamily="Consolas,JetBrains Mono,Monospace,monospace">
             <!-- Define columns to display -->
             <avaloniaHex:HexEditor.Columns>
@@ -156,6 +161,14 @@
                 <rendering:HexColumn UseDynamicHeader="True"/>
                 <rendering:AsciiColumn />
             </avaloniaHex:HexEditor.Columns>
+            <avaloniaHex:HexEditor.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        Command="{Binding Command}"
+                        CommandParameter="{Binding ElementName=BinaryEditor, Path=Selection}"
+                        Header="Translate"/>
+                </ContextMenu>
+            </avaloniaHex:HexEditor.ContextMenu>
         </avaloniaHex:HexEditor>
     </Grid>
 </Window>

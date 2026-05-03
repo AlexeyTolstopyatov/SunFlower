@@ -10,19 +10,20 @@
         <FileVersion>5.0.0.0</FileVersion>
         <ApplicationIcon>app5.ico</ApplicationIcon>
     </PropertyGroup>
-    <!-- Headers -->
     <ItemGroup>
-
+        <Compile Include="AvaloniaViewModel.fs" />
         <Compile Include="Services\JsonService.fs"/>
-
         <Compile Include="Services\FlowerService.fs" />
-        <Compile Include="Models\RecentModel.fs"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Converter\DataConverters.fs"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ViewModels\AvaloniaViewModel.fs"/>
+        <Compile Include="Models\RecentModel.fs"/>
+        <Compile Include="Models\WorkspaceSourceModel.fs" />
+        <Compile Include="Models\WorkspaceDisassemblerModel.fs" />
+    </ItemGroup>
+    <ItemGroup>
         <Compile Include="ViewModels\WorkspaceViewModel.fs"/>
         <Compile Include="ViewModels\ConsoleArgsViewModel.fs"/>
         <Compile Include="ViewModels\ConverterViewModel.fs"/>
@@ -75,6 +76,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Sunflower.Dasm\Sunflower.Dasm.fsproj" />
         <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj"/>
     </ItemGroup>
 

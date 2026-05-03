@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Threading.Tasks
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Interactivity
@@ -53,16 +54,16 @@ type WorkspaceWindow() as this =
                 let ctx = this.DataContext :?> WorkspaceViewModel
 
                 match isNull storage with
-                | true -> return ()
+                | true ->
+                    return ()
                 | false ->
-
                     let! stream = storage.OpenWriteAsync()
                     use writer = new StreamWriter(stream)
 
-                    do! writer.WriteAsync ctx.Source
+                    do! writer.WriteAsync ctx.SourceModel.Source
         }
 
-    member this.SaveDialog(_: obj, _: RoutedEventArgs) =
+    member this.SaveText(_: obj, _: RoutedEventArgs) =
         // Call SaveFileDialogAsync with no awaits
         // Looking for Failures
         task {
@@ -82,7 +83,34 @@ type WorkspaceWindow() as this =
         |> Async.AwaitTask
         |> Async.Start
 
-    member this.SavePdfDialog(_: obj, _: RoutedEventArgs) =
-        let ctx = this.DataContext :?> WorkspaceViewModel
-
-        ()
+    member this.SaveBinary (_: obj, _: RoutedEventArgs) =
+        // Imm32 calling the police ;-;
+        task {
+            try
+                let topLevel = TopLevel.GetTopLevel this
+                let options = FilePickerSaveOptions()
+                options.Title <- "Export document"
+                options.FileTypeChoices <- [| FilePickerFileType("Binary file (any extension)", Patterns = [| "*.*" |]) |]
+                // Call Avalonia services -> make an OpenFileDialog instance
+                // and wait dialog closing event (till the OK/Cancel/Close result 's given)
+                let! storage = topLevel.StorageProvider.SaveFilePickerAsync(options)
+                match storage.Name.Length with
+                | 0 -> return ()
+                | _ ->
+                    let ctx = this.DataContext :?> WorkspaceViewModel
+                    match isNull storage with
+                    | true ->
+                        return ()
+                    | false ->
+                        let! stream = storage.OpenWriteAsync()
+                        do! stream.WriteAsync(ctx.File.Memory.ToArray())
+            with
+            | e ->
+#if DEBUG
+                e |> string |> Console.Error.WriteLine
+#else
+                "Storage provider is dead. Can't write binary" |> Console.Error.WriteLine
+#endif
+        }
+        |> Async.AwaitTask
+        |> Async.Start

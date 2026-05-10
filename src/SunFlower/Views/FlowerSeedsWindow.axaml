@@ -75,7 +75,7 @@
                                 ItemsSource="{Binding Contracts}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <ListBoxItem>
+                                        <ItemsControl>
                                             <WrapPanel>
                                                 <Image
                                                     Source="/Assets/convert48.png" />
@@ -91,7 +91,7 @@
                                                         Foreground="{DynamicResource SecondaryTextBrush}" />
                                                 </StackPanel>
                                             </WrapPanel>
-                                        </ListBoxItem>
+                                        </ItemsControl>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>

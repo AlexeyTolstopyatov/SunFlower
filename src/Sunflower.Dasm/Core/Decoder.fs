@@ -147,10 +147,10 @@ module internal Decoder =
 
     let private immediateSize (token: string) (hasOpSize32: bool) (addressSize: int) =
         match token with
-        | "Ib" // Immediate .BYTE
-        | "Jb" -> 1 //
-        | "Iw" -> 2 // Immediate .WORD
-        | "Id" -> 4 // Immediate .DWORD
+        | "Ib"
+        | "Jb" -> 1
+        | "Iw" -> 2
+        | "Id" -> 4
         | "Iz"
         | "Iv"
         | "Jz" -> if hasOpSize32 then 4 else 2

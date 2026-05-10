@@ -60,7 +60,7 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
     /// Loaded plugins list
     /// </summary>
     [<ObservableProperty>]
-    member this.SourceList
+    member this.LoadedFlowerSeeds
         with get () = sourceList
         and set value =
             sourceList <- value
@@ -69,7 +69,7 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
     /// <summary>
     /// Selected data source in the UI BimboBox
     /// </summary>
-    member this.SourceIndex
+    member this.SelectedFlowerIndex
         with get () = sourceIndex
         and set value =
             if sourceIndex <> value then
@@ -97,7 +97,7 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
     /// <summary>
     /// Reference of _sourceExceptionMessage
     /// </summary>
-    member this.SourceExceptionMessage
+    member this.FlowerSeedMessage
         with get () = sourceExceptionMessage
         and set value =
             sourceExceptionMessage <- value
@@ -105,15 +105,18 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
     /// <summary>
     /// Reference of _sourceExceptioin
     /// </summary>
-    member this.SourceException
+    member this.FlowerSeedException
         with get () = sourceException
         and set value =
             sourceException <- value
             this.OnPropertyChanged()
+    member this.FlowerSeedEnabled
+        with get () =
+            not(this.LoadedFlowerSeeds[this.SelectedFlowerIndex].hasError())
     /// <summary>
     /// Reference of the _version
     /// </summary>
-    member this.SourceVersion
+    member this.FlowerSeedVersion
         with get () = version
         and set value =
             version <- value
@@ -122,7 +125,7 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
     /// <summary>
     /// Reference of the _kind
     /// </summary>
-    member this.SourceKind
+    member this.FlowerSeedKind
         with get () = kind
         and set value =
             kind <- value
@@ -154,12 +157,12 @@ type WorkspaceSourceModel(sourceList: ObservableCollection<FlowerSeedData>, file
                 kind <- currentSource.kind |> string
                 version <- currentSource.version
                 openInMarkdownRender <- (currentSource.kind = SeedTarget.Data)
-        this.OnPropertyChanged(nameof this.SourceExceptionMessage)
-        this.OnPropertyChanged(nameof this.SourceException)
+        this.OnPropertyChanged(nameof this.FlowerSeedMessage)
+        this.OnPropertyChanged(nameof this.FlowerSeedException)
         this.OnPropertyChanged(nameof this.Source)
-        this.OnPropertyChanged(nameof this.SourceKind)
-        this.OnPropertyChanged(nameof this.SourceVersion)
-        this.OnPropertyChanged(nameof this.SourceIndex)
+        this.OnPropertyChanged(nameof this.FlowerSeedKind)
+        this.OnPropertyChanged(nameof this.FlowerSeedVersion)
+        this.OnPropertyChanged(nameof this.SelectedFlowerIndex)
         this.OnPropertyChanged(nameof this.Document)
         this.OnPropertyChanged(nameof this.OpenInMarkdownRender)
     

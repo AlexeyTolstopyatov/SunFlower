@@ -5,8 +5,6 @@
         xmlns:vm="clr-namespace:SunFlower.ViewModels"
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
         xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
-        xmlns:converter="clr-namespace:SunFlower.Converter"
-        xmlns:views="clr-namespace:SunFlower.Views"
         xmlns:avaloniaHex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
         xmlns:rendering="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
         mc:Ignorable="d"
@@ -32,6 +30,7 @@
             <StackPanel>
                 <!-- Panel of plugins/tools -->
                 <Expander
+                    IsEnabled="{Binding !DisassemblerModeEnabled}"
                     IsExpanded="True"
                     Header="Plugin state"
                     Margin="10, 10,10,0">
@@ -54,8 +53,8 @@
                                 Grid.Column="1"
                                 BorderBrush="Transparent"
                                 Margin="10,0"
-                                SelectedIndex="{Binding SourceModel.SourceIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                ItemsSource="{Binding SourceModel.SourceList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                SelectedIndex="{Binding SourceModel.SelectedFlowerIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                ItemsSource="{Binding SourceModel.LoadedFlowerSeeds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock>
@@ -72,20 +71,49 @@
                         <TextBlock
                             Margin="10">
                             <Run Text="Target" Foreground="{StaticResource SecondaryTextBrush}"/>
-                            <Run Text="{Binding SourceModel.SourceKind}"/>
+                            <Run Text="{Binding SourceModel.FlowerSeedKind}"/>
                             <LineBreak/>
                             <Run Text="Version" Foreground="{StaticResource SecondaryTextBrush}"/>
-                            <Run Text="{Binding SourceModel.SourceVersion}"/>
+                            <Run Text="{Binding SourceModel.FlowerSeedVersion}"/>
                         </TextBlock>
+                        <FlyoutPresenter
+                            IsVisible="{Binding !SourceModel.FlowerSeedEnabled, UpdateSourceTrigger=PropertyChanged}"
+                            Opacity="0.6">
+                            <StackPanel>
+                                <TextBlock
+                                    TextWrapping="Wrap"
+                                    Text="{Binding SourceModel.FlowerSeedMessage}" />
+                                <TextBlock
+                                    TextWrapping="Wrap"
+                                    FontFamily="Consolas"
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Text="{Binding SourceModel.FlowerSeedException}" />
+                            </StackPanel>
+                        </FlyoutPresenter>
+                    </StackPanel>
+                </Expander>
+                <Expander
+                    IsExpanded="True"
+                    Margin="10,5,10,5"
+                    Header="Working Disassembler">
+                    <StackPanel>
                         <TextBlock
-                            TextWrapping="Wrap"
+                            TextWrapping="WrapWithOverflow"
                             Margin="10"
-                            Text="{Binding SourceModel.SourceExceptionMessage}" />
-                        <TextBlock
-                            TextWrapping="Wrap"
-                            FontFamily="Consolas"
-                            Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="{Binding SourceModel.SourceException}" />
+                            Foreground="{StaticResource SecondaryTextBrush}">
+                            Working disassembler will translate selected byte segments
+                            in the HEX editor at the right-side
+                        </TextBlock>
+                        <ComboBox
+                            BorderBrush="Transparent"
+                            Margin="10,0"
+                            SelectedIndex="{Binding DasmModel.SelectedModeIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            ItemsSource="{Binding DasmModel.Modes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        </ComboBox>
+                        <CheckBox
+                            Margin="10"
+                            IsChecked="{Binding DisassemblerModeEnabled, Mode=TwoWay}"
+                            Content="Disassembler mode"/>
                     </StackPanel>
                 </Expander>
                 <Expander
@@ -140,14 +168,13 @@
                 Margin="10,20"
                 FontSize="12"
                 FontFamily="Consolas,Cascadia Code,Menlo,Monospace,JetBrains Mono Medium"
-                Document="{Binding SourceModel.Document, UpdateSourceTrigger=PropertyChanged, FallbackValue='No source'}">
+                Document="{Binding DisplayDocument, UpdateSourceTrigger=PropertyChanged, FallbackValue='No source'}">
             </avaloniaEdit:TextEditor>
         </Grid>
         <GridSplitter
             Background="{DynamicResource RegionBrush}"
             ResizeDirection="Columns"
             Grid.Column="3" />
-        
         <avaloniaHex:HexEditor
             x:Name="BinaryEditor"
             Grid.Column="4"
@@ -159,14 +186,20 @@
             <avaloniaHex:HexEditor.Columns>
                 <rendering:OffsetColumn/>
                 <rendering:HexColumn UseDynamicHeader="True"/>
-                <rendering:AsciiColumn />
+                <rendering:AsciiColumn/>
             </avaloniaHex:HexEditor.Columns>
             <avaloniaHex:HexEditor.ContextMenu>
                 <ContextMenu>
                     <MenuItem
-                        Command="{Binding Command}"
-                        CommandParameter="{Binding ElementName=BinaryEditor, Path=Selection}"
-                        Header="Translate"/>
+                        FontFamily="Sans Serif"
+                        FontSize="14"
+                        Header="Send to disassembler"
+                        Command="{Binding TranslateSelected}"
+                        CommandParameter="{Binding ElementName=BinaryEditor, Path=Selection}">
+                        <MenuItem.Icon>
+                            <Image Source="/Assets/code48.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </avaloniaHex:HexEditor.ContextMenu>
         </avaloniaHex:HexEditor>

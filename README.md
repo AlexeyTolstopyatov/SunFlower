@@ -2,16 +2,17 @@
 
 <img src="assets/sunflower.svg" height="128" width="128" align="right">
 
-Sunflower is an open-source, plugin-driven system designed for binary analysis. 
-Was inspired by PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same toolkits. 
-Main idea of it - make non-monolith application and avoid embedded functions. This repository contains
-just loader details and the client.   
+Sunflower is an open-source, user-friendly disassembler and plugin-driven system designed for binary analysis.
+
+_Was inspired by IDA, PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same toolkits._
+
+Main idea of it - make non-monolith application and avoid embedded functions. This repository contains just loader details and the client.
 
 This repository includes following parts of my work:
  - Base definitions (`abstractions`) 
  - Plugins manager (`kernel`)
  - Avalonia client (`client`)
- - Disassembler support (`dasm`)
+ - Core Disassembler (`dasm`)
 
 > [!NOTE]
 > Sources of plugins contains in [SunFlower.Plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repository
@@ -81,7 +82,6 @@ type MyAnalyzer() =
 7) Run SunFlower and see what you can!
 
 ![Sunflower at the archVM](assets/vmware_screenshot.png)
-![Sunflower at the Windows platform](assets/light.png)
 ### Supported Binary Formats
 
 Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repo
@@ -97,10 +97,12 @@ Any differences between foundation file version and plugins foundation calls for
 ### Frameworks And other external toolchain
 
 All frameworks and toolkits
- - Avalonia XPF `.net8.0` - Foundation of crossplatform client
- - `.NET 8.0` - Foundation of everything
+ - .NET `8.0` - Foundation of everything
+ - [Avalonia XPF](https://github.com/AvaloniaUI/Avalonia) `11.3` - Foundation of crossplatform client
  - [HandyControls](https://github.com/HandyOrg/HandyControl) - better Window controls / little MVVM experience
  - [Markdown.Avalonia](https://github.com/whistyun/Markdown.Avalonia) instead of Monaco Editor and JavaScript bindings
+ - [Avalonia Hex](https://github.com/Washi1337/AvaloniaHex)
+ - [Avalonia Edit](https://github.com/AvaloniaUI/AvaloniaEdit)
 
 > [!TIP]
 > At the moment of publishing Sunflower the `HandyControl`s not supports

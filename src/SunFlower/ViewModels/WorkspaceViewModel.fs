@@ -83,7 +83,7 @@ type WorkspaceViewModel(sourceList: ObservableCollection<FlowerSeedData>, path: 
                 else
                     this.DasmModel.SelectedModeIndex
 
-            let decoder = this.DasmModel.Modes[this.DasmModel.SelectedModeIndex].action
+            let decoder = this.DasmModel.Modes[this.DasmModel.SelectedModeIndex].linearDecode
             let bytesRange = Array.zeroCreate(int selection.Range.ByteLength).AsSpan()
 
             this.File.ReadBytes(selection.Range.Start.ByteIndex, bytesRange)
@@ -92,7 +92,7 @@ type WorkspaceViewModel(sourceList: ObservableCollection<FlowerSeedData>, path: 
                 try
                     decoder (bytesRange.ToArray())
                 with e ->
-                    [ "# Disassembler died with following words: "; $"# {e}" ]
+                    [ "/* Disassembler died with following words: "; $" {e} */" ]
 
             let text = String.Join("\r\n", lines)
             // Update properties -> show results
@@ -100,7 +100,42 @@ type WorkspaceViewModel(sourceList: ObservableCollection<FlowerSeedData>, path: 
             this.DisassemblerModeEnabled <- true
             this.SourceModel.OpenInMarkdownRender <- false
             this.OnPropertyChanged(nameof this.DisplayDocument)
+            this.Update()
+    [<RelayCommand>]
+    member this.TranslateRecursive(selection: Selection) =
+        match selection.Range.ByteLength.Equals(0) with
+        | true -> ()
+        | false ->
+            this.DasmModel.SelectedModeIndex <-
+                if
+                    this.DasmModel.SelectedModeIndex > this.DasmModel.Modes.Length
+                    || this.DasmModel.SelectedModeIndex < 0
+                then
+                    0
+                else
+                    this.DasmModel.SelectedModeIndex
+            // If selected interrupt vectors table index out of range -> change it to 0.
+            match this.DasmModel.SelectedVectors with
+            | l when l = 1 || l > this.DasmModel.Vectors.Length -> this.DasmModel.SelectedVectors <- 0
+            | _ -> ()
+            
+            let recDecode = this.DasmModel.Modes[this.DasmModel.SelectedModeIndex].recDecode
+            let bytesRange = Array.zeroCreate(int selection.Range.ByteLength).AsSpan()
 
+            this.File.ReadBytes(selection.Range.Start.ByteIndex, bytesRange)
+
+            let lines =
+                try
+                    recDecode (this.DasmModel.Vectors[this.DasmModel.SelectedVectors].Path, bytesRange.ToArray(), [| 0 |])
+                with e ->
+                    $"/* Disassembler died with following words: {e} */"
+
+            // Update properties -> show results
+            disassembledFragment <- TextDocument(lines)
+            this.DisassemblerModeEnabled <- true
+            this.SourceModel.OpenInMarkdownRender <- false
+            this.OnPropertyChanged(nameof this.DisplayDocument)
+            this.Update()
     /// <summary>
     /// Updates all children in "/View"
     /// </summary>

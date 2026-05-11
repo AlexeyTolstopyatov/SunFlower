@@ -1,0 +1,587 @@
+﻿[
+  {
+    "int": "20",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": false,
+        "comment": "Terminate program"
+      }
+    ]
+  },
+  {
+    "int": "21",
+    "args": [
+      {
+        "byte": "00",
+        "return_flow": false,
+        "comment": "Program terminate"
+      },
+      {
+        "byte": "01",
+        "return_flow": true,
+        "comment": "Character input"
+      },
+      {
+        "byte": "02",
+        "return_flow": true,
+        "comment": "Character output"
+      },
+      {
+        "byte": "03",
+        "return_flow": true,
+        "comment": "Auxiliary input"
+      },
+      {
+        "byte": "04",
+        "return_flow": true,
+        "comment": "Auxiliary output"
+      },
+      {
+        "byte": "05",
+        "return_flow": true,
+        "comment": "Printer output"
+      },
+      {
+        "byte": "06",
+        "return_flow": true,
+        "comment": "Direct console I/O"
+      },
+      {
+        "byte": "07",
+        "return_flow": true,
+        "comment": "Direct console input without echo"
+      },
+      {
+        "byte": "08",
+        "return_flow": true,
+        "comment": "Console input without echo"
+      },
+      {
+        "byte": "09",
+        "return_flow": true,
+        "comment": "Display string"
+      },
+      {
+        "byte": "0A",
+        "return_flow": true,
+        "comment": "Buffered keyboard input"
+      },
+      {
+        "byte": "0B",
+        "return_flow": true,
+        "comment": "Get input status"
+      },
+      {
+        "byte": "0C",
+        "return_flow": true,
+        "comment": "Flush input buffer and input"
+      },
+      {
+        "byte": "0D",
+        "return_flow": true,
+        "comment": "Disk reset"
+      },
+      {
+        "byte": "0E",
+        "return_flow": true,
+        "comment": "Set default drive"
+      },
+      {
+        "byte": "0F",
+        "return_flow": true,
+        "comment": "Open file (FCB)"
+      },
+      {
+        "byte": "10",
+        "return_flow": true,
+        "comment": "Close file (FCB)"
+      },
+      {
+        "byte": "11",
+        "return_flow": true,
+        "comment": "Find first file (FCB)"
+      },
+      {
+        "byte": "12",
+        "return_flow": true,
+        "comment": "Find next file (FCB)"
+      },
+      {
+        "byte": "13",
+        "return_flow": true,
+        "comment": "Delete file (FCB)"
+      },
+      {
+        "byte": "14",
+        "return_flow": true,
+        "comment": "Sequential read (FCB)"
+      },
+      {
+        "byte": "15",
+        "return_flow": true,
+        "comment": "Sequential write (FCB)"
+      },
+      {
+        "byte": "16",
+        "return_flow": true,
+        "comment": "Create or truncate file (FCB)"
+      },
+      {
+        "byte": "17",
+        "return_flow": true,
+        "comment": "Rename file (FCB)"
+      },
+      {
+        "byte": "19",
+        "return_flow": true,
+        "comment": "Get default drive"
+      },
+      {
+        "byte": "1A",
+        "return_flow": true,
+        "comment": "Set disk transfer address"
+      },
+      {
+        "byte": "1B",
+        "return_flow": true,
+        "comment": "Get allocation info for default drive"
+      },
+      {
+        "byte": "1C",
+        "return_flow": true,
+        "comment": "Get allocation info for specified drive"
+      },
+      {
+        "byte": "1F",
+        "return_flow": true,
+        "comment": "Get disk parameter block for default drive"
+      },
+      {
+        "byte": "21",
+        "return_flow": true,
+        "comment": "Random read (FCB)"
+      },
+      {
+        "byte": "22",
+        "return_flow": true,
+        "comment": "Random write (FCB)"
+      },
+      {
+        "byte": "23",
+        "return_flow": true,
+        "comment": "Get file size in records (FCB)"
+      },
+      {
+        "byte": "24",
+        "return_flow": true,
+        "comment": "Set random record number (FCB)"
+      },
+      {
+        "byte": "25",
+        "return_flow": true,
+        "comment": "Set interrupt vector"
+      },
+      {
+        "byte": "26",
+        "return_flow": true,
+        "comment": "Create PSP"
+      },
+      {
+        "byte": "27",
+        "return_flow": true,
+        "comment": "Random block read (FCB)"
+      },
+      {
+        "byte": "28",
+        "return_flow": true,
+        "comment": "Random block write (FCB)"
+      },
+      {
+        "byte": "29",
+        "return_flow": true,
+        "comment": "Parse filename"
+      },
+      {
+        "byte": "2A",
+        "return_flow": true,
+        "comment": "Get date"
+      },
+      {
+        "byte": "2B",
+        "return_flow": true,
+        "comment": "Set date"
+      },
+      {
+        "byte": "2C",
+        "return_flow": true,
+        "comment": "Get time"
+      },
+      {
+        "byte": "2D",
+        "return_flow": true,
+        "comment": "Set time"
+      },
+      {
+        "byte": "2E",
+        "return_flow": true,
+        "comment": "Set verify flag"
+      },
+      {
+        "byte": "2F",
+        "return_flow": true,
+        "comment": "Get disk transfer address"
+      },
+      {
+        "byte": "30",
+        "return_flow": true,
+        "comment": "Get DOS version"
+      },
+      {
+        "byte": "31",
+        "return_flow": false,
+        "comment": "Terminate and stay resident"
+      },
+      {
+        "byte": "32",
+        "return_flow": true,
+        "comment": "Get disk parameter block for specified drive"
+      },
+      {
+        "byte": "33",
+        "return_flow": true,
+        "comment": "Get or set Ctrl-Break"
+      },
+      {
+        "byte": "34",
+        "return_flow": true,
+        "comment": "Get InDOS flag pointer"
+      },
+      {
+        "byte": "35",
+        "return_flow": true,
+        "comment": "Get interrupt vector"
+      },
+      {
+        "byte": "36",
+        "return_flow": true,
+        "comment": "Get free disk space"
+      },
+      {
+        "byte": "37",
+        "return_flow": true,
+        "comment": "Get or set switch character"
+      },
+      {
+        "byte": "38",
+        "return_flow": true,
+        "comment": "Get or set country info"
+      },
+      {
+        "byte": "39",
+        "return_flow": true,
+        "comment": "Create subdirectory"
+      },
+      {
+        "byte": "3A",
+        "return_flow": true,
+        "comment": "Remove subdirectory"
+      },
+      {
+        "byte": "3B",
+        "return_flow": true,
+        "comment": "Change current directory"
+      },
+      {
+        "byte": "3C",
+        "return_flow": true,
+        "comment": "Create or truncate file (handle)"
+      },
+      {
+        "byte": "3D",
+        "return_flow": true,
+        "comment": "Open file (handle)"
+      },
+      {
+        "byte": "3E",
+        "return_flow": true,
+        "comment": "Close file (handle)"
+      },
+      {
+        "byte": "3F",
+        "return_flow": true,
+        "comment": "Read file or device"
+      },
+      {
+        "byte": "40",
+        "return_flow": true,
+        "comment": "Write file or device"
+      },
+      {
+        "byte": "41",
+        "return_flow": true,
+        "comment": "Delete file"
+      },
+      {
+        "byte": "42",
+        "return_flow": true,
+        "comment": "Move file pointer"
+      },
+      {
+        "byte": "43",
+        "return_flow": true,
+        "comment": "Get or set file attributes"
+      },
+      {
+        "byte": "44",
+        "return_flow": true,
+        "comment": "I/O control for devices"
+      },
+      {
+        "byte": "45",
+        "return_flow": true,
+        "comment": "Duplicate handle"
+      },
+      {
+        "byte": "46",
+        "return_flow": true,
+        "comment": "Redirect handle"
+      },
+      {
+        "byte": "47",
+        "return_flow": true,
+        "comment": "Get current directory"
+      },
+      {
+        "byte": "48",
+        "return_flow": true,
+        "comment": "Allocate memory"
+      },
+      {
+        "byte": "49",
+        "return_flow": true,
+        "comment": "Release memory"
+      },
+      {
+        "byte": "4A",
+        "return_flow": true,
+        "comment": "Reallocate memory"
+      },
+      {
+        "byte": "4B",
+        "return_flow": true,
+        "comment": "Execute program (EXEC)"
+      },
+      {
+        "byte": "4C",
+        "return_flow": false,
+        "comment": "Exit with return code"
+      },
+      {
+        "byte": "4D",
+        "return_flow": true,
+        "comment": "Get program return code"
+      },
+      {
+        "byte": "4E",
+        "return_flow": true,
+        "comment": "Find first file (FCB-based)"
+      },
+      {
+        "byte": "4F",
+        "return_flow": true,
+        "comment": "Find next file (FCB-based)"
+      },
+      {
+        "byte": "50",
+        "return_flow": true,
+        "comment": "Set current PSP"
+      },
+      {
+        "byte": "51",
+        "return_flow": true,
+        "comment": "Get current PSP"
+      },
+      {
+        "byte": "52",
+        "return_flow": true,
+        "comment": "Get DOS internal pointers (SYSVARS)"
+      },
+      {
+        "byte": "53",
+        "return_flow": true,
+        "comment": "Create disk parameter block"
+      },
+      {
+        "byte": "54",
+        "return_flow": true,
+        "comment": "Get verify flag"
+      },
+      {
+        "byte": "55",
+        "return_flow": true,
+        "comment": "Create program PSP"
+      },
+      {
+        "byte": "56",
+        "return_flow": true,
+        "comment": "Rename file"
+      },
+      {
+        "byte": "57",
+        "return_flow": true,
+        "comment": "Get or set file date and time"
+      },
+      {
+        "byte": "58",
+        "return_flow": true,
+        "comment": "Get or set allocation strategy"
+      },
+      {
+        "byte": "59",
+        "return_flow": true,
+        "comment": "Get extended error info"
+      },
+      {
+        "byte": "5A",
+        "return_flow": true,
+        "comment": "Create unique file"
+      },
+      {
+        "byte": "5B",
+        "return_flow": true,
+        "comment": "Create new file"
+      },
+      {
+        "byte": "5C",
+        "return_flow": true,
+        "comment": "Lock or unlock file"
+      },
+      {
+        "byte": "5D",
+        "return_flow": true,
+        "comment": "File sharing functions"
+      },
+      {
+        "byte": "5E",
+        "return_flow": true,
+        "comment": "Network functions"
+      },
+      {
+        "byte": "5F",
+        "return_flow": true,
+        "comment": "Network redirection functions"
+      },
+      {
+        "byte": "60",
+        "return_flow": true,
+        "comment": "Qualify filename"
+      },
+      {
+        "byte": "62",
+        "return_flow": true,
+        "comment": "Get current PSP"
+      },
+      {
+        "byte": "63",
+        "return_flow": true,
+        "comment": "Get DBCS lead byte table pointer"
+      },
+      {
+        "byte": "64",
+        "return_flow": true,
+        "comment": "Set wait for external event flag"
+      },
+      {
+        "byte": "65",
+        "return_flow": true,
+        "comment": "Get extended country info"
+      },
+      {
+        "byte": "66",
+        "return_flow": true,
+        "comment": "Get or set code page"
+      },
+      {
+        "byte": "67",
+        "return_flow": true,
+        "comment": "Set handle count"
+      },
+      {
+        "byte": "68",
+        "return_flow": true,
+        "comment": "Commit file"
+      },
+      {
+        "byte": "69",
+        "return_flow": true,
+        "comment": "Get or set media id"
+      },
+      {
+        "byte": "6A",
+        "return_flow": true,
+        "comment": "Commit file"
+      },
+      {
+        "byte": "6C",
+        "return_flow": true,
+        "comment": "Extended open/create file"
+      },
+      {
+        "byte": "*",
+        "return_flow": true,
+        "comment": "Unknown DOS API call"
+      }
+    ]
+  },
+  {
+    "int": "27",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": false,
+        "comment": "Terminate and stay resident"
+      }
+    ]
+  },
+  {
+    "int": "10",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": true,
+        "comment": "Video BIOS"
+      }
+    ]
+  },
+  {
+    "int": "25",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": true,
+        "comment": "Absolute disk read"
+      }
+    ]
+  },
+  {
+    "int": "26",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": true,
+        "comment": "Absolute disk write"
+      }
+    ]
+  },
+  {
+    "int": "2F",
+    "args": [
+      {
+        "byte": "*",
+        "return_flow": true,
+        "comment": "Multiplex interrupt"
+      }
+    ]
+  }
+]

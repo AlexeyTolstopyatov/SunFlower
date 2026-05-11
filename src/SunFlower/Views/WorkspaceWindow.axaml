@@ -7,6 +7,7 @@
         xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
         xmlns:avaloniaHex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
         xmlns:rendering="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
+        xmlns:m="clr-namespace:SunFlower.Models"
         mc:Ignorable="d"
         Background="{DynamicResource RegionBrush}"
         d:DesignWidth="600" d:DesignHeight="600"
@@ -109,6 +110,34 @@
                             Margin="10,0"
                             SelectedIndex="{Binding DasmModel.SelectedModeIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             ItemsSource="{Binding DasmModel.Modes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="{x:Type m:WorkspaceDisassemblerCallback}">
+                                    <ItemsControl>
+                                        <TextBlock>
+                                            <Run Text="{Binding name}"/>
+                                        </TextBlock>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock
+                            Margin="10,5"
+                            Foreground="{StaticResource SecondaryTextBrush}">
+                            Connect loaded Interrupt vectors
+                        </TextBlock>
+                        <ComboBox
+                            x:DataType="vm:WorkspaceViewModel"
+                            BorderBrush="Transparent"
+                            Margin="10,0"
+                            SelectedIndex="{Binding DasmModel.SelectedVectors, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            ItemsSource="{Binding DasmModel.Vectors, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="m:FileModel">
+                                    <ItemsControl>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
                         <CheckBox
                             Margin="10"
@@ -146,7 +175,7 @@
             </StackPanel>
         </Grid>
         <GridSplitter
-            Background="{DynamicResource DefaultBrush}"
+            Background="{DynamicResource BorderBrush}"
             ResizeDirection="Columns"
             Grid.Column="1" />
         <!-- Depending on SeedTarget will be various view controls-->
@@ -172,7 +201,7 @@
             </avaloniaEdit:TextEditor>
         </Grid>
         <GridSplitter
-            Background="{DynamicResource RegionBrush}"
+            Background="{DynamicResource BorderBrush}"
             ResizeDirection="Columns"
             Grid.Column="3" />
         <avaloniaHex:HexEditor
@@ -190,6 +219,16 @@
             </avaloniaHex:HexEditor.Columns>
             <avaloniaHex:HexEditor.ContextMenu>
                 <ContextMenu>
+                    <MenuItem
+                        FontFamily="Sans Serif"
+                        FontSize="14"
+                        Header="Iterate by disassembler"
+                        Command="{Binding TranslateRecursive}"
+                        CommandParameter="{Binding ElementName=BinaryEditor, Path=Selection}">
+                        <MenuItem.Icon>
+                            <Image Source="/Assets/code48.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem
                         FontFamily="Sans Serif"
                         FontSize="14"

@@ -19,6 +19,7 @@
         <Compile Include="Converter\DataConverters.fs"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Models\FileModel.fs" />
         <Compile Include="Models\RecentModel.fs"/>
         <Compile Include="Models\WorkspaceSourceModel.fs" />
         <Compile Include="Models\WorkspaceDisassemblerModel.fs" />

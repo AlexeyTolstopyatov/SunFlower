@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+        xmlns:view="clr-namespace:SunFlower.Client.View"
+        mc:Ignorable="d" 
+        d:DesignWidth="1024" 
+        d:DesignHeight="768"
+        x:Class="SunFlower.Client.View.WorkspaceWindow"
+        x:DataType="{x:Type vm:WorkspaceViewModel}"
+        Icon="/Assets/app48.png"
+        Background="{StaticResource RegionBrush}"
+        Title="{Binding FileName, FallbackValue=Workspace}"
+        Closing="OnClosing">
+
+    <!-- Embed the existing WorkspaceView UserControl -->
+    <view:WorkspaceView DataContext="{Binding}" />
+</Window>

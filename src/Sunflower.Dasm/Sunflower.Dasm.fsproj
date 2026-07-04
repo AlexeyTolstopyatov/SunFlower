@@ -7,24 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="move.ps1">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
         <Content Include="Interrupt\dos.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Compile Include="Interrupt\IntelInterrupt.fs" />
-        <Compile Include="Core\Operation.fs" />
-        <Compile Include="Core\Decoder.fs" />
+        <Content Include="opcodes8086.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="opcodes186.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Content Include="opcodes8086.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
+      <Compile Include="Intel\Core\IntelInterrupt.fs" />
+      <Compile Include="Intel\Core\Operation.fs" />
+      <Compile Include="Intel\Core\Decoder.fs" />
       <Compile Include="I8086Decoder.fs" />
       <Compile Include="I80186Decoder.fs" />
       <Compile Include="FlowerDecoder.fs" />

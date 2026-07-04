@@ -120,7 +120,15 @@ type FluentFlowerManager() =
     [<CompiledName "UpdateAll">]
     member public this.updateAll(path) =
         try
-            seeds |> Seq.toList |> List.iter (fun x -> x.seed.Main path |> ignore)
+            seeds
+                |> Seq.toList
+                |> List.iter (fun x ->
+                    // Clear previous results then add updated 
+                    x.seed.Status.Results.Clear()
+                    x.seed.Status.LastError <- null
+                    x.seed.Status.IsEnabled <- true
+                    
+                    x.seed.Main path |> ignore)
         with kernel ->
             $"::STOP\r\n >> {kernel |> string}" |> Console.Error.WriteLine
 

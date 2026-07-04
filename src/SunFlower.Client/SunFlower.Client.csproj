@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>app5.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.12"/>
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.12"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.3.0" />
+        <PackageReference Include="AvaloniaHex" Version="0.1.10" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="Markdown.Avalonia" Version="11.0.2"/>
+        <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.2"/>
+        <PackageReference Include="Xaml.Behaviors" Version="11.3.9.6" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+      <ProjectReference Include="..\Sunflower.Dasm\Sunflower.Dasm.fsproj" />
+      <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="HandyControl">
+        <HintPath>..\..\external\HandyControl.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\"/>
+      <AvaloniaResource Include="Assets\**"/>  
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="View\MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="View\WorkspaceWindow.axaml.cs">
+        <DependentUpon>WorkspaceWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="View\RecentFilesView.axaml.cs">
+        <DependentUpon>RecentFilesView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="View\WorkspaceView.axaml.cs">
+        <DependentUpon>WorkspaceView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+</Project>

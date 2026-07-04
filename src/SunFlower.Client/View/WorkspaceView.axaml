@@ -1,0 +1,196 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:kernel="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
+             xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
+             xmlns:rendering="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
+             xmlns:avaloniaHex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" 
+             d:DesignHeight="600"
+             Background="Transparent"
+             x:Class="SunFlower.Client.View.WorkspaceView"
+             x:DataType="{x:Type vm:WorkspaceViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- project explorer & plugins -->
+            <ColumnDefinition 
+                MinWidth="280" 
+                MaxWidth="500" 
+                Width="300" />
+            <ColumnDefinition 
+                Width="3" />
+            <!-- active content -->
+            <ColumnDefinition 
+                MinWidth="400" 
+                Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="32"/>
+                <RowDefinition 
+                    Height="2*" 
+                    MinHeight="150" />
+                <RowDefinition 
+                    Height="3" />
+                <RowDefinition
+                    Height="3*" 
+                    MinHeight="200" />
+            </Grid.RowDefinitions>
+
+            <WrapPanel>
+                <Button>
+                    <Image Source="/Assets/edit48.png"/>
+                </Button>
+            </WrapPanel>
+            
+            <!-- Project files -->
+            <StackPanel
+                Grid.Row="1"
+                Margin="10" >
+                <ListBox
+                    ItemsSource="{Binding ProjectFiles}"
+                    SelectedItem="{Binding SelectedProjectFile, Mode=TwoWay}"
+                    BorderBrush="Transparent"
+                    Background="Transparent">
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="DoubleTapped">
+                            <InvokeCommandAction Command="{Binding OpenProjectFileCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProjectFileItem">
+                            <Grid>
+                                <Grid 
+                                    ColumnDefinitions="24,*">
+                                    <Image
+                                        Source="/Assets/file48.png"
+                                        Width="24"/>
+                                    <StackPanel 
+                                        Grid.Column="1" 
+                                        Margin="5,0">
+                                        <TextBlock 
+                                            Text="{Binding Name}"
+                                            />
+                                        <TextBlock 
+                                            Text="{Binding Size}" 
+                                            Foreground="{StaticResource SecondaryTextBrush}" 
+                                            />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+
+            <GridSplitter 
+                Grid.Row="2" 
+                Background="{StaticResource BorderBrush}" />
+
+            <!-- Plugin selector + actions -->
+            <StackPanel 
+                Grid.Row="3" 
+                Margin="10">
+                <!-- Plugin label -->
+                <StackPanel
+                    Orientation="Horizontal">
+                    <Image Source="/Assets/convert48.png"/>
+                    <TextBlock
+                        VerticalAlignment="Center">
+                        <Run
+                            Text="{Binding SelectedPlugin.seed.Seed, FallbackValue='Select plugin'}"/>
+                        <Run
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            Text="{Binding SelectedPlugin.kind, FallbackValue=(target)}"/>
+                        <LineBreak/>
+                        <Run
+                            Text="{Binding SelectedPlugin.version, FallbackValue=0.0.0}"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
+                    </TextBlock>
+                </StackPanel>
+                
+                <TextBlock
+                    Margin="10,10"
+                    TextWrapping="Wrap"
+                    Foreground="{StaticResource SecondaryTextBrush}">
+                    For plugins which use [FlowerSeed] API, results stores in the collection
+                    and work of plugin measures in the blocks (items in the result collection)
+                </TextBlock>
+                
+                <!-- was Mode=TwoWay -->
+                <ListBox 
+                    BorderBrush="Transparent"
+                    ItemsSource="{Binding AvailablePlugins}"
+                    SelectedItem="{Binding SelectedPlugin}">
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="DoubleTapped">
+                            <InvokeCommandAction Command="{Binding RunSelectedPluginCommand, Mode=TwoWay}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="kernel:FlowerSeedData">
+                            <Grid
+                                ColumnDefinitions="24,*">
+                                <Image 
+                                    Source="/Assets/convert48.png"/>
+                                <TextBlock
+                                    Grid.Column="1">
+                                    <Run
+                                        Text="{Binding seed.Seed}"/>
+                                    <Run 
+                                        Foreground="{StaticResource SecondaryTextBrush}"
+                                        Text="{Binding seed.Status.Results.Count, StringFormat='Blocks={0}'}"/>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+
+        <!-- Splitter -->
+        <GridSplitter 
+            Grid.Column="1" 
+            Background="{StaticResource BorderBrush}" />
+        <Grid
+            Grid.Column="2">
+            
+            <!-- Main content area -->
+            <md:MarkdownScrollViewer
+                Margin="20" 
+                IsEnabled="{Binding IsMarkdownView}"
+                IsVisible="{Binding IsMarkdownView}"
+                Markdown="{Binding ActiveContentText}">
+                <md:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
+                </md:MarkdownScrollViewer.Styles>
+            </md:MarkdownScrollViewer>
+            <edit:TextEditor
+                Margin="20" 
+                IsEnabled="{Binding IsAssemblyView}"
+                IsVisible="{Binding IsAssemblyView}"
+                Document="{Binding ActiveTextDocument}">
+            </edit:TextEditor>
+            <avaloniaHex:HexEditor
+                IsVisible="{Binding IsBinaryView}"
+                IsEnabled="{Binding IsBinaryView}"
+                Padding="10"
+                Background="Transparent"
+                Document="{Binding ActiveBinaryDocument}"
+                FontFamily="Consolas,JetBrains Mono,Monospace,monospace">
+                <!-- Define columns to display -->
+                <avaloniaHex:HexEditor.Columns>
+                    <rendering:OffsetColumn/>
+                    <rendering:HexColumn UseDynamicHeader="True"/>
+                    <rendering:AsciiColumn/>
+                </avaloniaHex:HexEditor.Columns>
+            </avaloniaHex:HexEditor>
+        </Grid>
+    </Grid>
+</UserControl>

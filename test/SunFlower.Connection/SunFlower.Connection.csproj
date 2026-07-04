@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\SunFlower.Terminal\SunFlower.Terminal.fsproj"/>
         <ProjectReference Include="..\..\src\SunFlower.Kernel\SunFlower.Kernel.fsproj"/>
     </ItemGroup>
 

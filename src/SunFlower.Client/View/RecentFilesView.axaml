@@ -1,0 +1,97 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" 
+             d:DesignHeight="450"
+             Background="Transparent"
+             x:Class="SunFlower.Client.View.RecentFilesView"
+             x:DataType="{x:Type vm:RecentFilesViewModel}">
+    <!-- DoubleTapped event -> opening -->
+    <ListBox
+        Grid.Row="1"
+        x:Name="RecentList"
+        SelectionMode="Single"
+        Margin="10"
+        Background="Transparent"
+        BorderBrush="Transparent"
+        ItemsSource="{Binding RecentFiles, UpdateSourceTrigger=PropertyChanged}">
+        <Interaction.Behaviors>
+            <EventTriggerBehavior EventName="DoubleTapped">
+                <InvokeCommandAction 
+                    CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}"
+                    Command="{Binding OpenSelectedFileCommand}" />
+            </EventTriggerBehavior>
+        </Interaction.Behaviors>
+        <ListBox.ContextMenu>
+            <ContextMenu>
+                <MenuItem
+                    Command="{Binding OpenSelectedFileCommand}"
+                    CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}"
+                    HotKey="Enter">
+                    <MenuItem.Header>
+                        <TextBlock>
+                            <Run Text="Open" />
+                            <Run Text="Enter" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </TextBlock>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/app48.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem
+                    HotKey="Delete"
+                    Command="{Binding RemoveSelectedFileCommand}"
+                    CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}">
+                    <MenuItem.Header>
+                        <TextBlock>
+                            <Run Text="Remove" />
+                            <Run Text="Delete" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </TextBlock>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/clear48.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </ListBox.ContextMenu>
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <ItemsControl>
+                    <Grid
+                        ColumnDefinitions="48, Auto">
+                        <Image
+                            Source="/Assets/file48.png" />
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Grid.Column="1">
+                            <TextBlock
+                                FontFamily="SegoeUI"
+                                FontSize="12"
+                                Text="{Binding Name}" />
+                            <Grid
+                                ColumnDefinitions="Auto, Auto">
+                                <TextBlock
+                                    FontFamily="SegoeUI"
+                                    FontSize="12"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Text="{Binding Path}" />
+                                <TextBlock
+                                    FontFamily="SegoeUI"
+                                    FontSize="12"
+                                    Padding="2,0"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Text="{Binding Type}" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </ItemsControl>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

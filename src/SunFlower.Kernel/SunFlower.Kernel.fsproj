@@ -17,7 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="Database\FlowerObjectHeader.fs" />
         <Compile Include="Writers\FlowerMarkdownWriter.fs"/>
+        <Compile Include="Writers\FlowerObjectWriter.fs" />
         <Compile Include="Services\FlowerSeedData.fs" />
         <Compile Include="Services\FluentFlowerManager.fs"/>
         <Compile Include="Services\FlowerCompatibility.fs" />

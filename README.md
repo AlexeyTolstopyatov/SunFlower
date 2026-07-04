@@ -2,7 +2,7 @@
 
 <img src="assets/sunflower.svg" height="128" width="128" align="right">
 
-Sunflower is an open-source, user-friendly disassembler and plugin-driven system designed for binary analysis.
+Sunflower is an open-source, user-friendly plugin-driven system designed for binary analysis.
 
 _Was inspired by IDA, PEAnathomist, CFFExplrer, Semi VB Decompiler, and other same toolkits._
 
@@ -29,6 +29,8 @@ In releases always will be represented plugins for definition
  - `LX` OS/2-ArcaOS standard executables;
  - `PE` Windows NT stndard applications;
  - `MS-DOS PIF files.
+ - `A-Out` Iris/Solaris/Plan9/other Unix plain executables;
+ - `ELF` Linux/BSD executables
 
 But you sunflower gives a chance to make your own extension of it and
 run it with all plugins too.

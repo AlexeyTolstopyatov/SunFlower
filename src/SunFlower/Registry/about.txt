@@ -1,4 +1,0 @@
-﻿This window contains nested list of ALL assemblies and plugins.
-All what you see here might be incompatible with SunFlower kernel.
-Roots (list items) are external DLLs (a.k.a flowers) and nested 
-elements inside them are instantiated plugins (a.k.a. sunflower seeds)

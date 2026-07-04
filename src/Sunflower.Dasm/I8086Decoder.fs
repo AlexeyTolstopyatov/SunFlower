@@ -5,6 +5,7 @@ open System.Collections.Generic
 open System.IO
 open System.Linq
 open Microsoft.FSharp.Linq.RuntimeHelpers
+open Sunflower.Dasm.Intel.Core
 
 /// <summary>
 /// This module represents setup of base intel disassembler for I8086 only!
@@ -30,7 +31,6 @@ module I8086Decoder =
         Decoder.decode state bytes
     let decodeRecursive (interruptsPath: string, bytes: byte array, offsets: int array)=
         let decoder = get(interruptsPath)
-        let fsharpList = offsets
         let instructions, status = Decoder.disassembleRecursive decoder bytes offsets
         Decoder.formatWithLabels instructions bytes status
         

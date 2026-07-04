@@ -1,0 +1,110 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SunFlower.Client.ViewModel"
+        mc:Ignorable="d"
+        Width="1024"
+        Height="500"
+        x:Class="SunFlower.Client.View.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/sunflower256.png"
+        Background="{StaticResource RegionBrush}"
+        Title="SunFlower"
+        Closing="OnClosing">
+    <Grid
+        Background="{StaticResource CloudTileBrush}"
+        ColumnDefinitions="Auto,*">
+        <!-- Sidebar -->
+        <Grid
+            Background="{StaticResource RegionBrush}"
+            RowDefinitions="Auto,Auto,*">
+            <!-- Logo -->
+            <Grid Margin="10" ColumnDefinitions="64,*">
+                <Image 
+                    HorizontalAlignment="Left"
+                    Source="/Assets/sunflower256.png"
+                    Width="64" />
+                <StackPanel Margin="10,30" Grid.Column="1">
+                    <TextBlock Text="SunFlower" />
+                    <TextBlock 
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="{Binding Version, FallbackValue='0.0.0'}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Menu -->
+            <Menu Grid.Row="1">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                
+                <MenuItem 
+                    Header="Recent" 
+                    Command="{Binding NavigateHomeCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/dir48.png" />
+                    </MenuItem.Icon>
+                    <MenuItem.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Recent files section"/>
+                        </Flyout>
+                    </MenuItem.ContextFlyout>
+                </MenuItem>
+
+                <MenuItem 
+                    Header="Import" 
+                    Command="{Binding ImportFileCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/app48.png" />
+                    </MenuItem.Icon>
+                    <MenuItem.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Read any file and remember it (write to 'Recent')"/>
+                        </Flyout>
+                    </MenuItem.ContextFlyout>
+                </MenuItem>
+                <MenuItem 
+                    Header="Restore" 
+                    Command="{Binding RestoreProjectCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/open48.png" />
+                    </MenuItem.Icon>
+                    <MenuItem.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Load data from sunflower project file"/>
+                        </Flyout>
+                    </MenuItem.ContextFlyout>
+                </MenuItem>
+                <MenuItem 
+                    Command="{CompiledBinding NavigateSettingsCommand}"
+                    Header="Settings">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/paper48.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem 
+                    Command="{CompiledBinding NavigateDiagnosticsCommand}"
+                    Header="Flowers">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/sunflower256.png" />
+                    </MenuItem.Icon>
+                    <MenuItem.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Connected plugin assemblies section"/>
+                        </Flyout>
+                    </MenuItem.ContextFlyout>
+                </MenuItem>
+            </Menu>
+        </Grid>
+
+        <!-- Page area — uses ViewLocator to auto-resolve View for ViewModel -->
+        <ContentControl
+            Grid.Column="1"
+            Name="PageArea"
+            Content="{Binding CurrentPage}"
+            ContentTemplate="{StaticResource ViewLocator}" />
+    </Grid>
+</Window>

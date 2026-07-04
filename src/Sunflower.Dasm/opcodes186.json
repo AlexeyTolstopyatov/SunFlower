@@ -997,6 +997,9 @@
     "ModRM": true,
     "IsPrefix": false
   },
+  { "Opcode": "60", "Reg": null, "Mnemonic": "PUSHA", "Operands": [], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "61", "Reg": null, "Mnemonic": "POPA",  "Operands": [], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "62", "Reg": null, "Mnemonic": "BOUND", "Operands": ["Gv","Ma"], "ModRM": true,  "IsPrefix": false },
   {
     "Opcode": "64",
     "Reg": null,
@@ -1077,6 +1080,10 @@
     "ModRM": true,
     "IsPrefix": false
   },
+  { "Opcode": "6C", "Reg": null, "Mnemonic": "INSB",  "Operands": [], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "6D", "Reg": null, "Mnemonic": "INSW",  "Operands": [], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "6E", "Reg": null, "Mnemonic": "OUTSB", "Operands": [], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "6F", "Reg": null, "Mnemonic": "OUTSW", "Operands": [], "ModRM": false, "IsPrefix": false },
   {
     "Opcode": "70",
     "Reg": null,
@@ -2176,7 +2183,7 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  {
+    {
     "Opcode": "C6/0",
     "Reg": 0,
     "Mnemonic": "MOV",
@@ -2216,6 +2223,8 @@
       "Jz", "000", "11B"
     ]
   },
+  { "Opcode": "C8", "Reg": null, "Mnemonic": "ENTER", "Operands": ["Iw","Ib"], "ModRM": false, "IsPrefix": false },
+  { "Opcode": "C9", "Reg": null, "Mnemonic": "LEAVE", "Operands": [], "ModRM": false, "IsPrefix": false },
   {
     "Opcode": "CC",
     "Reg": null,

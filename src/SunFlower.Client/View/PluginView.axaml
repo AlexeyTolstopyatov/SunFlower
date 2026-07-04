@@ -1,0 +1,72 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:c="clr-namespace:SunFlower.Client"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SunFlower.Client.View.PluginView"
+             x:DataType="{x:Type vm:PluginViewModel}">
+    <ScrollViewer>
+        <ItemsControl
+            ItemsSource="{CompiledBinding Assemblies}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <!-- Assembly Card template -->
+                    <Border
+                        Margin="10"
+                        CornerRadius="5"
+                        Background="{StaticResource BorderBrush}">
+                        <StackPanel
+                            Margin="10">
+                            <TextBlock
+                                TextWrapping="Wrap">
+                                <Run 
+                                    Text="{Binding Name}"/>
+                                <LineBreak/>
+                                <Run
+                                    Foreground="{StaticResource SecondaryTextBrush}"
+                                    Text="{CompiledBinding Version}"/>
+                                <LineBreak/>
+                            </TextBlock>
+                            
+                            <ListBox
+                                ItemsSource="{CompiledBinding Contracts}"
+                                SelectionMode="Toggle"
+                                Background="Transparent"
+                                BorderBrush="Transparent">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid
+                                            ColumnDefinitions="24,*">
+                                            <Image Source="/Assets/convert48.png"/>
+                                            <StackPanel
+                                                Margin="5"
+                                                VerticalAlignment="Center"
+                                                Grid.Column="1">
+                                                <TextBlock 
+                                                    Text="{Binding Item1}"/>
+                                                <TextBlock
+                                                    Foreground="{StaticResource SecondaryTextBrush}">
+                                                    <Run Text="{CompiledBinding Item2}"/>
+                                                    <Run Text="{CompiledBinding Item2, StringFormat={}, Converter={x:Static c:UiConverters.IsCompatConverter}}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                    
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

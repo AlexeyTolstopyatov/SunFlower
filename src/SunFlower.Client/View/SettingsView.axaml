@@ -1,0 +1,47 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" 
+             d:DesignHeight="450"
+             x:Class="SunFlower.Client.View.SettingsView"
+             x:DataType="{x:Type vm:SettingsViewModel}">
+    <StackPanel>
+        <!-- App -->
+        <TextBlock
+            Text="Application"
+            TextWrapping="Wrap"/>
+        <Border
+            Margin="20,5"
+            Padding="10"
+            CornerRadius="5"
+            Background="{StaticResource BorderBrush}">
+            <WrapPanel 
+                ItemSpacing="10">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Theme variant"/>
+                <ComboBox
+                    Name="ThemeBox"
+                    VerticalAlignment="Center"
+                    SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="SelectionChanged">
+                            <InvokeCommandAction 
+                                CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
+                                Command="{CompiledBinding ChangeThemeCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <ComboBoxItem
+                        Content="System"/>
+                    <ComboBoxItem
+                        Content="Light"/>
+                    <ComboBoxItem
+                        Content="Dark"/>
+                </ComboBox>
+            </WrapPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

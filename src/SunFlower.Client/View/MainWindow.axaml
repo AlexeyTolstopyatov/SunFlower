@@ -20,7 +20,9 @@
             Background="{StaticResource RegionBrush}"
             RowDefinitions="Auto,Auto,*">
             <!-- Logo -->
-            <Grid Margin="10" ColumnDefinitions="64,*">
+            <Grid 
+                Margin="10" 
+                ColumnDefinitions="64,*">
                 <Image 
                     HorizontalAlignment="Left"
                     Source="/Assets/sunflower256.png"

@@ -1,13 +1,13 @@
-﻿// CoffeeLake (C) 2026-*
+﻿//
+// CoffeeLake (C) 2026-*
 // 
 // The SettingsModel.cs represents settings file model
 // Uses by SettingsView to configure visuals 
 //
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
-
+//
 using System.Text.Json.Serialization;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SunFlower.Client.Model;
 
@@ -25,19 +25,22 @@ public class Font
 
     [JsonPropertyName("size")] 
     public double Size { get; set; } = 10.0;
+    
+    public Font(string family, double size)
+    {
+        Family = family;
+        Size = size;
+    }
 }
 
-public partial class SettingsModel : ObservableObject
+public class SettingsModel
 {
     [JsonPropertyName("theme")]
-    [ObservableProperty] 
-    private Theme _theme;
+    public Theme Theme { get; set; }
 
     [JsonPropertyName("text_control")] 
-    [ObservableProperty]
-    public Font? _textControl;
+    public Font? TextControl { get; set; }
 
     [JsonPropertyName("hex_control")]
-    [ObservableProperty]
-    public Font? _hexControl;
+    public Font? HexControl { get; set; }
 }

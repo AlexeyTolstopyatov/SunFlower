@@ -31,14 +31,14 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     public FlowerFileInfo? CurrentFileInfo => _currentFileInfo;
 
     /// <summary>
-    /// Plugin analysis results for the current workspace.
-    /// </summary>
-    public IReadOnlyList<FlowerSeedData>? CurrentResults => _currentResults;
-
-    /// <summary>
     /// Whether the current workspace is a .flowerproj project file.
     /// </summary>
     public bool IsProject => _isProject;
+
+    /// <summary>
+    /// Provides access to the underlying ProjectService for file management.
+    /// </summary>
+    public ProjectService ProjectService => projectService;
 
     /// <summary>
     /// Current project info from ProjectService.
@@ -46,17 +46,12 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     public ProjectInfo? CurrentProject => projectService.CurrentProject;
 
     /// <summary>
-    /// Fires when workspace changes (file opened/closed).
-    /// </summary>
-    public event Action? WorkspaceChanged;
-
-    /// <summary>
     /// Fires when analysis results are updated.
     /// </summary>
     public event Action? ResultsUpdated;
 
     /// <summary>
-    /// Open a file — automatically detects whether it's a raw binary or project.
+    /// Open a file - automatically detects whether it's a raw binary or project.
     /// </summary>
     public FlowerFileInfo OpenFile(string path)
     {
@@ -68,10 +63,8 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         {
             return OpenProject(path);
         }
-        else
-        {
-            return OpenRawBinary(path);
-        }
+
+        return OpenRawBinary(path);
     }
 
     /// <summary>
@@ -85,10 +78,8 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
         // Analyze with all plugins
+        _currentResults = pluginService.Analyze(_currentFilePath);
         
-        _currentResults = pluginService.AnalyzeFile(_currentFilePath);
-
-        WorkspaceChanged?.Invoke();
         ResultsUpdated?.Invoke();
 
         return _currentFileInfo;
@@ -102,15 +93,13 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         var project = projectService.OpenProject(path);
         _isProject = true;
 
-        // The original binary path inside the project
         var originalBinary = project.OriginalBinaryPath;
         _currentFilePath = originalBinary ?? path;
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
         // Analyze with all plugins
-        _currentResults = pluginService.AnalyzeFile(_currentFilePath);
+        _currentResults = pluginService.Analyze(_currentFilePath);
 
-        WorkspaceChanged?.Invoke();
         ResultsUpdated?.Invoke();
 
         return _currentFileInfo;
@@ -124,21 +113,12 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         if (_currentFilePath == null)
             throw new InvalidOperationException("No file is currently open.");
 
-        if (projectService.CurrentProject?.OriginalBinaryPath != null)
-        {
-            _currentResults = pluginService.AnalyzeFile(
-                projectService.CurrentProject.OriginalBinaryPath);
-        }
-        else
-        {
-            _currentResults = pluginService.AnalyzeFile(_currentFilePath);
-        }
+        _currentResults = pluginService.Analyze(projectService.CurrentProject?.OriginalBinaryPath ?? _currentFilePath);
 
         ResultsUpdated?.Invoke();
     }
-
     /// <summary>
-    /// Close the current workspace and clean up.
+    /// Free project pointers and close project 
     /// </summary>
     public void CloseFile()
     {
@@ -148,12 +128,8 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         _isProject = false;
 
         projectService.CloseProject();
-        WorkspaceChanged?.Invoke();
     }
 
-    /// <summary>
-    /// Save the project (with or without a specific path).
-    /// </summary>
     public async Task SaveProjectAsync(string? savePath = null)
     {
         await projectService.SaveProjectAsync(savePath);

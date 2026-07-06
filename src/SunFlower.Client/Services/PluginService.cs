@@ -4,6 +4,7 @@
 // PluginService is a singleton service that initializes all flower seeds
 // once at application startup.
 //
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,7 @@ public class PluginService
     /// Seeds that were loaded at initialization (metadata + interfaces).
     /// </summary>
     private List<FlowerSeedData>? _loadedSeeds;
+
     private bool _initialized;
 
     public PluginService()
@@ -27,7 +29,7 @@ public class PluginService
         _manager = FluentFlowerManager.CreateInstance();
         _loadedSeeds = null;
         _initialized = false;
-        
+
         Initialize();
     }
 
@@ -36,10 +38,12 @@ public class PluginService
     /// </summary>
     public void Initialize()
     {
-        if (_initialized) return;
+        if (_initialized)
+            return;
 
-        var pluginsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-        if (!Directory.Exists(pluginsDir))
+        var pluginsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+
+        if (!Directory.Exists(pluginsDirectory))
         {
             _loadedSeeds = [];
             _initialized = true;
@@ -63,14 +67,14 @@ public class PluginService
     /// Analyze a file with all loaded plugins. Returns results.
     /// Does NOT reinitialize plugins — uses cached instances.
     /// </summary>
-    public IReadOnlyList<FlowerSeedData> AnalyzeFile(string filePath)
+    public IReadOnlyList<FlowerSeedData> Analyze(string filePath)
     {
         if (!_initialized)
             throw new InvalidOperationException("PluginService not initialized.");
 
         if (!File.Exists(filePath))
             throw new FileNotFoundException("Target file not found.", filePath);
-        
+
         _manager.UpdateAll(filePath);
 
         return _manager.Seeds.AsReadOnly();
@@ -81,6 +85,8 @@ public class PluginService
     /// </summary>
     public IReadOnlyList<FlowerVersionInfo> GetVersionInfo()
     {
-        return FlowerCompatibility.GetForAllList().AsReadOnly();
+        return FlowerCompatibility
+            .GetForAllList()
+            .AsReadOnly();
     }
 }

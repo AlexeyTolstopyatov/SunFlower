@@ -11,7 +11,6 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SunFlower.Client.Model;
 using SunFlower.Client.Services;
 
 namespace SunFlower.Client.ViewModel;
@@ -104,7 +103,7 @@ public partial class MainWindowViewModel : ObservableObject
             [
                 new FilePickerFileType("All Executables")
                 {
-                    Patterns = ["*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv", "*.*"]
+                    Patterns = ["*.*", "*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv"]
                 },
                 new FilePickerFileType("Project Files")
                 {
@@ -227,7 +226,7 @@ public partial class MainWindowViewModel : ObservableObject
 
             var analysisService = new PluginAnalysisService(WorkspaceService);
             WindowService.OpenWorkspaceWindow(
-                new WorkspaceViewModel(WorkspaceService, PluginService, analysisService));
+                new WorkspaceViewModel(WorkspaceService, PluginService, analysisService, SettingsService));
         }
         catch (Exception ex)
         {

@@ -11,6 +11,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Model;
 using SunFlower.Client.Services;
+using System.Drawing.Text;
+using System.Linq;
+using Avalonia.Media;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -18,18 +21,25 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
     private readonly ThemeService _themeService;
-
+    
     public SettingsViewModel(SettingsService settingsService, ThemeService themeService)
     {
         _settingsService = settingsService;
         _themeService = themeService;
         
         Settings = settingsService.Current;
+        _installedFonts = FontManager
+            .Current
+            .SystemFonts
+            .ToArray();
     }
     
     [ObservableProperty]
     private SettingsModel _settings;
-
+    
+    [ObservableProperty]
+    private FontFamily[] _installedFonts;
+    
     [RelayCommand]
     private void ChangeTheme(object? index)
     {

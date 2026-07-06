@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Styling;
 using SunFlower.Client.ViewModel;
 
 namespace SunFlower.Client.View;

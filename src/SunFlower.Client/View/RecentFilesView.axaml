@@ -11,7 +11,6 @@
              x:DataType="{x:Type vm:RecentFilesViewModel}">
     <!-- DoubleTapped event -> opening -->
     <ListBox
-        Grid.Row="1"
         x:Name="RecentList"
         SelectionMode="Single"
         Margin="10"

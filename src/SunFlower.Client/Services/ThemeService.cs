@@ -6,7 +6,6 @@
 // MainWindow subscribes and sets RequestedThemeVariant programmatically.
 //
 using System;
-using Avalonia;
 using Avalonia.Styling;
 using SunFlower.Client.Model;
 

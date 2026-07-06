@@ -16,13 +16,14 @@ public class WindowService
     /// <summary>
     /// Open the WorkspaceView in a separate window.
     /// </summary>
-    public void OpenWorkspaceWindow(WorkspaceViewModel viewModel)
+    public void OpenWorkspaceWindow(WorkspaceViewModel vm)
     {
+        
         var window = new WorkspaceWindow
         {
-            DataContext = viewModel
+            DataContext = vm
         };
-
+        vm.ThisWindow = window;
         window.Show();
     }
 

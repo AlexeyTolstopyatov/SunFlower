@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SunFlower.Client.Services;
-using SunFlower.Kernel.Readers;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;

@@ -25,16 +25,24 @@
                         Background="{StaticResource BorderBrush}">
                         <StackPanel
                             Margin="10">
-                            <TextBlock
-                                TextWrapping="Wrap">
-                                <Run 
-                                    Text="{Binding Name}"/>
-                                <LineBreak/>
-                                <Run
-                                    Foreground="{StaticResource SecondaryTextBrush}"
-                                    Text="{CompiledBinding Version}"/>
-                                <LineBreak/>
-                            </TextBlock>
+                            <Grid
+                                ColumnDefinitions="32, Auto">
+                                <Image
+                                    VerticalAlignment="Top"
+                                    Source="/Assets/file48.png"/>
+                                <TextBlock
+                                    VerticalAlignment="Top"
+                                    Grid.Column="1"
+                                    TextWrapping="Wrap">
+                                    <Run 
+                                        Text="{Binding Name}"/>
+                                    <LineBreak/>
+                                    <Run
+                                        Foreground="{StaticResource SecondaryTextBrush}"
+                                        Text="{CompiledBinding Version}"/>
+                                    <LineBreak/>
+                                </TextBlock>
+                            </Grid>
                             
                             <ListBox
                                 ItemsSource="{CompiledBinding Contracts}"

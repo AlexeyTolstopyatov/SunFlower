@@ -5,11 +5,9 @@
 // Persisted as JSON in the Registry directory.
 //
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia.Styling;
 using SunFlower.Client.Model;
 
 namespace SunFlower.Client.Services;
@@ -70,6 +68,9 @@ public class SettingsService
         if (!File.Exists(_settingsPath))
         {
             _settings = new SettingsModel();
+            
+            await Console.Out.WriteLineAsync("Settings file not found. Making something new");
+            
             await SaveAsync();
             return;
         }
@@ -77,10 +78,14 @@ public class SettingsService
         try
         {
             var json = await File.ReadAllTextAsync(_settingsPath);
-            _settings = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ?? new SettingsModel();
+            _settings = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ?? 
+                        new SettingsModel();
+            
+            Console.WriteLine(json);
         }
-        catch
+        catch (Exception e)
         {
+            await Console.Out.WriteLineAsync(e.Message);
             _settings = new SettingsModel();
         }
     }

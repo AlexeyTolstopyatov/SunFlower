@@ -5,9 +5,7 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace SunFlower.Client.View;
 

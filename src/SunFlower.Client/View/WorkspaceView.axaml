@@ -3,13 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             xmlns:kernel="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
+             xmlns:k="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
              xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
              xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
-             xmlns:rendering="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
-             xmlns:avaloniaHex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+             xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
+             xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
              mc:Ignorable="d" 
-             d:DesignWidth="800" 
+             d:DesignWidth="1024" 
              d:DesignHeight="600"
              Background="Transparent"
              x:Class="SunFlower.Client.View.WorkspaceView"
@@ -17,22 +17,90 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <!-- project explorer & plugins -->
-            <ColumnDefinition 
-                MinWidth="280" 
-                MaxWidth="500" 
-                Width="300" />
-            <ColumnDefinition 
-                Width="3" />
+            <ColumnDefinition
+                Width="250" />
+            
+            <ColumnDefinition
+                Width="3"/>
             <!-- active content -->
             <ColumnDefinition 
                 MinWidth="400" 
                 Width="*" />
+            
+            <ColumnDefinition
+                Width="3"/>
+            
+            <ColumnDefinition 
+                MinWidth="280"
+                MaxWidth="500"
+                Width="360" />
         </Grid.ColumnDefinitions>
-
-        <Grid>
+        
+        <StackPanel>
+            <Grid
+                Margin="10"
+                ColumnDefinitions="48, *">
+                <Image
+                    Source="/Assets/app48.png"/>
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Margin="10,30"
+                    Grid.Column="1">
+                    <TextBlock
+                        VerticalAlignment="Center">
+                        <Run
+                            Text="{CompiledBinding FileName}"/>
+                        <LineBreak/>
+                        <Run
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            Text="{CompiledBinding ProjectFiles.Count, StringFormat='Files: {0}'}"/>
+                        <LineBreak/>
+                        <Run
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            Text="{CompiledBinding ProjectDirectory}"
+                            />
+                        <LineBreak/>
+                        <Run
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsDirty, StringFormat='Not saved: {0}'}"
+                        />
+                        <LineBreak/>
+                        <Run
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsProject, StringFormat='Is project: {0}'}"
+                        />
+                        <LineBreak/>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+            
+            <Menu>
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <MenuItem
+                    Header="Save project"
+                    Command="{CompiledBinding SaveProjectCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/edit48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                
+            </Menu>
+        </StackPanel>
+        
+        <GridSplitter
+            Background="{StaticResource BorderBrush}"
+            Grid.Column="1"/>
+        <GridSplitter
+            Background="{StaticResource BorderBrush}"
+            Grid.Column="3"/>
+        
+        <Grid
+            Grid.Column="4">
             <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="32"/>
                 <RowDefinition 
                     Height="2*" 
                     MinHeight="150" />
@@ -42,36 +110,32 @@
                     Height="3*" 
                     MinHeight="200" />
             </Grid.RowDefinitions>
-
-            <WrapPanel>
-                <Button>
-                    <Image Source="/Assets/edit48.png"/>
-                </Button>
-            </WrapPanel>
             
             <!-- Project files -->
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="0"
                 Margin="10" >
                 <ListBox
-                    ItemsSource="{Binding ProjectFiles}"
-                    SelectedItem="{Binding SelectedProjectFile, Mode=TwoWay}"
+                    ItemsSource="{CompiledBinding ProjectFiles}"
+                    SelectedItem="{CompiledBinding SelectedProjectFile, Mode=TwoWay}"
                     BorderBrush="Transparent"
                     Background="Transparent">
                     <Interaction.Behaviors>
                         <EventTriggerBehavior EventName="DoubleTapped">
-                            <InvokeCommandAction Command="{Binding OpenProjectFileCommand}" />
+                            <InvokeCommandAction Command="{CompiledBinding OpenProjectFileCommand}" />
                         </EventTriggerBehavior>
                     </Interaction.Behaviors>
                     <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="vm:ProjectFileItem">
+                        <DataTemplate 
+                            x:DataType="vm:ProjectFileItem">
                             <Grid>
-                                <Grid 
-                                    ColumnDefinitions="24,*">
+                                <Grid
+                                    ColumnDefinitions="24, *">
                                     <Image
                                         Source="/Assets/file48.png"
                                         Width="24"/>
                                     <StackPanel 
+                                        VerticalAlignment="Center"
                                         Grid.Column="1" 
                                         Margin="5,0">
                                         <TextBlock 
@@ -83,19 +147,40 @@
                                             />
                                     </StackPanel>
                                 </Grid>
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem
+                                            Header="Open"
+                                            Command="{CompiledBinding $parent[UserControl].DataContext.OpenProjectFileCommand}"
+                                            CommandParameter="{Binding}"/>
+                                        <MenuItem
+                                            Header="Save active file"
+                                            Command="{CompiledBinding $parent[UserControl].DataContext.SaveActiveFileCommand}"/>
+                                        <Separator/>
+                                        <MenuItem
+                                            Header="Rename"
+                                            Command="{CompiledBinding $parent[UserControl].DataContext.RenameProjectFileCommand}"
+                                            CommandParameter="{Binding}"/>
+                                        <MenuItem
+                                            Header="Delete"
+                                            Command="{CompiledBinding $parent[UserControl].DataContext.DeleteProjectFileCommand}"
+                                            CommandParameter="{Binding}"
+                                            IsEnabled="{Binding CanDelete}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </StackPanel>
 
-            <GridSplitter 
-                Grid.Row="2" 
+            <GridSplitter
+                Grid.Row="1"
                 Background="{StaticResource BorderBrush}" />
 
             <!-- Plugin selector + actions -->
-            <StackPanel 
-                Grid.Row="3" 
+            <StackPanel
+                Grid.Row="2" 
                 Margin="10">
                 <!-- Plugin label -->
                 <StackPanel
@@ -123,7 +208,6 @@
                     and work of plugin measures in the blocks (items in the result collection)
                 </TextBlock>
                 
-                <!-- was Mode=TwoWay -->
                 <ListBox 
                     BorderBrush="Transparent"
                     ItemsSource="{Binding AvailablePlugins}"
@@ -134,7 +218,7 @@
                         </EventTriggerBehavior>
                     </Interaction.Behaviors>
                     <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="kernel:FlowerSeedData">
+                        <DataTemplate x:DataType="k:FlowerSeedData">
                             <Grid
                                 ColumnDefinitions="24,*">
                                 <Image 
@@ -160,7 +244,6 @@
             Background="{StaticResource BorderBrush}" />
         <Grid
             Grid.Column="2">
-            
             <!-- Main content area -->
             <md:MarkdownScrollViewer
                 Margin="20" 
@@ -172,25 +255,37 @@
                 </md:MarkdownScrollViewer.Styles>
             </md:MarkdownScrollViewer>
             <edit:TextEditor
-                Margin="20" 
+                Margin="20"
+                FontSize="{CompiledBinding TextFontSize}"
+                FontFamily="{CompiledBinding TextFontFamily}"
                 IsEnabled="{Binding IsAssemblyView}"
                 IsVisible="{Binding IsAssemblyView}"
                 Document="{Binding ActiveTextDocument}">
             </edit:TextEditor>
-            <avaloniaHex:HexEditor
+            <hex:HexEditor
+                x:Name="HexViewer"
                 IsVisible="{Binding IsBinaryView}"
                 IsEnabled="{Binding IsBinaryView}"
+                FontSize="{CompiledBinding  HexFontSize}"
+                FontFamily="{CompiledBinding HexFontFamily}"
                 Padding="10"
                 Background="Transparent"
-                Document="{Binding ActiveBinaryDocument}"
-                FontFamily="Consolas,JetBrains Mono,Monospace,monospace">
+                Document="{Binding ActiveBinaryDocument}">
                 <!-- Define columns to display -->
-                <avaloniaHex:HexEditor.Columns>
-                    <rendering:OffsetColumn/>
-                    <rendering:HexColumn UseDynamicHeader="True"/>
-                    <rendering:AsciiColumn/>
-                </avaloniaHex:HexEditor.Columns>
-            </avaloniaHex:HexEditor>
+                <hex:HexEditor.Columns>
+                    <hexr:OffsetColumn/>
+                    <hexr:HexColumn UseDynamicHeader="True"/>
+                    <hexr:AsciiColumn/>
+                </hex:HexEditor.Columns>
+                <hex:HexEditor.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Header="Extract selection to file"
+                            Command="{Binding ExtractHexSelectionCommand}"
+                            CommandParameter="{Binding ElementName=HexViewer}"/>
+                    </ContextMenu>
+                </hex:HexEditor.ContextMenu>
+            </hex:HexEditor>
         </Grid>
     </Grid>
 </UserControl>

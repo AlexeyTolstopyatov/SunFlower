@@ -4,6 +4,7 @@
 // WorkspaceService manages opened files and their analysis results.
 // Works together with ProjectService to support raw binaries and .flowerproj projects.
 //
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 using SunFlower.Kernel.Readers;
 using SunFlower.Kernel.Services;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class WorkspaceService(PluginService pluginService, ProjectService projectService)
 {
@@ -79,7 +80,6 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
 
         // Analyze with all plugins
         _currentResults = pluginService.Analyze(_currentFilePath);
-        
         ResultsUpdated?.Invoke();
 
         return _currentFileInfo;
@@ -99,24 +99,11 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
 
         // Analyze with all plugins
         _currentResults = pluginService.Analyze(_currentFilePath);
-
         ResultsUpdated?.Invoke();
 
         return _currentFileInfo;
     }
 
-    /// <summary>
-    /// Re-run analysis on the current file.
-    /// </summary>
-    public void ReAnalyze()
-    {
-        if (_currentFilePath == null)
-            throw new InvalidOperationException("No file is currently open.");
-
-        _currentResults = pluginService.Analyze(projectService.CurrentProject?.OriginalBinaryPath ?? _currentFilePath);
-
-        ResultsUpdated?.Invoke();
-    }
     /// <summary>
     /// Free project pointers and close project 
     /// </summary>

@@ -24,7 +24,7 @@ public class Font
     public string? Family { get; set; }
 
     [JsonPropertyName("size")] 
-    public double Size { get; set; } = 10.0;
+    public double Size { get; set; }
     
     public Font(string family, double size)
     {
@@ -37,6 +37,9 @@ public class SettingsModel
 {
     [JsonPropertyName("theme")]
     public Theme Theme { get; set; }
+    
+    [JsonPropertyName("text_control_theme")]
+    public int TextControlTheme { get; set; }
 
     [JsonPropertyName("text_control")] 
     public Font? TextControl { get; set; }

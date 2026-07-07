@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Model;
-using SunFlower.Client.Services;
 using System.Drawing.Text;
 using System.Linq;
 using Avalonia.Media;
+using SunFlower.Client.Service;
+using TextMateSharp.Grammars;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -32,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject
             .Current
             .SystemFonts
             .ToArray();
+
     }
     
     [ObservableProperty]
@@ -40,6 +42,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private FontFamily[] _installedFonts;
     
+    [ObservableProperty]
+    private string[] _textEditorThemes = Enum.GetNames(typeof(ThemeName));
+
     [RelayCommand]
     private void ChangeTheme(object? index)
     {
@@ -48,7 +53,15 @@ public partial class SettingsViewModel : ObservableObject
         
         _themeService.SetTheme((Theme)index);
     }
-    
+    [RelayCommand]
+    private void ChangeEditorTheme(object? index)
+    {
+        if (index is null)
+            return;
+        // c:\Users\atvlg\Downloads\NASM.JSON-tmLanguage
+        _themeService.SetEditor((ThemeName)index);
+    }
+
     [RelayCommand]
     private async Task SaveAsync()
     {

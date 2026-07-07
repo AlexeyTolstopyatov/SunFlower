@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using SunFlower.Kernel.Services;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class PluginService
 {

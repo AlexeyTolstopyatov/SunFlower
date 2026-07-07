@@ -1,11 +1,12 @@
 //
 // CoffeeLake (C) 2026-*
 //
+
 using System;
 using System.IO;
 using System.Linq;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class ContentDetectionResult
 {

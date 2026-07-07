@@ -3,13 +3,14 @@
 //
 // RecentFilesService manages recent files list via JSON persistence.
 //
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SunFlower.Kernel.Readers;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class RecentFilesService
 {

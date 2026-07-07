@@ -5,13 +5,14 @@
 // writes the result to the project working directory as a file,
 // and returns metadata about what view was created.
 //
+
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SunFlower.Kernel.Services;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class PluginContentView
 {

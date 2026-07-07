@@ -297,7 +297,19 @@ module internal Decoder =
 
         loop startIdx operands []
 
-    let private resolveModRMOperands opcodesMap hex defaultOperation bytes startIdx hasOpSize32 addressSize =
+    /// <summary>
+    /// Returns true if the token is an immediate or jump-displacement token
+    /// that should be read from the byte stream rather than used as a register.
+    /// </summary>
+    let private isImmediateToken (token: string) =
+        match token with
+        | "Ib" | "Iv" | "Iz" | "Id" | "Iw"
+        | "Jb" | "Jz"
+        | "Ob" | "Ov"
+        | "Mp" | "Ap" -> true
+        | _ -> false
+
+    let rec private resolveModRMOperands opcodesMap hex defaultOperation bytes startIdx hasOpSize32 addressSize =
         match tryReadByte startIdx bytes with
         | None -> None
         | Some(idx, modrm) ->
@@ -313,6 +325,15 @@ module internal Decoder =
                 | None -> defaultOperation
 
             let operands = effectiveOp.operands
+            if operands.Length = 0 then
+                // Base group entry with no operands (e.g. opcode "80" alone) —
+                // fall back to the group variant, but if it also has no operands, fail.
+                let groupFallbackKey = $"{hex}/{reg}"
+                match Map.tryFind groupFallbackKey opcodesMap with
+                | Some fallbackOp when fallbackOp.operands.Length > 0 ->
+                    resolveModRMOperands opcodesMap hex fallbackOp bytes startIdx hasOpSize32 addressSize
+                | _ -> None
+            else
             let firstToken = operands[0]
             let isByte = firstToken.EndsWith("b")
 
@@ -353,26 +374,44 @@ module internal Decoder =
             match rmStrOpt with
             | None -> None
             | Some(rmStr, newIdx) ->
-                let getOperand (token: string) =
-                    if token.Contains("E") then rmStr
-                    elif token.Contains("G") then regStr
-                    elif token.Contains("S") then regStr
-                    elif token.StartsWith("M") then rmStr
-                    else token
-
-                let opStrings =
-                    operands
-                    |> List.mapi (fun i tok ->
-                        if i = 0 || i = 1 then
-                            getOperand tok
+                let rec loopTokens (idx: int) (tokens: string list) (acc: string list) : (int * string list) option =
+                    match tokens with
+                    | [] -> Some(idx, List.rev acc)
+                    | tok :: rest ->
+                        if tok.Contains("E") then
+                            loopTokens idx rest (rmStr :: acc)
+                        elif tok.Contains("G") then
+                            loopTokens idx rest (regStr :: acc)
+                        elif tok.Contains("S") then
+                            loopTokens idx rest (regStr :: acc)
+                        elif tok.StartsWith("M") then
+                            loopTokens idx rest (rmStr :: acc)
+                        elif isImmediateToken tok then
+                            let immSize = immediateSize tok hasOpSize32 addressSize
+                            match tryReadBytes immSize idx bytes with
+                            | Some(ni, immBytes) ->
+                                loopTokens ni rest (formatImmediate immBytes :: acc)
+                            | None ->
+                                loopTokens idx rest ("<?..." :: acc)
                         else
-                            let immBytesCount = immediateSize tok hasOpSize32 addressSize
+                            let expanded =
+                                match tok with
+                                | "rAX" | "eAX" -> "AX"
+                                | "rCX" | "eCX" -> "CX"
+                                | "rDX" | "eDX" -> "DX"
+                                | "rBX" | "eBX" -> "BX"
+                                | "rSP" | "eSP" -> "SP"
+                                | "rBP" | "eBP" -> "BP"
+                                | "rSI" | "eSI" -> "SI"
+                                | "rDI" | "eDI" -> "DI"
+                                | t when t.Contains('/') -> t.Split('/').[0].Trim()
+                                | t -> t
+                            loopTokens idx rest (expanded :: acc)
 
-                            match tryReadBytes immBytesCount newIdx bytes with
-                            | None -> "<?..."
-                            | Some(ni, immBytes) -> formatImmediate immBytes)
-
-                Some(newIdx, effectiveOp.mnemonic, opStrings)
+                match loopTokens newIdx operands [] with
+                | Some(finalIdx, opStrings) ->
+                    Some(finalIdx, effectiveOp.mnemonic, opStrings)
+                | None -> None
 
     let touchOperation (state: DecoderState) (bytes: byte[]) : (string * int) option =
         if bytes.Length = 0 then
@@ -576,35 +615,50 @@ module internal Decoder =
                 let flow = if arg.ReturnFlow then FallThrough else Return
                 flow, [], Some arg.Comment
             | None -> SoftwareInterrupt, [], None
+    /// <summary>
+    /// Find the first non-prefix byte offset within an instruction.
+    /// Scans forward from 'startOffset' skipping known prefix bytes.
+    /// Returns the offset of the actual opcode byte.
+    /// </summary>
+    let private skipPrefixes (state: DecoderState) (bytes: byte[]) (startOffset: int) =
+        let mutable i = startOffset
+        while i < bytes.Length && state.prefixSet.Contains bytes[i] do
+            i <- i + 1
+        i
+
     let private classifyFlow (state: DecoderState) (offset: int) (length: int) (bytes: byte[]) : FlowControl * int list * string option =
-        let opcode = bytes[offset]
+        let opcodeOffset = skipPrefixes state bytes offset
+        if opcodeOffset >= bytes.Length then FallThrough, [], None
+        else
+        let opcode = bytes[opcodeOffset]
         match opcode with
         | 0x0Fuy ->
-            if offset+1 < bytes.Length then
-                let b2 = bytes[offset+1]
+            let jmpOffset = opcodeOffset + 1
+            if jmpOffset < bytes.Length then
+                let b2 = bytes[jmpOffset]
                 if b2 >= 0x80uy && b2 <= 0x8Fuy then
-                    let rel = if offset+4 < bytes.Length then BitConverter.ToInt32(bytes, offset+2)
-                              elif offset+2 < bytes.Length then BitConverter.ToInt16(bytes, offset+2) |> int
+                    let rel = if jmpOffset+3 < bytes.Length then BitConverter.ToInt32(bytes, jmpOffset+1)
+                              elif jmpOffset+1 < bytes.Length then BitConverter.ToInt16(bytes, jmpOffset+1) |> int
                               else 0
                     ConditionalJump, [(offset + length + rel) &&& 0xFFFF], None
                 else FallThrough, [], None
             else FallThrough, [], None
-        | 0xEBuy -> Jump, rel8Target offset length bytes, None
-        | 0xE9uy -> Jump, rel16Target offset length bytes, None
-        | 0xE8uy -> Call, rel16Target offset length bytes, None
+        | 0xEBuy -> Jump, rel8Target opcodeOffset length bytes, None
+        | 0xE9uy -> Jump, rel16Target opcodeOffset length bytes, None
+        | 0xE8uy -> Call, rel16Target opcodeOffset length bytes, None
         | 0xCDuy ->
-            let flow, targets, comment = resolveInterruptFlow state offset bytes
-            // resolveInterruptFlow returns interrupt comment
+            let flow, targets, comment = resolveInterruptFlow state opcodeOffset bytes
             flow, targets, comment
         | 0xCEuy -> FallThrough, [], None
-        | 0xC3uy | 0xCBuy | 0xCFuy -> Return, [], None
+        | 0xC2uy | 0xC3uy | 0xCBuy | 0xCFuy -> Return, [], None // C2?
         | 0x70uy | 0x71uy | 0x72uy | 0x73uy | 0x74uy | 0x75uy | 0x76uy | 0x77uy
         | 0x78uy | 0x79uy | 0x7Auy | 0x7Buy | 0x7Cuy | 0x7Duy | 0x7Euy | 0x7Fuy ->
-            ConditionalJump, rel8Target offset length bytes, None
-        | 0xE0uy | 0xE1uy | 0xE2uy | 0xE3uy -> ConditionalJump, rel8Target offset length bytes, None
+            ConditionalJump, rel8Target opcodeOffset length bytes, None
+        | 0xE0uy | 0xE1uy | 0xE2uy | 0xE3uy -> ConditionalJump, rel8Target opcodeOffset length bytes, None
         | 0xFFuy ->
-            match if offset+1 < bytes.Length then Some bytes[offset+1] else None with
-            | Some modrm ->
+            let modrmOffset = opcodeOffset + 1
+            if modrmOffset < bytes.Length then
+                let modrm = bytes[modrmOffset]
                 let reg = (modrm >>> 3) &&& 0b111uy
                 match reg with
                 | 2uy -> IndirectCall, [], None
@@ -612,7 +666,7 @@ module internal Decoder =
                 | 3uy -> IndirectCallFar, [], None
                 | 5uy -> IndirectJumpFar, [], None
                 | _ -> FallThrough, [], None
-            | None -> FallThrough, [], None
+            else FallThrough, [], None
         | 0xEAuy -> Jump, [], None
         | 0x9Auy -> Call, [], None
         | _ -> FallThrough, [], None
@@ -683,7 +737,7 @@ module internal Decoder =
         let sb = StringBuilder()
         for instr in instructions do
             if labelSet.Contains(instr.Offset) then
-                sb.AppendLine($"__label_0x{instr.Offset:X4}:") |> ignore
+                sb.AppendLine($"@0x{instr.Offset:X4}:") |> ignore
             
             // let byteStatus =
             //     if instr.Length > 0 && instr.Offset < status.Length then
@@ -698,5 +752,5 @@ module internal Decoder =
                 match instr.Comment with
                 | Some c -> $"{c}"
                 | None -> ""
-            sb.AppendLine($"\t{instr.Mnemonic,-30} # 0x{instr.Offset:X4}|{bytesStr}|{comment}") |> ignore
+            sb.AppendLine($"\t{instr.Mnemonic,-30} ; 0x{instr.Offset:X4} {bytesStr} {comment}") |> ignore
         sb.ToString()

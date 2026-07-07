@@ -2792,7 +2792,7 @@
   {
     "Opcode": "E9",
     "Reg": null,
-    "Mnemonic": "JMPN",
+    "Mnemonic": "JMP",
     "Operands": [
       "Jz"
     ],
@@ -2802,7 +2802,7 @@
   {
     "Opcode": "EA",
     "Reg": null,
-    "Mnemonic": "JMPF",
+    "Mnemonic": "JMP",
     "Operands": [
       "Ap"
     ],

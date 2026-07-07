@@ -15,5 +15,7 @@
         Closing="OnClosing">
 
     <!-- Embed the existing WorkspaceView UserControl -->
-    <view:WorkspaceView DataContext="{Binding}" />
+    <view:WorkspaceView
+        x:Name="WorkspaceView"
+        DataContext="{Binding}" />
 </Window>

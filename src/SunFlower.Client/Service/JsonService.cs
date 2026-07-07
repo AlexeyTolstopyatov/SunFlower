@@ -6,13 +6,14 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 //
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class JsonService<T>
 {

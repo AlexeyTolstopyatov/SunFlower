@@ -3,7 +3,8 @@ using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using SunFlower.Client.Services;
+using SunFlower.Client.Model;
+using SunFlower.Client.Service;
 using SunFlower.Client.View;
 using SunFlower.Client.ViewModel;
 
@@ -12,12 +13,13 @@ namespace SunFlower.Client;
 public partial class App : Application
 {
     public static PluginService PluginService { get; } = new();
+    public static DisassemblingService DisassemblingService { get; } = new(WorkspaceService);
     private static RecentFilesService RecentFilesService { get; } = new();
     private static ProjectService ProjectService { get; } = new();
     private static WorkspaceService WorkspaceService { get; } = new(PluginService, ProjectService);
     private static WindowService WindowService { get; } = new();
     private static SettingsService SettingsService { get; } = new();
-    private ThemeService ThemeService { get; set; } = new();
+    public static ThemeService ThemeService { get; set; } = new();
     
     public override void Initialize()
     {
@@ -39,7 +41,7 @@ public partial class App : Application
         {
             RequestedThemeVariant = variant;
         };
-
+        
         var mainViewModel = new MainWindowViewModel(
             PluginService,
             RecentFilesService,

@@ -4,13 +4,14 @@
 // SettingsService manages application settings (UI, paths, preferences).
 // Persisted as JSON in the Registry directory.
 //
+
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SunFlower.Client.Model;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 // /// <summary>
 // /// Application settings model.

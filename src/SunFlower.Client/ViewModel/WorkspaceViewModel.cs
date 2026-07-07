@@ -24,7 +24,7 @@ using AvaloniaHex.Editing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
-using SunFlower.Client.Services;
+using SunFlower.Client.Service;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;
@@ -42,6 +42,7 @@ public partial class WorkspaceViewModel : ObservableObject
     private WorkspaceService _workspaceService;
     private readonly PluginService _pluginService;
     private readonly PluginAnalysisService _analysisService;
+    private readonly DisassemblingService _disassemblingService;
     private Window? _thisWindow;
 
     #region File information
@@ -122,6 +123,19 @@ public partial class WorkspaceViewModel : ObservableObject
 
     #endregion
 
+    #region Disassembler
+
+    [ObservableProperty]
+    private bool _isDisassemblyInProgress;
+
+    [ObservableProperty]
+    private DisassemblerArchitecture _selectedArchitecture = DisassemblerArchitecture.I8086;
+
+    public Array AvailableArchitectures { get; } =
+        Enum.GetValues(typeof(DisassemblerArchitecture));
+
+    #endregion
+
     /// <summary>
     /// Name of the file that is currently open in the active viewer,
     /// so we know which file to save back.
@@ -157,6 +171,7 @@ public partial class WorkspaceViewModel : ObservableObject
         _workspaceService = workspaceService;
         _pluginService = pluginService;
         _analysisService = analysisService;
+        _disassemblingService = App.DisassemblingService;
 
         LoadFileInfo();
         LoadProjectFiles();
@@ -332,13 +347,12 @@ public partial class WorkspaceViewModel : ObservableObject
         };
 
         var length = abs(start, end);
-
         var extracted = new byte[length];
         // File may be wide -> int cast is bad. Copy array the safe way without offsets trimming
         // Array.Copy(_activeBinaryBytes, start, extracted, 0, length); <-- bad
         ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out extracted);
-        // Save selection after Avalonia dialog call
         
+        // Save selection after Avalonia dialog call
         if (_thisWindow == null || WorkspaceService.CurrentProject == null)
             return;
 
@@ -588,6 +602,93 @@ public partial class WorkspaceViewModel : ObservableObject
 
         return Path.GetFileName(path);
     }
+
+    #region Disassembler commands
+
+    /// <summary>
+    /// Disassemble the entire currently open binary file using the recursive
+    /// I8086 decoder. Shows the result in the Assembly (code) viewer.
+    /// </summary>
+    [RelayCommand]
+    private async Task DisassembleCurrentFileAsync()
+    {
+        if (_activeBinaryBytes == null)
+            return;
+
+        IsDisassemblyInProgress = true;
+        try
+        {
+            var arch = SelectedArchitecture;
+            var listing = await Task.Run(() =>
+                _disassemblingService.DisassembleRange(_activeBinaryBytes, 0, arch));
+
+            _activeFileName = null; // not a project file
+            ActiveTextDocument = new TextDocument(listing);
+            ActiveContentText = string.Empty;
+            ActiveBinaryDocument = null;
+
+            IsAssemblyView = true;
+            IsBinaryView = false;
+            IsMarkdownView = false;
+        }
+        catch (Exception ex)
+        {
+            ActiveContentText = $"# Disassembly error\n\n```\n{ex}\n```";
+            IsMarkdownView = true;
+            IsAssemblyView = false;
+            IsBinaryView = false;
+        }
+        finally
+        {
+            IsDisassemblyInProgress = false;
+        }
+    }
+
+    /// <summary>
+    /// Disassemble the currently selected range in the hex editor.
+    /// Selection must not be empty. Shows result in the Assembly viewer.
+    /// </summary>
+    [RelayCommand]
+    private async Task DisassembleHexSelectionAsync(object? parameter)
+    {
+        if (_activeBinaryBytes == null)
+            return;
+
+        var editorApi = (HexEditor?)parameter;
+        if (editorApi == null || editorApi.Selection.Range.IsEmpty)
+            return;
+
+        var start = (int)editorApi.Selection.Range.Start.ByteIndex;
+
+        IsDisassemblyInProgress = true;
+        try
+        {
+            var listing = await Task.Run(() =>
+                _disassemblingService.DisassembleRange(_activeBinaryBytes, start));
+
+            _activeFileName = null;
+            ActiveTextDocument = new TextDocument(listing);
+            ActiveContentText = string.Empty;
+            ActiveBinaryDocument = null;
+
+            IsAssemblyView = true;
+            IsBinaryView = false;
+            IsMarkdownView = false;
+        }
+        catch (Exception ex)
+        {
+            ActiveContentText = $"# Disassembly error\n\n```\n{ex}\n```";
+            IsMarkdownView = true;
+            IsAssemblyView = false;
+            IsBinaryView = false;
+        }
+        finally
+        {
+            IsDisassemblyInProgress = false;
+        }
+    }
+
+    #endregion
 
     private async Task ExecutePluginActionAsync(FlowerSeedData seed)
     {

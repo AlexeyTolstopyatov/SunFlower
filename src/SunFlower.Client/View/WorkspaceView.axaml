@@ -57,18 +57,15 @@
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding ProjectDirectory}"
-                            />
+                            Text="{CompiledBinding ProjectDirectory}"/>
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsDirty, StringFormat='Not saved: {0}'}"
-                        />
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsDirty, StringFormat='Not saved: {0}'}"/>
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsProject, StringFormat='Is project: {0}'}"
-                        />
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsProject, StringFormat='Is project: {0}'}"/>
                         <LineBreak/>
                     </TextBlock>
                 </StackPanel>
@@ -87,7 +84,47 @@
                         <Image Source="/Assets/edit48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                
+                <MenuItem
+                    CommandParameter="{CompiledBinding ElementName=HexViewer}"
+                    Command="{CompiledBinding ExtractHexSelectionCommand}"
+                    Header="Save bytes array">
+                    <MenuItem.Icon>
+                        <Image
+                            Width="48"
+                            Source="/Assets/fbin48.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem
+                    Header="Disassemble">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/code48.png"/>
+                    </MenuItem.Icon>
+                    <MenuItem>
+                        <MenuItem.Header>
+                            <Grid
+                                ColumnSpacing="10"
+                                ColumnDefinitions="Auto,*">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Text="Model"/>
+                                <ComboBox
+                                    VerticalAlignment="Center"
+                                    Grid.Column="1"
+                                    ItemsSource="{CompiledBinding AvailableArchitectures}"
+                                    SelectedItem="{CompiledBinding SelectedArchitecture, Mode=TwoWay}"
+                                    Width="130"/>
+                            </Grid>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem
+                        Header="All bytes"
+                        Command="{CompiledBinding DisassembleCurrentFileCommand}"/>
+                    <MenuItem
+                        Header="Selected bytes"
+                        Command="{CompiledBinding DisassembleHexSelectionCommand}"
+                        CommandParameter="{CompiledBinding ElementName=HexViewer}"/>
+                </MenuItem>
             </Menu>
         </StackPanel>
         
@@ -139,31 +176,29 @@
                                         Grid.Column="1" 
                                         Margin="5,0">
                                         <TextBlock 
-                                            Text="{Binding Name}"
-                                            />
+                                            Text="{Binding Name}"/>
                                         <TextBlock 
                                             Text="{Binding Size}" 
-                                            Foreground="{StaticResource SecondaryTextBrush}" 
-                                            />
+                                            Foreground="{StaticResource SecondaryTextBrush}" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem
                                             Header="Open"
-                                            Command="{CompiledBinding $parent[UserControl].DataContext.OpenProjectFileCommand}"
+                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).OpenProjectFileCommand}"
                                             CommandParameter="{Binding}"/>
                                         <MenuItem
                                             Header="Save active file"
-                                            Command="{CompiledBinding $parent[UserControl].DataContext.SaveActiveFileCommand}"/>
+                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).SaveActiveFileCommand}"/>
                                         <Separator/>
                                         <MenuItem
                                             Header="Rename"
-                                            Command="{CompiledBinding $parent[UserControl].DataContext.RenameProjectFileCommand}"
+                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).RenameProjectFileCommand}"
                                             CommandParameter="{Binding}"/>
                                         <MenuItem
                                             Header="Delete"
-                                            Command="{CompiledBinding $parent[UserControl].DataContext.DeleteProjectFileCommand}"
+                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).DeleteProjectFileCommand}"
                                             CommandParameter="{Binding}"
                                             IsEnabled="{Binding CanDelete}"/>
                                     </ContextMenu>
@@ -255,6 +290,7 @@
                 </md:MarkdownScrollViewer.Styles>
             </md:MarkdownScrollViewer>
             <edit:TextEditor
+                x:Name="Editor"
                 Margin="20"
                 FontSize="{CompiledBinding TextFontSize}"
                 FontFamily="{CompiledBinding TextFontFamily}"
@@ -280,9 +316,21 @@
                 <hex:HexEditor.ContextMenu>
                     <ContextMenu>
                         <MenuItem
-                            Header="Extract selection to file"
+                            Header="Save bytes array"
                             Command="{Binding ExtractHexSelectionCommand}"
-                            CommandParameter="{Binding ElementName=HexViewer}"/>
+                            CommandParameter="{Binding ElementName=HexViewer}">
+                            <MenuItem.Icon>
+                                <Image Source="/Assets/fbin48.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Header="Disassemble bytes array"
+                            Command="{CompiledBinding DisassembleHexSelectionCommand}"
+                            CommandParameter="{CompiledBinding ElementName=HexViewer}">
+                            <MenuItem.Icon>
+                                <Image Source="/Assets/code48.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </hex:HexEditor.ContextMenu>
             </hex:HexEditor>

@@ -4,12 +4,20 @@
 // WindowService opens new windows from ViewModel without View reference.
 // ViewModel calls OpenWorkspaceWindow(), WindowService creates the Window.
 //
+
+using System;
+using System.IO;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using AvaloniaEdit;
+using AvaloniaEdit.Document;
+using AvaloniaEdit.TextMate;
 using SunFlower.Client.View;
 using SunFlower.Client.ViewModel;
+using TextMateSharp.Grammars;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public class WindowService
 {
@@ -18,11 +26,21 @@ public class WindowService
     /// </summary>
     public void OpenWorkspaceWindow(WorkspaceViewModel vm)
     {
-        
+        // Workspace control stores inside the window -> define the user control in it
         var window = new WorkspaceWindow
         {
             DataContext = vm
         };
+        var inst = window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(App.ThemeService.TextEditorVariant));
+        var grammar = Path.Combine(AppContext.BaseDirectory, "Grammar", "att.JSON-tmLanguage");
+        inst.SetGrammarFile(grammar);
+        // When settings combo box selection changes -> action applies new textmate rules 
+        App.ThemeService.EditorChanged += variant =>
+        {
+            window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(variant));
+            //inst.SetGrammarFile(grammar); // My suggestions this operation influences to the text printing. It got slower :(
+        };
+        
         vm.ThisWindow = window;
         window.Show();
     }

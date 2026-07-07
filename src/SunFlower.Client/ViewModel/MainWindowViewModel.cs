@@ -11,7 +11,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SunFlower.Client.Services;
+using SunFlower.Client.Service;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -50,7 +50,8 @@ public partial class MainWindowViewModel : ObservableObject
         SettingsService = settingsService;
         ThemeService = themeService;
         
-        Version = UiConverters.KernelApiVersion ?? throw new NullReferenceException("Kernel API metadata is missing");
+        Version = UiConverters.KernelApiVersion ?? 
+                  throw new NullReferenceException("Kernel API metadata is missing");
 
         CurrentPage = new RecentFilesViewModel(recentFilesService, this);
     }

@@ -1,9 +1,6 @@
 using System;
-using System.Runtime.CompilerServices;
-using AvaloniaEdit;
-using Microsoft.FSharp.Core;
 
-namespace SunFlower.Client.Services;
+namespace SunFlower.Client.Service;
 
 public static class ArrayExtension
 {

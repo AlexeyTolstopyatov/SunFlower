@@ -64,7 +64,7 @@ public class SettingsService
     /// <summary>
     /// Load settings from disk. Creates defaults if file doesn't exist.
     /// </summary>
-    public async Task LoadAsync()
+    private async Task LoadAsync()
     {
         if (!File.Exists(_settingsPath))
         {

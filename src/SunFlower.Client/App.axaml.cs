@@ -3,7 +3,6 @@ using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using SunFlower.Client.Model;
 using SunFlower.Client.Service;
 using SunFlower.Client.View;
 using SunFlower.Client.ViewModel;

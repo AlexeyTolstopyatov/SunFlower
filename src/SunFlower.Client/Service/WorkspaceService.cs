@@ -6,11 +6,9 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SunFlower.Kernel.Readers;
-using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.Service;
 
@@ -18,7 +16,6 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
 {
     private string? _currentFilePath;
     private FlowerFileInfo? _currentFileInfo;
-    private IReadOnlyList<FlowerSeedData>? _currentResults;
     private bool _isProject;
 
     /// <summary>
@@ -54,7 +51,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     /// <summary>
     /// Open a file - automatically detects whether it's a raw binary or project.
     /// </summary>
-    public FlowerFileInfo OpenFile(string path)
+    public void OpenFile(string path)
     {
         if (!File.Exists(path))
             throw new FileNotFoundException("File not found.", path);
@@ -62,10 +59,11 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         // Determine if it's a project or raw binary
         if (projectService.IsProjectFile(path) || projectService.HasProjectExtension(path))
         {
-            return OpenProject(path);
+            OpenProject(path);
+            return;
         }
 
-        return OpenRawBinary(path);
+        OpenRawBinary(path);
     }
 
     /// <summary>
@@ -79,7 +77,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
         // Analyze with all plugins
-        _currentResults = pluginService.Analyze(_currentFilePath);
+        pluginService.Analyze(_currentFilePath);
         ResultsUpdated?.Invoke();
 
         return _currentFileInfo;
@@ -88,7 +86,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     /// <summary>
     /// Open a .flowerproj project file.
     /// </summary>
-    private FlowerFileInfo OpenProject(string path)
+    private void OpenProject(string path)
     {
         var project = projectService.OpenProject(path);
         _isProject = true;
@@ -98,10 +96,8 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
         // Analyze with all plugins
-        _currentResults = pluginService.Analyze(_currentFilePath);
+        pluginService.Analyze(_currentFilePath);
         ResultsUpdated?.Invoke();
-
-        return _currentFileInfo;
     }
 
     /// <summary>
@@ -111,7 +107,6 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     {
         _currentFilePath = null;
         _currentFileInfo = null;
-        _currentResults = null;
         _isProject = false;
 
         projectService.CloseProject();

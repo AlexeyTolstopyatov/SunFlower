@@ -19,6 +19,9 @@
         <Content Include="opcodes286.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="opcodes386.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     
     <ItemGroup>
@@ -28,6 +31,7 @@
       <Compile Include="I8086Decoder.fs" />
       <Compile Include="I80186Decoder.fs" />
       <Compile Include="I80286Decoder.fs" />
+      <Compile Include="I80386Decoder.fs" />
       <Compile Include="FlowerDecoder.fs" />
     </ItemGroup>
 

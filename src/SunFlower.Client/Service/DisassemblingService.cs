@@ -7,8 +7,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Sunflower.Dasm;
 
 namespace SunFlower.Client.Service;
@@ -20,7 +18,8 @@ public enum DisassemblerArchitecture
 {
     I8086,
     I80186,
-    I80286
+    I80286,
+    I80386
 }
 
 public class DisassemblingService
@@ -52,7 +51,9 @@ public class DisassemblingService
                 I80186Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
             DisassemblerArchitecture.I80286 =>
                 I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            _ => I8086Decoder.decodeRecursive(interruptsPath, bytes, entryPoints)
+            DisassemblerArchitecture.I80386 =>
+                I80386Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
+            _ => I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints)
         };
     }
 

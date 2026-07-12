@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Model;
-using System.Drawing.Text;
 using System.Linq;
 using Avalonia.Media;
 using SunFlower.Client.Service;
@@ -33,7 +32,6 @@ public partial class SettingsViewModel : ObservableObject
             .Current
             .SystemFonts
             .ToArray();
-
     }
     
     [ObservableProperty]
@@ -58,7 +56,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (index is null)
             return;
-        // c:\Users\atvlg\Downloads\NASM.JSON-tmLanguage
+        
         _themeService.SetEditor((ThemeName)index);
     }
 

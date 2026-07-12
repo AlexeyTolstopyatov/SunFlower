@@ -12,7 +12,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -20,10 +19,8 @@ using Avalonia.Platform.Storage;
 using AvaloniaEdit.Document;
 using AvaloniaHex;
 using AvaloniaHex.Document;
-using AvaloniaHex.Editing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 using SunFlower.Client.Service;
 using SunFlower.Kernel.Services;
 
@@ -178,14 +175,16 @@ public partial class WorkspaceViewModel : ObservableObject
         LoadAvailablePlugins();
 
         HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);  // null forgiving. Model filled already
+        HexFontSize = settingsService.Current.HexControl?.Size ?? 16;
+        
         TextFontFamily = FontFamily.Parse(settingsService.Current.TextControl?.Family!);// null forgiving. Model filled already
-
+        TextFontSize = settingsService.Current.TextControl?.Size ?? 16;
+        
         _workspaceService.ResultsUpdated += OnResultsUpdated;
     }
 
     public Window? ThisWindow
     {
-        get => _thisWindow;
         set => _thisWindow = value;
     }
 
@@ -341,16 +340,12 @@ public partial class WorkspaceViewModel : ObservableObject
         if (editorApi.Selection.Range.IsEmpty)
             return;
 
-        var abs = (ulong a, ulong b) =>
-        {
-            return a > b ? a - b : b - a;
-        };
+        ulong Abs(ulong a, ulong b) => a > b ? a - b : b - a;
 
-        var length = abs(start, end);
-        var extracted = new byte[length];
+        var length = Abs(start, end);
         // File may be wide -> int cast is bad. Copy array the safe way without offsets trimming
         // Array.Copy(_activeBinaryBytes, start, extracted, 0, length); <-- bad
-        ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out extracted);
+        ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out var extracted);
         
         // Save selection after Avalonia dialog call
         if (_thisWindow == null || WorkspaceService.CurrentProject == null)

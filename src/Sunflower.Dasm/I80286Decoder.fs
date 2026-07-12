@@ -10,7 +10,7 @@ module public I80286Decoder =
         let opcodesPath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "opcodes286.json")
         let safePath = if File.Exists(interruptsPath) then Some(interruptsPath) else None 
-        Decoder.create opcodesPath safePath
+        Decoder.create opcodesPath safePath false
 
     let touchOperation (state: DecoderState) (bytes: byte[]) =
         Decoder.touchOperation state bytes

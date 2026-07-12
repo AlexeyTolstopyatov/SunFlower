@@ -1,23 +1,16 @@
-﻿namespace Sunflower.Dasm
+namespace Sunflower.Dasm
 
 open System
-open System.Collections.Generic
 open System.IO
-open System.Linq
-open Microsoft.FSharp.Linq.RuntimeHelpers
+open System.Text
 open Sunflower.Dasm.Intel.Core
 
-/// <summary>
-/// This module represents setup of base intel disassembler for I8086 only!
-/// For I186 disassembler use <see cref="I80186Decoder"/>
-/// </summary>
-module I8086Decoder =
+module I80386Decoder =
     let get (interruptsPath: string) =
         let opcodesPath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "opcodes8086.json")
-        // Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Interrupt", "dos.json")
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "opcodes386.json")
         let safePath = if File.Exists(interruptsPath) then Some(interruptsPath) else None 
-        Decoder.create opcodesPath safePath false
+        Decoder.create opcodesPath safePath true
 
     let touchOperation (state: DecoderState) (bytes: byte[]) =
         Decoder.touchOperation state bytes
@@ -29,9 +22,8 @@ module I8086Decoder =
         
     let decodeWith (state: DecoderState) (bytes: byte []) =
         Decoder.decode state bytes
+    
     let decodeRecursive (interruptsPath: string, bytes: byte array, offsets: int array)=
         let decoder = get(interruptsPath)
         let instructions, status = Decoder.disassembleRecursive decoder bytes offsets
         Decoder.formatWithLabels instructions bytes status
-        
-    

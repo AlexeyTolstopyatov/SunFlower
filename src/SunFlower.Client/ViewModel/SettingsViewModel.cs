@@ -41,7 +41,7 @@ public partial class SettingsViewModel : ObservableObject
     private FontFamily[] _installedFonts;
     
     [ObservableProperty]
-    private string[] _textEditorThemes = Enum.GetNames(typeof(ThemeName));
+    private Array _textEditorThemes = Enum.GetValues(typeof(ThemeName));
 
     [RelayCommand]
     private void ChangeTheme(object? index)

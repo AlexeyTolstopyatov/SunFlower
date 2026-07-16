@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Service;
+using TextMateSharp.Grammars;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -226,6 +227,8 @@ public partial class MainWindowViewModel : ObservableObject
             }
 
             var analysisService = new PluginAnalysisService(WorkspaceService);
+            App.ThemeService.SetEditor((ThemeName)SettingsService.Current.TextControlTheme);
+            
             WindowService.OpenWorkspaceWindow(
                 new WorkspaceViewModel(WorkspaceService, PluginService, analysisService, SettingsService));
         }

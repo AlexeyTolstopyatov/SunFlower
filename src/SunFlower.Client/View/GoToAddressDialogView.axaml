@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="150"
+             x:Class="SunFlower.Client.View.GoToAddressDialogView"
+             x:DataType="{x:Type vm:GoToAddressDialogViewModel}">
+    <StackPanel
+        Spacing="10">
+        <TextBlock 
+            Text="Go To" 
+            FontWeight="Bold" 
+            FontSize="16"/>
+        
+        <TextBlock 
+            Text="{Binding MaxAddress, StringFormat='File {0} bytes'}"
+            Foreground="{StaticResource SecondaryTextBrush}"/>
+        
+        <TextBox 
+            Text="{Binding AddressInput, Mode=TwoWay}"
+            Watermark="File Offset (example: '1A2B')"/>
+        
+        <TextBlock 
+            Text="{Binding ErrorMessage}"
+            Foreground="Red"/>
+        
+        <StackPanel 
+            Orientation="Horizontal" 
+            HorizontalAlignment="Right" 
+            Spacing="10">
+            <Button 
+                MinWidth="80"
+                Command="{Binding AcceptCommand}">
+                OK
+            </Button>
+            <Button 
+                MinWidth="80"
+                Command="{Binding CancelCommand}">
+                Cancel
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

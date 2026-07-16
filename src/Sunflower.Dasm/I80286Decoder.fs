@@ -18,12 +18,12 @@ module public I80286Decoder =
     let decode (bytes: byte[]) =
         let state = get("")
         Decoder.decode state bytes
-                        |> Decoder.format
+                    |> Decoder.format
         
     let decodeWith (state: DecoderState) (bytes: byte []) =
         Decoder.decode state bytes
     
     let decodeRecursive (interruptsPath: string, bytes: byte array, offsets: int array)=
         let decoder = get(interruptsPath)
-        let instructions, status = Decoder.disassembleRecursive decoder bytes offsets
-        Decoder.formatWithLabels instructions bytes status
+        let instructions, status, entrySet = Decoder.disassembleRecursive decoder bytes offsets
+        Decoder.formatWithLabels instructions bytes status entrySet

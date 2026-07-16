@@ -1,19 +1,19 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             xmlns:k="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
-             xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
-             xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
-             xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
-             xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
-             mc:Ignorable="d" 
-             d:DesignWidth="1024" 
-             d:DesignHeight="600"
-             Background="Transparent"
-             x:Class="SunFlower.Client.View.WorkspaceView"
-             x:DataType="{x:Type vm:WorkspaceViewModel}">
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+              xmlns:k="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
+              xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
+              xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
+              xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
+              xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+              mc:Ignorable="d" 
+              d:DesignWidth="1024" 
+              d:DesignHeight="600"
+              Background="Transparent"
+              x:Class="SunFlower.Client.View.WorkspaceView"
+              x:DataType="{x:Type vm:WorkspaceViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
             <!-- project explorer & plugins -->
@@ -95,7 +95,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem
-                    Header="Disassemble">
+                    Header="Disassemble bytes">
                     <MenuItem.Icon>
                         <Image Source="/Assets/code48.png"/>
                     </MenuItem.Icon>
@@ -106,7 +106,7 @@
                                 ColumnDefinitions="Auto,*">
                                 <TextBlock
                                     VerticalAlignment="Center"
-                                    Text="Model"/>
+                                    Text="Architecture:"/>
                                 <ComboBox
                                     VerticalAlignment="Center"
                                     Grid.Column="1"
@@ -119,11 +119,20 @@
                     <Separator/>
                     <MenuItem
                         Header="All bytes"
-                        Command="{CompiledBinding DisassembleCurrentFileCommand}"/>
+                        Command="{CompiledBinding ShowDisassemblerDialogCommand}"/>
                     <MenuItem
                         Header="Selected bytes"
-                        Command="{CompiledBinding DisassembleHexSelectionCommand}"
+                        Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
                         CommandParameter="{CompiledBinding ElementName=HexViewer}"/>
+                </MenuItem>
+                <MenuItem
+                    Header="Go to Address">
+                    <MenuItem.Icon>
+                        <!-- <Image Source="/Assets/fedit48"/> -->
+                    </MenuItem.Icon>
+                    <MenuItem
+                        Header="Go to byte offset"
+                        Command="{CompiledBinding ShowGoToAddressDialogCommand}"/>
                 </MenuItem>
             </Menu>
         </StackPanel>
@@ -325,10 +334,18 @@
                         </MenuItem>
                         <MenuItem
                             Header="Disassemble bytes array"
-                            Command="{CompiledBinding DisassembleHexSelectionCommand}"
+                            Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
                             CommandParameter="{CompiledBinding ElementName=HexViewer}">
                             <MenuItem.Icon>
-                                <Image Source="/Assets/code48.png"/>
+                                <!-- <Image Source="/Assets/code48.png"/> -->
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem
+                            Header="Go to Address..."
+                            Command="{CompiledBinding ShowGoToAddressDialogCommand}">
+                            <MenuItem.Icon>
+                                <!-- <Image Source="/Assets/fedit48.png"/> -->
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

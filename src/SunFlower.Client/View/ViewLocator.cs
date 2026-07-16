@@ -25,9 +25,6 @@ public class ViewLocator : IDataTemplate
         if (!type.IsSubclassOf(typeof(Window))) 
             return (Control)Activator.CreateInstance(type)!;
         
-        var window = (Window)Activator.CreateInstance(type)!; // why parent closes and new window appears???
-        window.Show();
-        
         return new TextBlock { Text = $"The {view} initialized" };
     }
 

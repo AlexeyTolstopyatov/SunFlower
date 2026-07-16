@@ -6,6 +6,9 @@
         <entry key="src/SunFlower.Client/App.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/CloudsBrush.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/MainWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/DisassemblerDialog.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/DisassemblerDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/GoToAddressDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/MainWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/PluginView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/PluginsView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
@@ -13,6 +16,9 @@
         <entry key="src/SunFlower.Client/View/SettingsView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/WorkspaceView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/WorkspaceWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/WorkspaceWindow.xaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/YesNoDialog.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/YesNoDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower/App.axaml" value="src/SunFlower/SunFlower.fsproj" />
         <entry key="src/SunFlower/Drawing/CloudsBrush.axaml" value="src/SunFlower/SunFlower.fsproj" />
         <entry key="src/SunFlower/Drawing/CloudsStyle.axaml" value="src/SunFlower/SunFlower.fsproj" />

@@ -1,0 +1,32 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d"
+             x:Class="SunFlower.Client.View.YesNoDialogView"
+             x:DataType="vm:YesNoDialogViewModel">
+    <StackPanel>
+        <TextBlock
+            Text="{Binding Title, FallbackValue='Hahaha'}"
+            Margin="0, 0, 0, 10"/>
+        <TextBlock
+            Text="{Binding Message, FallbackValue='You serious?'}"
+            Foreground="{StaticResource SecondaryTextBrush}"
+            TextWrapping="WrapWithOverflow"
+            Margin="0, 0, 0, 20"/>
+        <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Spacing="10">
+            <Button
+                MinWidth="80"
+                Command="{Binding ConfirmCommand}"
+                Content="{Binding ConfirmButtonText, FallbackValue='Yes'}"/>
+            <Button
+                MinWidth="80"
+                Command="{Binding CancelCommand}"
+                Content="{Binding CancelButtonText, FallbackValue='No'}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

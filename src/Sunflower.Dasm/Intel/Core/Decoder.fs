@@ -412,6 +412,8 @@ module internal Decoder =
                 | "Yb"
                 | "Xv"
                 | "Yv"
+                // | "Ap" ->  
+
                 | "Fv" -> loop idx rest ("" :: acc)
                 | t when t.Contains('/') ->
                     let simple = t.Split('/').[0].Trim()
@@ -942,10 +944,11 @@ module internal Decoder =
         (state: DecoderState)
         (bytes: byte[])
         (entryPoints: int[])
-        : DecodedInstruction list * ByteStatus[] =
+        : DecodedInstruction list * ByteStatus[] * Set<int> =
         let status = Array.create bytes.Length ByteStatus.Unknown
         let mutable result = []
         let queue = System.Collections.Generic.Queue<int>(entryPoints)
+        let entrySet = Set.ofArray (entryPoints)
 
         while queue.Count > 0 do
             let offset = queue.Dequeue()
@@ -984,9 +987,9 @@ module internal Decoder =
                     then
                         queue.Enqueue(fallThrough)
 
-        (List.rev result, status)
+        (List.rev result, status, entrySet)
 
-    let formatWithLabels (instructions: DecodedInstruction list) (bytes: byte[]) (status: ByteStatus[]) =
+    let formatWithLabels (instructions: DecodedInstruction list) (bytes: byte[]) (status: ByteStatus[]) (entrySet: Set<int>) =
         let labelSet = instructions |> List.collect (fun i -> i.Targets) |> Set.ofList
         // Collect CALL targets -> these will become function entries
         let callTargets =
@@ -1005,26 +1008,35 @@ module internal Decoder =
             |> List.map (fun i -> i.Offset)
             |> Set.ofList
 
+        // Sort instructions by offset for proper label placement
+        let sortedInstructions = instructions |> List.sortBy (fun i -> i.Offset)
+
         // Track which offsets are directly preceded by a RET -> to add blank line
         let mutable prevWasRet = false
         let sb = StringBuilder()
 
-        for instr in instructions do
+        for instr in sortedInstructions do
+            // Entry point that is not a call target — mark as p_ but always show "Entry point"
+            if entrySet.Contains(instr.Offset) && not (callTargets.Contains(instr.Offset)) then
+                if prevWasRet |> not then
+                    sb.AppendLine ";" |> ignore
+                    sb.AppendLine $"; Entry point at 0x{instr.Offset:X4} (export)" |> ignore
+                    sb.AppendLine ";" |> ignore
+                sb.AppendLine $"p_0x{instr.Offset:X4}:" |> ignore
+                prevWasRet <- false
+
+            // Label (non-call target - jump target)
+            elif labelSet.Contains(instr.Offset) && not (callTargets.Contains(instr.Offset)) then
+                sb.AppendLine $"__0x{instr.Offset:X4}:" |> ignore
+
             // Function entry: if this instruction is a CALL target, show a header
-            let mutable procStart = None
             if callTargets.Contains(instr.Offset) then
                 if prevWasRet |> not then
-                    procStart <- Some instr.Offset
                     sb.AppendLine ";" |> ignore
                     sb.AppendLine $"; Procedure at 0x{instr.Offset:X4} instruction offset" |> ignore
                     sb.AppendLine ";" |> ignore
-                    sb.AppendLine $"p_0x{instr.Offset:X4}:" |> ignore
-                
+                sb.AppendLine $"p_0x{instr.Offset:X4}:" |> ignore
                 prevWasRet <- false
-
-            // Label
-            if labelSet.Contains(instr.Offset) && not (callTargets.Contains(instr.Offset)) then
-                sb.AppendLine $"__0x{instr.Offset:X4}:" |> ignore
 
             let bytesStr = BitConverter.ToString(instr.Bytes).Replace("-", " ")
 

@@ -22,6 +22,7 @@ using AvaloniaHex.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Service;
+using SunFlower.Client.View;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;
@@ -40,7 +41,15 @@ public partial class WorkspaceViewModel : ObservableObject
     private readonly PluginService _pluginService;
     private readonly PluginAnalysisService _analysisService;
     private readonly DisassemblingService _disassemblingService;
+    private DialogService _dialogService;
+
+    public void SetDialogService(DialogService dialogService)
+    {
+        _dialogService = dialogService;
+    }
+    
     private Window? _thisWindow;
+    private ulong _targetAddress;
 
     #region File information
 
@@ -169,15 +178,15 @@ public partial class WorkspaceViewModel : ObservableObject
         _pluginService = pluginService;
         _analysisService = analysisService;
         _disassemblingService = App.DisassemblingService;
-
+        
         LoadFileInfo();
         LoadProjectFiles();
         LoadAvailablePlugins();
 
-        HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);  // null forgiving. Model filled already
+        HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);
         HexFontSize = settingsService.Current.HexControl?.Size ?? 16;
         
-        TextFontFamily = FontFamily.Parse(settingsService.Current.TextControl?.Family!);// null forgiving. Model filled already
+        TextFontFamily = FontFamily.Parse(settingsService.Current.TextControl?.Family!);
         TextFontSize = settingsService.Current.TextControl?.Size ?? 16;
         
         _workspaceService.ResultsUpdated += OnResultsUpdated;
@@ -314,7 +323,9 @@ public partial class WorkspaceViewModel : ObservableObject
     [RelayCommand]
     private async Task RunSelectedPluginAsync()
     {
-        if (SelectedPlugin == null) return;
+        if (SelectedPlugin == null) 
+            return;
+        
         await ExecutePluginActionAsync(SelectedPlugin);
     }
 
@@ -334,8 +345,8 @@ public partial class WorkspaceViewModel : ObservableObject
         if (editorApi == null)
             return;
 
-        var start = editorApi.Selection.Range.Start.ByteIndex; // start BYTE offset
-        var end = editorApi.Selection.Range.End.ByteIndex; // same thing bro
+        var start = editorApi.Selection.Range.Start.ByteIndex;
+        var end = editorApi.Selection.Range.End.ByteIndex;
 
         if (editorApi.Selection.Range.IsEmpty)
             return;
@@ -343,11 +354,8 @@ public partial class WorkspaceViewModel : ObservableObject
         ulong Abs(ulong a, ulong b) => a > b ? a - b : b - a;
 
         var length = Abs(start, end);
-        // File may be wide -> int cast is bad. Copy array the safe way without offsets trimming
-        // Array.Copy(_activeBinaryBytes, start, extracted, 0, length); <-- bad
         ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out var extracted);
         
-        // Save selection after Avalonia dialog call
         if (_thisWindow == null || WorkspaceService.CurrentProject == null)
             return;
 
@@ -374,7 +382,6 @@ public partial class WorkspaceViewModel : ObservableObject
 
         project.IsDirty = true;
 
-        // Refresh the file list
         LoadProjectFiles();
     }
 
@@ -387,7 +394,6 @@ public partial class WorkspaceViewModel : ObservableObject
         var content = await PluginAnalysisService.LoadFromFileAsync(file.Path);
         if (content is null) return;
 
-        // Remember which file is open for SaveActiveFile
         _activeFileName = file.Name;
 
         if (content.IsBinary)
@@ -510,10 +516,8 @@ public partial class WorkspaceViewModel : ObservableObject
 
             pService.DeleteProjectFile(file.Name);
 
-            // Reload the file list
             LoadProjectFiles();
 
-            // Clear viewer if the deleted file was open
             if (string.Equals(_activeFileName, file.Name, StringComparison.OrdinalIgnoreCase))
             {
                 _activeFileName = null;
@@ -550,13 +554,11 @@ public partial class WorkspaceViewModel : ObservableObject
 
             pService.RenameProjectFile(file.Name, newName);
 
-            // Update active file tracking if this file was open
             if (string.Equals(_activeFileName, file.Name, StringComparison.OrdinalIgnoreCase))
             {
                 _activeFileName = newName;
             }
 
-            // Reload file list
             LoadProjectFiles();
         }
         catch (Exception ex)
@@ -565,10 +567,6 @@ public partial class WorkspaceViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Shows a simple input dialog to get a new file name.
-    /// Uses the storage provider's save picker with SuggestedFileName.
-    /// </summary>
     private async Task<string?> ShowRenameDialogAsync(string currentName)
     {
         var storage = TopLevel.GetTopLevel(_thisWindow)?.StorageProvider;
@@ -601,24 +599,27 @@ public partial class WorkspaceViewModel : ObservableObject
     #region Disassembler commands
 
     /// <summary>
-    /// Disassemble the entire currently open binary file using the recursive
-    /// I8086 decoder. Shows the result in the Assembly (code) viewer.
+    /// Shows the disassembler dialog for the entire currently open binary file.
     /// </summary>
     [RelayCommand]
-    private async Task DisassembleCurrentFileAsync()
+    private async Task ShowDisassemblerDialogAsync()
     {
         if (_activeBinaryBytes == null)
             return;
 
-        IsDisassemblyInProgress = true;
-        try
-        {
-            var arch = SelectedArchitecture;
-            var listing = await Task.Run(() =>
-                _disassemblingService.DisassembleRange(_activeBinaryBytes, 0, arch));
+        var dialogVm = new DisassemblerDialogViewModel(
+            _activeBinaryBytes, 
+            null, // disassemble all bytes
+            _disassemblingService,
+            SelectedArchitecture
+        );
 
-            _activeFileName = null; // not a project file
-            ActiveTextDocument = new TextDocument(listing);
+        var result = await _dialogService.ShowDialogAsync<DisassemblerDialogViewModel, string?>(dialogVm);
+
+        if (!string.IsNullOrEmpty(result))
+        {
+            _activeFileName = null;
+            ActiveTextDocument = new TextDocument(result);
             ActiveContentText = string.Empty;
             ActiveBinaryDocument = null;
 
@@ -626,27 +627,16 @@ public partial class WorkspaceViewModel : ObservableObject
             IsBinaryView = false;
             IsMarkdownView = false;
         }
-        catch (Exception ex)
-        {
-            ActiveContentText = $"# Disassembly error\n\n```\n{ex}\n```";
-            IsMarkdownView = true;
-            IsAssemblyView = false;
-            IsBinaryView = false;
-        }
-        finally
-        {
-            IsDisassemblyInProgress = false;
-        }
     }
 
     /// <summary>
-    /// Disassemble the currently selected range in the hex editor.
-    /// Selection must not be empty. Shows result in the Assembly viewer.
+    /// Shows the disassembler dialog for the currently selected range in the hex editor.
+    /// Selection must not be empty.
     /// </summary>
     [RelayCommand]
-    private async Task DisassembleHexSelectionAsync(object? parameter)
+    private async Task ShowDisassemblerSelectionDialogAsync(object? parameter)
     {
-        if (_activeBinaryBytes == null)
+        if (_activeBinaryBytes == null || _dialogService == null)
             return;
 
         var editorApi = (HexEditor?)parameter;
@@ -655,14 +645,19 @@ public partial class WorkspaceViewModel : ObservableObject
 
         var start = (int)editorApi.Selection.Range.Start.ByteIndex;
 
-        IsDisassemblyInProgress = true;
-        try
-        {
-            var listing = await Task.Run(() =>
-                _disassemblingService.DisassembleRange(_activeBinaryBytes, start));
+        var dialogVm = new DisassemblerDialogViewModel(
+            _activeBinaryBytes, 
+            start, // disassemble with offset
+            _disassemblingService,
+            SelectedArchitecture
+        );
 
+        var result = await _dialogService.ShowDialogAsync<DisassemblerDialogViewModel, string?>(dialogVm);
+
+        if (!string.IsNullOrEmpty(result))
+        {
             _activeFileName = null;
-            ActiveTextDocument = new TextDocument(listing);
+            ActiveTextDocument = new TextDocument(result);
             ActiveContentText = string.Empty;
             ActiveBinaryDocument = null;
 
@@ -670,16 +665,38 @@ public partial class WorkspaceViewModel : ObservableObject
             IsBinaryView = false;
             IsMarkdownView = false;
         }
-        catch (Exception ex)
+    }
+    #endregion
+
+    #region Go To Address command
+
+    /// <summary>
+    /// Shows the "Go to Address" dialog for navigating in the hex editor.
+    /// If HexEditor is not open, opens the Hex view.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowGoToAddressDialogAsync()
+    {
+        if (_activeBinaryBytes == null)
+            return;
+
+        // Switch to Hex view if not already visible
+        if (!IsBinaryView)
         {
-            ActiveContentText = $"# Disassembly error\n\n```\n{ex}\n```";
-            IsMarkdownView = true;
+            IsBinaryView = true;
             IsAssemblyView = false;
-            IsBinaryView = false;
+            IsMarkdownView = false;
         }
-        finally
+
+        var maxAddress = (ulong)_activeBinaryBytes.Length;
+        var dialogVm = new GoToAddressDialogViewModel(maxAddress);
+
+        var result = await _dialogService.ShowDialogAsync<GoToAddressDialogViewModel, ulong?>(dialogVm);
+
+        // Store the result for potential use
+        if (result.HasValue)
         {
-            IsDisassemblyInProgress = false;
+            _targetAddress = result.Value;
         }
     }
 
@@ -714,7 +731,6 @@ public partial class WorkspaceViewModel : ObservableObject
 
         _activeFileName = content.FileName;
 
-        // Refresh project files list (new file was created)
         LoadProjectFiles();
     }
 }
@@ -728,15 +744,8 @@ public class ProjectFileItem
     public string Size { get; set; } = string.Empty;
     public string Extension { get; set; } = string.Empty;
 
-    /// <summary>
-    /// True if this file is the original binary being analyzed.
-    /// Prevents accidental deletion.
-    /// </summary>
     public bool IsOriginalBinary { get; set; }
 
-    /// <summary>
-    /// True if this file can be deleted (i.e. it's not the original binary).
-    /// </summary>
     public bool CanDelete => !IsOriginalBinary;
 }
 

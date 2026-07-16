@@ -1000,9 +1000,7 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "64", "Reg": null, "Mnemonic": "FS", "Operands": [], "ModRM": false, "IsPrefix": true },
-  { "Opcode": "65", "Reg": null, "Mnemonic": "GS", "Operands": [], "ModRM": false, "IsPrefix": true },
-  { "Opcode": "66", "Reg": null, "Mnemonic": "OPSIZE", "Operands": [], "ModRM": false, "IsPrefix": true },
+  
   {
     "Opcode": "67",
     "Reg": null,
@@ -1627,14 +1625,6 @@
     ],
     "ModRM": true,
     "IsPrefix": false
-  },
-  { 
-    "Opcode": "8F/0", 
-    "Reg": 0, 
-    "Mnemonic": "POP", 
-    "Operands": ["Ev"], 
-    "ModRM": true, 
-    "IsPrefix": false 
   },
   {
     "Opcode": "90",
@@ -2851,7 +2841,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2859,7 +2849,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2867,7 +2857,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2875,7 +2865,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2883,7 +2873,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2891,7 +2881,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2899,7 +2889,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2907,7 +2897,7 @@
     "Reg": null,
     "Mnemonic": "ESC",
     "Operands": [],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {

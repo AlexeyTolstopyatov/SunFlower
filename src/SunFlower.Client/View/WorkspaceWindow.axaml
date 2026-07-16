@@ -10,12 +10,38 @@
         x:Class="SunFlower.Client.View.WorkspaceWindow"
         x:DataType="{x:Type vm:WorkspaceViewModel}"
         Icon="/Assets/app48.png"
+        KeyDown="DialogContainerKeyHandled"
         Background="{StaticResource RegionBrush}"
         Title="{Binding FileName, FallbackValue=Workspace}"
         Closing="OnClosing">
+    <Grid>
+        <view:WorkspaceView 
+            x:Name="WorkspaceView" 
+            DataContext="{Binding}" />
+        
+        <Border 
+            x:Name="DialogLayer"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Background="#80000000"
+            IsVisible="False">
+        </Border>
 
-    <!-- Embed the existing WorkspaceView UserControl -->
-    <view:WorkspaceView
-        x:Name="WorkspaceView"
-        DataContext="{Binding}" />
+        <Popup 
+            x:Name="DialogContainer"
+            IsOpen="False"
+            PlacementTarget="{Binding ElementName=DialogLayer}"
+            Placement="Center"
+            OverlayDismissEventPassThrough="True"
+            Closed="DialogContainerClosed"
+            Opened="DialogContainerOpened">
+            <FlyoutPresenter
+                MaxHeight="1024"
+                MaxWidth="768"
+                Padding="20"
+                x:Name="DialogPresenter">
+                
+            </FlyoutPresenter>
+        </Popup>
+    </Grid>
 </Window>

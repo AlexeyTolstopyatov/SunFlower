@@ -1,0 +1,75 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+             x:Class="SunFlower.Client.View.DisassemblerDialogView"
+             x:DataType="{x:Type vm:DisassemblerDialogViewModel}">
+    <StackPanel Spacing="10">
+        <!-- Title -->
+        <TextBlock 
+            Text="Disassemble Bytes" 
+            FontWeight="Bold" 
+            FontSize="16"/>
+        
+        <!-- Info about input -->
+        <TextBlock 
+            Text="{Binding SourceInfo}"
+            Foreground="{StaticResource SecondaryTextBrush}"/>
+        
+        <!-- Architecture selection -->
+        <Grid ColumnDefinitions="Auto,*">
+            <TextBlock 
+                VerticalAlignment="Center"
+                Text="Architecture:"/>
+            <ComboBox 
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Width="150"
+                ItemsSource="{Binding AvailableArchitectures}"
+                SelectedItem="{Binding SelectedArchitecture, Mode=TwoWay}"/>
+        </Grid>
+        
+        <!-- Disassembly result -->
+        <TextBlock 
+            Text="Result:" 
+            FontWeight="SemiBold"/>
+        <Border 
+            Background="{StaticResource PanelBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            Padding="5">
+            <ScrollViewer 
+                MaxHeight="300"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto">
+                <TextBlock 
+                    Text="{Binding DisassemblyResult}"
+                    FontFamily="Consolas"/>
+            </ScrollViewer>
+        </Border>
+        
+        <!-- Buttons -->
+        <StackPanel 
+            Orientation="Horizontal" 
+            HorizontalAlignment="Right" 
+            Spacing="10">
+            <Button 
+                MinWidth="80"
+                Command="{Binding DisassembleCommand}">
+                Disassemble
+            </Button>
+            <Button 
+                MinWidth="80"
+                Command="{Binding AcceptCommand}">
+                Accept
+            </Button>
+            <Button 
+                MinWidth="80"
+                Command="{Binding CancelCommand}">
+                Cancel
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

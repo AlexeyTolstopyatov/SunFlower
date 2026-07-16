@@ -99,13 +99,4 @@ public class SettingsService
         var json = JsonSerializer.Serialize(_settings, JsonOptions);
         await File.WriteAllTextAsync(_settingsPath, json);
     }
-
-    /// <summary>
-    /// Update a single setting and persist.
-    /// </summary>
-    public async Task UpdateAsync(Action<SettingsModel> update)
-    {
-        update(_settings);
-        await SaveAsync();
-    }
 }

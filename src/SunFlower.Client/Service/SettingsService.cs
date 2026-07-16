@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SunFlower.Client.Model;
@@ -98,5 +99,26 @@ public class SettingsService
     {
         var json = JsonSerializer.Serialize(_settings, JsonOptions);
         await File.WriteAllTextAsync(_settingsPath, json);
+    }
+    
+    private Task DeleteCacheAsync(string path)
+    {
+        foreach (var directory in Directory.EnumerateDirectories(path))
+        {
+            Directory.Delete(directory, true);
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteFirstCacheAsync()
+    {
+        DeleteCacheAsync(Path.Combine(AppContext.BaseDirectory, "CacheV1"));
+        return Task.CompletedTask;
+    }
+    public Task DeleteSecondCacheAsync()
+    {
+        var stCacheDir = Path.Combine(AppContext.BaseDirectory, "CacheV2");
+        return DeleteCacheAsync(stCacheDir);
     }
 }

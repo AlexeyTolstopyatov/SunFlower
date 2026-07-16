@@ -8,6 +8,7 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Metadata;
 using Avalonia.Styling;
 using SunFlower.Client.Service;
 using SunFlower.Client.ViewModel;
@@ -32,12 +33,20 @@ public partial class WorkspaceWindow : Window
             {
                 new KeyFrame
                 {
-                    Setters = { new Setter(ScaleTransform.ScaleXProperty, 0.0) },
+                    Setters =
+                    {
+                        new Setter(ScaleTransform.ScaleXProperty, 0.0),
+                        new Setter(ScaleTransform.ScaleYProperty, 0.0),
+                    },
                     KeyTime = TimeSpan.FromSeconds(0)
                 },
                 new KeyFrame
                 {
-                    Setters = { new Setter(ScaleTransform.ScaleXProperty, 1.0) },
+                    Setters =
+                    {
+                        new Setter(ScaleTransform.ScaleXProperty, 1.0),
+                        new Setter(ScaleTransform.ScaleYProperty, 1.0),
+                    },
                     KeyTime = TimeSpan.FromSeconds(0.1)
                 }
             }
@@ -95,6 +104,11 @@ public partial class WorkspaceWindow : Window
     private void DialogContainerOpened(object? sender, EventArgs e)
     {
         DialogLayer.IsVisible = true;
+        //_dialogOpenAnimation.RunAsync(DialogPresenter);
+    }
+
+    private void DialogPresenterSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
         _dialogOpenAnimation.RunAsync(DialogPresenter);
     }
 }

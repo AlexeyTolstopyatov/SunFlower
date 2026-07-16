@@ -39,8 +39,8 @@
                 MaxHeight="1024"
                 MaxWidth="768"
                 Padding="20"
+                SizeChanged="DialogPresenterSizeChanged"
                 x:Name="DialogPresenter">
-                
             </FlyoutPresenter>
         </Popup>
     </Grid>

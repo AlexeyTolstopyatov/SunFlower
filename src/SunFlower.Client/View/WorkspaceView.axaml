@@ -78,61 +78,97 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
                 <MenuItem
-                    Header="Save project"
+                    HotKey="Ctrl+S"
                     Command="{CompiledBinding SaveProjectCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/edit48.png"/>
                     </MenuItem.Icon>
+                    <MenuItem.Header>
+                        <TextBlock
+                            FontSize="12">
+                            <Run
+                                Text="Save Project"/>
+                            <Run
+                                Text="Ctrl+S"
+                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
                 </MenuItem>
                 <MenuItem
+                    HotKey="Ctrl+B"
                     CommandParameter="{CompiledBinding ElementName=HexViewer}"
                     Command="{CompiledBinding ExtractHexSelectionCommand}"
-                    Header="Save bytes array">
+                    >
+                    <MenuItem.Header>
+                        <TextBlock
+                            FontSize="12">
+                            <Run
+                                Text="Save Selection As"/>
+                            <Run
+                                Text="Ctrl+B"
+                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
                     <MenuItem.Icon>
                         <Image
                             Width="48"
                             Source="/Assets/fbin48.png"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                
                 <MenuItem
-                    Header="Disassemble bytes">
+                    HotKey="Ctrl+Shift+T"
+                    Command="{CompiledBinding ShowDisassemblerDialogCommand}">
+                    <MenuItem.Header>
+                        <TextBlock
+                            FontSize="12">
+                            <Run
+                                Text="Translate Binary"/>
+                            <Run
+                                Text="Ctrl+Shift+T"
+                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
                     <MenuItem.Icon>
                         <Image Source="/Assets/code48.png"/>
                     </MenuItem.Icon>
-                    <MenuItem>
-                        <MenuItem.Header>
-                            <Grid
-                                ColumnSpacing="10"
-                                ColumnDefinitions="Auto,*">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    Text="Architecture:"/>
-                                <ComboBox
-                                    VerticalAlignment="Center"
-                                    Grid.Column="1"
-                                    ItemsSource="{CompiledBinding AvailableArchitectures}"
-                                    SelectedItem="{CompiledBinding SelectedArchitecture, Mode=TwoWay}"
-                                    Width="130"/>
-                            </Grid>
-                        </MenuItem.Header>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem
-                        Header="All bytes"
-                        Command="{CompiledBinding ShowDisassemblerDialogCommand}"/>
-                    <MenuItem
-                        Header="Selected bytes"
-                        Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
-                        CommandParameter="{CompiledBinding ElementName=HexViewer}"/>
                 </MenuItem>
+                
                 <MenuItem
-                    Header="Go to Address">
+                    HotKey="Ctrl+T"
+                    Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
+                    CommandParameter="{CompiledBinding ElementName=HexViewer}">
                     <MenuItem.Icon>
-                        <!-- <Image Source="/Assets/fedit48"/> -->
+                        <Image Source="/Assets/code48.png"/>
                     </MenuItem.Icon>
-                    <MenuItem
-                        Header="Go to byte offset"
-                        Command="{CompiledBinding ShowGoToAddressDialogCommand}"/>
+                    <MenuItem.Header>
+                        <TextBlock
+                            FontSize="12">
+                            <Run
+                                Text="Translate Selection"/>
+                            <Run
+                                Text="Ctrl+T"
+                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+                
+                <MenuItem
+                    HotKey="Ctrl+J"
+                    Command="{CompiledBinding ShowGoToAddressDialogCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/fbin48.png"/>
+                    </MenuItem.Icon>
+                    <MenuItem.Header>
+                        <TextBlock
+                            FontSize="12">
+                            <Run
+                                Text="Jump At"/>
+                            <Run
+                                Text="Ctrl+J"
+                                Foreground="{StaticResource SecondaryTextBrush}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
                 </MenuItem>
             </Menu>
         </StackPanel>
@@ -337,7 +373,7 @@
                             Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
                             CommandParameter="{CompiledBinding ElementName=HexViewer}">
                             <MenuItem.Icon>
-                                <!-- <Image Source="/Assets/code48.png"/> -->
+                                <Image Source="/Assets/code48.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator/>

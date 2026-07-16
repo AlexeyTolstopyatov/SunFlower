@@ -134,13 +134,41 @@
             Padding="10"
             CornerRadius="5"
             Background="{StaticResource BorderBrush}">
-            <Button
-                Command="{CompiledBinding SaveCommand}"
-                Margin="20,10"
-                Width="100"
-                HorizontalAlignment="Right"
-                Content="Save"/>
+            <WrapPanel>
+                <Button
+                    Command="{CompiledBinding DeleteFirstCacheCommand}"
+                    Content="Clear 1'st Cache"
+                    HotKey="Delete">
+                    <Button.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Delete unsaved workspace temp files"/>
+                        </Flyout>
+                    </Button.ContextFlyout>
+                </Button>
+                <Button
+                    Command="{CompiledBinding DeleteSecondCacheCommand}"
+                    Content="Clear 2'nd Cache"
+                    HotKey="Shift+Delete">
+                    <Button.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Delete project temp files"/>
+                        </Flyout>
+                    </Button.ContextFlyout>
+                </Button>
+                <Button
+                    HotKey="Ctrl+S"
+                    Command="{CompiledBinding SaveCommand}"
+                    Margin="20,10"
+                    Width="100"
+                    HorizontalAlignment="Right"
+                    Content="Save">
+                    <Button.ContextFlyout>
+                        <Flyout>
+                            <TextBlock Text="Write changes to settings file. No restart"/>
+                        </Flyout>
+                    </Button.ContextFlyout>
+                </Button>
+            </WrapPanel>
         </Border>
-        
     </StackPanel>
 </UserControl>

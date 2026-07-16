@@ -9,8 +9,7 @@
     <StackPanel
         Spacing="10">
         <TextBlock 
-            Text="Go To" 
-            FontWeight="Bold" 
+            Text="Set Cursor at" 
             FontSize="16"/>
         
         <TextBlock 
@@ -30,11 +29,13 @@
             HorizontalAlignment="Right" 
             Spacing="10">
             <Button 
+                HotKey="Enter"
                 MinWidth="80"
                 Command="{Binding AcceptCommand}">
                 OK
             </Button>
             <Button 
+                HotKey="Escape"
                 MinWidth="80"
                 Command="{Binding CancelCommand}">
                 Cancel

@@ -65,4 +65,18 @@ public partial class SettingsViewModel : ObservableObject
     {
         await _settingsService.SaveAsync();
     }
+
+    [RelayCommand]
+    private async Task DeleteFirstCacheAsync()
+    {
+        await Console.Out.WriteLineAsync("First cache reacts");
+        await _settingsService.DeleteFirstCacheAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteSecondCacheAsync()
+    {
+        await Console.Out.WriteLineAsync("Second cache reacts");
+        await _settingsService.DeleteSecondCacheAsync();
+    }
 }

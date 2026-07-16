@@ -94,7 +94,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
     [RelayCommand]
     private void Cancel()
     {
-        DialogService?.CloseDialog(null);
+        DialogService?.CloseDialog(string.Empty);
     }
 
     [RelayCommand]

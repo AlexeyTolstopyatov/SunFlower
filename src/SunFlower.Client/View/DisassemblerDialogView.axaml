@@ -3,14 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
              x:Class="SunFlower.Client.View.DisassemblerDialogView"
              x:DataType="{x:Type vm:DisassemblerDialogViewModel}">
     <StackPanel Spacing="10">
         <!-- Title -->
         <TextBlock 
-            Text="Disassemble Bytes" 
-            FontWeight="Bold" 
+            Text="Disassemble Original File Fragment" 
             FontSize="16"/>
         
         <!-- Info about input -->
@@ -33,7 +31,7 @@
         
         <!-- Disassembly result -->
         <TextBlock 
-            Text="Result:" 
+            Text="Preview" 
             FontWeight="SemiBold"/>
         <Border 
             Background="{StaticResource PanelBrush}"
@@ -56,16 +54,19 @@
             HorizontalAlignment="Right" 
             Spacing="10">
             <Button 
+                HotKey="Enter"
                 MinWidth="80"
                 Command="{Binding DisassembleCommand}">
                 Disassemble
             </Button>
             <Button 
+                HotKey="Ctrl+Enter"
                 MinWidth="80"
                 Command="{Binding AcceptCommand}">
                 Accept
             </Button>
             <Button 
+                HotKey="Escape"
                 MinWidth="80"
                 Command="{Binding CancelCommand}">
                 Cancel

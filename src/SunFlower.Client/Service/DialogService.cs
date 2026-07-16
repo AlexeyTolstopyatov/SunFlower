@@ -28,7 +28,6 @@ public class DialogService(Window mainWindow)
         if (view is not Control dialogContent) 
             return default;
 
-        // Set DataContext to the view so bindings work
         dialogContent.DataContext = viewModel;
 
         // Inject DialogService into the ViewModel if it has the property
@@ -58,17 +57,9 @@ public class DialogService(Window mainWindow)
         dialogLayer.IsVisible = false;
 
         // Clear the reference to avoid memory leaks
-        if (viewModel is YesNoDialogViewModel ynVm)
+        if (viewModel is DialogViewModel dialog)
         {
-            ynVm.DialogService = null;
-        }
-        else if (viewModel is DisassemblerDialogViewModel disVm)
-        {
-            disVm.DialogService = null;
-        }
-        else if (viewModel is GoToAddressDialogViewModel goVm)
-        {
-            goVm.DialogService = null;
+            dialog.DialogService = null;
         }
         
         return result is TResult typedResult 

@@ -308,18 +308,12 @@ module internal Decoder =
 
     let private immediateSize (token: string) (hasOpSize32: bool) (addressSize: int) =
         match token with
-        | "Ib"
-        | "Jb" -> 1
+        | "Ib" | "Jb" -> 1
         | "Iw" -> 2
         | "Id" -> 4
-        | "Iz"
-        | "Iv"
-        | "Jz" -> if hasOpSize32 then 4 else 2
-        | "Ob"
-        | "Ov" -> if addressSize = 32 then 4 else 2
-        | "Mp"
-        | "Ap"
-        | "p" -> 4
+        | "Iz" | "Iv" | "Jz" -> if hasOpSize32 then 4 else 2
+        | "Ob" | "Ov" -> if addressSize = 32 then 4 else 2
+        | "Mp" | "Ap" -> 4
         | t -> failwithf $"Unsupported immediate token: %s{t}"
 
     let private tryReadByte (i: int) (bytes: byte[]) =
@@ -378,6 +372,30 @@ module internal Decoder =
                     match tryReadBytes n idx bytes with
                     | None -> None
                     | Some(ni, bs) -> loop ni rest (formatImmediate bs :: acc)
+                | "Iw" ->
+                    match tryReadBytes 2 idx bytes with
+                    | None -> None
+                    | Some(ni, bs) -> loop ni rest (formatImmediate bs :: acc)
+                | "Id" ->
+                    match tryReadBytes 4 idx bytes with
+                    | None -> None
+                    | Some(ni, bs) -> loop ni rest (formatImmediate bs :: acc)
+                | "Ap" ->
+                    // Far pointer
+                    match tryReadBytes 4 idx bytes with
+                    | None -> None
+                    | Some(ni, bs) ->
+                        let off = BitConverter.ToUInt16(bs, 0)
+                        let seg = BitConverter.ToUInt16(bs, 2)
+                        loop ni rest ($"0x{seg:X4}:0x{off:X4}" :: acc)
+                | "Mp" ->
+                    // Far pointer 
+                    match tryReadBytes 4 idx bytes with
+                    | None -> None
+                    | Some(ni, bs) ->
+                        let off = BitConverter.ToUInt16(bs, 0)
+                        let seg = BitConverter.ToUInt16(bs, 2)
+                        loop ni rest ($"0x{seg:X4}:0x{off:X4}" :: acc)
                 | "Jb" ->
                     match tryReadByte idx bytes with
                     | None -> None
@@ -412,8 +430,6 @@ module internal Decoder =
                 | "Yb"
                 | "Xv"
                 | "Yv"
-                // | "Ap" ->  
-
                 | "Fv" -> loop idx rest ("" :: acc)
                 | t when t.Contains('/') ->
                     let simple = t.Split('/').[0].Trim()
@@ -428,17 +444,7 @@ module internal Decoder =
     /// </summary>
     let private isImmediateToken (token: string) =
         match token with
-        | "Ib"
-        | "Iv"
-        | "Iz"
-        | "Id"
-        | "Iw"
-        | "Jb"
-        | "Jz"
-        | "Ob"
-        | "Ov"
-        | "Mp"
-        | "Ap" -> true
+        | "Ib" | "Iv" | "Iz" | "Id" | "Iw" | "Jb" | "Jz" | "Ob" | "Ov" | "Mp" | "Ap" -> true
         | _ -> false
 
     let rec private resolveModRMOperands opcodesMap hex defaultOperation bytes startIdx hasOpSize32 addressSize is32Bit =

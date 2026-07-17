@@ -1,42 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <LangVersion>8.0</LangVersion>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <Content Include="Interrupt\dos.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="opcodes8086.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="opcodes186.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="opcodes286.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="opcodes386.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Include="Intel\Core\IntelInterrupt.fs" />
-      <Compile Include="Intel\Core\Operation.fs" />
-      <Compile Include="Intel\Core\Decoder.fs" />
-      <Compile Include="I8086Decoder.fs" />
-      <Compile Include="I80186Decoder.fs" />
-      <Compile Include="I80286Decoder.fs" />
-      <Compile Include="I80386Decoder.fs" />
-      <Compile Include="FlowerDecoder.fs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.8.0" />
-    </ItemGroup>
-
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Interrupt\dos.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="opcodes8086.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="opcodes186.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="opcodes286.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="opcodes386.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Intel\Core\IntelInterrupt.fs" />
+    <Compile Include="Intel\Core\Operation.fs" />
+    <Compile Include="Intel\Core\Decoder.fs" />
+    <Compile Include="I8086Decoder.fs" />
+    <Compile Include="I80186Decoder.fs" />
+    <Compile Include="I80286Decoder.fs" />
+    <Compile Include="I80386Decoder.fs" />
+    <Compile Include="FlowerDecoder.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.8.0" />
+  </ItemGroup>
 </Project>

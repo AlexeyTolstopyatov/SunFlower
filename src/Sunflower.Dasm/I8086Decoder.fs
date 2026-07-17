@@ -17,8 +17,8 @@ module I8086Decoder =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "opcodes8086.json")
         // Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Interrupt", "dos.json")
         let safePath = if File.Exists(interruptsPath) then Some(interruptsPath) else None
+    
         Decoder.create opcodesPath safePath false
-
     let touchOperation (state: DecoderState) (bytes: byte[]) =
         Decoder.touchOperation state bytes
 

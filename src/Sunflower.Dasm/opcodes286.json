@@ -2204,13 +2204,14 @@
       "Ib", "000", "11B"
     ]
   },
+  { "Opcode": "C7", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
   {
     "Opcode": "C7/0",
     "Reg": 0,
     "Mnemonic": "MOV",
     "ModRM": true,
     "Operands": [
-      "Eb", "Iz"
+      "Ev", "Iz"
     ],
     "IsPrefix": false
   },

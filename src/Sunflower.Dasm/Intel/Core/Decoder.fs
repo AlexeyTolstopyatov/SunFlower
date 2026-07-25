@@ -809,7 +809,7 @@ module internal Decoder =
         match Map.tryFind intNum state.interrupts with
         // If no interrupt vectors table loaded or interrupt number not matches
         // Right answer on the question will be "undocumented".
-        | None -> SoftwareInterrupt, [], None // без комментария
+        | None -> SoftwareInterrupt, [], None
         | Some intDef ->
             let findArg () =
                 intDef.Args

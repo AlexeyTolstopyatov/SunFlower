@@ -53,19 +53,19 @@
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding ProjectFiles.Count, StringFormat='Files: {0}'}"/>
+                            Text="{CompiledBinding ProjectFiles.Count, StringFormat='Files: {0}', FallbackValue=0}"/>
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding ProjectDirectory}"/>
+                            Text="{CompiledBinding ProjectDirectory, FallbackValue=No project}"/>
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsDirty, StringFormat='Not saved: {0}'}"/>
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsDirty, StringFormat='Not saved: {0}', FallbackValue=False}"/>
                         <LineBreak/>
                         <Run
                             Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsProject, StringFormat='Is project: {0}'}"/>
+                            Text="{CompiledBinding WorkspaceService.CurrentProject.IsProject, StringFormat='Is project: {0}', FallbackValue=False}"/>
                         <LineBreak/>
                     </TextBlock>
                 </StackPanel>
@@ -78,7 +78,7 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
                 <MenuItem
-                    HotKey="Ctrl+S"
+                    HotKey="Ctrl+Shift+S"
                     Command="{CompiledBinding SaveProjectCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/edit48.png"/>
@@ -89,13 +89,13 @@
                             <Run
                                 Text="Save Project"/>
                             <Run
-                                Text="Ctrl+S"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"
                                 Foreground="{StaticResource SecondaryTextBrush}"/>
                         </TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem
-                    HotKey="Ctrl+B"
+                    HotKey="Ctrl+Shift+B"
                     CommandParameter="{CompiledBinding ElementName=HexViewer}"
                     Command="{CompiledBinding ExtractHexSelectionCommand}"
                     >
@@ -105,7 +105,7 @@
                             <Run
                                 Text="Save Selection As"/>
                             <Run
-                                Text="Ctrl+B"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"
                                 Foreground="{StaticResource SecondaryTextBrush}"/>
                         </TextBlock>
                     </MenuItem.Header>
@@ -117,7 +117,7 @@
                 </MenuItem>
                 
                 <MenuItem
-                    HotKey="Ctrl+Shift+T"
+                    HotKey="Ctrl+B"
                     Command="{CompiledBinding ShowDisassemblerDialogCommand}">
                     <MenuItem.Header>
                         <TextBlock
@@ -125,7 +125,7 @@
                             <Run
                                 Text="Translate Binary"/>
                             <Run
-                                Text="Ctrl+Shift+T"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"
                                 Foreground="{StaticResource SecondaryTextBrush}"/>
                         </TextBlock>
                     </MenuItem.Header>
@@ -147,7 +147,7 @@
                             <Run
                                 Text="Translate Selection"/>
                             <Run
-                                Text="Ctrl+T"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"
                                 Foreground="{StaticResource SecondaryTextBrush}"/>
                         </TextBlock>
                     </MenuItem.Header>
@@ -165,7 +165,7 @@
                             <Run
                                 Text="Jump At"/>
                             <Run
-                                Text="Ctrl+J"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"
                                 Foreground="{StaticResource SecondaryTextBrush}"/>
                         </TextBlock>
                     </MenuItem.Header>
@@ -306,10 +306,10 @@
                                 <TextBlock
                                     Grid.Column="1">
                                     <Run
-                                        Text="{Binding seed.Seed}"/>
+                                        Text="{CompiledBinding seed.Seed}"/>
                                     <Run 
                                         Foreground="{StaticResource SecondaryTextBrush}"
-                                        Text="{Binding seed.Status.Results.Count, StringFormat='Blocks={0}'}"/>
+                                        Text="{CompiledBinding seed.Status.Results.Count, StringFormat='Blocks={0}'}"/>
                                 </TextBlock>
                             </Grid>
                         </DataTemplate>
@@ -381,7 +381,7 @@
                             Header="Go to Address..."
                             Command="{CompiledBinding ShowGoToAddressDialogCommand}">
                             <MenuItem.Icon>
-                                <!-- <Image Source="/Assets/fedit48.png"/> -->
+                                <Image Source="/Assets/fbin48.png"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

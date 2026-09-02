@@ -9,6 +9,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -127,6 +128,9 @@ public partial class WorkspaceViewModel : ObservableObject
     [ObservableProperty]
     private DecoderArchitecture _selectedArchitecture = DecoderArchitecture.I8086;
 
+    [ObservableProperty]
+    private string[] _kernelMessages;
+
     #endregion
 
     /// <summary>
@@ -139,7 +143,7 @@ public partial class WorkspaceViewModel : ObservableObject
     /// Raw bytes of the currently open binary file (for send-back).
     /// </summary>
     private byte[]? _activeBinaryBytes;
-
+    
     [ObservableProperty]
     private bool _hasHexSelection;
 
@@ -169,6 +173,8 @@ public partial class WorkspaceViewModel : ObservableObject
         LoadFileInfo();
         LoadProjectFiles();
         LoadAvailablePlugins();
+        
+        KernelMessages = _pluginService.KernelMessages;
         
         HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);
         HexFontSize = settingsService.Current.HexControl?.Size ?? 16;
@@ -608,8 +614,10 @@ public partial class WorkspaceViewModel : ObservableObject
                 {
                     Patterns = ["*.*"]
                 }
-            ]
+            ],
+            DefaultExtension = SelectedProjectFile?.Extension
         });
+        
         if (file is null)
             return;
         

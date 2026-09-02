@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +23,7 @@ public class PluginService
     /// FlowerCollection that were loaded at initialization (metadata + interfaces).
     /// </summary>
     private List<FlowerData>? _loaded;
-
+    
     private bool _initialized;
 
     public PluginService()
@@ -65,6 +66,7 @@ public class PluginService
         _loaded ?? throw new InvalidOperationException(
             "PluginService not initialized. Call InitializeAsync() first.");
 
+    public string[] KernelMessages => _manager.Messages.ToArray();
     /// <summary>
     /// AnalyzeAsync a file with all loaded plugins. Returns results.
     /// Does NOT reinitialize plugins — uses cached instances.

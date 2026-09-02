@@ -12,6 +12,7 @@
               d:DesignWidth="1024" 
               d:DesignHeight="600"
               Background="Transparent"
+              x:Name="Workspace"
               x:Class="SunFlower.Client.View.WorkspaceView"
               x:DataType="{x:Type vm:WorkspaceViewModel}">
     <Grid>
@@ -95,10 +96,27 @@
                     </MenuItem.Header>
                 </MenuItem>
                 <MenuItem
+                    Command="{CompiledBinding ExportFileCommand}"
+                    CommandParameter="{CompiledBinding SelectedProjectFile}"
+                    HotKey="Ctrl+Alt+S">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/dir48.png"/>
+                    </MenuItem.Icon>
+                    <MenuItem.Header>
+                        <TextBlock 
+                            FontSize="12">
+                            <Run
+                                Text="Export File"/>
+                            <Run
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                Text="{CompiledBinding $parent[MenuItem].HotKey}"/>
+                        </TextBlock>
+                    </MenuItem.Header>
+                </MenuItem>
+                <MenuItem
                     HotKey="Ctrl+Shift+B"
                     CommandParameter="{CompiledBinding ElementName=HexViewer}"
-                    Command="{CompiledBinding ExtractHexSelectionCommand}"
-                    >
+                    Command="{CompiledBinding ExtractHexSelectionCommand}">
                     <MenuItem.Header>
                         <TextBlock
                             FontSize="12">
@@ -155,6 +173,7 @@
                 
                 <MenuItem
                     HotKey="Ctrl+J"
+                    CommandParameter="{CompiledBinding ElementName=HexViewer}"
                     Command="{CompiledBinding ShowGoToAddressDialogCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/fbin48.png"/>
@@ -184,137 +203,100 @@
             Grid.Column="4">
             <Grid.RowDefinitions>
                 <RowDefinition 
-                    Height="2*" 
-                    MinHeight="150" />
-                <RowDefinition 
-                    Height="3" />
-                <RowDefinition
-                    Height="3*" 
-                    MinHeight="200" />
+                    Height="*" />
             </Grid.RowDefinitions>
-            
+
             <!-- Project files -->
             <StackPanel
-                Grid.Row="0"
-                Margin="10" >
-                <ListBox
-                    ItemsSource="{CompiledBinding ProjectFiles}"
-                    SelectedItem="{CompiledBinding SelectedProjectFile, Mode=TwoWay}"
-                    BorderBrush="Transparent"
-                    Background="Transparent">
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="DoubleTapped">
-                            <InvokeCommandAction Command="{CompiledBinding OpenProjectFileCommand}" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate 
-                            x:DataType="vm:ProjectFileItem">
-                            <Grid>
-                                <Grid
-                                    ColumnDefinitions="24, *">
-                                    <Image
-                                        Source="/Assets/file48.png"
-                                        Width="24"/>
-                                    <StackPanel 
-                                        VerticalAlignment="Center"
-                                        Grid.Column="1" 
-                                        Margin="5,0">
-                                        <TextBlock 
-                                            Text="{Binding Name}"/>
-                                        <TextBlock 
-                                            Text="{Binding Size}" 
-                                            Foreground="{StaticResource SecondaryTextBrush}" />
-                                    </StackPanel>
+                Background="{DynamicResource CloudTileBrush}"
+                Grid.Row="0">
+                <Border
+                    Margin="20"
+                    Padding="10"
+                    CornerRadius="10"
+                    Background="{DynamicResource BorderBrush}">
+                    <ListBox
+                        ItemsSource="{CompiledBinding ProjectFiles}"
+                        SelectedItem="{CompiledBinding SelectedProjectFile, Mode=TwoWay}"
+                        BorderBrush="Transparent"
+                        Background="Transparent">
+                        <Interaction.Behaviors>
+                            <EventTriggerBehavior EventName="DoubleTapped">
+                                <InvokeCommandAction Command="{CompiledBinding OpenProjectFileCommand}" />
+                            </EventTriggerBehavior>
+                        </Interaction.Behaviors>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate 
+                                x:DataType="vm:ProjectFileItem">
+                                <Grid>
+                                    <Interaction.Behaviors>
+                                        <EventTriggerBehavior EventName="ContextRequested">
+                                            <InvokeCommandAction
+                                                Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).SetActiveProjectFileCommand, FallbackValue=Close}"
+                                                CommandParameter="{Binding}"/>
+                                        </EventTriggerBehavior>
+                                    </Interaction.Behaviors>
+                                    <Grid
+                                        ColumnDefinitions="24, *">
+                                        <Image
+                                            Source="/Assets/file48.png"
+                                            Width="24"/>
+                                        <StackPanel 
+                                            VerticalAlignment="Center"
+                                            Grid.Column="1" 
+                                            Margin="5,0">
+                                            <TextBlock
+                                                TextWrapping="NoWrap">
+                                                <Run Text="{CompiledBinding Name}"/>
+                                                <Run
+                                                    Text="{Binding Size}" 
+                                                    Foreground="{StaticResource SecondaryTextBrush}"></Run>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem
+                                                Header="Open"
+                                                Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).OpenProjectFileCommand, FallbackValue=Close}"
+                                                CommandParameter="{Binding}"/>
+                                            <MenuItem
+                                                Header="Save"
+                                                Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).SaveActiveFileCommand, FallbackValue=Close}"/>
+                                            <!-- <Separator/> -->
+                                            <MenuItem
+                                                Header="Rename"
+                                                Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).RenameProjectFileCommand, FallbackValue=Close}"
+                                                CommandParameter="{Binding}"/>
+                                            <MenuItem
+                                                Header="Delete"
+                                                Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).DeleteProjectFileCommand, FallbackValue=Close}"
+                                                CommandParameter="{Binding}"
+                                                IsEnabled="{Binding CanDelete}"/>
+                                            <!-- <Separator/> -->
+                                            <MenuItem
+                                                Header="Run plugin"
+                                                ItemsSource="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).AvailablePlugins, FallbackValue=[]}">
+                                                <MenuItem.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <MenuItem
+                                                            Header="{CompiledBinding Instance.Name}"
+                                                            Command="{CompiledBinding ElementName=Workspace, Path=((vm:WorkspaceViewModel)DataContext).ApplyPluginToProjectFileCommand, FallbackValue=Close}"
+                                                            CommandParameter="{Binding .}">
+                                                            <MenuItem.Icon>
+                                                                <Image Source="/Assets/sunflower256.png"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                    </DataTemplate>
+                                                </MenuItem.ItemTemplate>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
                                 </Grid>
-                                <Grid.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem
-                                            Header="Open"
-                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).OpenProjectFileCommand}"
-                                            CommandParameter="{Binding}"/>
-                                        <MenuItem
-                                            Header="Save active file"
-                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).SaveActiveFileCommand}"/>
-                                        <Separator/>
-                                        <MenuItem
-                                            Header="Rename"
-                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).RenameProjectFileCommand}"
-                                            CommandParameter="{Binding}"/>
-                                        <MenuItem
-                                            Header="Delete"
-                                            Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).DeleteProjectFileCommand}"
-                                            CommandParameter="{Binding}"
-                                            IsEnabled="{Binding CanDelete}"/>
-                                    </ContextMenu>
-                                </Grid.ContextMenu>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-
-            <GridSplitter
-                Grid.Row="1"
-                Background="{StaticResource BorderBrush}" />
-
-            <!-- Plugin selector + actions -->
-            <StackPanel
-                Grid.Row="2" 
-                Margin="10">
-                <!-- Plugin label -->
-                <StackPanel
-                    Orientation="Horizontal">
-                    <Image Source="/Assets/convert48.png"/>
-                    <TextBlock
-                        VerticalAlignment="Center">
-                        <Run
-                            Text="{Binding SelectedPlugin.seed.Seed, FallbackValue='Select plugin'}"/>
-                        <Run
-                            Foreground="{StaticResource SecondaryTextBrush}"
-                            Text="{Binding SelectedPlugin.kind, FallbackValue=(target)}"/>
-                        <LineBreak/>
-                        <Run
-                            Text="{Binding SelectedPlugin.version, FallbackValue=0.0.0}"
-                            Foreground="{StaticResource SecondaryTextBrush}"/>
-                    </TextBlock>
-                </StackPanel>
-                
-                <TextBlock
-                    Margin="10,10"
-                    TextWrapping="Wrap"
-                    Foreground="{StaticResource SecondaryTextBrush}">
-                    For plugins which use [FlowerSeed] API, results stores in the collection
-                    and work of plugin measures in the blocks (items in the result collection)
-                </TextBlock>
-                
-                <ListBox 
-                    BorderBrush="Transparent"
-                    ItemsSource="{Binding AvailablePlugins}"
-                    SelectedItem="{Binding SelectedPlugin}">
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="DoubleTapped">
-                            <InvokeCommandAction Command="{Binding RunSelectedPluginCommand, Mode=TwoWay}" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="k:FlowerSeedData">
-                            <Grid
-                                ColumnDefinitions="24,*">
-                                <Image 
-                                    Source="/Assets/convert48.png"/>
-                                <TextBlock
-                                    Grid.Column="1">
-                                    <Run
-                                        Text="{CompiledBinding seed.Seed}"/>
-                                    <Run 
-                                        Foreground="{StaticResource SecondaryTextBrush}"
-                                        Text="{CompiledBinding seed.Status.Results.Count, StringFormat='Blocks={0}'}"/>
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
             </StackPanel>
         </Grid>
 
@@ -350,18 +332,18 @@
                 FontSize="{CompiledBinding  HexFontSize}"
                 FontFamily="{CompiledBinding HexFontFamily}"
                 Padding="10"
-                Background="Transparent"
                 Document="{Binding ActiveBinaryDocument}">
                 <!-- Define columns to display -->
                 <hex:HexEditor.Columns>
                     <hexr:OffsetColumn/>
-                    <hexr:HexColumn UseDynamicHeader="True"/>
+                    <hexr:HexColumn 
+                        UseDynamicHeader="True"/>
                     <hexr:AsciiColumn/>
                 </hex:HexEditor.Columns>
                 <hex:HexEditor.ContextMenu>
                     <ContextMenu>
                         <MenuItem
-                            Header="Save bytes array"
+                            Header="Save fragment"
                             Command="{Binding ExtractHexSelectionCommand}"
                             CommandParameter="{Binding ElementName=HexViewer}">
                             <MenuItem.Icon>
@@ -369,7 +351,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Header="Disassemble bytes array"
+                            Header="Disassemble fragment"
                             Command="{CompiledBinding ShowDisassemblerSelectionDialogCommand}"
                             CommandParameter="{CompiledBinding ElementName=HexViewer}">
                             <MenuItem.Icon>
@@ -378,7 +360,8 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem
-                            Header="Go to Address..."
+                            Header="Jump at"
+                            CommandParameter="{CompiledBinding ElementName=HexViewer}"
                             Command="{CompiledBinding ShowGoToAddressDialogCommand}">
                             <MenuItem.Icon>
                                 <Image Source="/Assets/fbin48.png"/>

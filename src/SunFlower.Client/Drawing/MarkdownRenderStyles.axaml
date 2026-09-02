@@ -4,7 +4,7 @@
         xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia">
     <Style Selector="ctxt|CTextBlock">
         <Style.Setters>
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="0,5" />
         </Style.Setters>
     </Style>
@@ -76,7 +76,7 @@
     </Style>
     <Style Selector="Border.NoContainer">
         <Style.Setters>
-            <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         </Style.Setters>
     </Style>
 
@@ -91,7 +91,7 @@
         <Style.Setters>
             <Setter Property="Margin" Value="5,0,5,0" />
             <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
-            <Setter Property="BorderThickness" Value="3,3,3,3" />
+            <Setter Property="BorderThickness" Value="3" />
             <!-- <Setter Property="Background"      Value="{DynamicResource DefaultBrush}"/> -->
         </Style.Setters>
     </Style>
@@ -113,18 +113,22 @@
     </Style>
 
     <Style Selector="Border.Table">
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
+        <Setter 
+            Property="HorizontalAlignment" 
+            Value="Left" />
+        <Setter 
+            Property="BorderBrush" 
+            Value="{DynamicResource BorderBrush}" />
     </Style>
 
-    <!-- <Style Selector="Grid.Table > Border"> -->
-    <!--   <Style.Setters> -->
-    <!--     <Setter Property="Margin" Value="0"/> -->
-    <!--     <Setter Property="BorderThickness" Value="1,1,0,0"/> -->
-    <!--     <Setter Property="BorderBrush" Value="Gray"/> -->
-    <!--     <Setter Property="Padding" Value="2"/> -->
-    <!--   </Style.Setters> -->
-    <!-- </Style> -->
+    <Style Selector="Grid.Table > Border">
+      <Style.Setters>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="BorderThickness" Value="1,1,0,0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="Padding" Value="2"/>
+      </Style.Setters>
+    </Style>
 
     <Style Selector="Grid.Table">
         <Style.Setters>
@@ -140,25 +144,25 @@
 
     <Style Selector="Border.TableHeader">
         <Setter Property="Padding" Value="5,0" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         <Setter Property="Background" Value="{DynamicResource RegionBrush}" />
     </Style>
 
     <Style Selector="Border.OddTableRow">
         <Setter Property="Padding" Value="5,0" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         <Setter Property="Background" Value="{DynamicResource RegionBrush}" />
     </Style>
 
     <Style Selector="Border.EvenTableRow">
         <Setter Property="Padding" Value="5,0" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
     </Style>
 
     <Style Selector="Border.Blockquote">
         <Style.Setters>
-            <Setter Property="BorderBrush" Value="{DynamicResource RegionBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="5,0,0,0" />
         </Style.Setters>
     </Style>

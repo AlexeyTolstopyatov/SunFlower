@@ -12,27 +12,33 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace SunFlower.Client.ViewModel;
 
-public partial class GoToAddressDialogViewModel : DialogViewModel
+public enum OffsetBase
 {
-    private readonly ulong _maxAddress;
+    Hexadecimal,
+    Decimal,
+    Octal
+}
 
-    public GoToAddressDialogViewModel(ulong maxAddress)
-    {
-        _maxAddress = maxAddress;
-    }
-
+public partial class GoToAddressDialogViewModel(ulong maxAddress) : DialogViewModel
+{
     [ObservableProperty]
     private string _addressInput = string.Empty;
 
     [ObservableProperty]
     private string _errorMessage = string.Empty;
 
-    public ulong MaxAddress => _maxAddress;
+    [ObservableProperty]
+    private OffsetBase _offsetBase;
+    
+    [ObservableProperty]
+    private bool _isRelativeOffset;
+
+    public ulong MaxAddress { get; } = maxAddress;
 
     [RelayCommand]
     private void Cancel()
     {
-        DialogService?.CloseDialog(null);
+        DialogService?.CloseDialog();
     }
 
     [RelayCommand]
@@ -46,18 +52,25 @@ public partial class GoToAddressDialogViewModel : DialogViewModel
             return;
         }
 
-        if (!ulong.TryParse(AddressInput.Trim(), System.Globalization.NumberStyles.HexNumber, null, out var address))
+        var offset = OffsetBase switch
         {
-            ErrorMessage = "Incorrect format (expected: 1A2B)";
+            OffsetBase.Hexadecimal => Convert.ToUInt64(AddressInput, 16),
+            OffsetBase.Octal => Convert.ToUInt64(AddressInput, 8),
+            _ => Convert.ToUInt64(AddressInput)
+        };
+        
+        if (offset >= MaxAddress)
+        {
+            ErrorMessage = $"Out of bounds! (max: {MaxAddress - 1:X})";
             return;
         }
+        
+        DialogService?.CloseDialog((IsRelativeOffset, offset));
+    }
 
-        if (address >= MaxAddress)
-        {
-            ErrorMessage = $"Out of file bounds (max: {MaxAddress - 1:X})";
-            return;
-        }
-
-        DialogService?.CloseDialog((ulong?)address);
+    [RelayCommand]
+    private void SwitchOffsetMode()
+    {
+        IsRelativeOffset = !IsRelativeOffset;
     }
 }

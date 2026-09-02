@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SunFlower.Client.View.BytesDialogView"
+             x:DataType="{x:Type vm:BytesDialogViewModel}">
+    <StackPanel
+        Spacing="10">
+        <!-- Title -->
+        <TextBlock 
+            Text="Selected Bytes Fragment" 
+            FontSize="16"/>
+        
+        <!-- Info about input -->
+        <TextBlock 
+            Text="{Binding }"
+            Foreground="{StaticResource SecondaryTextBrush}"/>
+        
+        <Button
+            Width="100"
+            HorizontalAlignment="Right"
+            Content="OK"/>
+    </StackPanel>
+</UserControl>

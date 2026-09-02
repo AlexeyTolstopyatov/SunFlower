@@ -8,7 +8,6 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Metadata;
 using Avalonia.Styling;
 using SunFlower.Client.Service;
 using SunFlower.Client.ViewModel;
@@ -83,7 +82,7 @@ public partial class WorkspaceWindow : Window
         {
             // The ViewModel shouldn't know about Window closing,
             // -> handle cleanup here via the service.
-            // MainWindow handles the save dialog on app exit.
+            // MainWindow handles the send dialog on app exit.
         }
     }
 

@@ -2,7 +2,6 @@ namespace Sunflower.Dasm
 
 open System
 open System.IO
-open System.Text
 open Sunflower.Dasm.Intel.Core
 
 module public I80286Decoder =

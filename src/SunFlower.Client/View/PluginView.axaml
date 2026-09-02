@@ -29,7 +29,7 @@
                                 ColumnDefinitions="32, Auto">
                                 <Image
                                     VerticalAlignment="Top"
-                                    Source="/Assets/file48.png"/>
+                                    Source="/Assets/sunflower256.png"/>
                                 <TextBlock
                                     VerticalAlignment="Top"
                                     Grid.Column="1"
@@ -72,7 +72,6 @@
                             </ListBox>
                         </StackPanel>
                     </Border>
-                    
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

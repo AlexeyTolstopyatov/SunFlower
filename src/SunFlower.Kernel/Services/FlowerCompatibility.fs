@@ -3,6 +3,7 @@
 open System
 open System.Data
 open System.IO
+open System.Linq
 open System.Reflection
 open Microsoft.FSharp.Core
 open SunFlower.Kernel
@@ -34,10 +35,10 @@ module FlowerCompatibility =
     /// <summary>
     /// Returns Some result or None depends on attribute existence
     /// </summary>
-    let private tryGetContract (t: Type) : FlowerSeedContractAttribute option =
-        t.GetCustomAttributes(typeof<FlowerSeedContractAttribute>, false)
+    let private tryGetContract (t: Type) : FlowerVersionContractAttribute option =
+        t.GetCustomAttributes(typeof<FlowerVersionContractAttribute>, false)
         |> Array.tryHead
-        |> Option.map (fun attr -> attr :?> FlowerSeedContractAttribute)
+        |> Option.map (fun attr -> attr :?> FlowerVersionContractAttribute)
 
     /// <summary>
     /// Creates a compatibility table with standard columns
@@ -54,14 +55,14 @@ module FlowerCompatibility =
     /// </summary>
     let private getKernelContract () =
         let attr =
-            typeof<FluentFlowerManager>.GetCustomAttribute<FlowerSeedContractAttribute>()
+            typeof<FluentFlowerManager>.GetCustomAttribute<FlowerVersionContractAttribute>()
 
         (attr.MajorVersion, attr.MinorVersion, attr.BuildVersion)
 
     /// <summary>
     /// Checks if a plugin version is compatible with manager
     /// </summary>
-    let private isCompatible (pluginAttr: FlowerSeedContractAttribute) (managerMajor, _, _) =
+    let private isCompatible (pluginAttr: FlowerVersionContractAttribute) (managerMajor, _, _) =
         // Basic compatibility check: same major version
         pluginAttr.MajorVersion = managerMajor
 
@@ -73,14 +74,14 @@ module FlowerCompatibility =
             let assembly = Assembly.LoadFrom(assemblyPath)
 
             assembly.GetTypes()
-            |> Array.filter (fun t -> typeof<IFlowerSeed>.IsAssignableFrom(t) && t.IsClass && not t.IsAbstract)
+            |> Array.filter (fun t -> typeof<IFlower>.IsAssignableFrom(t) && t.IsClass && not t.IsAbstract)
             |> Array.iter (fun t ->
                 match tryGetContract t with
                 | Some attr ->
                     let versionStr = $"{attr.MajorVersion}.{attr.MinorVersion}.{attr.BuildVersion}"
                     let compatible = isCompatible attr managerVersion
                     table.Rows.Add(versionStr, t.Name, compatible) |> ignore
-                | None -> table.Rows.Add("where?!", t.Name, false) |> ignore)
+                | None -> table.Rows.Add("<version is missing!>", t.Name, false) |> ignore)
         with ex ->
             table.Rows.Add("Load error", Path.GetFileName(assemblyPath), false) |> ignore
             table.Rows.Add("Error details", ex.Message, false) |> ignore
@@ -115,15 +116,16 @@ module FlowerCompatibility =
             let assembly = Assembly.LoadFrom(path)
 
             assembly.GetTypes()
-            |> Array.filter (fun t -> typeof<IFlowerSeed>.IsAssignableFrom(t) && t.IsClass && not t.IsAbstract)
+            |> Array.filter (fun t -> typeof<IFlower>.IsAssignableFrom(t) && t.IsClass && not t.IsAbstract)
             |> Array.iter (fun t ->
                 match tryGetContract t with
-                | Some attr -> contracts.Add(t.Name, Version(attr.MajorVersion, attr.MinorVersion, attr.BuildVersion))
-                | None -> contracts.Add("<missing>", Version(0, 0, 0, 0)))
+                | Some attr ->
+                    let seed = (t.Name, Version(attr.MajorVersion, attr.MinorVersion, attr.BuildVersion))
+                    contracts.Add(seed)
+                | None -> contracts.Add("<version is missing>", Version(0, 0, 0, 0)))
         with ex ->
             contracts.Add("<loaderr>", Version(0, 0, 0, 0))
             Console.WriteLine($"{ex}")
-            ()
 
         { Name = name
           Version = version
@@ -160,7 +162,7 @@ module FlowerCompatibility =
         //table.Rows.Add("", "", true) |> ignore  // Empty separator row
 
         // Process all assemblies in Plugins directory
-        let pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
+        let pluginsPath = Path.Combine(AppContext.BaseDirectory, "Plugins")
 
         match Directory.Exists pluginsPath with
         | true ->
@@ -185,7 +187,7 @@ module FlowerCompatibility =
             let assembly = Assembly.LoadFrom(path)
 
             assembly.GetTypes()
-            |> Array.filter (fun t -> typeof<IFlowerSeed>.IsAssignableFrom(t) && t.IsClass && not t.IsAbstract)
+            |> Array.filter (fun t -> t.GetType().IsAssignableTo(typeof<IFlower>) && t.IsClass && not t.IsAbstract)
             |> Array.iter (fun t ->
                 match tryGetContract t with
                 | Some attr ->
@@ -193,17 +195,17 @@ module FlowerCompatibility =
                     strings.Add $"*** {t.Name} v{ver_str} ***"
 
                     if attr.MajorVersion <> m_maj then
-                        strings.Add $" -> Differs with abstractions v{m_maj}.{m_min}.{m_bld}! System must unload it!"
+                        strings.Add $" -> Differs with abstractions v{m_maj}.{m_min}.{m_bld}! [Stopped]."
                     else
                         strings.Add
-                            $"    Not conflicts with abstractions v{m_maj}.{m_min}.{m_bld}! System can load it."
+                            $"    Not conflicts with abstractions v{m_maj}.{m_min}.{m_bld}!."
 
                     if attr.MinorVersion <> m_min then
                         strings.Add
-                            $" -> Differs with minor version. Make sure, it not conflicts with your plugins. System can load it."
+                            $" -> Differs with minor version. Make sure, it not conflicts with your plugins!"
                 | None ->
                     strings.Add $"*** {t.Name} ***"
-                    strings.Add($" -> Doesn't have a [FlowerContract] metadata!"))
+                    strings.Add($" -> Doesn't have a [FlowerVersionContract] metadata!"))
         with ex ->
             strings.Add($"Load error: {Path.GetFileName(path)}")
             strings.Add($"\tDetails: {ex.Message}")
@@ -217,7 +219,7 @@ module FlowerCompatibility =
         let list = CorList<FlowerVersionInfo>()
         let major, minor, build = getKernelContract ()
         let kernelVersionInfo =
-            FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "SunFlower.Kernel.dll")
+            FileVersionInfo.GetVersionInfo(AppContext.BaseDirectory + "SunFlower.Kernel.dll")
 
         let contracts = CorList<string * Version>()
         // Kernel .NET assembly adds manually now:
@@ -240,12 +242,15 @@ module FlowerCompatibility =
         //
         // Bad way: returned FlowerVersionInfo instance with <loaderr> name & 0.0.0.0 object version
         // Exceptions chain outputs into Console/configured sh session (stdout)
-        let root = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
+        let root = Path.Combine(AppContext.BaseDirectory, "Plugins")
 
         match Directory.Exists root with
         | true ->
             Directory.GetFiles(root, "*.dll")
             |> Array.iter (fun i -> list.Add(tryGetFlowerVersionInfo i))
+            
         | false -> ()
-        // Return not-null list anyway. Nullable objects denied here
+        // Return only registered objects
         list
+            .Where(fun i -> i.Contracts.Count > 0)
+            .ToList()

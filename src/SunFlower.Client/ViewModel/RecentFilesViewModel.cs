@@ -42,7 +42,7 @@ public partial class RecentFilesViewModel : ObservableObject
 
         RefreshList();
 
-        var pluginCount = mainWindow.PluginService.Seeds.Count;
+        var pluginCount = mainWindow.PluginService.FlowerCollection.Count;
         _pluginStatusText = $"Plugins loaded: {pluginCount}";
     }
 

@@ -22,7 +22,6 @@ using AvaloniaHex.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Service;
-using SunFlower.Client.View;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;
@@ -41,7 +40,7 @@ public partial class WorkspaceViewModel : ObservableObject
     private readonly PluginService _pluginService;
     private readonly PluginAnalysisService _analysisService;
     private readonly DisassemblingService _disassemblingService;
-    private DialogService _dialogService;
+    private DialogService? _dialogService;
 
     public void SetDialogService(DialogService dialogService)
     {
@@ -49,6 +48,7 @@ public partial class WorkspaceViewModel : ObservableObject
     }
     
     private Window? _thisWindow;
+    [ObservableProperty]
     private ulong _targetAddress;
 
     #region File information
@@ -70,17 +70,7 @@ public partial class WorkspaceViewModel : ObservableObject
 
     #endregion
 
-    #region Plugin results
-
-    [ObservableProperty]
-    private PluginResultItem? _selectedPluginResult;
-
-    [ObservableProperty]
-    private string _selectedResultContent = string.Empty;
-
-    #endregion
-
-    #region Project files (left top)
+    #region Project files (explorer)
 
     public ObservableCollection<ProjectFileItem> ProjectFiles { get; } = [];
 
@@ -89,15 +79,15 @@ public partial class WorkspaceViewModel : ObservableObject
 
     #endregion
 
-    #region Available plugins (left bottom)
+    #region Available plugins (applied via project file context menu)
 
-    public ObservableCollection<FlowerSeedData> AvailablePlugins { get; } = [];
+    public ObservableCollection<FlowerData> AvailablePlugins { get; } = [];
 
-    [ObservableProperty]
-    private FlowerSeedData? _selectedPlugin;
-
-    [ObservableProperty]
-    private PluginActionItem? _selectedPluginAction;
+    /// <summary>
+    /// The project file that was right-clicked to open its context menu.
+    /// Plugins chosen from that menu are applied to this file.
+    /// </summary>
+    private ProjectFileItem? _contextProjectFile;
 
     #endregion
 
@@ -135,21 +125,18 @@ public partial class WorkspaceViewModel : ObservableObject
     private bool _isDisassemblyInProgress;
 
     [ObservableProperty]
-    private DisassemblerArchitecture _selectedArchitecture = DisassemblerArchitecture.I8086;
-
-    public Array AvailableArchitectures { get; } =
-        Enum.GetValues(typeof(DisassemblerArchitecture));
+    private DecoderArchitecture _selectedArchitecture = DecoderArchitecture.I8086;
 
     #endregion
 
     /// <summary>
     /// Name of the file that is currently open in the active viewer,
-    /// so we know which file to save back.
+    /// so we know which file to send back.
     /// </summary>
     private string? _activeFileName;
 
     /// <summary>
-    /// Raw bytes of the currently open binary file (for save-back).
+    /// Raw bytes of the currently open binary file (for send-back).
     /// </summary>
     private byte[]? _activeBinaryBytes;
 
@@ -182,13 +169,13 @@ public partial class WorkspaceViewModel : ObservableObject
         LoadFileInfo();
         LoadProjectFiles();
         LoadAvailablePlugins();
-
+        
         HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);
         HexFontSize = settingsService.Current.HexControl?.Size ?? 16;
         
         TextFontFamily = FontFamily.Parse(settingsService.Current.TextControl?.Family!);
         TextFontSize = settingsService.Current.TextControl?.Size ?? 16;
-        
+
         _workspaceService.ResultsUpdated += OnResultsUpdated;
     }
 
@@ -198,9 +185,9 @@ public partial class WorkspaceViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ChangeView(object? mode)
+    private void ChangeView(ViewMode? mode)
     {
-        switch ((ViewMode?)mode)
+        switch (mode)
         {
             case ViewMode.Hex:
                 IsBinaryView = true;
@@ -277,9 +264,9 @@ public partial class WorkspaceViewModel : ObservableObject
 
         try
         {
-            foreach (var seed in _pluginService.Seeds)
+            foreach (var f in _pluginService.FlowerCollection)
             {
-                AvailablePlugins.Add(seed);
+                AvailablePlugins.Add(f);
             }
         }
         catch
@@ -294,16 +281,6 @@ public partial class WorkspaceViewModel : ObservableObject
         LoadProjectFiles();
     }
 
-    partial void OnSelectedPluginResultChanged(PluginResultItem? value)
-    {
-        if (value != null)
-        {
-            SelectedResultContent = value.HasError
-                ? value.ErrorMessage!
-                : value.HasResults ? "Works Correct" : "No results";
-        }
-    }
-
     partial void OnSelectedProjectFileChanged(ProjectFileItem? value)
     {
         if (value != null)
@@ -312,23 +289,42 @@ public partial class WorkspaceViewModel : ObservableObject
         }
     }
 
-    partial void OnSelectedPluginActionChanged(PluginActionItem? value)
-    {
-        if (value != null && SelectedPlugin != null)
-        {
-            _ = ExecutePluginActionAsync(SelectedPlugin);
-        }
-    }
-
+    /// <summary>
+    /// Remembers which project file the context menu was opened on,
+    /// so plugins chosen from that menu are applied to the right file.
+    /// </summary>
     [RelayCommand]
-    private async Task RunSelectedPluginAsync()
+    private void SetActiveProjectFile(ProjectFileItem? file)
     {
-        if (SelectedPlugin == null) 
-            return;
-        
-        await ExecutePluginActionAsync(SelectedPlugin);
+        _contextProjectFile = file;
     }
 
+    /// <summary>
+    /// Applies a plugin (chosen from the project file context menu)
+    /// to the file that was right-clicked.
+    /// </summary>
+    [RelayCommand]
+    private async Task ApplyPluginToProjectFileAsync(FlowerData? plugin)
+    {
+        if (plugin is null)
+        {
+            await Console.Error.WriteLineAsync("plugin is null");
+            return;
+        }
+        var file = _contextProjectFile ?? SelectedProjectFile;
+        if (file == null || string.IsNullOrWhiteSpace(file.Path))
+        {
+            await Console.Error.WriteLineAsync("plugin path is null or empty");
+            return;
+        }
+
+        // The context menu is attached to a specific file; clear the
+        // remembered target so it isn't reused by the next plugin run.
+        _contextProjectFile = null;
+
+        await ExecutePluginActionAsync(plugin, file.Path);
+    }
+    
     [RelayCommand]
     private async Task ExtractHexSelectionAsync(object? parameter)
     {
@@ -590,12 +586,47 @@ public partial class WorkspaceViewModel : ObservableObject
             return null;
 
         var path = file.TryGetLocalPath();
-        if (string.IsNullOrEmpty(path))
-            return null;
-
-        return Path.GetFileName(path);
+        
+        return string.IsNullOrEmpty(path) 
+            ? null 
+            : Path.GetFileName(path);
     }
 
+    [RelayCommand]
+    private async Task ExportFileAsync()
+    {
+        var storage = TopLevel.GetTopLevel(_thisWindow)?.StorageProvider;
+        if (storage is null)
+            return;
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Export SunFlower Project",
+            FileTypeChoices =
+            [
+                new FilePickerFileType("All Files")
+                {
+                    Patterns = ["*.*"]
+                }
+            ]
+        });
+        if (file is null)
+            return;
+        
+        if (IsBinaryView && _activeBinaryBytes != null)
+        {
+            await File.WriteAllBytesAsync(file.Path.AbsolutePath, _activeBinaryBytes);
+        }
+        else if (IsAssemblyView && ActiveTextDocument != null)
+        {
+            await File.WriteAllTextAsync(file.Path.AbsolutePath, ActiveTextDocument.Text);
+        }
+        else if (IsMarkdownView)
+        {
+            await File.WriteAllTextAsync(file.Path.AbsolutePath, ActiveContentText);
+        }
+    }
+    
     #region Disassembler commands
 
     /// <summary>
@@ -613,7 +644,10 @@ public partial class WorkspaceViewModel : ObservableObject
             _disassemblingService,
             SelectedArchitecture
         );
-
+        
+        if (_dialogService is null)
+            return;
+        
         var result = await _dialogService.ShowDialogAsync<DisassemblerDialogViewModel, string?>(dialogVm);
 
         if (!string.IsNullOrEmpty(result))
@@ -675,36 +709,37 @@ public partial class WorkspaceViewModel : ObservableObject
     /// If HexEditor is not open, opens the Hex view.
     /// </summary>
     [RelayCommand]
-    private async Task ShowGoToAddressDialogAsync()
+    private async Task ShowGoToAddressDialogAsync(HexEditor? editor)
     {
         if (_activeBinaryBytes == null)
             return;
 
         // Switch to Hex view if not already visible
-        if (!IsBinaryView)
-        {
-            IsBinaryView = true;
-            IsAssemblyView = false;
-            IsMarkdownView = false;
-        }
+        ChangeView(ViewMode.Hex);
 
         var maxAddress = (ulong)_activeBinaryBytes.Length;
         var dialogVm = new GoToAddressDialogViewModel(maxAddress);
-
-        var result = await _dialogService.ShowDialogAsync<GoToAddressDialogViewModel, ulong?>(dialogVm);
+        
+        if (_dialogService is null)
+            return;
+        
+        var result = await _dialogService.ShowDialogAsync<GoToAddressDialogViewModel, (bool isRelative, ulong offset)?>(dialogVm);
 
         // Store the result for potential use
-        if (result.HasValue)
+        if (editor != null && result is not null)
         {
-            _targetAddress = result.Value;
+            if (!result.Value.isRelative)
+                editor.Caret.Location = new BitLocation(0, 0); // From the start of file 
+            
+            editor.Caret.GoForward(result.Value.offset);
         }
     }
 
     #endregion
 
-    private async Task ExecutePluginActionAsync(FlowerSeedData seed)
+    private async Task ExecutePluginActionAsync(FlowerData seed, string targetPath)
     {
-        var content = await _analysisService.AnalyzeAndSaveAsync(seed);
+        var content = await _analysisService.AnalyzeAndSaveAsync(seed, targetPath);
 
         if (content.IsAssembly)
         {
@@ -747,20 +782,6 @@ public class ProjectFileItem
     public bool IsOriginalBinary { get; set; }
 
     public bool CanDelete => !IsOriginalBinary;
-}
-
-public class PluginActionItem
-{
-    public string Name { get; set; } = string.Empty;
-}
-
-public class PluginResultItem
-{
-    public string PluginName { get; set; } = string.Empty;
-    public string Kind { get; set; } = string.Empty;
-    public bool HasError { get; init; }
-    public string? ErrorMessage { get; set; } = string.Empty;
-    public bool HasResults { get; init; }
 }
 
 #endregion

@@ -12,14 +12,11 @@ open System
 open System.Collections.Generic
 open System.Data
 open Microsoft.FSharp.Core
-open SunFlower.Abstractions.Types
 
 // Module abstract ends. Result of IFlowerSeed interface into collection of results
 // supports some casts:
-//  - Strings       IEnumerable<string>
+//  - Strings       IEnumerable<string> based
 //  - Bytes         Byte[]
-//  - Region        SunFlower.Abstractions.Types.Region <-- My type :3
-//                  (Header, Content, Table)
 //  - DataTable     System.Data.DataTable
 // Support of "Type -> Text" converters will be implemented here
 
@@ -116,41 +113,6 @@ let formatTable (table: DataTable) : string =
 let private (|+) (a: String) (b: String) = a + b + "\n"
 
 /// <summary>
-/// Makes a simple "Papers Section". The region container
-/// contains Header, Content, chat must describe target
-/// object and table what represents you information about this target.
-/// </summary>
-/// <param name="reg">Current region given+unboxed from FlowerResult collection</param>
-/// <param name="header_level">Markdown Heading level</param>
-[<CompiledName "FormatRegion">]
-let formatRegion (reg: Region) (header_level: int) =
-    "#" |> String.replicate header_level // <-- Header declaration must be separated by the value
-    |+ $" {reg.Head}"
-    |+ reg.Content
-    |+ formatTable reg.Table
-    |+ "\n"
-
-/// <summary>
-/// Transforms all Regions collection into one Markdown written next
-///
-/// Warning: The Writers algorithm will be rewritten next time
-/// Reason: FlowerResults contains boxed values and unboxing mechanism
-/// couldn't be one-typed. (FlowerResult collection can contain different
-/// typed entries)
-/// <example>
-/// <code>
-/// [Strings, Bytes, Region, Region, Strings]
-/// </code>
-/// </example>
-/// </summary>
-/// <param name="list"></param>
-[<CompiledName "FormatRegions">]
-let formatRegions (list: IEnumerable<Region>) =
-    let regs = list |> Seq.map (fun reg -> formatRegion reg 3)
-
-    String.Join("\n", regs) |+ "\n"
-
-/// <summary>
 /// Transforms all Regions collection into one Markdown written next
 ///
 /// Warning: The Writers algorithm will be rewritten next time
@@ -166,15 +128,3 @@ let formatTables (list: IEnumerable<DataTable>) =
 
     String.Join("\n", regs) |+ "\n"
 
-[<CompiledName "Write">]
-let write (results: IEnumerable<FlowerSeedResult>) =
-    let mutable acc = "" |+ $"Generated at: {DateTime.Now}"
-
-    for i in results do
-        match i.BoxedResult with
-        | :? IEnumerable<Region> as regs -> acc <- acc |+ formatRegions regs |+ "\n"
-        | :? IEnumerable<String> as strs -> acc <- acc |+ formatStrings strs |+ "\n"
-        | :? IEnumerable<DataTable> as dts -> acc <- acc |+ formatTables dts |+ "\n"
-        | unknown -> acc <- acc |+ $"```\n{unknown.GetType}\n```\n\n"
-
-    acc

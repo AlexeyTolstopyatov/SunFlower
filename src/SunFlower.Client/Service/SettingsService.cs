@@ -40,6 +40,9 @@ public class SettingsService
 {
     private readonly string _settingsPath;
     private SettingsModel _settings;
+
+    public int CacheSubdirectories { get; private set; }
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
@@ -52,6 +55,10 @@ public class SettingsService
         Directory.CreateDirectory(registryDir);
         _settingsPath = Path.Combine(registryDir, "settings.json");
         _settings = new SettingsModel();
+        
+        CacheSubdirectories = 
+            Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV1").Count() + 
+            Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV2").Count();
         
         _ = LoadAsync();
     }
@@ -110,15 +117,15 @@ public class SettingsService
         
         return Task.CompletedTask;
     }
-
-    public Task DeleteFirstCacheAsync()
+    
+    public Task DeleteCacheAsync()
     {
+        if (CacheSubdirectories == 0)
+            return Task.CompletedTask;
+        
         DeleteCacheAsync(Path.Combine(AppContext.BaseDirectory, "CacheV1"));
+        DeleteCacheAsync(Path.Combine(AppContext.BaseDirectory, "CacheV2"));
+            
         return Task.CompletedTask;
-    }
-    public Task DeleteSecondCacheAsync()
-    {
-        var stCacheDir = Path.Combine(AppContext.BaseDirectory, "CacheV2");
-        return DeleteCacheAsync(stCacheDir);
     }
 }

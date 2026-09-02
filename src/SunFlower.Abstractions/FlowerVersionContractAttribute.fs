@@ -14,7 +14,7 @@ open System
 /// </summary>
 [<Class>]
 [<AttributeUsage(AttributeTargets.Class)>]
-type FlowerSeedContractAttribute(major: int, minor: int, build: int) =
+type FlowerVersionContractAttribute(major: int, minor: int, build: int) =
     inherit Attribute()
 
     let mutable majorVersion: Int32 = major

@@ -5,7 +5,10 @@ open System
 // CoffeeLake (C) 2026
 // This part licensed under MIT
 //
-type SeedTarget =
+// [Flower] attribute tells that object which use it -> will be handled by Kernel API
+// as connectable/renderable data model. Other plugin-side API declared in the IFlower interface
+//
+type FlowerTarget =
     /// This characteristic means the plugin specified
     /// on the program data (embedded structures or nested tables)
     ///
@@ -25,7 +28,8 @@ type SeedTarget =
 /// Metadata which stores here could be used at the kernel or at the client-side
 /// </summary>
 [<Sealed>]
-type FlowerAttribute(target: SeedTarget) =
+[<AttributeUsage(AttributeTargets.Class)>]
+type FlowerAttribute(target: FlowerTarget) =
     inherit Attribute()
-    let mutable _target: SeedTarget = target
-    member val Target: SeedTarget = _target with get, set
+    let mutable _target: FlowerTarget = target
+    member val Target: FlowerTarget = _target with get, set

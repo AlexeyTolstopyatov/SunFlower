@@ -2387,7 +2387,7 @@
     ],
     "ModRM": true,
     "IsPrefix": false
-  }, // 0F 83 -> 0F 86 missed
+  }, 
   {
     "Opcode": "C6/0",
     "Reg": 0,

@@ -62,7 +62,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     public async Task InitializeAsync()
     {
-        PluginService.Initialize();
+        await PluginService.InitializeAsync();
         await RecentFilesService.LoadAsync();
 
         if (CurrentPage is RecentFilesViewModel recent)
@@ -219,7 +219,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         try
         {
-            WorkspaceService.OpenFile(path);
+            await WorkspaceService.OpenFile(path);
             var fileInfo = WorkspaceService.CurrentFileInfo;
             if (fileInfo != null)
             {
@@ -253,7 +253,7 @@ public partial class MainWindowViewModel : ObservableObject
             }
             catch
             {
-                // Ignore save errors on exit
+                // Ignore send errors on exit
             }
         }
 

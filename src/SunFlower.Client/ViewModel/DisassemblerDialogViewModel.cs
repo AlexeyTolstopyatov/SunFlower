@@ -20,7 +20,6 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SunFlower.Client.Service;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -28,13 +27,13 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
 {
     private readonly DisassemblingService _disassemblingService;
 
-    public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService, DisassemblerArchitecture? initialArchitecture = null)
+    public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService, DecoderArchitecture? initialArchitecture = null)
     {
         _disassemblingService = disassemblingService;
         
-        // Initialize properties
-        AvailableArchitectures = Enum.GetValues(typeof(DisassemblerArchitecture));
-        SelectedArchitecture = initialArchitecture ?? DisassemblerArchitecture.I8086;
+        // InitializeAsync properties
+        AvailableArchitectures = Enum.GetValues(typeof(DecoderArchitecture));
+        SelectedArchitecture = initialArchitecture ?? DecoderArchitecture.I8086;
         
         // Store input bytes
         InputBytes = bytes;
@@ -44,7 +43,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
     }
 
     [ObservableProperty]
-    private DisassemblerArchitecture _selectedArchitecture;
+    private DecoderArchitecture _selectedArchitecture;
 
     public Array AvailableArchitectures { get; }
 

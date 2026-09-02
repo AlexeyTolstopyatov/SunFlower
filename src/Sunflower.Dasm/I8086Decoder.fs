@@ -1,10 +1,7 @@
 ﻿namespace Sunflower.Dasm
 
 open System
-open System.Collections.Generic
 open System.IO
-open System.Linq
-open Microsoft.FSharp.Linq.RuntimeHelpers
 open Sunflower.Dasm.Intel.Core
 
 /// <summary>

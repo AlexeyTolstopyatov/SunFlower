@@ -268,7 +268,7 @@ public class ProjectService
     }
     public async Task WriteBinaryAsAsync(Window windowHost)
     {
-        
+        // ignored
     }
     /// <summary>
     /// Writes binary data into the project working directory.
@@ -334,7 +334,7 @@ public class ProjectService
             throw new ArgumentException("New file name cannot be empty.");
 
         if (newFileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-            throw new ArgumentException($"New file name contains invalid characters.");
+            throw new ArgumentException("New file name contains invalid characters.");
 
         var oldPath = Path.Combine(_currentProject.WorkingDirectory, oldFileName);
         var newPath = Path.Combine(_currentProject.WorkingDirectory, newFileName);

@@ -1,7 +1,7 @@
 //
 // CoffeeLake (C) 2026-*
 //
-// PluginService is a singleton service that initializes all flower seeds
+// PluginService is a singleton service that initializes all flowers
 // once at application startup.
 //
 
@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.Service;
@@ -18,56 +19,57 @@ public class PluginService
     private readonly FluentFlowerManager _manager;
 
     /// <summary>
-    /// Seeds that were loaded at initialization (metadata + interfaces).
+    /// FlowerCollection that were loaded at initialization (metadata + interfaces).
     /// </summary>
-    private List<FlowerSeedData>? _loadedSeeds;
+    private List<FlowerData>? _loaded;
 
     private bool _initialized;
 
     public PluginService()
     {
         _manager = FluentFlowerManager.CreateInstance();
-        _loadedSeeds = null;
+        _loaded = null;
         _initialized = false;
 
-        Initialize();
+        InitializeAsync().Wait();
     }
 
     /// <summary>
-    /// Initialize all plugins. Call once at application startup.
+    /// InitializeAsync all plugins. Call once at application startup.
     /// </summary>
-    public void Initialize()
+    public async Task InitializeAsync()
     {
         if (_initialized)
             return;
 
-        var pluginsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+        var pluginsDirectory = Path.Combine(AppContext.BaseDirectory, "Plugins");
 
         if (!Directory.Exists(pluginsDirectory))
         {
-            _loadedSeeds = [];
+            _loaded = [];
             _initialized = true;
             return;
         }
 
-        _manager.ActivateAll();
-        _loadedSeeds = _manager.Seeds.ToList();
+        await _manager.ActivateAllAsync();
+        
+        _loaded = _manager.LoadedFlowers.ToList();
 
         _initialized = true;
     }
 
     /// <summary>
-    /// Get all loaded seeds metadata.
+    /// Get all loaded flowers metadata.
     /// </summary>
-    public IReadOnlyList<FlowerSeedData> Seeds =>
-        _loadedSeeds ?? throw new InvalidOperationException(
-            "PluginService not initialized. Call Initialize() first.");
+    public IReadOnlyList<FlowerData> FlowerCollection =>
+        _loaded ?? throw new InvalidOperationException(
+            "PluginService not initialized. Call InitializeAsync() first.");
 
     /// <summary>
-    /// Analyze a file with all loaded plugins. Returns results.
+    /// AnalyzeAsync a file with all loaded plugins. Returns results.
     /// Does NOT reinitialize plugins — uses cached instances.
     /// </summary>
-    public IReadOnlyList<FlowerSeedData> Analyze(string filePath)
+    public async Task AnalyzeAsync(string filePath)
     {
         if (!_initialized)
             throw new InvalidOperationException("PluginService not initialized.");
@@ -75,9 +77,7 @@ public class PluginService
         if (!File.Exists(filePath))
             throw new FileNotFoundException("Target file not found.", filePath);
 
-        _manager.UpdateAll(filePath);
-
-        return _manager.Seeds.AsReadOnly();
+        await _manager.InitializeAllAsync(filePath);
     }
 
     /// <summary>

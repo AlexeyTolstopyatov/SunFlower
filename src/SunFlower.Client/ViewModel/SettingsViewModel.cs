@@ -43,6 +43,15 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private Array _textEditorThemes = Enum.GetValues(typeof(ThemeName));
 
+    [ObservableProperty]
+    private bool _firstCacheCleared;
+
+    [ObservableProperty]
+    private bool _settingsSaved;
+
+    [ObservableProperty]
+    private string? _message;
+    
     [RelayCommand]
     private void ChangeTheme(object? index)
     {
@@ -64,19 +73,17 @@ public partial class SettingsViewModel : ObservableObject
     private async Task SaveAsync()
     {
         await _settingsService.SaveAsync();
-    }
 
-    [RelayCommand]
-    private async Task DeleteFirstCacheAsync()
-    {
-        await Console.Out.WriteLineAsync("First cache reacts");
-        await _settingsService.DeleteFirstCacheAsync();
+        FirstCacheCleared = true;
+        //Message = "Settings saved!";
     }
-
+    
     [RelayCommand]
-    private async Task DeleteSecondCacheAsync()
+    private async Task DeleteCacheAsync()
     {
-        await Console.Out.WriteLineAsync("Second cache reacts");
-        await _settingsService.DeleteSecondCacheAsync();
+        await _settingsService.DeleteCacheAsync();
+
+        FirstCacheCleared = true;
+        //Message = "Cache is removed!";
     }
 }

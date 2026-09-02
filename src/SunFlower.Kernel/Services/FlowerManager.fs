@@ -1,7 +1,14 @@
 ﻿//
 // CoffeeLake (C) 2026-*
 //
-// This module represents: F# loader
+// This module represents: F# loader for new SunFlower 5.0 plugins.
+// .NET assemblies now are becoming a "Sunflower fields" instead of sunflowers themselves.
+//
+// The project (sunflower field) structure now looks like project root
+// presents only IFlower derived classes. Subdirectories of the project may be used for free.
+//
+// Don't worry, anyway the kernel API checks all nested types of .NET assembly.
+// 
 // @creator atolstopyatov2017@vk.com
 //
 namespace SunFlower.Services
@@ -12,7 +19,6 @@ open System.IO
 open System.Reflection
 open SunFlower.Abstractions
 open SunFlower.Kernel.Services
-open SunFlower.Kernel.Writers
 
 /// <summary>
 /// State of FlowerManager machine
@@ -20,12 +26,12 @@ open SunFlower.Kernel.Writers
 type FlowerState =
     { FilePath: string
       SeedsPath: string
-      Seeds: seq<FlowerSeedData> }
+      Seeds: seq<FlowerData> }
 
 /// <summary>
 /// Loader and plugin manager of SunFlower kernel
 /// </summary>
-[<FlowerSeedContract(5, 0, 0)>]
+[<FlowerVersionContract(5, 0, 0)>]
 module FlowerManager =
     /// <summary>
     /// SunFlower.Kernel file version.
@@ -94,11 +100,11 @@ module FlowerManager =
                 [||]
 
         let isAssignable (t: Type) =
-            let flowerType = typeof<IFlowerSeed>
+            let flowerType = typeof<IFlower>
             t.IsAssignableTo flowerType && not t.IsAbstract && t.IsClass
 
         let havingContext (t: Type) =
-            let flowerContract = t.GetCustomAttribute<FlowerSeedContractAttribute>()
+            let flowerContract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
             let flowerTarget = t.GetCustomAttribute<FlowerAttribute>()
 
             try
@@ -110,7 +116,7 @@ module FlowerManager =
                     None
                 | true ->
                     Some
-                        { seed = t |> Activator.CreateInstance :?> IFlowerSeed
+                        { instance = t |> Activator.CreateInstance :?> IFlower
                           kind = flowerTarget.Target
                           version =
                             Version(
@@ -141,25 +147,25 @@ module FlowerManager =
                 [||]
 
         /// Returns filter criteria of correct type.
-        /// Type must be a derivative of IFlowerSeed interface
+        /// Type must be a derivative of IFlower interface
         let byAssignableTypes (t: Type) =
-            let flowerType = typeof<IFlowerSeed>
+            let flowerType = typeof<IFlower>
             t.IsAssignableTo flowerType && not t.IsAbstract
 
         /// Collects optional values from total given types
         /// Watches on the subscribed attributes [Flower] and [FlowerContract]
         let withCorrectMetadata (t: Type) =
-            let flowerContract = t.GetCustomAttribute<FlowerSeedContractAttribute>()
+            let flowerContract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
             let flower = t.GetCustomAttribute<FlowerAttribute>()
             // Nested metadata are copies to the FlowerSeedData instance
             // And might be used by other modules later.
             // For example:
-            // Client looks at the FlowerSeedData::kind field to organize output
+            // Client looks at the FlowerData::kind field to organize output
             try
                 match flowerContract.MajorVersion = loaderMajor with
                 | true ->
                     Some
-                        { seed = t |> Activator.CreateInstance :?> IFlowerSeed
+                        { instance = t |> Activator.CreateInstance :?> IFlower
                           kind = flower.Target
                           version = Version(
                             flowerContract.MajorVersion,
@@ -187,16 +193,16 @@ module FlowerManager =
     /// Calls entrypoint for each loaded plugin
     /// </summary>
     /// <param name="state"></param>
-    [<CompiledName "UpdateAll">]
-    let updateAll (state: FlowerState) =
-        try
-            state.Seeds |> Seq.iter (fun data ->
-                let _i = data.seed.Main(state.FilePath)
-                ())
-        with e ->
-            e.Message |> Console.Error.WriteLine
-
-        state
+    // [<CompiledName "UpdateAll">]
+    // let updateAll (state: FlowerState) =
+    //     try
+    //         state.Seeds |> Seq.iter (fun data ->
+    //             let _i = data.seed.Main(state.FilePath)
+    //             ())
+    //     with e ->
+    //         e.Message |> Console.Error.WriteLine
+    //
+    //     state
     /// <summary>
     /// Returns loaded flower seeds collection
     /// </summary>

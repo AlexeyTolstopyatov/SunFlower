@@ -18,19 +18,13 @@ public enum Theme
     Dark
 }
 
-public class Font
+public class Font(string family, double size)
 {
     [JsonPropertyName("family")]
-    public string? Family { get; set; }
+    public string? Family { get; set; } = family;
 
     [JsonPropertyName("size")] 
-    public double Size { get; set; }
-    
-    public Font(string family, double size)
-    {
-        Family = family;
-        Size = size;
-    }
+    public double Size { get; set; } = size;
 }
 
 public class SettingsModel

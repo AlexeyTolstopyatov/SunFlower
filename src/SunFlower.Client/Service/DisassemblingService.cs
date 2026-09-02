@@ -14,7 +14,7 @@ namespace SunFlower.Client.Service;
 /// <summary>
 /// Target CPU architecture for disassembly.
 /// </summary>
-public enum DisassemblerArchitecture
+public enum DecoderArchitecture
 {
     I8086,
     I80186,
@@ -22,20 +22,15 @@ public enum DisassemblerArchitecture
     I80386
 }
 
-public class DisassemblingService
+public class DisassemblingService(WorkspaceService workspaceService)
 {
-    private readonly WorkspaceService _workspaceService;
-
-    public DisassemblingService(WorkspaceService workspaceService)
-    {
-        _workspaceService = workspaceService;
-    }
+    private readonly WorkspaceService _workspaceService = workspaceService;
 
     /// <summary>
     /// Disassemble a byte range, starting at the given offset.
     /// </summary>
     public string DisassembleRange(byte[] bytes, int startOffset,
-        DisassemblerArchitecture arch = DisassemblerArchitecture.I80286)
+        DecoderArchitecture arch = DecoderArchitecture.I80286)
     {
         if (bytes.Length == 0)
             return "; (empty range)";
@@ -45,13 +40,13 @@ public class DisassemblingService
 
         return arch switch
         {
-            DisassemblerArchitecture.I8086 =>
+            DecoderArchitecture.I8086 =>
                 I8086Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DisassemblerArchitecture.I80186 =>
+            DecoderArchitecture.I80186 =>
                 I80186Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DisassemblerArchitecture.I80286 =>
+            DecoderArchitecture.I80286 =>
                 I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DisassemblerArchitecture.I80386 =>
+            DecoderArchitecture.I80386 =>
                 I80386Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
             _ => I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints)
         };

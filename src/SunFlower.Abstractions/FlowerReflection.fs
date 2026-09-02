@@ -6,6 +6,8 @@ open System.Data
 open System.Reflection
 open System.Text
 open SunFlower.Abstractions
+open SunFlower.Abstractions.Pointers
+
 
 module FlowerReflection =
     // CoffeeLake 2025
@@ -35,19 +37,19 @@ module FlowerReflection =
     /// Accepts only types by value. Throws exceptions.
     /// Uses standard .NET reflection for types deserialization.
     /// </summary>
-    [<CompiledName "GetNameValueTable">]
-    let get_nv_table<'TSafe> (inst: 'TSafe) : DataTable =
+    [<CompiledName "DictionaryDataTable">]
+    let dictionaryDataTable<'TSafe> (inst: 'TSafe) : DataTable =
         let dt = new DataTable()
-        dt.Columns.Add("Name", typeof<string>) |> ignore
+        dt.Columns.Add("Key", typeof<string>) |> ignore
         dt.Columns.Add("Value", typeof<string>) |> ignore
 
-        let typ = typeof<'TSafe> // how to trait it like: ... where TSafe : struct
+        let typ = typeof<'TSafe> // how to trait it like: ... where TSafe : IEnumerable
 
         let properties = typ.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
         let fields = typ.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
-        let get_type_enum (t: Type) =
+        let getTypeEnum (t: Type) =
             match t with // guards and generics
             | _ when t = typeof<Byte> -> FlowerType.U1
             | _ when t = typeof<SByte> -> FlowerType.U1
@@ -65,17 +67,25 @@ module FlowerReflection =
             | _ when t = typeof<DateTime> -> FlowerType.AnyStr
             | _ -> FlowerType.AnyStr
 
-        let get_value_string (value: obj) =
+        let getValueString (value: obj) =
             match value with
             | null -> String.Empty
-            | :? Byte
-            | :? SByte as b -> $"0x{b:X2}"
-            | :? UInt16
-            | :? Int16 as w -> $"0x{w:X4}"
-            | :? UInt32
-            | :? Int32 as dw -> $"0x{dw:X8}"
-            | :? UInt64
-            | :? Int64 as qw -> $"0x{qw:X16}"
+            // | :? int8
+            // | :? int16
+            // | :? int32
+            // | :? int64
+            // | :? uint8
+            // | :? uint16
+            // | :? uint32
+            // | :? uint64 -> $"{value}" --> type redefinition doesn't work right :D!!!
+            | :? U8Ptr
+            | :? I8Ptr as b -> $"0x{b:X2}"
+            | :? U16Ptr
+            | :? I16Ptr as w -> $"0x{w:X4}"
+            | :? U32Ptr
+            | :? I32Ptr as dw -> $"0x{dw:X8}"
+            | :? U64Ptr
+            | :? I64Ptr as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
             | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
             | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
@@ -84,15 +94,15 @@ module FlowerReflection =
         for prop in properties do
             if prop.CanRead then
                 let value = prop.GetValue(inst)
-                let flt = get_type_enum prop.PropertyType
-                let type_str = FlowerReport.forColumnFl (prop.Name, flt)
-                dt.Rows.Add(type_str, get_value_string value) |> ignore
+                let flt = getTypeEnum prop.PropertyType
+                let typeStr = FlowerReport.forColumnFl (prop.Name, flt)
+                dt.Rows.Add(typeStr, getValueString value) |> ignore
 
         for field in fields do
             let value = field.GetValue(inst)
-            let flt = get_type_enum field.FieldType
-            let type_str = FlowerReport.forColumnFl (field.Name, flt)
-            dt.Rows.Add(type_str, get_value_string value) |> ignore
+            let flt = getTypeEnum field.FieldType
+            let typeStr = FlowerReport.forColumnFl (field.Name, flt)
+            dt.Rows.Add(typeStr, getValueString value) |> ignore
 
         dt
 
@@ -106,53 +116,53 @@ module FlowerReflection =
     /// </summary>
     /// <param name="items">COR List of objects saved after deserialization</param>
     [<CompiledName "ListToDataTable">]
-    let list_to_data_table<'T> (items: IEnumerable<'T>) : DataTable =
-        let get_value_string (value: obj) =
+    let arrayToDataTable<'T> (items: IEnumerable<'T>) : DataTable =
+        let getValueString (value: obj) =
             match value with
-            | :? Byte
-            | :? SByte as b -> $"0x{b:X2}"
-            | :? UInt16
-            | :? Int16 as w -> $"0x{w:X4}"
-            | :? UInt32
-            | :? Int32 as dw -> $"0x{dw:X8}"
-            | :? UInt64
-            | :? Int64 as qw -> $"0x{qw:X16}"
+            | :? U8Ptr
+            | :? I8Ptr as b -> $"0x{b:X2}"
+            | :? U16Ptr
+            | :? I16Ptr as w -> $"0x{w:X4}"
+            | :? U32Ptr
+            | :? I32Ptr as dw -> $"0x{dw:X8}"
+            | :? U64Ptr
+            | :? I64Ptr as qw   -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
-            | :? String as str -> str |> FlowerReport.safeString
+            | :? String as str  -> str |> FlowerReport.safeString
             | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
             | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
             | _ -> value.ToString()
 
-        let dt = new DataTable("CollectionData")
-        let item_type = typeof<'T>
+        let dt = new DataTable($"serialized${typeof<'T>}")
+        let itemType = typeof<'T>
 
-        let get_underlying_type (typ: Type) =
-            if typ.IsGenericType && typ.GetGenericTypeDefinition() = typedefof<Option<_>> then
-                typ.GetGenericArguments().[0]
+        let underlyingType (t: Type) =
+            if t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Option<_>> then
+                t.GetGenericArguments()[0]
             else
-                typ
+                t
 
         // First item columns construct
-        let first_item =
+        let firstItem =
             if items <> null then
                 Some(items.GetEnumerator().MoveNext())
             else
                 None
 
-        match first_item with
-        | Some(item) ->
+        match firstItem with
+        | Some _ ->
             let properties =
-                item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+                itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
                 |> Array.filter _.CanRead
 
-            let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
             for prop in properties do
-                let column_type = get_underlying_type prop.PropertyType
+                let _columnType = underlyingType prop.PropertyType
                 dt.Columns.Add(prop.Name) |> ignore
 
             for field in fields do
-                let column_type = get_underlying_type field.FieldType
+                let _columnType = underlyingType field.FieldType
                 dt.Columns.Add(field.Name) |> ignore
 
             dt.Columns.Add("#", typeof<int>) |> ignore
@@ -164,7 +174,7 @@ module FlowerReflection =
                 for prop in properties do
                     try
                         let value = prop.GetValue(item)
-                        row[prop.Name] <- get_value_string value
+                        row[prop.Name] <- getValueString value
                     with ex ->
                         row[prop.Name] <- DBNull.Value
                         printfn $"Error reading property %s{prop.Name}: %s{ex.Message}"
@@ -172,28 +182,27 @@ module FlowerReflection =
                 for field in fields do
                     try
                         let value = field.GetValue(item)
-                        row[field.Name] <- get_value_string value
+                        row[field.Name] <- getValueString value
                     with ex ->
                         row[field.Name] <- DBNull.Value
                         printfn $"Error reading field %s{field.Name}: %s{ex.Message}"
 
                 row["#"] <- index
                 dt.Rows.Add(row))
-
         | None ->
             let properties =
-                item_type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+                itemType.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
                 |> Array.filter _.CanRead
 
-            let fields = item_type.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+            let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
             for prop in properties do
-                let column_type = get_underlying_type prop.PropertyType
-                dt.Columns.Add(prop.Name, column_type) |> ignore
+                let columnType = underlyingType prop.PropertyType
+                dt.Columns.Add(prop.Name, columnType) |> ignore
 
             for field in fields do
-                let column_type = get_underlying_type field.FieldType
-                dt.Columns.Add(field.Name, column_type) |> ignore
+                let columnType = underlyingType field.FieldType
+                dt.Columns.Add(field.Name, columnType) |> ignore
 
             dt.Columns.Add("#", typeof<int>) |> ignore
 

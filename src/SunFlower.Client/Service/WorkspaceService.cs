@@ -51,7 +51,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     /// <summary>
     /// Open a file - automatically detects whether it's a raw binary or project.
     /// </summary>
-    public void OpenFile(string path)
+    public async Task OpenFile(string path)
     {
         if (!File.Exists(path))
             throw new FileNotFoundException("File not found.", path);
@@ -63,30 +63,30 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
             return;
         }
 
-        OpenRawBinary(path);
+        await OpenRawBinary(path);
     }
 
     /// <summary>
     /// Open a raw binary and create a temp project for it.
     /// </summary>
-    private FlowerFileInfo OpenRawBinary(string path)
+    private async Task OpenRawBinary(string path)
     {
-        var project = projectService.OpenRawBinary(path);
+        projectService.OpenRawBinary(path);
         _isProject = false;
         _currentFilePath = Path.GetFullPath(path);
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
-        // Analyze with all plugins
-        pluginService.Analyze(_currentFilePath);
+        // AnalyzeAsync with all plugins
+        await pluginService.AnalyzeAsync(_currentFilePath);
+        
+        // pluginService.AnalyzeAsync(_currentFilePath);
         ResultsUpdated?.Invoke();
-
-        return _currentFileInfo;
     }
 
     /// <summary>
     /// Open a .flowerproj project file.
     /// </summary>
-    private void OpenProject(string path)
+    private async Task OpenProject(string path)
     {
         var project = projectService.OpenProject(path);
         _isProject = true;
@@ -95,8 +95,8 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         _currentFilePath = originalBinary ?? path;
         _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
 
-        // Analyze with all plugins
-        pluginService.Analyze(_currentFilePath);
+        // AnalyzeAsync with all plugins
+        await pluginService.AnalyzeAsync(_currentFilePath);
         ResultsUpdated?.Invoke();
     }
 

@@ -2,7 +2,6 @@
 
 open System
 open System.IO
-open System.Text
 open Sunflower.Dasm.Intel.Core
 
 module I80186Decoder =

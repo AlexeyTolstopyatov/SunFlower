@@ -53,28 +53,38 @@ module FlowerBinarySeeker =
             Some(reader.ReadBytes(count))
         with _ ->
             None
-
     let private seekForMz (reader: BinaryReader) =
         match readBytes reader 0L 2 with
-        | Some [| 0x4auy; 0x5auy |] -> Found(0x5a4d, "DOS Executable (MZ)")
-        | Some [| 0x5auy; 0x4duy |] -> Found(0x4d5a, "DOS Executable (ZM)")
+        | Some [| 0x4auy; 0x5auy |] -> Found(0x5a4d, "DOS Executable")
+        | Some [| 0x5auy; 0x4duy |] -> Found(0x4d5a, "DOS Executable")
         | Some bytes when bytes.Length = 2 -> NotFound(int bytes[0] ||| (int bytes[1] <<< 8))
         | _ -> Error
-
+    /// <summary>
+    /// Historically all Microsoft executable containers always
+    /// store a DOS stub or a some runtime details. That's why firstly
+    /// goes extended DOS header. Only after the DOS header by the
+    /// [e_lfanew] offset the next container is following
+    /// </summary>
+    /// <param name="reader"></param>
     let private seekForNext (reader: BinaryReader) =
         match readBytes reader 0x3CL 4 with
         | Some offsetBytes when offsetBytes.Length = 4 ->
             let offset = BitConverter.ToInt32(offsetBytes, 0)
-
             match readBytes reader (int64 offset) 2 with
-            | Some [| 0x50uy; 0x45uy |] -> Found(0x4550, "WinNT Executable (PE)")
-            | Some [| 0x45uy; 0x50uy |] -> Found(0x5045, "WinNT Executable (PE)")
-            | Some [| 0x45uy; 0x4euy |] -> Found(0x454e, "Win16-OS/2 1.x Executable (NE)")
-            | Some [| 0x4euy; 0x45uy |] -> Found(0x4e45, "Win16-OS/2 1.x Executable (NE)")
-            | Some [| 0x45uy; 0x4cuy |] -> Found(0x454c, "Win386-OS/2 2.x Executable (LE)")
-            | Some [| 0x4cuy; 0x45uy |] -> Found(0x4c45, "Win386-OS/2 2.x Executable (LE)")
-            | Some [| 0x58uy; 0x4cuy |] -> Found(0x584c, "OS/2-ArcaOS Executable (LX)")
-            | Some [| 0x4cuy; 0x58uy |] -> Found(0x4c58, "OS/2-ArcaOS Executable (LX)")
+            | Some [| 0x50uy; 0x45uy |] -> Found(0x4550, "Portable Executable")
+            | Some [| 0x45uy; 0x50uy |] -> Found(0x5045, "Portable Executable")
+            | Some [| 0x45uy; 0x4euy |] -> Found(0x454e, "New Executable")
+            | Some [| 0x4euy; 0x45uy |] -> Found(0x4e45, "New Executable")
+            | Some [| 0x45uy; 0x4cuy |] -> Found(0x454c, "Linear Executable")
+            | Some [| 0x4cuy; 0x45uy |] -> Found(0x4c45, "Linear Executable")
+            | Some [| 0x58uy; 0x4cuy |] -> Found(0x584c, "Linear eXecutable")
+            | Some [| 0x4cuy; 0x58uy |] -> Found(0x4c58, "Linear eXecutable")
+            | Some [| 0x4cuy; 0x43uy |] -> Found(0x4c43, "Linear Compressed")
+            | Some [| 0x43uy; 0x4cuy |] -> Found(0x434c, "Linear Compressed")
+            | Some [| 0x33uy; 0x57uy |]
+            | Some [| 0x57uy; 0x33uy |] -> Found(0x3357, "W3 Container")
+            | Some [| 0x34uy; 0x57uy |]
+            | Some [| 0x57uy; 0x34uy |] -> Found(0x3457, "W4 Archive")
             | Some bytes when bytes.Length = 2 -> NotFound(int bytes[0] ||| (int bytes[1] <<< 8))
             | _ -> Error
         | _ -> Error

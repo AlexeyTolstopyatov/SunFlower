@@ -41,47 +41,9 @@ For making new sunflower extension:
 1) Create Visual Studio solution.
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
-4) Follow this template
-5) Read documents at the end of "README".
-
-```csharp
-[Flower(SeedTarget.Data)]
-[FlowerContract(5, 0, 0)]
-public class MyAnalyzer : IFlowerSeed {
-  /// Title
-  public string Name => "It shows in Connected Plugins menu";
-  /// Plugin results writes here. All exception chains
-  /// contains here. When exception throws -> 
-  /// plugin terminates and information shows in a Client app.
-  public FlowerSeedStatus Status { get; set; }
-  /// EntryPoint 
-  /// (calls when IFlowerSeed derivate instance creates)
-  public int Main(string path) { /* Scan for patterns */ }
-}
-```
-
-If you want use F# toolchain you can implement it like this:
-
-```fsharp
-[<Flower(SeedTarget.Code)>]
-[<FlowerContract(5, 0, 0)>]
-type MyAnalyzer() =
-  interface IFlowerSeed with
-  /// Title
-  member this.Name = "It shows in Connected Plugins menu"
-  /// Plugin results writes here. All exception chains
-  /// contains here. When exception throws -> 
-  /// plugin terminates and information shows in a Client app.
-  member val Status = FlowerSeedStatus() with get, set
-  /// EntryPoint
-  /// (calls when IFlowerSeed derivate instance creates)
-  member this.Main(path: string) : int = 
-    // Scan for patterns
-    0
-```
-
-6) Build and Drop .DLL into `%Application%/Plugins`
-7) Run SunFlower and see what you can!
+4) Read documents at the end of "README".
+5) Build and Drop .DLL into `%Application%/Plugins`
+6) Run SunFlower and see what you can!
 
 ![Sunflower at the archVM](assets/vmware_screenshot.png)
 ### Supported Binary Formats

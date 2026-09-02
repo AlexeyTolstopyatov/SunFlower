@@ -3,41 +3,66 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="150"
+             mc:Ignorable="d" 
+             d:DesignWidth="400" d:DesignHeight="150"
              x:Class="SunFlower.Client.View.GoToAddressDialogView"
              x:DataType="{x:Type vm:GoToAddressDialogViewModel}">
+    <UserControl.KeyBindings>
+        <KeyBinding
+            Gesture="Ctrl+Enter"
+            Command="{CompiledBinding SwitchOffsetModeCommand}"/>
+    </UserControl.KeyBindings>
     <StackPanel
         Spacing="10">
-        <TextBlock 
+        <TextBlock
             Text="Set Cursor at" 
             FontSize="16"/>
         
-        <TextBlock 
-            Text="{Binding MaxAddress, StringFormat='File {0} bytes'}"
+        <TextBlock
+            Text="{Binding MaxAddress, StringFormat='File {0} bytes', FallbackValue='File 0 bytes'}"
             Foreground="{StaticResource SecondaryTextBrush}"/>
         
-        <TextBox 
-            Text="{Binding AddressInput, Mode=TwoWay}"
-            Watermark="File Offset (example: '1A2B')"/>
-        
+        <Grid
+            HorizontalAlignment="Stretch"
+            ColumnDefinitions="*,6*">
+            <ComboBox
+                SelectedIndex="{CompiledBinding OffsetBase}">
+                <ComboBoxItem
+                    Content="0x"/>
+                <ComboBoxItem
+                    Content="0d"/>
+                <ComboBoxItem
+                    Content="0o"/>
+            </ComboBox>
+            <TextBox
+                Grid.Column="1"
+                AcceptsReturn="False"
+                AcceptsTab="False"
+                Text="{Binding AddressInput, Mode=TwoWay}"
+                Watermark="File Offset"/>
+        </Grid>
         <TextBlock 
             Text="{Binding ErrorMessage}"
             Foreground="Red"/>
         
-        <StackPanel 
+        <StackPanel
             Orientation="Horizontal" 
             HorizontalAlignment="Right" 
             Spacing="10">
+            <TextBlock
+                IsVisible="{CompiledBinding IsRelativeOffset}"
+                Text="From current location"
+                FontWeight="DemiBold"/>
             <Button 
                 HotKey="Enter"
                 MinWidth="80"
-                Command="{Binding AcceptCommand}">
+                Command="{CompiledBinding AcceptCommand}">
                 OK
             </Button>
             <Button 
                 HotKey="Escape"
                 MinWidth="80"
-                Command="{Binding CancelCommand}">
+                Command="{CompiledBinding CancelCommand}">
                 Cancel
             </Button>
         </StackPanel>

@@ -30,62 +30,54 @@ public class PluginContentView
     public long FileSize { get; set; }
 }
 
-public class PluginAnalysisService
+public class PluginAnalysisService(WorkspaceService workspaceService)
 {
-    private readonly WorkspaceService _workspaceService;
-
-    public PluginAnalysisService(WorkspaceService workspaceService)
-    {
-        _workspaceService = workspaceService;
-    }
-
     /// <summary>
-    /// Run a specific plugin on the open file, write result to project dir.
+    /// Run a specific plugin on a given project file, write the result to the project dir.
+    /// The result file is named after the file it was applied to,
+    /// following the convention: <c>&lt;targetFileName&gt;_&lt;pluginName&gt;</c>
+    /// (e.g. applying the plugin to "explorer.exe" gives "explorer_Sunflower.Pe.md").
     /// Fix: clears stale results before Main() so Code-plugins don't
     /// accumulate output from previous file runs.
     /// </summary>
-    public async Task<PluginContentView> AnalyzeAndSaveAsync(FlowerSeedData seedData)
+    /// <param name="flowerData">The plugin to run.</param>
+    /// <param name="targetPath">
+    /// Path of the project file the plugin is applied to. When null, falls back
+    /// to the original binary of the current project (or the opened file).
+    /// </param>
+    public async Task<PluginContentView> AnalyzeAndSaveAsync(FlowerData flowerData, string? targetPath)
     {
-        var project = _workspaceService.CurrentProject;
+        var project = workspaceService.CurrentProject;
         if (project == null)
             throw new InvalidOperationException("No project is open.");
 
         var workingDir = project.WorkingDirectory;
-        var pluginName = seedData.seed.Seed;
-        var kind = $"{seedData.kind}";
+        var pluginName = flowerData.Instance.Name;
+        var kind = $"{flowerData.Kind}";
         var ext = kind == "Code" ? ".asm" : ".md";
 
-        // Clear previous results
-        // CRITICAL: Code-plugins append via results.Add() instead of
-        // setting the whole list. Without this Clear, old data from
-        // the previous file leaks into the current output.
-        var status = seedData.seed.Status;
-        status.Results.Clear();
-        status.LastError = null;
+        var appliedPath = targetPath ?? project.OriginalBinaryPath ?? workspaceService.CurrentFilePath;
+        if (string.IsNullOrEmpty(appliedPath))
+            throw new InvalidOperationException("No target file is available to analyze.");
 
-        var targetPath = project.OriginalBinaryPath ?? _workspaceService.CurrentFilePath;
-        if (targetPath != null)
-            seedData.seed.Main(targetPath);
-
-        var hasError = status.LastError != null;
-        var errorMessage = status.LastError?.Message;
-
-        string content;
-        if (hasError)
+        Exception? error = null;
+        try
         {
-            content = $"# {pluginName}\n\n**Error:** {errorMessage}\n\n```\n{status.LastError}\n```";
+            await flowerData.Instance.CreateAsync(appliedPath);
         }
-        else if (status.Results.Count > 0)
+        catch (Exception e)
         {
-            content = seedData.render();
+            error = e;
         }
-        else
-        {
-            content = $"# {pluginName}\n\nNo results returned. (Blocks count=0)";
-        }
+        
+        var content = error is not null 
+            ? $"# {pluginName}\n\n**Error:** {error.Message}\n\n```\n{error}\n```" 
+            : flowerData.render();
 
-        // Write content to new* file
-        var safeFileName = EraseInvalidCharacters(pluginName) + ext;
+        // Write content to a file named after the analyzed target,
+        // so results never collide when a plugin is applied to several files.
+        var targetBaseName = Path.GetFileNameWithoutExtension(appliedPath);
+        var safeFileName = $"{EraseInvalidCharacters(targetBaseName)}_{EraseInvalidCharacters(pluginName)}{ext}";
         var filePath = Path.Combine(workingDir, safeFileName);
         await File.WriteAllTextAsync(filePath, content);
 
@@ -93,14 +85,14 @@ public class PluginAnalysisService
 
         return new PluginContentView
         {
-            Name = pluginName,
+            Name = $"{targetBaseName}_{pluginName}",
             FileName = safeFileName,
             FilePath = filePath,
             ContentType = kind == "Code" ? "Assembly" : "Markdown",
             Kind = kind,
             RawContent = content,
-            HasError = hasError,
-            ErrorMessage = errorMessage,
+            HasError = error is not null,
+            ErrorMessage = error?.Message, // null reference?
             IsBinary = false,
             IsAssembly = kind == "Code",
             IsMarkdown = kind != "Code",

@@ -8,7 +8,3 @@
 // @creator: atolstopyatov2017@vk.com
 //
 module SunFlower.Kernel.Writers.FlowerObjectWriter
-
-open System.IO
-open System.Text
-open SunFlower.Kernel.Database

@@ -14,6 +14,7 @@ open System
 /// </summary>
 [<Class>]
 [<AttributeUsage(AttributeTargets.Class)>]
+[<AllowNullLiteral>]
 type FlowerVersionContractAttribute(major: int, minor: int, build: int) =
     inherit Attribute()
 

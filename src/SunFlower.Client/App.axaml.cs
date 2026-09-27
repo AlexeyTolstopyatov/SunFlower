@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -12,13 +13,13 @@ namespace SunFlower.Client;
 public partial class App : Application
 {
     public static PluginService PluginService { get; } = new();
-    public static DisassemblingService DisassemblingService { get; } = new(WorkspaceService);
     private static RecentFilesService RecentFilesService { get; } = new();
     private static ProjectService ProjectService { get; } = new();
     private static WorkspaceService WorkspaceService { get; } = new(PluginService, ProjectService);
+    public static DisassemblingService DisassemblingService { get; } = new(WorkspaceService);
     private static WindowService WindowService { get; } = new();
     private static SettingsService SettingsService { get; } = new();
-    public static ThemeService ThemeService { get; set; } = new();
+    public static ThemeService ThemeService { get; private set; } = new();
     
     public override void Initialize()
     {
@@ -51,7 +52,9 @@ public partial class App : Application
             ThemeService
         );
 
-        _ = mainViewModel.InitializeAsync();
+        // Show the main window first, then initialize plugins/recent files in the
+        // background so the UI thread stays responsive during startup.
+        _ = InitializeWhenReadyAsync(mainViewModel);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -67,6 +70,23 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Runs startup initialization in the background. The window is already visible,
+    /// and heavy plugin activation is offloaded to the thread pool by PluginService,
+    /// so this never blocks the UI thread. Exceptions are caught instead of being lost.
+    /// </summary>
+    private static async Task InitializeWhenReadyAsync(MainWindowViewModel mainViewModel)
+    {
+        try
+        {
+            await mainViewModel.InitializeAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Window init failed: {ex}");
+        }
     }
     /// <summary>
     /// Necessary files which stores in the root already is recent files collection

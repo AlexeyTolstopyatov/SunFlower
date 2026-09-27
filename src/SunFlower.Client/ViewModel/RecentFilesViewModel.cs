@@ -33,7 +33,7 @@ public partial class RecentFilesViewModel : ObservableObject
     /// Summary text about how many plugins are loaded.
     /// </summary>
     [ObservableProperty]
-    private string _pluginStatusText;
+    private string _pluginStatusText = "Loading plugins…";
 
     public RecentFilesViewModel(RecentFilesService recentFilesService, MainWindowViewModel mainWindow)
     {
@@ -42,8 +42,10 @@ public partial class RecentFilesViewModel : ObservableObject
 
         RefreshList();
 
-        var pluginCount = mainWindow.PluginService.FlowerCollection.Count;
-        _pluginStatusText = $"Plugins loaded: {pluginCount}";
+        // Plugins may not be loaded yet at this point (this VM is created in the
+        // MainWindowViewModel constructor). Show a pending status instead of
+        // touching FlowerCollection, which would throw during startup.
+        RefreshPluginStatus();
     }
 
     /// <summary>
@@ -56,6 +58,20 @@ public partial class RecentFilesViewModel : ObservableObject
         {
             RecentFiles.Add(file);
         }
+    }
+
+    /// <summary>
+    /// Updates the plugin status text. Safe to call before plugins are loaded:
+    /// it checks <see cref="PluginService.IsInitialized"/> and never touches
+    /// <see cref="PluginService.FlowerCollection"/> while it would throw.
+    /// </summary>
+    public void RefreshPluginStatus()
+    {
+        var pluginService = _mainWindow.PluginService;
+
+        PluginStatusText = pluginService.IsInitialized
+            ? $"Plugins loaded: {pluginService.FlowerCollection.Count}"
+            : "Loading plugins…";
     }
 
     /// <summary>

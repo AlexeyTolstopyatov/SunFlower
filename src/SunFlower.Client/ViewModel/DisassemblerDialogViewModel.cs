@@ -31,7 +31,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
     {
         _disassemblingService = disassemblingService;
         
-        // InitializeAsync properties
+        // ActivateAsync properties
         AvailableArchitectures = Enum.GetValues(typeof(DecoderArchitecture));
         SelectedArchitecture = initialArchitecture ?? DecoderArchitecture.I8086;
         

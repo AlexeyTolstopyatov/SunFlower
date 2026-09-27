@@ -6,10 +6,10 @@
 //
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SunFlower.Kernel.Services;
 
@@ -31,14 +31,15 @@ public class PluginService
         _manager = FluentFlowerManager.CreateInstance();
         _loaded = null;
         _initialized = false;
-
-        InitializeAsync().Wait();
     }
 
     /// <summary>
-    /// InitializeAsync all plugins. Call once at application startup.
+    /// ActivateAsync all plugins. Call once at application startup.
+    /// Plugin activation (Assembly.LoadFrom, reflection, Activator.CreateInstance) is CPU-bound
+    /// and F#'s <c>task {}</c> builder runs its synchronous body on the calling thread,
+    /// so the whole pipeline must be offloaded to the thread pool to keep the UI responsive.
     /// </summary>
-    public async Task InitializeAsync()
+    public async Task ActivateAsync()
     {
         if (_initialized)
             return;
@@ -52,8 +53,8 @@ public class PluginService
             return;
         }
 
-        await _manager.ActivateAllAsync();
-        
+        await Task.Run(_manager.ActivateAllAsync);
+
         _loaded = _manager.LoadedFlowers.ToList();
 
         _initialized = true;
@@ -64,14 +65,23 @@ public class PluginService
     /// </summary>
     public IReadOnlyList<FlowerData> FlowerCollection =>
         _loaded ?? throw new InvalidOperationException(
-            "PluginService not initialized. Call InitializeAsync() first.");
+            "PluginService not initialized. Call ActivateAsync() first.");
+
+    /// <summary>
+    /// Whether all plugins have been loaded. Until this is <c>true</c>,
+    /// <see cref="FlowerCollection"/> is not available and throws.
+    /// Use this to guard access during startup (see RecentFilesViewModel).
+    /// </summary>
+    public bool IsInitialized => _initialized;
 
     public string[] KernelMessages => _manager.Messages.ToArray();
     /// <summary>
     /// AnalyzeAsync a file with all loaded plugins. Returns results.
     /// Does NOT reinitialize plugins — uses cached instances.
+    ///
+    /// For unknown flower - recalls all flowers in collection
     /// </summary>
-    public async Task AnalyzeAsync(string filePath)
+    public async Task AnalyzeAsync(string filePath, [Optional] string? flowerName)
     {
         if (!_initialized)
             throw new InvalidOperationException("PluginService not initialized.");
@@ -79,7 +89,11 @@ public class PluginService
         if (!File.Exists(filePath))
             throw new FileNotFoundException("Target file not found.", filePath);
 
-        await _manager.InitializeAllAsync(filePath);
+        // await Task.Run(() => _manager.InitializeAllAsync(filePath));
+        if (flowerName is null)
+            await Task.Run(() => _manager.InitializeAllAsync(filePath));
+        else
+            await Task.Run(() => _manager.InitializeAsync(flowerName, filePath));
     }
 
     /// <summary>

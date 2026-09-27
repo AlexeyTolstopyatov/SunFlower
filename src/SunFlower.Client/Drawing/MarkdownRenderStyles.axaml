@@ -113,21 +113,21 @@
     </Style>
 
     <Style Selector="Border.Table">
-        <Setter 
-            Property="HorizontalAlignment" 
+        <Setter
+            Property="HorizontalAlignment"
             Value="Left" />
-        <Setter 
-            Property="BorderBrush" 
+        <Setter
+            Property="BorderBrush"
             Value="{DynamicResource BorderBrush}" />
     </Style>
 
     <Style Selector="Grid.Table > Border">
-      <Style.Setters>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="BorderThickness" Value="1,1,0,0"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-        <Setter Property="Padding" Value="2"/>
-      </Style.Setters>
+        <Style.Setters>
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="BorderThickness" Value="1,1,0,0" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Padding" Value="2" />
+        </Style.Setters>
     </Style>
 
     <Style Selector="Grid.Table">
@@ -157,7 +157,9 @@
     <Style Selector="Border.EvenTableRow">
         <Setter Property="Padding" Value="5,0" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+        <Setter
+            Property="Background"
+            Value="{DynamicResource RegionBrush}" />
     </Style>
 
     <Style Selector="Border.Blockquote">

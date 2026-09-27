@@ -266,10 +266,8 @@ public class ProjectService
         await File.WriteAllTextAsync(fullPath, content);
         _currentProject.IsDirty = true;
     }
-    public async Task WriteBinaryAsAsync(Window windowHost)
-    {
-        // ignored
-    }
+    // public async Task WriteBinaryAsAsync(Window windowHost)
+    
     /// <summary>
     /// Writes binary data into the project working directory.
     /// </summary>

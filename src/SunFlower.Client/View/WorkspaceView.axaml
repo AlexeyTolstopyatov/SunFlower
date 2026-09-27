@@ -78,7 +78,7 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
                 <MenuItem
-                    HotKey="Ctrl+Shift+S"
+                    HotKey="Alt+X"
                     Command="{CompiledBinding SaveProjectCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/edit48.png" />
@@ -94,6 +94,7 @@
                         </TextBlock>
                     </MenuItem.Header>
                 </MenuItem>
+                
                 <MenuItem
                     Command="{CompiledBinding ExportFileCommand}"
                     CommandParameter="{CompiledBinding SelectedProjectFile}"
@@ -276,6 +277,7 @@
                                                     Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).OpenProjectFileCommand, FallbackValue=Close}"
                                                     CommandParameter="{Binding}" />
                                                 <MenuItem
+                                                    HotKey="Ctrl+S"
                                                     Header="Save"
                                                     Command="{CompiledBinding $parent[UserControl].((vm:WorkspaceViewModel)DataContext).SaveActiveFileCommand, FallbackValue=Close}" />
                                                 <!-- <Separator/> -->

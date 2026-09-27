@@ -6,6 +6,7 @@
 // Injects all services that live for the lifetime of the app.
 //
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -19,16 +20,29 @@ namespace SunFlower.Client.ViewModel;
 public partial class MainWindowViewModel : ObservableObject
 {
     public PluginService PluginService { get; }
-    public RecentFilesService RecentFilesService { get; }
-    public WorkspaceService WorkspaceService { get; }
-    public ProjectService ProjectService { get; }
-    public WindowService WindowService { get; }
+    private RecentFilesService RecentFilesService { get; }
+    private WorkspaceService WorkspaceService { get; }
+    private ProjectService ProjectService { get; }
+    private WindowService WindowService { get; }
     public Version Version { get; init; }
     public SettingsService SettingsService { get; init; }
     public ThemeService ThemeService { get; init; }
 
     [ObservableProperty]
     private ObservableObject? _currentPage;
+
+    /// <summary>
+    /// True while background initialization (plugins, recent files) is running.
+    /// Drives the loading overlay in the application shell.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isBusy;
+
+    /// <summary>
+    /// Caption shown below the loading indicator.
+    /// </summary>
+    [ObservableProperty]
+    private string _busyText = "Waiting for a sun";
     
     /// <summary>
     /// Reference to the main window for dialogs. Set by View.
@@ -62,12 +76,23 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     public async Task InitializeAsync()
     {
-        await PluginService.InitializeAsync();
-        await RecentFilesService.LoadAsync();
-
-        if (CurrentPage is RecentFilesViewModel recent)
+        IsBusy = true;
+        try
         {
-            recent.RefreshList();
+            await PluginService.ActivateAsync();
+
+            BusyText = "Loading recent files…";
+            await RecentFilesService.LoadAsync();
+
+            if (CurrentPage is RecentFilesViewModel recent)
+            {
+                recent.RefreshList();
+                recent.RefreshPluginStatus();
+            }
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -103,9 +128,13 @@ public partial class MainWindowViewModel : ObservableObject
             AllowMultiple = false,
             FileTypeFilter =
             [
-                new FilePickerFileType("All Executables")
+                new FilePickerFileType("All Files")
                 {
-                    Patterns = ["*.*", "*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv"]
+                    Patterns = ["*.*"]
+                },
+                new FilePickerFileType("Executable Modules/Resources")
+                {
+                    Patterns = ["*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv", "*.scr"]
                 },
                 new FilePickerFileType("Project Files")
                 {
@@ -121,6 +150,11 @@ public partial class MainWindowViewModel : ObservableObject
         if (!string.IsNullOrEmpty(path))
         {
             await OpenFileAsync(path);
+        }
+
+        if (CurrentPage is RecentFilesViewModel recent)
+        {
+            recent.RefreshList();
         }
     }
 
@@ -217,6 +251,9 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task OpenExternalFile(string path)
     {
+        IsBusy = true;
+        BusyText = $"Opening {Path.GetFileName(path)}";
+
         try
         {
             await WorkspaceService.OpenFile(path);
@@ -235,6 +272,10 @@ public partial class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             await Console.Error.WriteLineAsync($"Failed to open file: {ex}");
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 

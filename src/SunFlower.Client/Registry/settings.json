@@ -1,0 +1,12 @@
+﻿{
+  "theme": 0,
+  "text_control_theme": 0,
+  "text_control": {
+    "family": "Droid Sans Mono",
+    "size": 13
+  },
+  "hex_control": {
+    "family": "Consolas",
+    "size": 16
+  }
+}

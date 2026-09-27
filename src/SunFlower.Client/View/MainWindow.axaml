@@ -103,10 +103,30 @@
         </Grid>
 
         <!-- Page area — uses ViewLocator to auto-resolve View for ViewModel -->
-        <ContentControl
-            Grid.Column="1"
-            Name="PageArea"
-            Content="{Binding CurrentPage}"
-            ContentTemplate="{StaticResource ViewLocator}" />
+        <Grid Grid.Column="1">
+            <ContentControl
+                Name="PageArea"
+                Content="{Binding CurrentPage}"
+                ContentTemplate="{StaticResource ViewLocator}" />
+
+            <!-- Startup loading overlay: shown while plugins/recent files initialize -->
+            <Border
+                Name="LoadingOverlay"
+                IsVisible="{Binding IsBusy}"
+                Background="{StaticResource RegionBrush}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+                    <ProgressBar
+                        Width="240"
+                        IsIndeterminate="True" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{StaticResource SecondaryTextBrush}"
+                        Text="{Binding BusyText}" />
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

@@ -43,6 +43,7 @@ open System.Runtime.InteropServices
 /// </summary>
 [<Class>]
 [<Sealed>]
+[<AllowNullLiteral>]
 [<AttributeUsage(AttributeTargets.Property ||| AttributeTargets.Field)>]
 type SeedAttribute(name: string, description: string, [<Optional>] skip: bool) =
     inherit Attribute()

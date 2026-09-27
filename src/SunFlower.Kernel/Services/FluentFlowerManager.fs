@@ -61,12 +61,12 @@ type public FlowerData =
                 // F# nullity check is strange sometimes.
                 // Let nullity check will be in run-time
                 let attr = f.GetCustomAttribute<SeedAttribute>()
-
-                try
-                    if not attr.Skip then
-                        yield (attr.Name, attr.Description, f.GetValue(me.instance))
-                with _ ->
-                    ()
+                
+                if isNull attr then ()
+                
+                if not attr.Skip then
+                    yield (attr.Name, attr.Description, f.GetValue(me.instance))
+            
         }
         |> Seq.toList
 
@@ -215,9 +215,15 @@ type FluentFlowerManager() =
                     | None -> [||])
                 |> Seq.filter (fun t -> t.IsClass && not t.IsAbstract && t.IsAssignableTo(parentType))
                 |> Seq.choose (fun t ->
+                    // Nullable container requires to have a 'T default constructor...
                     let contract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
-
-                    // Nullity check literally denied!. But what if CustomAttribute is missing?!
+                    
+                    match isNull contract with
+                    | true ->
+                        send "Version Error: Version is missing"
+                        None
+                    | false -> 
+                    
                     if contract.MajorVersion <> parentVersion.Major then
                         send $"Version Error: {t.Name} has v.{contract.MajorVersion}.x, Expected v.{parentVersion.Major}!"
                         None
@@ -263,7 +269,7 @@ type FluentFlowerManager() =
     [<CompiledName "InitializeAllAsync">]
     member this.initializeAllAsync(filePath: string) =
         task {
-            let compatible = flowers |> Seq.toList // |> Seq.filter (fun fd -> fd.instance.CanHandle(filePath)) |> Seq.toList
+            let compatible = flowers |> Seq.toList
 
             if compatible.IsEmpty then
                 send "Load Error: No such flowers loaded!"
@@ -307,7 +313,6 @@ type FluentFlowerManager() =
                 send "Load Error: IFlower.Name mismatch!"
                 return ()
             | Some c ->
-                // All right. Wake up, Neo
                 try
                     do! c.instance.CreateAsync(filePath)
                 with e ->

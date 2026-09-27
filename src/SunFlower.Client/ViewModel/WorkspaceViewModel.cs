@@ -133,6 +133,23 @@ public partial class WorkspaceViewModel : ObservableObject
 
     #endregion
 
+    #region Long-running operation state
+
+    /// <summary>
+    /// True while a long-running operation (e.g. running a plugin from the context menu)
+    /// is in progress. Drives the busy overlay in <c>WorkspaceWindow</c>.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isBusy;
+
+    /// <summary>
+    /// Caption shown under the workspace busy indicator.
+    /// </summary>
+    [ObservableProperty]
+    private string _busyText = "Working…";
+
+    #endregion
+
     /// <summary>
     /// Name of the file that is currently open in the active viewer,
     /// so we know which file to send back.
@@ -353,8 +370,6 @@ public partial class WorkspaceViewModel : ObservableObject
         if (editorApi.Selection.Range.IsEmpty)
             return;
 
-        ulong Abs(ulong a, ulong b) => a > b ? a - b : b - a;
-
         var length = Abs(start, end);
         ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out var extracted);
         
@@ -371,7 +386,7 @@ public partial class WorkspaceViewModel : ObservableObject
             DefaultExtension = "*.*",
             FileTypeChoices =
             [
-                new FilePickerFileType("Binary")
+                new FilePickerFileType("Any file")
                 {
                     Patterns = ["*.*"]
                 }
@@ -385,6 +400,9 @@ public partial class WorkspaceViewModel : ObservableObject
         project.IsDirty = true;
 
         LoadProjectFiles();
+        return;
+
+        ulong Abs(ulong a, ulong b) => a > b ? a - b : b - a;
     }
 
     [RelayCommand]
@@ -747,34 +765,47 @@ public partial class WorkspaceViewModel : ObservableObject
 
     private async Task ExecutePluginActionAsync(FlowerData seed, string targetPath)
     {
-        var content = await _analysisService.AnalyzeAndSaveAsync(seed, targetPath);
+        IsBusy = true;
+        BusyText = $"Running '{seed.Instance.Name}'…";
 
-        if (content.IsAssembly)
+        try
         {
-            _activeBinaryBytes = null;
-            ActiveTextDocument = new TextDocument(content.RawContent?.ToString() ?? string.Empty);
-            ActiveContentText = string.Empty;
-            ActiveBinaryDocument = null;
+            // Plugin work (CreateAsync/render) is CPU/IO bound and F# task bodies run
+            // synchronously on the calling thread, so run it on the thread pool to
+            // keep the workspace UI responsive.
+            var content = await Task.Run(() => _analysisService.AnalyzeAndSaveAsync(seed, targetPath));
 
-            IsAssemblyView = true;
-            IsBinaryView = false;
-            IsMarkdownView = false;
+            if (content.IsAssembly)
+            {
+                _activeBinaryBytes = null;
+                ActiveTextDocument = new TextDocument(content.RawContent?.ToString() ?? string.Empty);
+                ActiveContentText = string.Empty;
+                ActiveBinaryDocument = null;
+
+                IsAssemblyView = true;
+                IsBinaryView = false;
+                IsMarkdownView = false;
+            }
+            else
+            {
+                _activeBinaryBytes = null;
+                ActiveContentText = content.RawContent?.ToString() ?? string.Empty;
+                ActiveTextDocument = null;
+                ActiveBinaryDocument = null;
+
+                IsMarkdownView = true;
+                IsAssemblyView = false;
+                IsBinaryView = false;
+            }
+
+            _activeFileName = content.FileName;
+
+            await Task.Run(LoadProjectFiles);
         }
-        else
+        finally
         {
-            _activeBinaryBytes = null;
-            ActiveContentText = content.RawContent?.ToString() ?? string.Empty;
-            ActiveTextDocument = null;
-            ActiveBinaryDocument = null;
-
-            IsMarkdownView = true;
-            IsAssemblyView = false;
-            IsBinaryView = false;
+            IsBusy = false;
         }
-
-        _activeFileName = content.FileName;
-
-        LoadProjectFiles();
     }
 }
 

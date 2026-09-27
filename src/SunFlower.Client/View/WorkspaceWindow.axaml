@@ -8,11 +8,11 @@
         d:DesignWidth="1024" 
         d:DesignHeight="768"
         x:Class="SunFlower.Client.View.WorkspaceWindow"
-        x:DataType="{x:Type vm:WorkspaceViewModel}"
         Icon="/Assets/app48.png"
         KeyDown="DialogContainerKeyHandled"
         Background="{StaticResource RegionBrush}"
         Title="{Binding FileName, FallbackValue=Workspace}"
+        x:DataType="{x:Type vm:WorkspaceViewModel}"
         Closing="OnClosing">
     <Grid>
         <view:WorkspaceView 
@@ -25,6 +25,27 @@
             HorizontalAlignment="Stretch"
             Background="#80000000"
             IsVisible="False">
+        </Border>
+
+        <!-- Long-running routine overlay -->
+        <Border
+            x:Name="BusyLayer"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Background="#80000000"
+            IsVisible="{Binding Path=IsBusy}">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="12">
+                <ProgressBar
+                    Width="240"
+                    IsIndeterminate="True" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Foreground="{StaticResource SecondaryTextBrush}"
+                    Text="{Binding BusyText}" />
+            </StackPanel>
         </Border>
 
         <Popup 

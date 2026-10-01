@@ -160,7 +160,6 @@ module internal Decoder =
           path = ""
           is32Bit = is32Bit }
 
-
     let private reg8Names = [| "AL"; "CL"; "DL"; "BL"; "AH"; "CH"; "DH"; "BH" |]
     let private reg16Names = [| "AX"; "CX"; "DX"; "BX"; "SP"; "BP"; "SI"; "DI" |]
     let private reg32Names = [| "EAX"; "ECX"; "EDX"; "EBX"; "ESP"; "EBP"; "ESI"; "EDI" |]
@@ -995,6 +994,83 @@ module internal Decoder =
 
         (List.rev result, status, entrySet)
 
+    /// <summary>
+    /// Minimal length of the zero byte run which is collapsed into a single
+    /// listing line instead of being dumped byte by byte. Zero padding between
+    /// procedures/sections is typical for real-mode MZ images, so its value is
+    /// defined by the word/paragraph alignment
+    /// </summary>
+    let private zeroRunThreshold = 4
+
+    /// <summary>
+    /// Bytes per single ".byte" listing line of the non-code region.
+    /// </summary>
+    let private dataBytesPerLine = 16
+
+    /// <summary>
+    /// Upper bound of the "byte" lines emitted for one unreachable data region.
+    /// The whole block never fits the listing for the binaries with large
+    /// data/BSS tails, so the remainder is reported as a summary comment.
+    /// </summary>
+    let private maxDataLinesPerGap = 16
+
+    /// <summary>
+    /// Emits the region of bytes which are not covered by any decoded
+    /// instruction (i.e. the unreachable data / padding between procedures).
+    /// Runs of zero bytes no shorter than <see cref="zeroRunThreshold"/> are
+    /// collapsed into a single line:
+    ///
+    ///     0x0432 db 46 dup (0x00)
+    /// </summary>
+    let private emitDataRange (sb: StringBuilder) (bytes: byte[]) (offset: int) (length: int) =
+        let mutable linesLeft = maxDataLinesPerGap
+
+        let emitRaw (start: int) (count: int) =
+            let mutable left = count
+            let mutable pos = start
+
+            while left > 0 && linesLeft > 0 do
+                let take = min dataBytesPerLine left
+
+                let payload =
+                    bytes[pos .. pos + take - 1]
+                    |> Array.map (fun b -> $"0x{b:X2}")
+                    |> String.concat ", "
+
+                let line = "DB " + payload
+                sb.AppendLine($"\t{line, -30} ; 0x{pos:X4} data") |> ignore
+                pos <- pos + take
+                left <- left - take
+                linesLeft <- linesLeft - 1
+
+            if left > 0 then
+                sb.AppendLine $"; 0x{pos:X4} {left} more byte(s) of data (omitted)" |> ignore
+
+        let limit = offset + length
+        let mutable i = offset
+
+        while i < limit do
+            if bytes[i] = 0x00uy then
+                let start = i
+
+                while i < limit && bytes[i] = 0x00uy do
+                    i <- i + 1
+
+                let count = i - start
+
+                if count >= zeroRunThreshold then
+                    let line = $"DB {count} DUP (0x00)"
+                    sb.AppendLine($"\t{line, -30} ; 0x{start:X4} alignment padding") |> ignore
+                else
+                    emitRaw start count
+            else
+                let start = i
+
+                while i < limit && bytes[i] <> 0x00uy do
+                    i <- i + 1
+
+                emitRaw start (i - start)
+
     let formatWithLabels (instructions: DecodedInstruction list) (bytes: byte[]) (status: ByteStatus[]) (entrySet: Set<int>) =
         let labelSet = instructions |> List.collect (fun i -> i.Targets) |> Set.ofList
         // Collect CALL targets -> these will become function entries
@@ -1019,9 +1095,19 @@ module internal Decoder =
 
         // Track which offsets are directly preceded by a RET -> to add blank line
         let mutable prevWasRet = false
+        // End of the last emitted byte: the holes between instructions hold the
+        // unreachable data/padding which is not a part of any control flow
+        let mutable coverage = 0
         let sb = StringBuilder()
 
         for instr in sortedInstructions do
+            // Everything the recursive traversal never reached. Zero runs here
+            // are collapsed, so the zero padding does not flood the listing
+            if instr.Offset > coverage then
+                emitDataRange sb bytes coverage (instr.Offset - coverage)
+
+            coverage <- max coverage (instr.Offset + instr.Length)
+
             // Entry point that is not a call target — mark as p_ but always show "Entry point"
             if entrySet.Contains(instr.Offset) && not (callTargets.Contains(instr.Offset)) then
                 if prevWasRet |> not then
@@ -1060,5 +1146,9 @@ module internal Decoder =
             if prevWasRet then
                 sb.AppendLine $"; returned to previous control flow" |> ignore
                 sb.AppendLine() |> ignore
+
+        // Tail after the last reachable instruction (BSS tail, overlays, padding)
+        if coverage < bytes.Length then
+            emitDataRange sb bytes coverage (bytes.Length - coverage)
 
         sb.ToString()

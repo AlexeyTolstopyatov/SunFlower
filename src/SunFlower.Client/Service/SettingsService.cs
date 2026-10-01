@@ -110,6 +110,8 @@ public class SettingsService
     
     private Task DeleteCacheAsync(string path)
     {
+        if (!Directory.Exists(path))
+            return Task.CompletedTask;
         foreach (var directory in Directory.EnumerateDirectories(path))
         {
             Directory.Delete(directory, true);

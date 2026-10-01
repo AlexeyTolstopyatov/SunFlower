@@ -3,22 +3,22 @@
         {
             "name": "entity.name.function.instructions",
             "match": "\\b(?i:aa[adms]|adc|add|and|arpl|bound|bs[fr]|bswap|bt[crs]?|call|clc|cld|cli|cltd|clts|cmc|cmov(?:n?[abgl]e?|n?[ceosz]|np|p[eo]?)?|cmp|cmps[bwdq]?|cmpxchg|cmpxchg8b|cmpxchg16b|cpuid|c[lw]td|daa|das|dec|div|enter|esc|hlt|idiv|imul|in|inc|insd?|ins[bwdq]?|int(?:\\s*3|o)?|inv(?:d|pcid)?|invlpg|iret[dfwq]?|j(?:n?[abgl]e?|n?[ceosz]|np|p[eo]?)|jmp|j[er]?cxz|[ls]ahf|lar|l[d-gs]s|lea|leave|l[defgs]s|[ls][gil]dt|lmsw|loadall|lods[bwdq]?|loop(?:n?[ez])?|lsl|ltr|mov|movabs|movd|movq|movs|movsx|movsxd|movzx|mul|neg|nop|not|or|out|outs[bdw]?|pop|popa|popad|popf|popfd|popfq|push|pusha|pushad|pushf|pushfd|pushfq|rcl|rcr|rdmsr|wrmsr|rdtscp?|ret|retn|rol|ror|rsm|sal|sar|sbb|scas[bwdq]?|set(?:n?[abgl]e?|n?[ceosz]|np|p[eo]?)|shl|shr|shld|shrd|smsw|stc|std|sti|stos[bwdq]?|str|sub|swapgs|syscall|sysret|sysenter|sysexit|test|ud1|ud2[ab]?|verr|verw|fwait|wbinvd|xchg|xlatb?|xsave[cs]?|xrstors?)(?!:)\\b",
-            "comment": "Core x86 instructions — Intel syntax. GAS-стиль суффиксы (b/w/l/q) необязательны."
+            "comment": "Core x86 instructions - Intel syntax."
         },
         {
             "name": "entity.name.function.far_instructions",
             "match": "\\b(?i:lcall|ljmp|lret|retf|retfq|retfd|retfw|iret|iretd|iretf|iretq|jmpf|callf|jmpfq)\\b",
-            "comment": "Далекие вызовы/возвраты (far call/ret). В Intel-синтаксисе также пишутся как `call far ptr` / `jmp far ptr` — см. паттерн far/near ниже."
+            "comment": "far call/ret"
         },
         {
             "name": "keyword.other.far_near",
-            "match": "\\b(?i:far|near|short)\\b",
-            "comment": "Квалификаторы дальности перехода/вызова в Intel-синтаксисе."
+            "match": "\\b(?i:far|near|short|extern|extrn)\\b",
+            "comment": "short/near/far/extern"
         },
         {
             "name": "storage.type.size_specifier",
             "match": "\\b(?i:byte|word|dword|qword|tbyte|fword|oword|xmmword|ymmword|zmmword)\\s+ptr\\b",
-            "comment": "Intel size specifiers: byte ptr [rax], dword ptr [rbx] ..."
+            "comment": "Intel size specifiers: byte ptr [rax], dword ptr [rbx]"
         },
         {
             "name": "entity.name.function.conversion.instructions",
@@ -28,24 +28,24 @@
         {
             "name": "keyword.name.function.prefixes",
             "match": "\\b(?i:rep(?:n?[ez])?|[c-gs]s|(?:addr|data)(?:16|32)|lock|wait|rex(?:64(?:xyz)?)?)(?!:)\\b",
-            "comment": "Префиксы. Intel-синтаксис использует те же мнемоники."
+            "comment": "Prefixes"
         },
         {
             "name": "variable.parameter.relocation",
-            "match": "<[A-Za-z_$?.][A-Za-z0-9_$?.]*>\\s*@\\s*[A-Za-z_][A-Za-z0-9_]*",
+            "match": "[A-Za-z_$?.][A-Za-z0-9_$?.#]*\\s*::\\s*[A-Za-z_][A-Za-z0-9_@]*",
             "captures": {
                 "0": { "name": "variable.parameter.relocation.expression" }
             },
-            "comment": "Угловые скобки: <word>@<word>. Используется в SRE-платформе для импортов/экспортов."
+            "comment": "export/import declaration"
         },
         {
             "name": "variable.parameter.relocation",
-            "match": "\\b([A-Za-z_$?.][A-Za-z0-9_$?.]*)\\s*@\\s*([A-Za-z_][A-Za-z0-9_]*)\\b",
+            "match": "\\b([A-Za-z_$?.][A-Za-z0-9_$?.]*)\\s*::\\s*([A-Za-z_@][A-Za-z0-9_]*)\\b",
             "captures": {
                 "1": { "name": "entity.name.symbol" },
                 "2": { "name": "keyword.other.relocation" }
             },
-            "comment": "Релокации вида __imp_Func@4, Func@PLT, sym@GOTPCREL, sym@GOT, sym@TLSLD и т.п."
+            "comment": "__imp_Func::@4, Func::PLT, sym::GOTPCREL,"
         },
         {"comment": "Begin feature stuff:"},
         {
@@ -223,7 +223,7 @@
         {
             "name": "entity.name.function.miscellaneous",
             "match": "\\b(?i:xstorerng|vmxoff|getsec|vpclmulqdq|movbe|invept|invvpid|vmload|blcfill|v(?:ld|st)mxcsr)(?!:)\\b",
-            "comment": "Прочее."
+            "comment": "etc."
         },
         {"comment": "END feature stuff"},
         {
@@ -237,7 +237,7 @@
         },
         {
             "name": "support.constant.preprocessor",
-            "match": "^\\s*(?<!#)(?:#(?:#(?!#)|(?:un)?assert|define|elif|else|endif|error|ident|(?:ifn?|un)?def|if|import|include(?:_next)?|line|pragma|sccs|warning))\\b",
+            "match": "^\\s*(?<!#)(?:#(?:#(?!#)|(?:un)?assert|define|elif|else|endif|error|extern|ident|(?:ifn?|un)?def|if|import|include(?:_next)?|line|pragma|sccs|warning))\\b",
             "comment": "Normal directives."
         },
         {
@@ -251,7 +251,7 @@
         {
             "name": "comment.assembly",
             "match": "(?:#|//|;).*$",
-            "comment": "Intel/NASM комментарий — `;`. Также оставлены `#` (GAS) и `//` (альтернатива)."
+            "comment": "Intel/NASM comments"
         },
         {
             "begin": "\\s*/\\*",
@@ -264,11 +264,11 @@
         },
         {
             "name": "label.assembly",
-            "match": "((\\s+|;|^)(([A-Za-z$_.0-9]|C-[BA])+[:]))",
+            "match": "((\\s+|;|^)(([A-Za-z$@_.0-9]|C-[BA])+[:]))",
             "captures": {
                 "3": {"name": "keyword.label.assembly"}
             },
-            "comment": "Метки/символы."
+            "comment": "labels."
         },
         {
             "name": "support.constant.alternatives",
@@ -277,7 +277,7 @@
                 "0": { "name": "variable.parameter.symbol" },
                 "1": { "name": "keyword.operator.assignment" }
             },
-            "comment": "Альтернативы .set / .eqv."
+            "comment": "alternatives of .set / .eqv."
         },
         {
             "name": "constant.numeric.float",
@@ -316,7 +316,7 @@
         {
             "name": "constant.numeric.octal.intel",
             "match": "(?<!\\w)[-+~]?[0-7]+[oq]\\b",
-            "comment": "Intel-стиль: 777o / 777q."
+            "comment": "777o / 777q."
         },
         {
             "name": "constant.other.octal",
@@ -325,7 +325,7 @@
         {
             "name": "constant.numeric.decimal",
             "match": "(?<!\\w)[-+~]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[+-]?[0-9]+)?(?=[-\\s,;<>/+~$%(?:)\\]]|$)",
-            "comment": "Добавлен `]` — Intel-стиль memory operand."
+            "comment": "memory operand."
         },
         {
             "name": "constant.other.decimal",
@@ -338,17 +338,17 @@
         {
             "name": "string.quoted",
             "match": "(?:\".*?(?:[^\\\\](?:[\\\\][\\\\])*)\"|<.*?(?:[^\\\\](?:[\\\\][\\\\])*)>|`.*?`)",
-            "comment": "Двойные кавычки — GAS/Intel; угловые — altmacro; обратные — NASM."
+            "comment": "altmacro/NASM."
         },
         {
             "name": "variable.parameter.registers",
             "match": "\\b(?i:r(?:[89]|1[0-5])[dwb]?|[er]?[a-d]x|[a-d][lh]|[re]?s[ip]|s[ip]l|[re]?di|dil|[re]?bp|bpl|[c-gs]s|[re]?ip|e?flags|db(?:[0236-9]|1[0-5]?)|tr[0267]?|st(?:\\s*\\(?\\s*[0-7]\\s*\\)?)?|esp[0-2]|k[0-7]|[xyz]?mm(?:[0-9]|[12][0-9]?|3[01]?)|xmcrt|[gli]dtr|[cd]r(?:[02-9]|1[0-5]?)|msr|[cst]w|fp_(?:[id]p|[cd]s|opc)|mxcsr|msw)\\b",
-            "comment": "Intel: без `%`. Добавлены r8-r15d/w/b, sil/dil/bpl/spl, k0-k7, zmm0-31."
+            "comment": "r8-r15d/w/b, sil/dil/bpl/spl, k0-k7, zmm0-31."
         },
         {
             "name": "invalid.weirdland.eiz",
             "match": "\\b[er]iz\\b",
-            "comment": "eiz/riz — Intel-форма пустого индекса."
+            "comment": "eiz/riz empty index"
         },
         {
             "name": "invalid.instructions",
@@ -378,6 +378,6 @@
         "asm",
         "nasm"
     ],
-    "name": "Intel x86/x64 (SRE)",
+    "name": "Intel x86/x64 (Sunflower)",
     "scopeName": "source.x86.intel"
 }

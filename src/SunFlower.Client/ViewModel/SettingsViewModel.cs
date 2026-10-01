@@ -81,7 +81,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteCacheAsync()
     {
-        await _settingsService.DeleteCacheAsync();
+        await _settingsService.DeleteCache();
 
         FirstCacheCleared = true;
         //Message = "Cache is removed!";

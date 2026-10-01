@@ -41,7 +41,7 @@ public class SettingsService
     private readonly string _settingsPath;
     private SettingsModel _settings;
 
-    public int CacheSubdirectories { get; private set; }
+    private int CacheSubdirectories { get; }
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -59,8 +59,11 @@ public class SettingsService
         CacheSubdirectories = 
             Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV1").Count() + 
             Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV2").Count();
-        
-        _ = LoadAsync();
+
+        DeleteCache();
+
+        Task.Run(LoadAsync);
+        //_ = LoadAsync();
     }
 
     /// <summary>
@@ -79,8 +82,8 @@ public class SettingsService
             _settings = new SettingsModel();
             
             await Console.Out.WriteLineAsync("Settings file not found. Making something new");
-            
             await SaveAsync();
+            
             return;
         }
 
@@ -108,25 +111,22 @@ public class SettingsService
         await File.WriteAllTextAsync(_settingsPath, json);
     }
     
-    private Task DeleteCacheAsync(string path)
+    private void DeleteCache(string path)
     {
-        if (!Directory.Exists(path))
-            return Task.CompletedTask;
+        if (!Directory.Exists(path)) return;
         foreach (var directory in Directory.EnumerateDirectories(path))
         {
             Directory.Delete(directory, true);
         }
-        
-        return Task.CompletedTask;
     }
     
-    public Task DeleteCacheAsync()
+    public Task DeleteCache()
     {
         if (CacheSubdirectories == 0)
             return Task.CompletedTask;
         
-        DeleteCacheAsync(Path.Combine(AppContext.BaseDirectory, "CacheV1"));
-        DeleteCacheAsync(Path.Combine(AppContext.BaseDirectory, "CacheV2"));
+        DeleteCache(Path.Combine(AppContext.BaseDirectory, "CacheV1"));
+        DeleteCache(Path.Combine(AppContext.BaseDirectory, "CacheV2"));
             
         return Task.CompletedTask;
     }

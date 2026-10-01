@@ -164,6 +164,8 @@ module internal Decoder =
     let private reg16Names = [| "AX"; "CX"; "DX"; "BX"; "SP"; "BP"; "SI"; "DI" |]
     let private reg32Names = [| "EAX"; "ECX"; "EDX"; "EBX"; "ESP"; "EBP"; "ESI"; "EDI" |]
     let private segNames = [| "ES"; "CS"; "SS"; "DS"; "FS"; "GS" |]
+    let private crNames = [| "CR0"; "CR1"; "CR2"; "CR3"; "CR4"; "CR5"; "CR6"; "CR7" |]
+    let private drNames = [| "DR0"; "DR1"; "DR2"; "DR3"; "DR4"; "DR5"; "DR6"; "DR7" |]
 
     /// <summary>
     /// 16-bit effective address calculation.
@@ -441,12 +443,15 @@ module internal Decoder =
     /// Returns true if the token is an immediate or jump-displacement token
     /// that should be read from the byte stream rather than used as a register.
     /// </summary>
+    let private isControlToken (token: string) =
+        token = "Cd" || token = "Dd"
+
     let private isImmediateToken (token: string) =
         match token with
         | "Ib" | "Iv" | "Iz" | "Id" | "Iw" | "Jb" | "Jz" | "Ob" | "Ov" | "Mp" | "Ap" -> true
         | _ -> false
 
-    let rec private resolveModRMOperands opcodesMap hex defaultOperation bytes startIdx hasOpSize32 addressSize is32Bit =
+    let rec private resolveModRMOperands (opcodesMap: Map<string, Operation>) (hex: string) defaultOperation bytes startIdx hasOpSize32 addressSize is32Bit =
         match tryReadByte startIdx bytes with
         | None -> None
         | Some(idx, modrm) ->
@@ -454,22 +459,50 @@ module internal Decoder =
             let reg = (modrm >>> 3) &&& 0b111uy
             let rm = modrm &&& 0b111uy
 
-            let effectiveOp =
-                let groupKey = $"{hex}/{reg}"
+            // Intel syntax distinguishes memory form ("D8 /0") from register-direct
+            // form ("D8 +0p" / "D8 x0p"). The latter always has mod = 11b.
+            // When mod = 11 and a register-direct variant exists for this /N,
+            // the plain "/N" (memory) entry must not be used.
+            let opcodeKey = hex
 
-                match Map.tryFind groupKey opcodesMap with
-                | Some grpOp -> grpOp
-                | None -> defaultOperation
+            let findGroup (suffix: string) =
+                Map.tryFind (if suffix = "" then $"{opcodeKey}/{int reg}" else $"{opcodeKey}/{suffix}") opcodesMap
+
+            let tryRegDirect () =
+                match findGroup $"+{int reg}p" with
+                | Some op -> Some op
+                | None -> findGroup $"x{int reg}p"
+
+            // With mod = 11 the operand is a register, so an x87 group entry that
+            // requires memory (e.g. "D9 /5" = FLDCW m16int) cannot apply here.
+            let isFpuEscape =
+                opcodeKey.Length = 2 && opcodeKey.[0] = 'D' && opcodeKey.[1] >= '8' && opcodeKey.[1] <= 'F'
+
+            let fitsRegisterForm (op: Operation) =
+                not isFpuEscape
+                || op.operands |> List.forall (fun t -> not (t.StartsWith("M")))
+
+            let effectiveOp =
+                if modBits = 3uy then
+                    match tryRegDirect () with
+                    | Some grpOp -> grpOp
+                    | None ->
+                        match findGroup "" with
+                        | Some grpOp when fitsRegisterForm grpOp -> grpOp
+                        | _ -> defaultOperation
+                else
+                    match findGroup "" with
+                    | Some grpOp -> grpOp
+                    | None -> defaultOperation
 
             let operands = effectiveOp.operands
 
             if operands.Length = 0 then
                 // Base group entry with no operands (e.g. opcode "80" alone) —
                 // fall back to the group variant, but if it also has no operands, fail.
-                let groupFallbackKey = $"{hex}/{reg}"
-
-                match Map.tryFind groupFallbackKey opcodesMap with
-                | Some fallbackOp when fallbackOp.operands.Length > 0 ->
+                match findGroup "" with
+                | Some fallbackOp
+                    when fallbackOp.operands.Length > 0 && fitsRegisterForm fallbackOp ->
                     resolveModRMOperands opcodesMap hex fallbackOp bytes startIdx hasOpSize32 addressSize is32Bit
                 | _ -> None
             else
@@ -545,7 +578,31 @@ module internal Decoder =
                         match tokens with
                         | [] -> Some(idx, List.rev acc)
                         | tok :: rest ->
-                            if tok.Contains("E") then
+                            if isControlToken tok then
+                                // MOV <CRn/DRn>, <r32> - control register comes from the reg field
+                                let name =
+                                    if tok = "Cd" then
+                                        crNames[int reg]
+                                    else
+                                        drNames[int reg]
+
+                                loopTokens idx rest (name :: acc)
+                            elif tok = "Rd" then
+                                // MOV <r32>, <CRn/DRn> - GPR comes from the r/m field, mod must be 11
+                                if modBits <> 3uy then
+                                    None
+                                else
+                                    loopTokens idx rest (regName rm :: acc)
+                            elif tok = "ST0" then
+                                // x87 accumulator, always ST(0)
+                                loopTokens idx rest ("ST(0)" :: acc)
+                            elif tok = "STi" || tok = "Wn" then
+                                // x87 register selected by the r/m field, mod must be 11
+                                if modBits <> 3uy then
+                                    None
+                                else
+                                    loopTokens idx rest ($"ST({int rm})" :: acc)
+                            elif tok.Contains("E") then
                                 loopTokens idx rest (rmStr :: acc)
                             elif tok.Contains("G") then
                                 loopTokens idx rest (regStr :: acc)

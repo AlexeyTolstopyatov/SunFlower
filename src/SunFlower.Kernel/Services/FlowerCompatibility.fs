@@ -55,7 +55,7 @@ module FlowerCompatibility =
     /// </summary>
     let private getKernelContract () =
         let attr =
-            typeof<FluentFlowerManager>.GetCustomAttribute<FlowerVersionContractAttribute>()
+            typeof<FlowerManager>.GetCustomAttribute<FlowerVersionContractAttribute>()
 
         (attr.MajorVersion, attr.MinorVersion, attr.BuildVersion)
 

@@ -22,10 +22,10 @@ public class DialogService(Window mainWindow)
         where TViewModel : class
     {
         _tcs = new TaskCompletionSource<object?>();
-        
+
         var view = new ViewLocator().Build(viewModel);
-        
-        if (view is not Control dialogContent) 
+
+        if (view is not Control dialogContent)
             return default;
 
         dialogContent.DataContext = viewModel;
@@ -45,13 +45,13 @@ public class DialogService(Window mainWindow)
 
         // Set content to the FlyoutPresenter
         flyoutPresenter.Content = dialogContent;
-        
+
         // Show the dialog
         dialogLayer.IsVisible = true;
         popup.IsOpen = true;
 
         var result = await _tcs.Task;
-        
+
         // Clean up
         flyoutPresenter.Content = null;
         dialogLayer.IsVisible = false;
@@ -61,9 +61,9 @@ public class DialogService(Window mainWindow)
         {
             dialog.DialogService = null;
         }
-        
-        return result is TResult typedResult 
-            ? typedResult 
+
+        return result is TResult typedResult
+            ? typedResult
             : default;
     }
 
@@ -74,13 +74,13 @@ public class DialogService(Window mainWindow)
     {
         var popup = mainWindow.FindControl<Popup>("DialogContainer");
         var dialogLayer = mainWindow.FindControl<Border>("DialogLayer");
-        
-        if (popup == null || dialogLayer == null) 
+
+        if (popup == null || dialogLayer == null)
             return;
-        
+
         popup.IsOpen = false;
         dialogLayer.IsVisible = false;
-        
+
         _tcs?.SetResult(result);
     }
 }

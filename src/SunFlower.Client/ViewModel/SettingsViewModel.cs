@@ -21,25 +21,25 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
     private readonly ThemeService _themeService;
-    
+
     public SettingsViewModel(SettingsService settingsService, ThemeService themeService)
     {
         _settingsService = settingsService;
         _themeService = themeService;
-        
+
         Settings = settingsService.Current;
         _installedFonts = FontManager
             .Current
             .SystemFonts
             .ToArray();
     }
-    
+
     [ObservableProperty]
     private SettingsModel _settings;
-    
+
     [ObservableProperty]
     private FontFamily[] _installedFonts;
-    
+
     [ObservableProperty]
     private Array _textEditorThemes = Enum.GetValues(typeof(ThemeName));
 
@@ -51,13 +51,13 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string? _message;
-    
+
     [RelayCommand]
     private void ChangeTheme(object? index)
     {
         if (index is not int)
             return;
-        
+
         _themeService.SetTheme((Theme)index);
     }
     [RelayCommand]
@@ -65,7 +65,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (index is null)
             return;
-        
+
         _themeService.SetEditor((ThemeName)index);
     }
 
@@ -77,7 +77,7 @@ public partial class SettingsViewModel : ObservableObject
         FirstCacheCleared = true;
         //Message = "Settings saved!";
     }
-    
+
     [RelayCommand]
     private async Task DeleteCacheAsync()
     {

@@ -104,12 +104,13 @@ public static class ContentTypeDetector
     private static ContentDetectionResult? CheckMagicBytes(byte[] header)
     {
         if (header.Length < 4) return null;
-        
+
         // Intel HEX
         if (header[0] == 0x3A && header[1] == 0x30) // ":0" — start of Intel HEX record
             return new ContentDetectionResult
             {
-                IsBinary = false, IsText = true,
+                IsBinary = false,
+                IsText = true,
                 SubType = ContentSubType.PlainText,
                 Description = "Intel HEX",
                 MimeType = "text/plain"
@@ -119,7 +120,8 @@ public static class ContentTypeDetector
         if (header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47)
             return new ContentDetectionResult
             {
-                IsBinary = true, IsText = false,
+                IsBinary = true,
+                IsText = false,
                 SubType = ContentSubType.Image,
                 Description = "PNG Image",
                 MimeType = "image/png"

@@ -18,13 +18,13 @@ public class ViewLocator : IDataTemplate
     {
         var view = data.GetType().FullName!.Replace("ViewModel", "View");
         var type = Type.GetType(view);
-        
+
         if (type == null)
             return new TextBlock { Text = $"The {view} not found" };
 
-        if (!type.IsSubclassOf(typeof(Window))) 
+        if (!type.IsSubclassOf(typeof(Window)))
             return (Control)Activator.CreateInstance(type)!;
-        
+
         return new TextBlock { Text = $"The {view} initialized" };
     }
 

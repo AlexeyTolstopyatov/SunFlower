@@ -14,6 +14,11 @@
         Title="{Binding FileName, FallbackValue=Workspace}"
         x:DataType="{x:Type vm:WorkspaceViewModel}"
         Closing="OnClosing">
+    <Window.KeyBindings>
+        <KeyBinding 
+            Gesture="Ctrl+Shift+P" 
+            Command="{Binding ShowCommandPaletteCommand}"/>
+    </Window.KeyBindings>
     <Grid>
         <view:WorkspaceView 
             x:Name="WorkspaceView" 
@@ -28,12 +33,17 @@
         </Border>
 
         <!-- Long-running routine overlay -->
+        <!--
+             Want to see preview details? See WorkspaceView instead :D
+             Anyway if you set FallbackValue to False, nothing changes at the runtime
+        -->
         <Border
             x:Name="BusyLayer"
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             Background="#80000000"
-            IsVisible="{Binding Path=IsBusy}">
+            IsVisible="{Binding Path=IsBusy}"
+            >
             <StackPanel
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"

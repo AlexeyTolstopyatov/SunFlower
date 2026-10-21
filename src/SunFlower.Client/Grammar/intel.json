@@ -290,7 +290,7 @@
         {
             "name": "constant.numeric.hex.intel",
             "match": "(?<!\\w)[-+~]?[0-9][A-F0-9]*h\\b",
-            "comment": "Intel-стиль: 1234h. Обязательно начинается с цифры, иначе h — это регистр."
+            "comment": "1234h"
         },
         {
             "name": "constant.other.hex",
@@ -303,7 +303,7 @@
         {
             "name": "constant.numeric.binary.intel",
             "match": "(?<!\\w)[-+~]?[01]+b\\b",
-            "comment": "Intel-стиль: 1010b."
+            "comment": "1010b."
         },
         {
             "name": "constant.other.binary",

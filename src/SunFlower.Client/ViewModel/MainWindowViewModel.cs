@@ -43,7 +43,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _busyText = "Waiting for a sun";
-    
+
     /// <summary>
     /// Reference to the main window for dialogs. Set by View.
     /// </summary>
@@ -53,7 +53,7 @@ public partial class MainWindowViewModel : ObservableObject
         RecentFilesService recentFilesService,
         WorkspaceService workspaceService,
         ProjectService projectService,
-        WindowService windowService, 
+        WindowService windowService,
         SettingsService settingsService,
         ThemeService themeService)
     {
@@ -64,8 +64,8 @@ public partial class MainWindowViewModel : ObservableObject
         WindowService = windowService;
         SettingsService = settingsService;
         ThemeService = themeService;
-        
-        Version = UiConverters.KernelApiVersion ?? 
+
+        Version = UiConverters.KernelApiVersion ??
                   throw new NullReferenceException("Kernel API metadata is missing");
 
         CurrentPage = new RecentFilesViewModel(recentFilesService, this);
@@ -111,7 +111,17 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentPage = new SettingsViewModel(SettingsService, ThemeService);
     }
-    
+
+    [RelayCommand]
+    private void NavigateDockingWorkspace()
+    {
+        CurrentPage = new DockingWorkspaceViewModel(
+            WorkspaceService,
+            PluginService,
+            new PluginAnalysisService(WorkspaceService),
+            SettingsService);
+    }
+
     [RelayCommand]
     private async Task ImportFileAsync()
     {
@@ -132,9 +142,9 @@ public partial class MainWindowViewModel : ObservableObject
                 {
                     Patterns = ["*.*"]
                 },
-                new FilePickerFileType("Executable Modules/Resources")
+                new FilePickerFileType("Not UNIX")
                 {
-                    Patterns = ["*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv", "*.scr"]
+                    Patterns = ["*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv", "*.scr", "*.386", "*.vxd", "*.ocx", "*.vst", "*.lib"]
                 },
                 new FilePickerFileType("Project Files")
                 {
@@ -243,7 +253,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void DetachWorkspace()
     {
         if (CurrentPage is not WorkspaceViewModel workspaceVm) return;
-        
+
         WindowService.OpenWorkspaceWindow(workspaceVm);
         NavigateHome();
     }
@@ -256,6 +266,9 @@ public partial class MainWindowViewModel : ObservableObject
 
         try
         {
+            // Clear kernel messages from previous project/file session
+            PluginService.ClearKernelMessages();
+
             await WorkspaceService.OpenFile(path);
             var fileInfo = WorkspaceService.CurrentFileInfo;
             if (fileInfo != null)
@@ -265,9 +278,11 @@ public partial class MainWindowViewModel : ObservableObject
 
             var analysisService = new PluginAnalysisService(WorkspaceService);
             App.ThemeService.SetEditor((ThemeName)SettingsService.Current.TextControlTheme);
-            
-            WindowService.OpenWorkspaceWindow(
-                new WorkspaceViewModel(WorkspaceService, PluginService, analysisService, SettingsService));
+
+            var workspaceVm = new WorkspaceViewModel(
+                WorkspaceService, PluginService, analysisService, SettingsService);
+            workspaceVm.OpenDockingWorkspace = () => NavigateDockingWorkspace();
+            WindowService.OpenWorkspaceWindow(workspaceVm);
         }
         catch (Exception ex)
         {

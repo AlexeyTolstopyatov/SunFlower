@@ -2,6 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:view="clr-namespace:SunFlower.Client.View"
              xmlns:client="clr-namespace:SunFlower.Client"
+             xmlns:dock="using:Dock.Avalonia.Controls"
+             xmlns:dockModel="using:Dock.Avalonia.Controls"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
+             xmlns:edit="https://github.com/avaloniaui/avaloniaedit"
+             xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+             xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
              x:DataType="{x:Type client:App}"
              x:Class="SunFlower.Client.App">
     <Application.Resources>
@@ -19,6 +26,78 @@
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
         <StyleInclude Source="/Drawing/MarkdownRenderStyles.axaml" />
         <FluentTheme/>
+        <DockFluentTheme/>
         <StyleInclude Source="avares://HandyControl/Themes/Theme.axaml" />
+        
     </Application.Styles>
+
+    <Application.DataTemplates>
+        <!-- View model to view resolution for docking content -->
+        <DataTemplate DataType="{x:Type vm:MarkdownDocumentViewModel}">
+            <md:MarkdownScrollViewer Margin="10" Markdown="{Binding Content}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:HexDocumentViewModel}">
+            <hex:HexEditor Margin="10" FontFamily="{Binding HexFontFamily}" FontSize="{Binding HexFontSize}"
+                           Document="{Binding BinaryDocument}">
+                <hex:HexEditor.Columns>
+                    <hexr:OffsetColumn />
+                    <hexr:HexColumn UseDynamicHeader="True" />
+                    <hexr:AsciiColumn />
+                </hex:HexEditor.Columns>
+            </hex:HexEditor>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TextDocumentViewModel}">
+            <edit:TextEditor Margin="10" FontFamily="{Binding TextFontFamily}" FontSize="{Binding TextFontSize}"
+                             Document="{Binding TextDocument}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProjectExplorerToolViewModel}">
+            <StackPanel Background="{DynamicResource CloudTileBrush}">
+                <Border Margin="20" Padding="10" CornerRadius="10" Background="{DynamicResource BorderBrush}">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="48, *">
+                            <Image Margin="5" Source="/Assets/dir48.png" />
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                                <Run Text="Project Files" />
+                                <LineBreak />
+                                <Run Text="Double-click to open" Foreground="{DynamicResource SecondaryTextBrush}" />
+                            </TextBlock>
+                        </Grid>
+                        <ListBox ItemsSource="{CompiledBinding ProjectFiles}" SelectedItem="{CompiledBinding SelectedProjectFile, Mode=TwoWay}"
+                                 BorderBrush="Transparent" Background="Transparent" MinHeight="200">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ProjectFileItem">
+                                    <Grid ColumnDefinitions="24, *">
+                                        <Image Source="/Assets/file48.png" Width="24" />
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5,0"
+                                                   Text="{CompiledBinding Name}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:KernelMessagesToolViewModel}">
+            <StackPanel Background="{DynamicResource RegionBrush}">
+                <Grid ColumnDefinitions="48, *">
+                    <Image VerticalAlignment="Center" Source="/Assets/convert48.png" />
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14">
+                        <Run Text="Kernel Messages" />
+                        <LineBreak />
+                        <Run Foreground="{DynamicResource SecondaryTextBrush}" Text="Flowers manager messages" />
+                    </TextBlock>
+                </Grid>
+                <Border CornerRadius="10" Margin="0,5" Background="{DynamicResource RegionBrush}">
+                    <ListBox ItemsSource="{CompiledBinding Messages}" BorderBrush="Transparent">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock FontSize="10" FontFamily="Consolas" Text="{CompiledBinding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+    </Application.DataTemplates>
 </Application>

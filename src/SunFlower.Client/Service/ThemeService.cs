@@ -29,10 +29,7 @@ public class ThemeService
     /// <summary>
     /// Current editor theme
     /// </summary>
-    public ThemeName TextEditorVariant
-    {
-        get => _currentEditorVariant;
-    }
+    public ThemeName TextEditorVariant => _currentEditorVariant;
 
     /// <summary>
     /// Cast enum into ThemeVariant and apply changes 
@@ -46,9 +43,9 @@ public class ThemeService
             _ => ThemeVariant.Default
         };
 
-        if (_currentVariant == variant) 
+        if (_currentVariant == variant)
             return;
-        
+
         _currentVariant = variant;
         ThemeChanged?.Invoke(variant);
     }

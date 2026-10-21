@@ -51,7 +51,7 @@ module FlowerReport =
 
         str |> Encoding.ASCII.GetBytes |> Array.iter (appendEscaped >> ignore)
 
-        $"`{sb}`"
+        $"{sb}"
 
     [<CompiledName "ForColumn">]
     let forColumn (str: string, t: Type) : string =

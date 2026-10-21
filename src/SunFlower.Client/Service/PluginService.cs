@@ -17,18 +17,18 @@ namespace SunFlower.Client.Service;
 
 public class PluginService
 {
-    private readonly FluentFlowerManager _manager;
+    private readonly FlowerManager _manager;
 
     /// <summary>
     /// FlowerCollection that were loaded at initialization (metadata + interfaces).
     /// </summary>
     private List<FlowerData>? _loaded;
-    
+
     private bool _initialized;
 
     public PluginService()
     {
-        _manager = FluentFlowerManager.CreateInstance();
+        _manager = FlowerManager.CreateInstance();
         _loaded = null;
         _initialized = false;
     }
@@ -75,6 +75,15 @@ public class PluginService
     public bool IsInitialized => _initialized;
 
     public string[] KernelMessages => _manager.Messages.ToArray();
+
+    /// <summary>
+    /// Clears all kernel messages (e.g. when opening a new project/file).
+    /// </summary>
+    public void ClearKernelMessages()
+    {
+        _manager.Messages.Clear();
+    }
+
     /// <summary>
     /// AnalyzeAsync a file with all loaded plugins. Returns results.
     /// Does NOT reinitialize plugins — uses cached instances.

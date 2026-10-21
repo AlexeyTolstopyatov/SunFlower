@@ -18,7 +18,7 @@ public partial class WorkspaceWindow : Window
 {
     private readonly Animation _dialogOpenAnimation;
     private readonly Animation _dialogCloseAnimation;
-    
+
     public DialogService DialogService { get; }
 
     public WorkspaceWindow()
@@ -94,7 +94,7 @@ public partial class WorkspaceWindow : Window
 
     private void DialogContainerKeyHandled(object? sender, KeyEventArgs e)
     {
-        if (e.Key != Key.Escape) 
+        if (e.Key != Key.Escape)
             return;
 
         DialogContainer.IsOpen = false;
@@ -103,11 +103,11 @@ public partial class WorkspaceWindow : Window
     private void DialogContainerOpened(object? sender, EventArgs e)
     {
         DialogLayer.IsVisible = true;
-        //_dialogOpenAnimation.RunAsync(DialogPresenter);
+        _dialogOpenAnimation.RunAsync(DialogPresenter);
     }
 
     private void DialogPresenterSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        _dialogOpenAnimation.RunAsync(DialogPresenter);
+        // _dialogOpenAnimation.RunAsync(DialogPresenter);
     }
 }

@@ -18,7 +18,7 @@ public static class UiConverters
     public static readonly Version? KernelApiVersion = App.PluginService
         .GetVersionInfo()[0] // SunFlower.Kernel.dll metadata
         .Contracts[0].Item2; // Kernel API metadata
-    
+
     /// <summary>
     /// Executes condition of nullity of view model. Returns true if model is null
     /// </summary>
@@ -34,7 +34,7 @@ public static class UiConverters
 
         if (v?.Major != KernelApiVersion.Major)
             return "Incompatible. Discarded"; // Higher or lower -> not running
-        
+
         return "Works";
     });
 

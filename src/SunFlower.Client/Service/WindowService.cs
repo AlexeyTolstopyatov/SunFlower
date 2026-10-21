@@ -28,16 +28,16 @@ public class WindowService
         {
             DataContext = vm
         };
-        
+
         var inst = window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(App.ThemeService.TextEditorVariant));
         var grammar = Path.Combine(AppContext.BaseDirectory, "Grammar", "intel.json");
         inst.SetGrammarFile(grammar);
-        
+
         App.ThemeService.EditorChanged += variant =>
         {
             window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(variant));
         };
-        
+
         // Pass both Window and DialogService references to the ViewModel
         vm.ThisWindow = window;
         vm.SetDialogService(window.DialogService);

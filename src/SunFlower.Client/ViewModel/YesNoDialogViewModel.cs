@@ -31,7 +31,7 @@ public partial class YesNoDialogViewModel : DialogViewModel
 
     [ObservableProperty]
     private string _cancelButtonText = "No";
-    
+
     [RelayCommand]
     private void Confirm()
     {

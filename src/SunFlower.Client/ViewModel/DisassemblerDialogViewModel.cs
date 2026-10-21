@@ -30,15 +30,15 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
     public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService, DecoderArchitecture? initialArchitecture = null)
     {
         _disassemblingService = disassemblingService;
-        
+
         // ActivateAsync properties
         AvailableArchitectures = Enum.GetValues(typeof(DecoderArchitecture));
         SelectedArchitecture = initialArchitecture ?? DecoderArchitecture.I8086;
-        
+
         // Store input bytes
         InputBytes = bytes;
         StartOffset = startOffset ?? 0;
-        
+
         IsAllBytesMode = startOffset == null;
     }
 
@@ -57,9 +57,9 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
     private bool _isAllBytesMode;
 
     public byte[]? InputBytes { get; }
-    
+
     public int StartOffset { get; }
-    
+
     public string SourceInfo => IsAllBytesMode ? "All bytes" : $"Selected bytes (offset: {StartOffset})";
 
     [RelayCommand]
@@ -72,12 +72,12 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
         }
 
         IsDisassemblyInProgress = true;
-        
+
         try
         {
             var result = await Task.Run(() =>
                 _disassemblingService.DisassembleRange(InputBytes, StartOffset, SelectedArchitecture));
-            
+
             DisassemblyResult = result;
         }
         catch (Exception ex)

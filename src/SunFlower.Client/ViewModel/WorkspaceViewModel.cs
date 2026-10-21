@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -22,7 +23,9 @@ using AvaloniaHex;
 using AvaloniaHex.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SunFlower.Client.Model;
 using SunFlower.Client.Service;
+using SunFlower.Client.View;
 using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;
@@ -36,8 +39,8 @@ public enum ViewMode
 
 public partial class WorkspaceViewModel : ObservableObject
 {
-    [ObservableProperty]
-    private WorkspaceService _workspaceService;
+    [ObservableProperty] private WorkspaceService _workspaceService;
+
     private readonly PluginService _pluginService;
     private readonly PluginAnalysisService _analysisService;
     private readonly DisassemblingService _disassemblingService;
@@ -47,27 +50,27 @@ public partial class WorkspaceViewModel : ObservableObject
     {
         _dialogService = dialogService;
     }
-    
+
     private Window? _thisWindow;
-    [ObservableProperty]
-    private ulong _targetAddress;
+    [ObservableProperty] private ulong _targetAddress;
+
+    /// <summary>
+    /// Optional callback to open the DockingWorkspaceView (VS Code style docking layout).
+    /// Set by MainWindowViewModel when the workspace is created.
+    /// </summary>
+    public Action? OpenDockingWorkspace { get; set; }
 
     #region File information
 
-    [ObservableProperty]
-    private string _fileName = string.Empty;
+    [ObservableProperty] private string _fileName = string.Empty;
 
-    [ObservableProperty]
-    private string _fileType = string.Empty;
+    [ObservableProperty] private string _fileType = string.Empty;
 
-    [ObservableProperty]
-    private string _fileSize = string.Empty;
+    [ObservableProperty] private string _fileSize = string.Empty;
 
-    [ObservableProperty]
-    private string _fileSignature = string.Empty;
+    [ObservableProperty] private string _fileSignature = string.Empty;
 
-    [ObservableProperty]
-    private string _projectDirectory = string.Empty;
+    [ObservableProperty] private string _projectDirectory = string.Empty;
 
     #endregion
 
@@ -75,8 +78,7 @@ public partial class WorkspaceViewModel : ObservableObject
 
     public ObservableCollection<ProjectFileItem> ProjectFiles { get; } = [];
 
-    [ObservableProperty]
-    private ProjectFileItem? _selectedProjectFile;
+    [ObservableProperty] private ProjectFileItem? _selectedProjectFile;
 
     #endregion
 
@@ -94,42 +96,33 @@ public partial class WorkspaceViewModel : ObservableObject
 
     #region Active content (three separate typed fields)
 
-    /// <summary>Markdown content.</summary>
-    [ObservableProperty]
-    private string _activeContentText = string.Empty;
+    /// <summary>Markdown content</summary>
+    [ObservableProperty] private string _activeContentText = string.Empty;
 
     /// <summary>Code content</summary>
-    [ObservableProperty]
-    private TextDocument? _activeTextDocument;
+    [ObservableProperty] private TextDocument? _activeTextDocument;
 
     /// <summary>Binary content</summary>
-    [ObservableProperty]
-    private IBinaryDocument? _activeBinaryDocument;
+    [ObservableProperty] private IBinaryDocument? _activeBinaryDocument;
 
-    /// <summary>Show the Markdown viewer.</summary>
-    [ObservableProperty]
-    private bool _isMarkdownView;
+    /// <summary>Show the Markdown viewer</summary>
+    [ObservableProperty] private bool _isMarkdownView;
 
-    /// <summary>Show the code editor.</summary>
-    [ObservableProperty]
-    private bool _isAssemblyView;
+    /// <summary>Show the code editor</summary>
+    [ObservableProperty] private bool _isAssemblyView;
 
     /// <summary>Show the hex editor</summary>
-    [ObservableProperty]
-    private bool _isBinaryView;
+    [ObservableProperty] private bool _isBinaryView;
 
     #endregion
 
     #region Disassembler
 
-    [ObservableProperty]
-    private bool _isDisassemblyInProgress;
+    [ObservableProperty] private bool _isDisassemblyInProgress;
 
-    [ObservableProperty]
-    private DecoderArchitecture _selectedArchitecture = DecoderArchitecture.I8086;
+    [ObservableProperty] private DecoderArchitecture _selectedArchitecture = DecoderArchitecture.I8086;
 
-    [ObservableProperty]
-    private string[] _kernelMessages;
+    [ObservableProperty] private string[] _kernelMessages;
 
     #endregion
 
@@ -139,14 +132,12 @@ public partial class WorkspaceViewModel : ObservableObject
     /// True while a long-running operation (e.g. running a plugin from the context menu)
     /// is in progress. Drives the busy overlay in <c>WorkspaceWindow</c>.
     /// </summary>
-    [ObservableProperty]
-    private bool _isBusy;
+    [ObservableProperty] private bool _isBusy;
 
     /// <summary>
     /// Caption shown under the workspace busy indicator.
     /// </summary>
-    [ObservableProperty]
-    private string _busyText = "Working…";
+    [ObservableProperty] private string _busyText = "Working...";
 
     #endregion
 
@@ -160,21 +151,16 @@ public partial class WorkspaceViewModel : ObservableObject
     /// Raw bytes of the currently open binary file (for send-back).
     /// </summary>
     private byte[]? _activeBinaryBytes;
-    
-    [ObservableProperty]
-    private bool _hasHexSelection;
 
-    [ObservableProperty]
-    private FontFamily _hexFontFamily;
+    [ObservableProperty] private bool _hasHexSelection;
 
-    [ObservableProperty]
-    private FontFamily _textFontFamily;
+    [ObservableProperty] private FontFamily _hexFontFamily;
 
-    [ObservableProperty]
-    private double _hexFontSize;
+    [ObservableProperty] private FontFamily _textFontFamily;
 
-    [ObservableProperty]
-    private double _textFontSize;
+    [ObservableProperty] private double _hexFontSize;
+
+    [ObservableProperty] private double _textFontSize;
 
     public WorkspaceViewModel(
         WorkspaceService workspaceService,
@@ -186,16 +172,16 @@ public partial class WorkspaceViewModel : ObservableObject
         _pluginService = pluginService;
         _analysisService = analysisService;
         _disassemblingService = App.DisassemblingService;
-        
+
         LoadFileInfo();
         LoadProjectFiles();
         LoadAvailablePlugins();
-        
+
         KernelMessages = _pluginService.KernelMessages;
-        
-        HexFontFamily  = FontFamily.Parse(settingsService.Current.HexControl?.Family!);
+
+        HexFontFamily = FontFamily.Parse(settingsService.Current.HexControl?.Family!);
         HexFontSize = settingsService.Current.HexControl?.Size ?? 16;
-        
+
         TextFontFamily = FontFamily.Parse(settingsService.Current.TextControl?.Family!);
         TextFontSize = settingsService.Current.TextControl?.Size ?? 16;
 
@@ -334,6 +320,7 @@ public partial class WorkspaceViewModel : ObservableObject
             await Console.Error.WriteLineAsync("plugin is null");
             return;
         }
+
         var file = _contextProjectFile ?? SelectedProjectFile;
         if (file == null || string.IsNullOrWhiteSpace(file.Path))
         {
@@ -347,13 +334,15 @@ public partial class WorkspaceViewModel : ObservableObject
 
         await ExecutePluginActionAsync(plugin, file.Path);
     }
-    
+
     [RelayCommand]
     private async Task ExtractHexSelectionAsync(object? parameter)
     {
-        if (_activeBinaryBytes == null){
+        if (_activeBinaryBytes == null)
+        {
             return;
         }
+
         var project = WorkspaceService.CurrentProject;
 
         if (project == null)
@@ -372,7 +361,7 @@ public partial class WorkspaceViewModel : ObservableObject
 
         var length = Abs(start, end);
         ArrayExtension.ExtractBytes(start, length, _activeBinaryBytes, out var extracted);
-        
+
         if (_thisWindow == null || WorkspaceService.CurrentProject == null)
             return;
 
@@ -392,7 +381,7 @@ public partial class WorkspaceViewModel : ObservableObject
                 }
             ]
         });
-        if (file == null) 
+        if (file == null)
             return;
 
         await WorkspaceService.ProjectService.WriteBinaryAsync(file.Name, extracted);
@@ -595,7 +584,7 @@ public partial class WorkspaceViewModel : ObservableObject
 
         var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = $"Rename '{currentName}'",
+            Title = $"Rename \"{currentName}\" ",
             SuggestedFileName = currentName,
             FileTypeChoices =
             [
@@ -610,9 +599,9 @@ public partial class WorkspaceViewModel : ObservableObject
             return null;
 
         var path = file.TryGetLocalPath();
-        
-        return string.IsNullOrEmpty(path) 
-            ? null 
+
+        return string.IsNullOrEmpty(path)
+            ? null
             : Path.GetFileName(path);
     }
 
@@ -635,10 +624,10 @@ public partial class WorkspaceViewModel : ObservableObject
             ],
             DefaultExtension = SelectedProjectFile?.Extension
         });
-        
+
         if (file is null)
             return;
-        
+
         if (IsBinaryView && _activeBinaryBytes != null)
         {
             await File.WriteAllBytesAsync(file.Path.AbsolutePath, _activeBinaryBytes);
@@ -652,7 +641,7 @@ public partial class WorkspaceViewModel : ObservableObject
             await File.WriteAllTextAsync(file.Path.AbsolutePath, ActiveContentText);
         }
     }
-    
+
     #region Disassembler commands
 
     /// <summary>
@@ -665,15 +654,15 @@ public partial class WorkspaceViewModel : ObservableObject
             return;
 
         var dialogVm = new DisassemblerDialogViewModel(
-            _activeBinaryBytes, 
+            _activeBinaryBytes,
             null, // disassemble all bytes
             _disassemblingService,
             SelectedArchitecture
         );
-        
+
         if (_dialogService is null)
             return;
-        
+
         var result = await _dialogService.ShowDialogAsync<DisassemblerDialogViewModel, string?>(dialogVm);
 
         if (!string.IsNullOrEmpty(result))
@@ -706,7 +695,7 @@ public partial class WorkspaceViewModel : ObservableObject
         var start = (int)editorApi.Selection.Range.Start.ByteIndex;
 
         var dialogVm = new DisassemblerDialogViewModel(
-            _activeBinaryBytes, 
+            _activeBinaryBytes,
             start, // disassemble with offset
             _disassemblingService,
             SelectedArchitecture
@@ -726,6 +715,7 @@ public partial class WorkspaceViewModel : ObservableObject
             IsMarkdownView = false;
         }
     }
+
     #endregion
 
     #region Go To Address command
@@ -737,7 +727,7 @@ public partial class WorkspaceViewModel : ObservableObject
     [RelayCommand]
     private async Task ShowGoToAddressDialogAsync(HexEditor? editor)
     {
-        if (_activeBinaryBytes == null)
+        if (_activeBinaryBytes is null)
             return;
 
         // Switch to Hex view if not already visible
@@ -745,18 +735,20 @@ public partial class WorkspaceViewModel : ObservableObject
 
         var maxAddress = (ulong)_activeBinaryBytes.Length;
         var dialogVm = new GoToAddressDialogViewModel(maxAddress);
-        
+
         if (_dialogService is null)
             return;
-        
-        var result = await _dialogService.ShowDialogAsync<GoToAddressDialogViewModel, (bool isRelative, ulong offset)?>(dialogVm);
+
+        var result =
+            await _dialogService
+                .ShowDialogAsync<GoToAddressDialogViewModel, (bool isRelative, ulong offset)?>(dialogVm);
 
         // Store the result for potential use
-        if (editor != null && result is not null)
+        if (editor is not null && result is not null)
         {
             if (!result.Value.isRelative)
                 editor.Caret.Location = new BitLocation(0, 0); // From the start of file 
-            
+
             editor.Caret.GoForward(result.Value.offset);
         }
     }
@@ -766,7 +758,7 @@ public partial class WorkspaceViewModel : ObservableObject
     private async Task ExecutePluginActionAsync(FlowerData seed, string targetPath)
     {
         IsBusy = true;
-        BusyText = $"Running '{seed.Instance.Name}'…";
+        BusyText = $"Sun is rising for \"{seed.Instance.Name}\"";
 
         try
         {
@@ -807,6 +799,184 @@ public partial class WorkspaceViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+    #region Command palette
+
+    /// <summary>
+    /// Opens the Command Palette (ExecuteDialogView) with workspace-aware entries.
+    /// Bound to Ctrl+P in <see cref="WorkspaceWindow"/>.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowCommandPaletteAsync()
+    {
+        if (_dialogService is null)
+            return;
+
+        var vm = new ExecuteDialogViewModel(BuildCommandPaletteItems());
+        await _dialogService.ShowDialogAsync<ExecuteDialogViewModel, object?>(vm);
+    }
+
+    private IEnumerable<CommandPaletteItem> BuildCommandPaletteItems()
+    {
+        var items = new List<CommandPaletteItem>
+        {
+            new CommandPaletteItem
+            {
+                Name = "Open File",
+                Description = "Open any file into the workspace",
+                Hotkey = "Ctrl+O",
+                Action = async () => await OpenFileFromPaletteAsync()
+            },
+            new CommandPaletteItem
+            {
+                Name = "Open File Info",
+                Description = "Show current file details",
+                Action = async () => await OpenFileInformationLayoutDialogAsync() 
+            },
+            new CommandPaletteItem
+            {
+                Name = "Save Project",
+                Description = "Save the current SunFlower project",
+                Hotkey = "Ctrl+S",
+                Action = async () => await SaveProjectFromPaletteAsync()
+            },
+            new CommandPaletteItem
+            {
+                Name = "Go to Address",
+                Description = "Jump to an offset in the hex editor",
+                Hotkey = "Ctrl+G",
+                Action = async () => { await ShowGoToAddressDialogAsync(null); }
+            },
+            new CommandPaletteItem
+            {
+                Name = "Hex View",
+                Description = "Switch to the hexadecimal viewer",
+                Action = () =>
+                {
+                    ChangeView(ViewMode.Hex);
+                    return Task.CompletedTask;
+                }
+            },
+            new CommandPaletteItem
+            {
+                Name = "Text View",
+                Description = "Switch to the disassembly / text viewer",
+                Action = () =>
+                {
+                    ChangeView(ViewMode.Text);
+                    return Task.CompletedTask;
+                }
+            },
+            new CommandPaletteItem
+            {
+                Name = "Markdown View",
+                Description = "Switch to the markdown report viewer",
+                Action = () =>
+                {
+                    ChangeView(ViewMode.Html);
+                    return Task.CompletedTask;
+                }
+            }
+        };
+
+        if (OpenDockingWorkspace is not null)
+        {
+            items.Add(new CommandPaletteItem
+            {
+                Name = "Open Docking Workspace",
+                Description = "Open VS Code style docking workspace with multiple dockable panels",
+                Action = () => { OpenDockingWorkspace?.Invoke(); return Task.CompletedTask; }
+            });
+        }
+
+        items
+            .AddRange(AvailablePlugins
+                .Select(captured => new CommandPaletteItem
+                {
+                    Name = "Call: " + (captured.Instance?.Name ?? "<?>"),
+                    Description = "Execute this flower on the current file",
+                    Action = async () => await RunPluginFromPaletteAsync(captured)
+                }));
+
+        return items;
+    }
+
+    private async Task OpenFileInformationLayoutDialogAsync()
+    {
+        if (_dialogService is not null && SelectedProjectFile is not null)
+            await _dialogService.ShowDialogAsync<FileInformationLayoutDialogViewModel, byte>(new (SelectedProjectFile.Path));
+    }
+
+    private async Task OpenFileFromPaletteAsync()
+    {
+        if (_thisWindow is null)
+            return;
+
+        var storage = TopLevel.GetTopLevel(_thisWindow)?.StorageProvider;
+        if (storage is null)
+            return;
+
+        var files = await storage.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open File",
+            AllowMultiple = false
+        });
+
+        var file = files.FirstOrDefault();
+        var path = file?.TryGetLocalPath();
+        if (!string.IsNullOrEmpty(path))
+            await WorkspaceService.OpenFile(path);
+    }
+
+    private async Task SaveProjectFromPaletteAsync()
+    {
+        if (WorkspaceService.CurrentProject is null)
+            return;
+
+        if (WorkspaceService.IsProject)
+        {
+            await WorkspaceService.SaveProjectAsync();
+            return;
+        }
+
+        if (_thisWindow is null)
+            return;
+
+        var storage = TopLevel.GetTopLevel(_thisWindow)?.StorageProvider;
+
+        if (storage is null)
+            return;
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save SunFlower Project",
+            DefaultExtension = ".flowerproj",
+            FileTypeChoices =
+            [
+                new FilePickerFileType("SunFlower Project")
+                {
+                    Patterns = ["*.flowerproj"]
+                }
+            ]
+        });
+
+        var path = file?.TryGetLocalPath();
+        if (!string.IsNullOrEmpty(path))
+            await WorkspaceService.SaveProjectAsync(path);
+    }
+
+    private async Task RunPluginFromPaletteAsync(FlowerData plugin)
+    {
+        if (SelectedProjectFile is null)
+        {
+            await Console.Error.WriteLineAsync($"No target specified!");
+            return;
+        }
+
+        await ExecutePluginActionAsync(plugin, SelectedProjectFile.Path);
+    }
+
+    #endregion
 }
 
 #region Supporting types

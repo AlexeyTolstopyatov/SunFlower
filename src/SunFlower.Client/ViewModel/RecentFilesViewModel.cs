@@ -106,7 +106,7 @@ public partial class RecentFilesViewModel : ObservableObject
         {
             await _recentFilesService.RemoveAsync(SelectedFile);
         }
-        
+
         SelectedFile = null;
         RefreshList();
     }

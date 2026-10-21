@@ -1,0 +1,64 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d" d:DesignWidth="450"
+             x:Class="SunFlower.Client.View.FileInformationLayoutDialogView"
+             x:DataType="{x:Type vm:FileInformationLayoutDialogViewModel}">
+    <StackPanel
+        Spacing="5">
+        <TextBlock
+            FontWeight="Bold"
+            FontSize="21"
+            TextWrapping="WrapWithOverflow"
+            Text="{Binding FlowerFileInfo.Name, FallbackValue='File'}"/>
+        
+        <Border
+            Margin="10"
+            CornerRadius="6"
+            BorderBrush="{DynamicResource BorderBrush}">
+            <Grid
+                ColumnSpacing="10"
+                ColumnDefinitions="Auto,Auto">
+                <StackPanel>
+                    <TextBlock
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Text="File Location"/>
+                    <TextBlock
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Text="File Size"/>
+                    <TextBlock
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Text="Defined Type"/>
+                    <TextBlock
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Text="Binary (hex) definition"/>
+                </StackPanel>
+                <StackPanel
+                    Grid.Column="1">
+                    <SelectableTextBlock
+                        FontSize="14"
+                        FontFamily="Sans Serif"
+                        Text="{CompiledBinding FlowerFileInfo.Path, FallbackValue='?'}"/>
+                    <SelectableTextBlock
+                        FontSize="14"
+                        FontFamily="Sans Serif"
+                        Text="{CompiledBinding 
+                        FlowerFileInfo.Size, 
+                        FallbackValue='?',
+                        StringFormat={}{0} KiB }"/>
+                    <SelectableTextBlock
+                        FontSize="14"
+                        FontFamily="Sans Serif"
+                        Text="{CompiledBinding FlowerFileInfo.Type, FallbackValue='?'}"/>
+                    <SelectableTextBlock
+                        FontSize="14"
+                        FontFamily="Sans Serif"
+                        Text="{CompiledBinding FlowerFileInfo.Sign, FallbackValue='?'}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Separator/>
+    </StackPanel>
+</UserControl>

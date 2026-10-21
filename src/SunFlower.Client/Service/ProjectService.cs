@@ -267,7 +267,7 @@ public class ProjectService
         _currentProject.IsDirty = true;
     }
     // public async Task WriteBinaryAsAsync(Window windowHost)
-    
+
     /// <summary>
     /// Writes binary data into the project working directory.
     /// </summary>
@@ -455,7 +455,7 @@ public class ProjectService
 
     public void Dispose()
     {
-        if (_disposed) 
+        if (_disposed)
             return;
 
         CloseProject();

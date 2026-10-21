@@ -23,7 +23,7 @@ public class JsonService<T>
     {
         WriteIndented = true
     };
-    
+
     public async Task ReadAsync(string path)
     {
         if (!File.Exists(path))
@@ -35,14 +35,14 @@ public class JsonService<T>
 
         Data = data ?? [];
     }
-    
+
     public async Task WriteAsync(string file)
     {
         // Escape creating new serializer options
         // reuse already initialized for all operations
         var json = JsonSerializer.Serialize(Data, _options);
         var recent = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry", $"{file}.json");
-        
-        await File.WriteAllTextAsync(recent,json);
+
+        await File.WriteAllTextAsync(recent, json);
     }
 }

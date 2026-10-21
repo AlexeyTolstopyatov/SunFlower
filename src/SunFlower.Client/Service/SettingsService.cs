@@ -20,7 +20,7 @@ namespace SunFlower.Client.Service;
 // public class AppSettings
 // {
 //     public string Language { get; set; } = "en";
-    
+
 //     public bool ShowHexViewByDefault { get; set; } = false;
 //     public bool ShowLineNumbers { get; set; } = true;
 //     public bool WordWrap { get; set; } = false;
@@ -55,9 +55,9 @@ public class SettingsService
         Directory.CreateDirectory(registryDir);
         _settingsPath = Path.Combine(registryDir, "settings.json");
         _settings = new SettingsModel();
-        
-        CacheSubdirectories = 
-            Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV1").Count() + 
+
+        CacheSubdirectories =
+            Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV1").Count() +
             Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV2").Count();
 
         DeleteCache();
@@ -80,20 +80,19 @@ public class SettingsService
         if (!File.Exists(_settingsPath))
         {
             _settings = new SettingsModel();
-            
+
             await Console.Out.WriteLineAsync("Settings file not found. Making something new");
             await SaveAsync();
-            
+
             return;
         }
 
         try
         {
             var json = await File.ReadAllTextAsync(_settingsPath);
-            _settings = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ?? 
+            _settings = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ??
                         new SettingsModel();
             
-            Console.WriteLine(json);
         }
         catch (Exception e)
         {
@@ -110,24 +109,33 @@ public class SettingsService
         var json = JsonSerializer.Serialize(_settings, JsonOptions);
         await File.WriteAllTextAsync(_settingsPath, json);
     }
-    
+
     private void DeleteCache(string path)
     {
-        if (!Directory.Exists(path)) return;
+        if (!Directory.Exists(path))
+            return;
+
         foreach (var directory in Directory.EnumerateDirectories(path))
         {
-            Directory.Delete(directory, true);
+            try
+            {
+                Directory.Delete(directory, true);
+            }
+            catch (Exception exn)
+            {
+                Console.WriteLine(exn);
+            }
         }
     }
-    
+
     public Task DeleteCache()
     {
         if (CacheSubdirectories == 0)
             return Task.CompletedTask;
-        
+
         DeleteCache(Path.Combine(AppContext.BaseDirectory, "CacheV1"));
         DeleteCache(Path.Combine(AppContext.BaseDirectory, "CacheV2"));
-            
+
         return Task.CompletedTask;
     }
 }

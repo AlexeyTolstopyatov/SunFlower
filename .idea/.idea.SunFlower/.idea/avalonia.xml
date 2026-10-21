@@ -10,6 +10,7 @@
         <entry key="src/SunFlower.Client/View/BytesDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DisassemblerDialog.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DisassemblerDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/ExecuteDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/GoToAddressDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/MainWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/PluginView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />

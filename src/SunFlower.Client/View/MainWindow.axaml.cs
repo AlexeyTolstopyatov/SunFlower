@@ -14,7 +14,7 @@ public partial class MainWindow : Window
             if (DataContext is MainWindowViewModel vm)
             {
                 vm.MainWindow = this;
-                
+
                 // Apply persisted theme on startup
                 var settings = vm.SettingsService.Current;
                 vm.ThemeService.SetTheme(settings.Theme);

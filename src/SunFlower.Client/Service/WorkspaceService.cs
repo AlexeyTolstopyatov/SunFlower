@@ -77,7 +77,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     /// When <paramref name="flowerName"/> is provided, only that plugin is run;
     /// otherwise plugin analysis is deferred to the project file context menu.
     /// </summary>
-    private async Task OpenRawBinary(string path, [Optional]string? flowerName)
+    private async Task OpenRawBinary(string path, [Optional] string? flowerName)
     {
         projectService.OpenRawBinary(path);
         _isProject = false;

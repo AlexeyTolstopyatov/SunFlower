@@ -40,7 +40,7 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
     /// Fix: clears stale results before Main() so Code-plugins don't
     /// accumulate output from previous file runs.
     /// </summary>
-    /// <param name="flowerData">The plugin to run.</param>
+    /// <param name="flowerData">The plugin to run</param>
     /// <param name="targetPath">
     /// Path of the project file the plugin is applied to. When null, falls back
     /// to the original binary of the current project (or the opened file).
@@ -69,10 +69,20 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
         {
             error = e;
         }
-        
-        var content = error is not null 
-            ? $"# {pluginName}\n\n**Error:** {error.Message}\n\n```\n{error}\n```" 
-            : flowerData.render();
+
+        string renderResult;
+        try
+        {
+            renderResult = flowerData.render();
+        }
+        catch (Exception renderEx)
+        {
+            renderResult = $"# {pluginName}\n\n**Render Error:** {renderEx.Message}\n\n```\n{renderEx}\n```";
+        }
+
+        var content = error is not null
+            ? $"# {pluginName}\n\n**Error:** {error.Message}\n\n```\n{error}\n```"
+            : renderResult;
 
         // Write content to a file named after the analyzed target,
         // so results never collide when a plugin is applied to several files.

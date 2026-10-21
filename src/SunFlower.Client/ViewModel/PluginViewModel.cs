@@ -19,9 +19,9 @@ public partial class PluginViewModel : ObservableObject
 {
     public PluginViewModel(PluginService? pluginService)
     {
-        var info = pluginService?.GetVersionInfo() ?? 
+        var info = pluginService?.GetVersionInfo() ??
                      throw new NullReferenceException("Plugins service can't be not null!");
-        
+
         Assemblies = info;
     }
 

@@ -29,7 +29,7 @@ public partial class GoToAddressDialogViewModel(ulong maxAddress) : DialogViewMo
 
     [ObservableProperty]
     private OffsetBase _offsetBase;
-    
+
     [ObservableProperty]
     private bool _isRelativeOffset;
 
@@ -45,7 +45,7 @@ public partial class GoToAddressDialogViewModel(ulong maxAddress) : DialogViewMo
     private void Accept()
     {
         ErrorMessage = string.Empty;
-        
+
         if (string.IsNullOrWhiteSpace(AddressInput))
         {
             ErrorMessage = "Expected address";
@@ -58,13 +58,13 @@ public partial class GoToAddressDialogViewModel(ulong maxAddress) : DialogViewMo
             OffsetBase.Octal => Convert.ToUInt64(AddressInput, 8),
             _ => Convert.ToUInt64(AddressInput)
         };
-        
+
         if (offset >= MaxAddress)
         {
             ErrorMessage = $"Out of bounds! (max: {MaxAddress - 1:X})";
             return;
         }
-        
+
         DialogService?.CloseDialog((IsRelativeOffset, offset));
     }
 

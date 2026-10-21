@@ -1,4 +1,4 @@
-﻿namespace SunFlower.Abstractions
+namespace SunFlower.Abstractions
 
 open System
 open System.Collections.Generic
@@ -10,7 +10,7 @@ open SunFlower.Abstractions.Pointers
 
 
 module FlowerReflection =
-    // CoffeeLake 2025
+    // CoffeeLake 2025-*
     //
     // Module represents API for deserializing safe types
     // to DataTable objects through standard .NET reflection
@@ -43,7 +43,7 @@ module FlowerReflection =
         dt.Columns.Add("Key", typeof<string>) |> ignore
         dt.Columns.Add("Value", typeof<string>) |> ignore
 
-        let typ = typeof<'TSafe> // how to trait it like: ... where TSafe : IEnumerable
+        let typ = typeof<'TSafe>
 
         let properties = typ.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
@@ -87,22 +87,36 @@ module FlowerReflection =
             | :? U64Ptr
             | :? I64Ptr as qw -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
-            | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
-            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
+            | :? array<Char> as sz ->
+                  let str = sz
+                          |> String
+                          |> FlowerReport.safeString
+                  $"`{str}`"                        
+            | :? array<Byte> as ps ->
+                let str = ps
+                          |> Encoding.ASCII.GetString
+                          |> FlowerReport.safeString
+                $"`{str}`"
             | _ -> value.ToString()
 
         for prop in properties do
             if prop.CanRead then
-                let value = prop.GetValue(inst)
-                let flt = getTypeEnum prop.PropertyType
-                let typeStr = FlowerReport.forColumnFl (prop.Name, flt)
-                dt.Rows.Add(typeStr, getValueString value) |> ignore
+                try
+                    let value = prop.GetValue(inst)
+                    let flt = getTypeEnum prop.PropertyType
+                    let typeStr = FlowerReport.forColumnFl (prop.Name, flt)
+                    dt.Rows.Add(typeStr, getValueString value) |> ignore
+                with ex ->
+                    dt.Rows.Add(prop.Name, $"Error: {ex.Message}") |> ignore
 
         for field in fields do
-            let value = field.GetValue(inst)
-            let flt = getTypeEnum field.FieldType
-            let typeStr = FlowerReport.forColumnFl (field.Name, flt)
-            dt.Rows.Add(typeStr, getValueString value) |> ignore
+            try
+                let value = field.GetValue(inst)
+                let flt = getTypeEnum field.FieldType
+                let typeStr = FlowerReport.forColumnFl (field.Name, flt)
+                dt.Rows.Add(typeStr, getValueString value) |> ignore
+            with ex ->
+                dt.Rows.Add(field.Name, $"Error: {ex.Message}") |> ignore
 
         dt
 
@@ -116,7 +130,7 @@ module FlowerReflection =
     /// </summary>
     /// <param name="items">COR List of objects saved after deserialization</param>
     [<CompiledName "ListToDataTable">]
-    let arrayToDataTable<'T> (items: IEnumerable<'T>) : DataTable =
+    let listToDataTable<'T> (items: IEnumerable<'T>) : DataTable =
         let getValueString (value: obj) =
             match value with
             | :? U8Ptr
@@ -129,9 +143,17 @@ module FlowerReflection =
             | :? I64Ptr as qw   -> $"0x{qw:X16}"
             | :? DateTime as dt -> dt.ToString("yyyy-MM-dd HH:mm:ss")
             | :? String as str  -> str |> FlowerReport.safeString
-            | :? array<Char> as sz -> sz |> String |> FlowerReport.safeString
-            | :? array<Byte> as ps -> ps |> Encoding.ASCII.GetString |> FlowerReport.safeString
-            | _ -> value.ToString()
+            | :? array<Char> as sz ->
+                let str = sz
+                          |> String
+                          |> FlowerReport.safeString
+                $"`{str}`"
+            | :? array<Byte> as ps ->
+                let str = ps
+                          |> Encoding.ASCII.GetString
+                          |> FlowerReport.safeString
+                $"`{str}`"
+            | _ -> $"{value}"
 
         let dt = new DataTable($"serialized${typeof<'T>}")
         let itemType = typeof<'T>
@@ -141,7 +163,7 @@ module FlowerReflection =
                 t.GetGenericArguments()[0]
             else
                 t
-
+        
         // First item columns construct
         let firstItem =
             if items <> null then
@@ -158,11 +180,9 @@ module FlowerReflection =
             let fields = itemType.GetFields(BindingFlags.Public ||| BindingFlags.Instance)
 
             for prop in properties do
-                let _columnType = underlyingType prop.PropertyType
                 dt.Columns.Add(prop.Name) |> ignore
 
             for field in fields do
-                let _columnType = underlyingType field.FieldType
                 dt.Columns.Add(field.Name) |> ignore
 
             dt.Columns.Add("#", typeof<int>) |> ignore

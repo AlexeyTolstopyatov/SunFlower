@@ -20,8 +20,9 @@ This repository includes following parts of my work:
 
 ![Sunflower client](assets/title.png)
 
-### Sunflower core "seeds" (plugins)
+### Out-of-box Sunflower Plugins
 
+Every release of Sunflower here contains not only four core components.
 In releases always will be represented plugins for definition
  - `MZ` Executables (real-mode x86 applications);
  - `NE` segmented Executables (first protected-mode x86 applications);
@@ -35,9 +36,9 @@ In releases always will be represented plugins for definition
 But you sunflower gives a chance to make your own extension of it and
 run it with all plugins too.
 
-### Sunflower "seeds" (application plugins)
+### Make a Plugin
 
-For making new sunflower extension:
+For making new sunflower plugin:
 1) Create Visual Studio solution.
 2) Add reference `SunFlower.Abstractions.dll`
 3) Make sure: no differences between Client app version and Abstractions
@@ -46,9 +47,6 @@ For making new sunflower extension:
 6) Run SunFlower and see what you can!
 
 ![Sunflower at the archVM](assets/vmware_screenshot.png)
-### Supported Binary Formats
-
-Out-of-box DLLs are in [plugins](https://github.com/AlexeyTolstopyatov/SunFlower.Plugins/) repo
 
 ### An architecture problems that seriously bother me, but I can't fix them
 
@@ -74,6 +72,7 @@ All frameworks and toolkits
 > HandyControls for Avalonia.
 
 ### Documents
- - [Plugins development notes](ABSTRACT.md) - first stages & abstractions application
+ - [Plugins development notes (5.x)](flowerapi.md) - first stages & abstractions application
+ - [Plugins develoment notes (1.x-4.x)](flowerseedapi.md) - stages & abstractions application
  - [Client-Kernel communication notes](KERNEL.md) - how the SunFlower kernel works
  - [Versioning notes](VERSIONING.md)

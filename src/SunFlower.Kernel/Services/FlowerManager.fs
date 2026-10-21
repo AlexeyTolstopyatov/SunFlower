@@ -1,211 +1,389 @@
-﻿//
-// CoffeeLake (C) 2026-*
-//
-// This module represents: F# loader for new SunFlower 5.0 plugins.
-// .NET assemblies now are becoming a "Sunflower fields" instead of sunflowers themselves.
-//
-// The project (sunflower field) structure now looks like project root
-// presents only IFlower derived classes. Subdirectories of the project may be used for free.
-//
-// Don't worry, anyway the kernel API checks all nested types of .NET assembly.
-// 
-// @creator atolstopyatov2017@vk.com
-//
-namespace SunFlower.Services
+﻿namespace SunFlower.Kernel.Services
 
 open System
+open System.Collections.Concurrent
+open System.Collections.Generic
+open System.Data
 open System.Diagnostics
 open System.IO
+open System.Linq
 open System.Reflection
+open System.Text
+open System.Threading.Tasks
+open SunFlower.Kernel
 open SunFlower.Abstractions
-open SunFlower.Kernel.Services
+open Microsoft.FSharp.Collections
+open SunFlower.Kernel.Writers
 
-/// <summary>
-/// State of FlowerManager machine
-/// </summary>
-type FlowerState =
-    { FilePath: string
-      SeedsPath: string
-      Seeds: seq<FlowerData> }
+//
+// CoffeeLake 2025-*
+// This code licensed under MIT. Please see GitHub repo documentation.
+// @creator: atolstopyatov2017@vk.com
+//
 
-/// <summary>
-/// Loader and plugin manager of SunFlower kernel
-/// </summary>
-[<FlowerVersionContract(5, 0, 0)>]
-module FlowerManager =
-    /// <summary>
-    /// SunFlower.Kernel file version.
-    /// </summary>
-    let private loaderMajor =
-        FileVersionInfo
-            .GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SunFlower.Kernel.dll"))
-            .FileMajorPart
-    /// <summary>
-    /// State of manager
-    /// </summary>
-    let private instance =
-        { FilePath = ""
-          SeedsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
-          Seeds = [] }
+type public FlowerData =
+    { instance: IFlower
+      kind: FlowerTarget
+      version: Version
+      onRenderError: string -> unit }
+
+    member public me.Instance = me.instance
+    member public me.Kind = me.kind
+    member public me.Version = me.version
 
     /// <summary>
-    /// Creates new manager instance
+    /// Enumerate all properties/fields of [Flower] object which have a [Seed] metadata
+    /// If given language entry is a public field or property instance, which has a [Seed]
+    /// attribute, it will be included into flower seed collection.
+    ///
+    /// Basic class which implements IFlower interface doesn't have properties except the Flower name
+    /// (IFlower.Name) 
     /// </summary>
-    /// <param name="path"> target filename for whom plugin will be called</param>
-    let touch (path: string) =
-        { FilePath = path
-          SeedsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")
-          Seeds = [] }
+    [<CompiledName "EnumerateFlowerSeeds">]
+    member me.enumerateFlowerSeeds() =
+        let props =
+            me.instance.GetType().GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+
+        let fields =
+            me.instance.GetType().GetFields(BindingFlags.Public ||| BindingFlags.Instance)
+
+        seq {
+            for p in props do
+                let attr = p.GetCustomAttribute<SeedAttribute>()
+                if not (isNull attr) && not attr.Skip then
+                    yield (attr.Name, attr.Description, p.GetValue(me.instance))
+                    
+            for f in fields do
+                let attr = f.GetCustomAttribute<SeedAttribute>()
+                if not (isNull attr) && not attr.Skip then
+                    yield (attr.Name, attr.Description, f.GetValue(me.instance))
+                                
+        }
+        |> Seq.toList
 
     /// <summary>
-    /// Tell manually where the plugins are store
-    /// If given path wrong -> uses default path
+    /// The most painful function. Skip the entry or make a special (empty) tag 
     /// </summary>
-    /// <param name="path">Existing</param>
-    /// <param name="isChanged"></param>
-    /// <param name="state">current loader state</param>
-    [<CompiledName "TrySetLocation">]
-    let trySetLocation (path: string) (isChanged: bool outref) (state: FlowerState) =
-        isChanged <- false
+    member me.render() =
+        let builder = StringBuilder()
+        let getChildType (t: obj) =
+            let t = t.GetType()
+            if t.IsArray then
+                t.GetElementType()
+            else
+                match
+                    t.GetInterfaces()
+                    |> Seq.tryFind (fun i ->
+                        i.IsGenericType && i.GetGenericTypeDefinition() = typedefof<IEnumerable<_>>)
+                with
+                | Some i -> i.GetGenericArguments()[0]
+                | None -> typeof<obj>
 
-        match Directory.Exists path with
-        | false -> state
-        | true ->
-            isChanged <- true
-            { state with SeedsPath = path }
+        /// If "dynamic created" object presents an array, then
+        /// me.render() method must know "is this object empty?" because of
+        /// empty tables are "shitting?" in the file report
+        let isEnumerableDynamicEmpty (t: obj) = 
+            // The Enumerable objects comparison is a procedure much simpler
+            // because of Type metadata tells about (IsArray property) object characteristics.
+            // All arrays are IEnumerable-inherited objects. 
+            //
+            // I have all rights to "trim" object's functional to the IEnumerable  
+            match t with
+            | :? System.Collections.ICollection as c -> c.Count = 0
+            | :? System.Collections.IEnumerable as e -> e |> Seq.cast<obj> |> Seq.length = 0
+            | _ -> UnreachableException $"You, {t.GetType().FullName}! You aren't iterable!" |> raise
+        /// Compares object with just-activated empty object 
+        /// If comparison successful then [Seed] entry skips and name marks as empty
+        /// (or no result :D)
+        let isDynamicEmpty(t: 'T) = 
+            // I hope is works correct, because of two val/ref types comparison
+            // is a strange process. All whole types are inherits Object implicitly
+            // but Generic methods have less methods than default object type
+            let ty = t.GetType()
+            let ctor = ty.GetConstructor(Type.EmptyTypes)
+            if isNull ctor then
+                false
+            else
+                Object.Equals(ctor.Invoke([| |]), t)
+                
+        let presentText (_, _, instance: obj) = 
+            try
+                match instance.GetType().IsArray with
+                | true -> 
+                    instance :?> IEnumerable<string>
+                    |> Seq.iter (fun substring -> 
+                        substring
+                        |> string
+                        |> builder.AppendLine
+                        |> ignore)
+                | false -> 
+                    instance.ToString()
+                        |> builder.AppendLine
+                        |> ignore 
+            with ex ->
+                me.onRenderError $"### Render Error (text)"
+                me.onRenderError $"**{ex.GetType().Name}:** {ex.Message}"
+                $"### Render Error (text)"
+                    |> builder.AppendLine
+                    |> ignore
+                $"**{ex.GetType().Name}:** {ex.Message}"
+                    |> builder.AppendLine
+                    |> ignore
+        /// Given by <c>GetType().GetValue()</c> Object instance holds
+        /// constraints and type metadata, but this is not used unfortunately in this code scope
+        ///
+        /// Language runtime doesn't unbox concrete type and
+        /// generic methods from <c>FlowerReflection</c> don't apply
+        /// given object instance as a generic type.
+        ///
+        /// That's why I need too much reflection
+        let fromEnumerableDynamic(t: obj) =
+            let typ = getChildType(t)
+            let method =
+                Assembly
+                    .LoadFile(Path.Combine(AppContext.BaseDirectory, "SunFlower.Abstractions.dll"))
+                    .GetType("SunFlower.Abstractions.FlowerReflection")
+                    .GetMethod("ListToDataTable")
+                    .MakeGenericMethod([| typ |])
 
-    /// <summary>
-    /// Permanently set plugins location
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="state"></param>
-    [<CompiledName "SetLocation">]
-    let setLocation (path: string) (state: FlowerState) = { state with SeedsPath = path }
-
-    /// <summary>
-    /// Activate plugin and put it in the loaded plugins collection
-    /// </summary>
-    /// <param name="path">Target .NET Assembly location</param>
-    /// <param name="isOk">True if plugin loaded successfully</param>
-    [<CompiledName "Activate">]
-    let activate (path: string) (isOk: bool outref) =
-        isOk <- false
+            method.Invoke(null, [| t |]) :?> DataTable
         
-        /// Get types or an empty list if load failed
-        let tryGetTypes =
+        let fromDynamic(t: obj) =
+            let method =
+                Assembly
+                    .LoadFile(Path.Combine(AppContext.BaseDirectory, "SunFlower.Abstractions.dll"))
+                    .GetType("SunFlower.Abstractions.FlowerReflection")
+                    .GetMethod("DictionaryDataTable")
+                    .MakeGenericMethod([| t.GetType() |])
+
+            method.Invoke(null, [| t |]) :?> DataTable
+        /// Transforms activated object into filled DataTable instance
+        let asDataTable(t: obj) =
+            match t.GetType().IsArray with
+            | true -> fromEnumerableDynamic t
+            | false -> fromDynamic t
+            
+        let presentDynamic (name: string, description: string, t: obj) =
             try
-                Assembly.LoadFile(path).GetTypes()
-            with e ->
-                e.Message |> Console.Error.WriteLine
-                [||]
+                if t.GetType().IsArray && isEnumerableDynamicEmpty t then
+                    $"### {name} (No elements)" |> builder.AppendLine |> ignore
+                elif not (t.GetType().IsArray) && isDynamicEmpty t then
+                    $"### {name} (Zero filled)" |> builder.AppendLine |> ignore
+                else
+                    $"### {name}"
+                        |> builder.AppendLine
+                        |> ignore
+                        
+                    description
+                        |> builder.AppendLine
+                        |> ignore
+                    
+                    if t.GetType() = typeof<string IEnumerable> then
+                        t
+                        |> FlowerMarkdownWriter.formatStrings
+                        |> builder.AppendLine
+                        |> ignore
+                    else
+                        t
+                        |> asDataTable
+                        |> FlowerMarkdownWriter.formatTable
+                        |> builder.AppendLine
+                        |> ignore
+            with ex ->
+                me.onRenderError $"### {name} (Render Error)"
+                me.onRenderError $"**{ex.GetType().Name}:** {ex.Message}"
+                $"### {name} (Render Error)"
+                    |> builder.AppendLine
+                    |> ignore
+                $"**{ex.GetType().Name}:** {ex.Message}"
+                    |> builder.AppendLine
+                    |> ignore
+        try
+            match me.kind with
+            | FlowerTarget.Data -> me.enumerateFlowerSeeds () |> Seq.iter presentDynamic
+            | FlowerTarget.Code
+            | FlowerTarget.Process -> me.enumerateFlowerSeeds () |> Seq.iter presentText
+            | _ -> NotSupportedException "Sorry, given flower target not supported in this version" |> raise
+        with ex ->
+            me.onRenderError $"**Render Error:** {ex.Message}"
+            $"**Render Error:** {ex.Message}" |> builder.AppendLine |> ignore
 
-        let isAssignable (t: Type) =
-            let flowerType = typeof<IFlower>
-            t.IsAssignableTo flowerType && not t.IsAbstract && t.IsClass
+        // Produce toxic waste
+        builder.ToString()
+///
+/// SunFlower plugins manager with Fluent API for C#/VB.net client side
+///
+[<FlowerVersionContract(5, 0, 0)>]
+type FlowerManager() =
+    let mutable flowers: CorList<FlowerData> = CorList()
+    let mutable messages: ConcurrentBag<string> = ConcurrentBag()
+    /// <summary>
+    /// Writes message to Kernel messages storage (CorList of strings)
+    ///
+    /// Client can read this storage and make
+    /// a verbose output or current user.
+    ///
+    /// </summary>
+    /// <param name="str"></param>
+    let send (str: string) : unit = messages.Add str
 
-        let havingContext (t: Type) =
-            let flowerContract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
-            let flowerTarget = t.GetCustomAttribute<FlowerAttribute>()
+    let fromParentMetadata () =
+        let parent = typeof<FlowerManager>
+        let version = parent.GetCustomAttribute<FlowerVersionContractAttribute>()
 
-            try
-                match flowerContract.MajorVersion = loaderMajor with
-                | false ->
-                    $"{t.Name} is incompatible. Expected {loaderMajor}.x, found {flowerContract.MajorVersion}.x"
-                    |> Console.Error.WriteLine
+        Version(version.MajorVersion, version.MinorVersion, version.BuildVersion)
 
-                    None
-                | true ->
-                    Some
-                        { instance = t |> Activator.CreateInstance :?> IFlower
-                          kind = flowerTarget.Target
-                          version =
-                            Version(
-                                flowerContract.MajorVersion,
-                                flowerContract.MinorVersion,
-                                flowerContract.BuildVersion,
-                                0
-                            ) }
-            with e ->
-                // Send message to the sky
-                e.Message |> Console.Error.WriteLine
-                None
+    let mutable parentVersion = Version()
+    do parentVersion <- fromParentMetadata ()
 
-        isOk <- true // <-- loaded correctly
-        instance
+    [<CompiledName "GetContract">]
+    member public this.getContract() = parentVersion |> string
+
+    [<CompiledName "ActivateAllAsync">]
+    member this.activateAllAsync() =
+        task {
+            let pluginsPath = Path.Combine(AppContext.BaseDirectory, "Plugins")
+
+            if not (Directory.Exists pluginsPath) then
+                send "Load Error: /Plugins subdirectory is missing!"
+                return ()
+
+            let! assemblies =
+                Directory.GetFiles(pluginsPath, "*.dll")
+                |> Seq.map (fun path ->
+                    task {
+                        try
+                            return Some(Assembly.LoadFrom(path))
+                        with ex ->
+                            send $"Load error: {Path.GetFileName(path)}: {ex.Message}"
+                            return None
+                    })
+                |> Task.WhenAll
+
+            let parentType = typeof<IFlower>
+
+            let newFlowers =
+                assemblies
+                |> Seq.collect (fun asm ->
+                    match asm with
+                    | Some a -> try a.GetTypes() with _ -> [||] // <-- skill issue
+                    | None -> [||])
+                |> Seq.filter (fun t -> t.IsClass && not t.IsAbstract && t.IsAssignableTo(parentType))
+                |> Seq.choose (fun t ->
+                    // Nullable container requires to have a 'T default constructor...
+                    let contract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
+                    
+                    match isNull contract with
+                    | true ->
+                        send $"Version Error: {t.Name} version is missing"
+                        None
+                    | false -> 
+                    
+                    if contract.MajorVersion <> parentVersion.Major then
+                        send $"Version Error: {t.Name} has v.{contract.MajorVersion}.x, Expected v.{parentVersion.Major}!"
+                        None
+                    else
+                        if contract.MinorVersion <> parentVersion.Minor then
+                            send $"Version Warning: {t.Name} ({contract.MajorVersion}.{contract.MinorVersion}.{contract.BuildVersion}) differs with ({parentVersion})!"
+
+                        try
+                            let instance = Activator.CreateInstance(t) :?> IFlower
+                            let kindAttr = t.GetCustomAttribute<FlowerAttribute>()
+
+                            let version =
+                                Version(contract.MajorVersion, contract.MinorVersion, contract.BuildVersion)
+
+                            Some
+                                { instance = instance
+                                  kind = kindAttr.Target
+                                  version = version
+                                  onRenderError = send }
+                        with ex ->
+                            send $"Activation Error: {t.Name}: {ex.Message}"
+                            None)
+
+            flowers.Clear()
+            flowers.AddRange(newFlowers)
+            send $"Done! Proceed {flowers.Count} entries."
+            return ()
+        }
 
     /// <summary>
-    /// Try to load plugins from <c>SeedsPath</c> directory
+    /// Pointer to storage of all loaded
+    /// and initialized (activated)
+    /// sunflower plugins interfaces
     /// </summary>
-    [<CompiledName "ActivateAll">]
-    let activateAll (state: FlowerState) =
-        /// Returns collection of assembly types or an empty list at all
-        /// if file location is invalid
-        let tryGetTypes (file: string) =
-            try
-                Assembly.LoadFile(file).GetTypes()
-            with _ ->
-                [||]
+    member public this.LoadedFlowers = List flowers
 
-        /// Returns filter criteria of correct type.
-        /// Type must be a derivative of IFlower interface
-        let byAssignableTypes (t: Type) =
-            let flowerType = typeof<IFlower>
-            t.IsAssignableTo flowerType && not t.IsAbstract
-
-        /// Collects optional values from total given types
-        /// Watches on the subscribed attributes [Flower] and [FlowerContract]
-        let withCorrectMetadata (t: Type) =
-            let flowerContract = t.GetCustomAttribute<FlowerVersionContractAttribute>()
-            let flower = t.GetCustomAttribute<FlowerAttribute>()
-            // Nested metadata are copies to the FlowerSeedData instance
-            // And might be used by other modules later.
-            // For example:
-            // Client looks at the FlowerData::kind field to organize output
-            try
-                match flowerContract.MajorVersion = loaderMajor with
-                | true ->
-                    Some
-                        { instance = t |> Activator.CreateInstance :?> IFlower
-                          kind = flower.Target
-                          version = Version(
-                            flowerContract.MajorVersion,
-                            flowerContract.MinorVersion,
-                            flowerContract.BuildVersion,
-                            0) }
-                | false ->
-                    $"{t.Name} v{flowerContract.MajorVersion}.x unloaded! Expected {loaderMajor}.0+"
-                    |> Console.Error.WriteLine
-                    None //
-            with e ->
-                e.Message |> Console.Error.WriteLine
-                None
-        // Iterate over the loaded assembly types
-        // extract necessary payload
-        let loadedList =
-            Directory.EnumerateFiles(state.SeedsPath, "*.dll")
-            |> Seq.collect tryGetTypes
-            |> Seq.filter byAssignableTypes
-            |> Seq.choose withCorrectMetadata
-
-        { state with Seeds = loadedList }
+    member public this.Messages = List messages
 
     /// <summary>
-    /// Calls entrypoint for each loaded plugin
+    /// Clears all kernel messages (e.g. when opening a new project/file).
     /// </summary>
-    /// <param name="state"></param>
-    // [<CompiledName "UpdateAll">]
-    // let updateAll (state: FlowerState) =
-    //     try
-    //         state.Seeds |> Seq.iter (fun data ->
-    //             let _i = data.seed.Main(state.FilePath)
-    //             ())
-    //     with e ->
-    //         e.Message |> Console.Error.WriteLine
-    //
-    //     state
+    member this.clearMessages() =
+        messages.Clear()
+
     /// <summary>
-    /// Returns loaded flower seeds collection
+    /// Updates <see cref="Seeds"/> collection
+    /// by targeting file
     /// </summary>
-    /// <param name="state">current state</param>
-    [<CompiledName "Collect">]
-    let collect (state: FlowerState) = state.Seeds
+    /// <param name="filePath">targeting file</param>
+    [<CompiledName "InitializeAllAsync">]
+    member this.initializeAllAsync(filePath: string) =
+        task {
+            let compatible = flowers |> Seq.toList
+
+            if compatible.IsEmpty then
+                send "Load Error: No such flowers!"
+                return ()
+            // Future: limit it using Parallel.ForEach
+            let tasks: Task<unit>[] =
+                compatible
+                |> Seq.map (fun fd ->
+                    task {
+                        try
+                            do! fd.instance.CreateAsync(filePath)
+                        with ex ->
+                            //fd.IsInitialized <- false
+                            //fd.Error <- Some ex.Message
+                            send $"Flower Error: {fd.instance.Name}: {ex.Message}"
+                    })
+                |> Seq.toArray
+
+            let! _ = Task.WhenAll(tasks) // not do! because got [unit] array instead of unit
+
+            return ()
+        }
+
+    /// <summary>
+    /// Recalls plugin by which matches by IFlower.Name property.
+    /// results of it will be rewritten. (= updated).
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="filePath"></param>
+    [<CompiledName "InitializeAsync">]
+    member this.initializeAsync(name: string, filePath: string) =
+        task {
+            let compatible =
+                flowers
+                    .Where(fun s -> s.instance.Name = name)
+                    .Select(Some)
+                    .FirstOrDefault(None)
+
+            match compatible with
+            | None ->
+                send "Load Error: Name mismatch!"
+                return ()
+            | Some c ->
+                try
+                    do! c.instance.CreateAsync(filePath)
+                with e ->
+                    send $"Flower Error: {e}"
+                    return ()
+        }
+
+    /// <summary>
+    /// Makes temporary instance for manager
+    /// </summary>
+    [<CompiledName "CreateInstance">]
+    static member public createInstance() : FlowerManager = FlowerManager()

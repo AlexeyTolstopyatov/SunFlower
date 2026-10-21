@@ -9,5 +9,5 @@ namespace SunFlower.Client.ViewModel;
 
 public class BytesDialogViewModel : DialogViewModel
 {
-    
+
 }

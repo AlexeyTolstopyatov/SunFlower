@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:m="clr-namespace:SunFlower.Client.Model"
+             mc:Ignorable="d"
+             d:DesignWidth="520" d:DesignHeight="400"
+             x:Class="SunFlower.Client.View.ExecuteDialogView"
+             x:DataType="{x:Type vm:ExecuteDialogViewModel}">
+    <UserControl.Resources>
+        <SolidColorBrush 
+            x:Key="PaletteAccent" Color="#0078D7" />
+    </UserControl.Resources>
+
+    <DockPanel 
+        LastChildFill="True">
+        <!-- Footer hint -->
+        <TextBlock 
+            DockPanel.Dock="Bottom"
+            Text="↑↓ navigate  |  [Enter/Return]=Execute  |  [Esc]=Close"
+            Foreground="{StaticResource SecondaryTextBrush}"
+            FontSize="11"
+            HorizontalAlignment="Center"
+            Margin="0,10,0,0" />
+
+        <!-- Search bar -->
+        <Border
+            DockPanel.Dock="Top"
+            Padding="14,14,14,8">
+            <DockPanel 
+                LastChildFill="True">
+                <TextBlock 
+                    DockPanel.Dock="Left"
+                    Text="$&gt;"
+                    FontFamily="Consolas"
+                    FontSize="15"
+                    Foreground="{StaticResource PaletteAccent}"
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0" />
+                <TextBox 
+                    x:Name="SearchBox"
+                    Text="{CompiledBinding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Watermark="Execute a command"
+                    FontSize="14"
+                    Padding="8,6" />
+            </DockPanel>
+        </Border>
+
+        <!-- Commands list -->
+        <ListBox 
+            x:Name="CommandsList"
+            ItemsSource="{CompiledBinding FilteredCommands}"
+            SelectedItem="{CompiledBinding SelectedCommand, Mode=TwoWay}"
+            Background="Transparent"
+            BorderThickness="0"
+            Margin="14,0,14,14"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate 
+                    DataType="{x:Type m:CommandPaletteItem}">
+                    <Grid
+                        ColumnDefinitions="*,Auto"
+                        Margin="0,2">
+                        <StackPanel
+                            Grid.Column="0">
+                            <TextBlock 
+                                Text="{CompiledBinding Name}"
+                                FontSize="13"
+                                VerticalAlignment="Center"
+                                Margin="0,1"
+                                TextTrimming="CharacterEllipsis" 
+                                />
+                            <TextBlock 
+                                Text="{CompiledBinding Description}"
+                                Foreground="{StaticResource SecondaryTextBrush}"
+                                FontSize="11"
+                                VerticalAlignment="Top"
+                                TextTrimming="CharacterEllipsis" /> <!--0,16,0,0-->
+                        </StackPanel>
+                        <TextBlock 
+                            Grid.Column="1"
+                            Text="{CompiledBinding Hotkey}"
+                            FontFamily="Consolas"
+                            FontSize="11"
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            VerticalAlignment="Center"
+                            Margin="12,0,0,0" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

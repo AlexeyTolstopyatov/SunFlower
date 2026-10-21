@@ -20,7 +20,7 @@ public partial class App : Application
     private static WindowService WindowService { get; } = new();
     private static SettingsService SettingsService { get; } = new();
     public static ThemeService ThemeService { get; private set; } = new();
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -34,14 +34,14 @@ public partial class App : Application
             Environment.Exit(-1);
             return;
         }
-        
+
         // All children (windows in the App collection) must change theme by request
         ThemeService = new ThemeService();
         ThemeService.ThemeChanged += variant =>
         {
             RequestedThemeVariant = variant;
         };
-        
+
         var mainViewModel = new MainWindowViewModel(
             PluginService,
             RecentFilesService,
@@ -104,13 +104,13 @@ public partial class App : Application
             reason = "[Registry/recent.json]";
             return true;
         }
-        
+
         if (!settings.Exists || settings.IsReadOnly)
         {
             reason = "[Registry/settings.json]";
             return true;
         }
-        
+
         return false;
     }
 }

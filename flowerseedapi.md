@@ -1,9 +1,13 @@
-# Plugins development | usage of `SunFlower.Abstractions`
+# Plugins development | usage of `SunFlower.Abstractions` 1.x-4.x
 
 <img src="assets/sunflower.svg" align="right" width="128" height="128">
 
 All plugins what connects with SunFlower client are uses basic definitions
 what declared in the `SunFlower.Abstractions` namespace
+
+> [!WARNING]
+> This documentation is deprecated since Sunflower 5.0 release! Be carefully
+> see [flowerapi.md](flowerapi.md)
 
 ### First stage | Plugin-side code
 

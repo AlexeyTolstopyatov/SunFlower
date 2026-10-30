@@ -25,6 +25,7 @@
     <PackageReference Include="AvaloniaHex" Version="0.1.10" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Dock.Avalonia" Version="11.3.12" />
+    <PackageReference Include="Dock.Avalonia.Themes.Browser" Version="11.3.11.14" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12" />
     <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12" />
     <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
@@ -42,10 +43,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\" />
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="View\ExplorerDocumentView.axaml.cs">
+      <DependentUpon>DockExplorerView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
@@ -58,8 +62,8 @@
       <DependentUpon>RecentFilesView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="View\WorkspaceView.axaml.cs">
-      <DependentUpon>WorkspaceView.axaml</DependentUpon>
+    <Compile Update="View\DockWorkspaceView.axaml.cs">
+      <DependentUpon>DockingWorkspaceView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -73,5 +77,10 @@
     <None Update="Grammar\intel.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Update="Drawing\DockTheme.axaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaXaml>
   </ItemGroup>
 </Project>

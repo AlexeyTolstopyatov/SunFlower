@@ -20,12 +20,13 @@
         
         <TextBlock
             Text="{Binding MaxAddress, StringFormat='File {0} bytes', FallbackValue='File 0 bytes'}"
-            Foreground="{StaticResource SecondaryTextBrush}"/>
+            Foreground="{DynamicResource SecondaryTextBrush}"/>
         
         <Grid
             HorizontalAlignment="Stretch"
             ColumnDefinitions="*,6*">
             <ComboBox
+                TabIndex="0"
                 SelectedIndex="{CompiledBinding OffsetBase}">
                 <ComboBoxItem
                     Content="0x"/>
@@ -38,8 +39,17 @@
                 Grid.Column="1"
                 AcceptsReturn="False"
                 AcceptsTab="False"
+                TabIndex="1"
                 Text="{Binding AddressInput, Mode=TwoWay}"
-                Watermark="File Offset"/>
+                Watermark="File Offset">
+                <Interaction.Behaviors>
+                    <KeyTrigger
+                        Key="Enter">
+                        <InvokeCommandAction
+                            Command="{CompiledBinding AcceptCommand}"/>
+                    </KeyTrigger>
+                </Interaction.Behaviors>
+            </TextBox>
         </Grid>
         <TextBlock 
             Text="{Binding ErrorMessage}"

@@ -115,13 +115,13 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void NavigateDockingWorkspace()
     {
-        CurrentPage = new DockingWorkspaceViewModel(
+        CurrentPage = new DockWorkspaceViewModel(
             WorkspaceService,
             PluginService,
             new PluginAnalysisService(WorkspaceService),
             SettingsService);
     }
-
+    
     [RelayCommand]
     private async Task ImportFileAsync()
     {
@@ -142,9 +142,23 @@ public partial class MainWindowViewModel : ObservableObject
                 {
                     Patterns = ["*.*"]
                 },
-                new FilePickerFileType("Not UNIX")
+                new FilePickerFileType("Windows-DOS-OS/2 Modules")
                 {
-                    Patterns = ["*.exe", "*.dll", "*.sys", "*.bin", "*.rom", "*.com", "*.drv", "*.scr", "*.386", "*.vxd", "*.ocx", "*.vst", "*.lib"]
+                    Patterns = [
+                        "*.exe", 
+                        "*.dll", 
+                        "*.sys", 
+                        "*.bin", 
+                        "*.rom", 
+                        "*.com", 
+                        "*.drv", 
+                        "*.scr", 
+                        "*.386", 
+                        "*.vxd",
+                        "*.ocx", 
+                        "*.vst", 
+                        "*.lib"
+                    ]
                 },
                 new FilePickerFileType("Project Files")
                 {
@@ -219,11 +233,11 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveProjectAsAsync()
     {
-        if (MainWindow == null || WorkspaceService.CurrentProject == null)
+        if (MainWindow is null || WorkspaceService.CurrentProject is null)
             return;
 
         var storage = TopLevel.GetTopLevel(MainWindow)?.StorageProvider;
-        if (storage == null)
+        if (storage is null)
             return;
 
         var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -252,7 +266,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void DetachWorkspace()
     {
-        if (CurrentPage is not WorkspaceViewModel workspaceVm) return;
+        if (CurrentPage is not DockWorkspaceViewModel workspaceVm) return;
 
         WindowService.OpenWorkspaceWindow(workspaceVm);
         NavigateHome();
@@ -279,10 +293,11 @@ public partial class MainWindowViewModel : ObservableObject
             var analysisService = new PluginAnalysisService(WorkspaceService);
             App.ThemeService.SetEditor((ThemeName)SettingsService.Current.TextControlTheme);
 
-            var workspaceVm = new WorkspaceViewModel(
+            var workspaceVm = new DockWorkspaceViewModel(
                 WorkspaceService, PluginService, analysisService, SettingsService);
-            workspaceVm.OpenDockingWorkspace = () => NavigateDockingWorkspace();
+
             WindowService.OpenWorkspaceWindow(workspaceVm);
+            
         }
         catch (Exception ex)
         {

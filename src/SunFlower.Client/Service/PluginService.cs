@@ -35,7 +35,7 @@ public class PluginService
 
     /// <summary>
     /// ActivateAsync all plugins. Call once at application startup.
-    /// Plugin activation (Assembly.LoadFrom, reflection, Activator.CreateInstance) is CPU-bound
+    /// Plugin activation (Text.LoadFrom, reflection, Activator.CreateInstance) is CPU-bound
     /// and F#'s <c>task {}</c> builder runs its synchronous body on the calling thread,
     /// so the whole pipeline must be offloaded to the thread pool to keep the UI responsive.
     /// </summary>

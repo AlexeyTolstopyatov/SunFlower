@@ -1,0 +1,239 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dock="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
+        xmlns:dps="clr-namespace:Dock.Controls.ProportionalStackPanel;assembly=Dock.Controls.ProportionalStackPanel">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <CornerRadius x:Key="DockIslandCornerRadius">10</CornerRadius>
+      <CornerRadius x:Key="DockTabCornerRadius">5</CornerRadius>
+      <CornerRadius x:Key="DockDocumentBottomCornerRadius">0</CornerRadius>
+      <Thickness x:Key="DockIslandMargin">6</Thickness>
+      <Thickness x:Key="DockTabMargin">5</Thickness>
+      <Thickness x:Key="DockTabPadding">15,8</Thickness>
+      <Thickness x:Key="DockTabBorder">1</Thickness>
+      <x:Double x:Key="DockTitleBarHeight">40</x:Double>
+      <x:Double x:Key="DockTabHeight">40</x:Double>
+
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="DockSurfaceBrush" Color="#F2F4F8" Opacity="0.9" />
+          <SolidColorBrush x:Key="DockPanelBrush" Color="#FFFFFF" Opacity="0.9" />
+          <SolidColorBrush x:Key="DockBorderBrush" Color="#D8DEE7" />
+          <SolidColorBrush x:Key="DockTabInactiveBrush" Color="#E9EDF3" />
+          <SolidColorBrush x:Key="DockTabHoverBrush" Color="#F0F4FB" />
+          <SolidColorBrush x:Key="DockAccentBrush" Color="#2F7FF6" />
+          <SolidColorBrush x:Key="DockSplitterBrush" Color="Transparent" />
+        </ResourceDictionary>
+       
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="DockSurfaceBrush" Color="#181A1F" Opacity="0.9" />
+          <SolidColorBrush x:Key="DockPanelBrush" Color="#1F2229" Opacity="0.9" />
+          <SolidColorBrush x:Key="DockBorderBrush" Color="#32373F" />
+          <SolidColorBrush x:Key="DockTabInactiveBrush" Color="#1A1C21" />
+          <SolidColorBrush x:Key="DockTabHoverBrush" Color="#2A2D36" />
+          <SolidColorBrush x:Key="DockAccentBrush" Color="#4D8BFF" />
+          <SolidColorBrush x:Key="DockSplitterBrush" Color="Transparent" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- Root Dock layout -->
+  <Style Selector="dock|DockControl">
+    <Setter Property="Background" Value="{DynamicResource DockSurfaceBrush}" />
+  </Style>
+  
+  <Style Selector="Panel#PART_DocumentSeperator">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="Panel#PART_DocumentSeperator:selected">
+    <Setter Property="Opacity" Value="0.3"/>
+    <Setter Property="Background" Value="{DynamicResource DockSplitterBrush}"/>
+  </Style>
+  <!-- Splitter -->
+  <Style Selector="dps|ProportionalStackPanelSplitter">
+    <Setter Property="Background" Value="{DynamicResource DockSplitterBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockIslandCornerRadius}" />
+    <Setter Property="Thickness" Value="6" />
+  </Style>
+
+  <Style Selector="dps|ProportionalStackPanelSplitter:pointerover">
+    <Setter Property="Background" Value="{DynamicResource DockBorderBrush}" />
+    <Setter Property="Opacity" Value="0.5" />
+  </Style>
+  
+   <!--
+     Tool windows
+     TODO: nothing is working. DockFluentTheme still alive 
+    -->
+
+  <!-- Tool Window is floating or bounded -->
+  <Style Selector="dock|ToolChromeControl">
+    <Setter Property="Background" Value="{DynamicResource DefaultBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockIslandCornerRadius}" />
+    <Setter Property="Margin" Value="{StaticResource DockIslandMargin}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Opacity" Value="0.95" />
+  </Style>
+
+  <!-- Tool window still floating -->
+  <Style Selector="dock|ToolChromeControl:floating /template/ Border">
+    <Setter Property="CornerRadius" Value="{StaticResource DockIslandCornerRadius}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Background" Value="{DynamicResource DefaultBrush}" />
+  </Style>
+
+  <!-- Trying to replace title bar of given Tool Chrome Window but nothing changes D:!!!! -->
+  <Style Selector="dock|ToolChromeControl /template/ Grid#PART_TitleBar">
+    <Setter Property="Background" Value="{DynamicResource DockTabInactiveBrush}" />
+    <Setter Property="Height" Value="{StaticResource DockTitleBarHeight}" />
+    <!-- <Setter Property="CornerRadius" Value="5"></Setter> -->
+  </Style>
+
+  <!-- Tool Chrome Window content -->
+  <Style Selector="dock|ToolControl">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent"/>
+  </Style>
+
+  <!-- Tool Tabs -->
+  <Style Selector="dock|ToolTabStrip">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockTabCornerRadius}"></Setter>
+  </Style>
+  <!-- Tool Tab itself -->
+  <Style Selector="dock|ToolTabStripItem">
+    <Setter Property="Background" Value="{DynamicResource DockTabInactiveBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockTabCornerRadius}" />
+    <Setter Property="Margin" Value="{StaticResource DockTabMargin}" />
+    <Setter Property="Padding" Value="{StaticResource DockTabPadding}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DockBorderBrush}" />
+    <Setter Property="BorderThickness" Value="{StaticResource DockTabBorder}" />
+    <Setter Property="MinHeight" Value="{StaticResource DockTabHeight}" />
+  </Style>
+
+  <Style Selector="dock|ToolTabStripItem:pointerover">
+    <Setter Property="Background" Value="{DynamicResource DockTabHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+
+  <Style Selector="dock|ToolTabStripItem:selected">
+    <Setter Property="Background" Value="{DynamicResource DockPanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DockAccentBrush}" />
+    <Setter Property="BorderThickness" Value="1,1,1,2" />
+  </Style>
+
+  <!-- 
+     Center part of DockControl layout
+     Here is a much simpler because of document is a just a UserControl
+     not Window (or Host/ManagedHost/ToolChrome)Window. I'm f*g done with this s*t 
+    -->
+
+  <Style Selector="DocumentDockControl">
+    <Setter Property="BorderBrush" Value="Transparent"></Setter>
+    <Setter Property="Background" Value="Transparent"></Setter>
+  </Style>
+  
+  <!-- Document area styles (what stays as a Content property) -->
+  <Style Selector="dock|DocumentControl">
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <!-- <Setter Property="BorderThickness" Value="0,1,1,1" /> -->
+  </Style>
+
+  <Style Selector="dock|DocumentControl /template/ Border#PART_Border">
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <!-- <Setter Property="Background" Value="{DynamicResource DefaultBrush}" /> -->
+    <!-- <Setter Property="BorderThickness" Value="0,1,1,1" /> -->
+  </Style>
+
+  <!-- Document Tab Panel -->
+  <Style Selector="dock|DocumentTabStrip">
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <!-- <Setter Property="BorderThickness" Value="0" /> -->
+    <!-- <Setter Property="Background" Value="{DynamicResource DefaultBrush}" /> -->
+    <!-- <Setter Property="Padding" Value="0" /> -->
+  </Style>
+
+  <!-- Inactive tab styles -->
+  <Style Selector="dock|DocumentTabStripItem">
+    <Setter Property="Background" Value="{DynamicResource DockTabInactiveBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockTabCornerRadius}" />
+    <Setter Property="Margin" Value="{StaticResource DockTabMargin}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DockBorderBrush}" />
+    <Setter Property="BorderThickness" Value="{StaticResource DockTabBorder}" />
+    <!-- <Setter Property="Padding" Value="{StaticResource DockTabPadding}" /> -->
+    <!-- <Setter Property="MinHeight" Value="{StaticResource DockTabHeight}" /> -->
+  </Style>
+
+  <!-- Inactive tab Pointer over event is called -->
+  <Style Selector="dock|DocumentTabStripItem:pointerover">
+    <Setter Property="Background" Value="{DynamicResource DockTabHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+  </Style>
+
+  <!-- Active tab styles: Little bold border to see the selected event -->
+  <Style Selector="dock|DocumentTabStripItem:selected">
+    <Setter Property="Background" Value="{DynamicResource DockPanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+    <Setter Property="BorderThickness" Value="2" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DockAccentBrush}"/>
+    <!-- <Setter Property="BorderBrush" Value="{DynamicResource DockAccentBrush}" /> -->
+    <!-- <Setter Property="Margin" Value="5,5,0,0" /> -->
+    <!-- <Setter Property="Padding" Value="15,8" /> -->
+  </Style>
+  
+  <!-- Tab Item Text Characteristics -->
+  <Style Selector="dock|DocumentTabStripItem TextBlock, dock|ToolTabStripItem TextBlock">
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <!-- <Setter Property="TextTrimming" Value="CharacterEllipsis" /> -->
+  </Style>
+
+  
+  <!--
+    MDI Windows transformation. PART_TitleBar doesn't work
+    TODO: remake window title bar/window control scope.
+    I'm f*ing done
+  -->
+
+  <Style Selector="dock|MdiDocumentWindow">
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource DockIslandCornerRadius}" />
+    <Setter Property="Background" Value="{DynamicResource DefaultBrush}" />
+    <Setter Property="Opacity" Value="0.95" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="dock|MdiDocumentWindow /template/ Border#PART_Border">
+    <Setter Property="CornerRadius" Value="{StaticResource DockIslandCornerRadius}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <!-- <Setter Property="Background" Value="{DynamicResource DefaultBrush}" /> -->
+  </Style>
+
+  <!-- 
+    MDI window Title bar. PART_TitleBar doesn't work ;___;
+    At the moment of 23.X/2026 this is a rare s*t because of Border template changes WHOLE WINDOW??? OK. 
+  -->
+  <Style Selector="dock|MdiDocumentWindow /template/ Border">
+    <Setter Property="Background" Value="{DynamicResource RegionBrush}" />
+    <Setter Property="Opacity" Value="0.9"></Setter>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="VerticalAlignment" Value="Top"/>
+    <Setter Property="CornerRadius" Value="5"></Setter>
+  </Style>
+</Styles>

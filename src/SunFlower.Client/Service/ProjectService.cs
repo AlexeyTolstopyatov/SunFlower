@@ -25,7 +25,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 
 namespace SunFlower.Client.Service;
 
@@ -38,33 +37,27 @@ public class ProjectInfo
     /// Raw binary path if opened from a binary file, or project file path.
     /// </summary>
     public string FilePath { get; set; } = string.Empty;
-
     /// <summary>
     /// True if this is a .flowerproj project file (not raw binary).
     /// </summary>
     public bool IsProject { get; set; }
-
     /// <summary>
     /// Path to the temp working directory for this project.
     /// </summary>
     public string WorkingDirectory { get; set; } = string.Empty;
-
     /// <summary>
     /// Whether the project has unsaved changes.
     /// </summary>
     public bool IsDirty { get; set; }
-
     /// <summary>
     /// Original binary file path (for projects only).
     /// </summary>
     public string? OriginalBinaryPath { get; set; }
-
     /// <summary>
     /// Original binary file name (without directory).
     /// Stored inside .flowerproj to avoid a punch-method discovery.
     /// </summary>
     public string? OriginalFileName { get; set; }
-
     /// <summary>
     /// Returns the file name of the original binary, or empty.
     /// </summary>
@@ -387,6 +380,8 @@ public class ProjectService
     /// </summary>
     public async Task SaveProjectAsync(string? savePath = null)
     {
+        // TODO: File format might be simplified to zip or completely secured (AES/RSA?)
+        
         if (_currentProject == null)
             throw new InvalidOperationException("No project is open.");
 
@@ -413,11 +408,11 @@ public class ProjectService
             var timestamp = (ulong)(now - epoch).TotalSeconds;
             var fmtVer = Kernel.Services.FlowerCompatibility.GetForAllList()[0].Version;
 
-            writer.Write(fmtVer.Major);                 // 4 bytes -> version
-            writer.Write(fmtVer.Minor);                 // 4 bytes -> revision
-            writer.Write(timestamp);                    // 8 bytes -> created
-            writer.Write(timestamp);                    // 8 bytes -> modified
-            writer.Write((ulong)zipBytes.Length);       // 8 bytes -> containerSize
+            writer.Write(fmtVer.Major);           // 4 bytes -> version
+            writer.Write(fmtVer.Minor);           // 4 bytes -> revision
+            writer.Write(timestamp);              // 8 bytes -> created
+            writer.Write(timestamp);              // 8 bytes -> modified
+            writer.Write((ulong)zipBytes.Length); // 8 bytes -> containerSize
 
             var fileName = _currentProject.OriginalFileName ?? string.Empty;
             var fileNameBytes = Encoding.UTF8.GetBytes(fileName);

@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
+             xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="300"
+             x:Class="SunFlower.Client.View.HexDocumentView"
+             x:DataType="{x:Type dock:HexDocumentViewModel}">
+    <hex:HexEditor
+        x:Name="Editor"
+        Margin="10"
+        FontFamily="{Binding HexFontFamily}"
+        FontSize="{Binding HexFontSize}"
+        Document="{Binding BinaryDocument}">
+        <hex:HexEditor.Columns>
+            <hexr:OffsetColumn />
+            <hexr:HexColumn UseDynamicHeader="True" />
+            <hexr:AsciiColumn />
+        </hex:HexEditor.Columns>
+    </hex:HexEditor>
+</UserControl>

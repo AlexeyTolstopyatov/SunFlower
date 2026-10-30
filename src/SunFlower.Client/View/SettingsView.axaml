@@ -8,86 +8,135 @@
              d:DesignHeight="450"
              x:Class="SunFlower.Client.View.SettingsView"
              x:DataType="{x:Type vm:SettingsViewModel}">
-    <StackPanel>
-        <!-- App -->
-        <TextBlock
-            Margin="20, 5"
-            Text="Application"
-            TextWrapping="Wrap"/>
+    <WrapPanel>
         <Border
-            Margin="20,5"
+            Margin="10"
             Padding="10"
-            CornerRadius="5"
-            Background="{StaticResource BorderBrush}">
-            <Grid
-                ColumnDefinitions="90, 160">
-                <TextBlock
-                    Grid.Column="0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Text="Theme variant"/>
-                <ComboBox
-                    Grid.Column="1"
-                    Name="ThemeBox"
-                    Width="150"
-                    SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="SelectionChanged">
-                            <InvokeCommandAction 
-                                CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
-                                Command="{CompiledBinding ChangeThemeCommand}" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <ComboBoxItem
-                        Content="System"/>
-                    <ComboBoxItem
-                        Content="Light"/>
-                    <ComboBoxItem
-                        Content="Dark"/>
-                </ComboBox>
-            </Grid>
+            BorderThickness="2"
+            CornerRadius="10"
+            BorderBrush="{DynamicResource DockTabHoverBrush}"
+            Background="{DynamicResource RegionBrush}">
+            <StackPanel>
+                <Grid
+                    ColumnDefinitions="48, *">
+                    <!--Icon/Region behaviour-->
+                    <Image
+                        VerticalAlignment="Center"
+                        Source="/Assets/app48.png"/>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Grid.Column="1">
+                        <Run Text="Globals"/>
+                        <LineBreak/>
+                        <Run
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="Children windows setup"/>
+                    </TextBlock>
+                </Grid>
+                <Grid
+                    ColumnDefinitions="90, 160">
+                    <TextBlock
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Text="Theme variant"/>
+                    <ComboBox
+                        Grid.Column="1"
+                        Name="ThemeBox"
+                        Width="150"
+                        SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
+                        <Interaction.Behaviors>
+                            <EventTriggerBehavior EventName="SelectionChanged">
+                                <InvokeCommandAction 
+                                    CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
+                                    Command="{CompiledBinding ChangeThemeCommand}" />
+                            </EventTriggerBehavior>
+                        </Interaction.Behaviors>
+                        <ComboBoxItem
+                            Content="System"/>
+                        <ComboBoxItem
+                            Content="Light"/>
+                        <ComboBoxItem
+                            Content="Dark"/>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
         </Border>
-        <TextBlock
-            Margin="20, 5"
-            Text="Hex editor"
-            TextWrapping="Wrap">
-        </TextBlock>
+       
         <Border
-            Margin="20,5"
+            Margin="10"
             Padding="10"
-            CornerRadius="5"
-            Background="{StaticResource BorderBrush}">
-            <Grid
-                ColumnDefinitions="90, 160, Auto">
-                <TextBlock
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Text="Font params"/>
-                <AutoCompleteBox
-                    Grid.Column="1"
-                    Background="{StaticResource RegionBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
-                    ItemsSource="{CompiledBinding InstalledFonts}"
-                    Text="{CompiledBinding Settings.HexControl.Family, FallbackValue='Family', Mode=TwoWay}"
-                    Width="150"/>
-                <TextBox
-                    Grid.Column="2"
-                    Text="{CompiledBinding Settings.HexControl.Size, FallbackValue='Size', Mode=TwoWay}"
-                    Width="50"/>
-            </Grid>
+            BorderThickness="2"
+            CornerRadius="10"
+            BorderBrush="{DynamicResource DockTabHoverBrush}"
+            Background="{DynamicResource RegionBrush}">
+            <StackPanel>
+                <Grid
+                    ColumnDefinitions="48, *">
+                    <!--Icon/Region behaviour-->
+                    <Image
+                        VerticalAlignment="Center"
+                        Source="/Assets/fbin48.png"/>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Grid.Column="1">
+                        <Run Text="Hexadecimal Layout"/>
+                        <LineBreak/>
+                        <Run
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="Setup of hex editor control"/>
+                        <Run
+                            Text="restart is required"/>
+                    </TextBlock>
+                </Grid>
+                <Grid
+                    ColumnDefinitions="90, 160, Auto">
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="Font params"/>
+                    <AutoCompleteBox
+                        Grid.Column="1"
+                        Background="{StaticResource RegionBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        ItemsSource="{CompiledBinding InstalledFonts}"
+                        Text="{CompiledBinding Settings.HexControl.Family, FallbackValue='Family', Mode=TwoWay}"
+                        Width="150"/>
+                    <TextBox
+                        Grid.Column="2"
+                        Text="{CompiledBinding Settings.HexControl.Size, FallbackValue='Size', Mode=TwoWay}"
+                        Width="50"/>
+                </Grid>
+            </StackPanel>
         </Border>
-        <TextBlock
-            Margin="20, 5"
-            Text="Text editor"
-            TextWrapping="Wrap">
-        </TextBlock>
+        
         <Border
-            Margin="20,5"
+            Margin="10"
             Padding="10"
-            CornerRadius="5"
-            Background="{StaticResource BorderBrush}">
+            BorderThickness="2"
+            CornerRadius="10"
+            BorderBrush="{DynamicResource DockTabHoverBrush}"
+            Background="{DynamicResource RegionBrush}">
             <StackPanel
                 Spacing="10">
+                <Grid
+                    ColumnDefinitions="48, *">
+                    <!--Icon/Region behaviour-->
+                    <Image
+                        VerticalAlignment="Center"
+                        Source="/Assets/fdoc48.png"/>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Grid.Column="1">
+                        <Run Text="Text Layout"/>
+                        <LineBreak/>
+                        <Run
+                            Foreground="{DynamicResource SecondaryTextBrush}"
+                            Text="Text Editor parameters setup"/>
+                        <Run
+                            Text="restart is required"/>
+                    </TextBlock>
+                </Grid>
                 <Grid
                     HorizontalAlignment="Left"
                     ColumnDefinitions="90, 160, Auto">
@@ -97,7 +146,7 @@
                         Text="Font params"/>
                     <AutoCompleteBox
                         Background="{StaticResource RegionBrush}"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
                         Grid.Column="1"
                         Text="{CompiledBinding Settings.TextControl.Family, FallbackValue='Family', Mode=TwoWay}"
                         Width="150"
@@ -113,7 +162,7 @@
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="Theme variant"/>
+                        Text="Syntax Theme"/>
                     <ComboBox
                         Grid.Column="1"
                         Width="150"
@@ -132,56 +181,58 @@
                 </Grid>
             </StackPanel>
         </Border>
-        <Grid
-            Margin="20,0"
-            ColumnDefinitions="3*, *">
-            
-            <WrapPanel
-                Grid.Column="0">
-                <Button
-                    Margin="0, 0"
-                    Width="100"
-                    Background="{StaticResource BorderBrush}"
-                    Command="{CompiledBinding DeleteCacheCommand}"
-                    Content="Clear Cache"
-                    HotKey="Delete">
-                    <Button.ContextFlyout>
-                        <Flyout>
-                            <TextBlock 
-                                Text="Delete project temp files"/>
-                        </Flyout>
-                    </Button.ContextFlyout>
-                </Button>
-                <Button
-                    Background="{StaticResource BorderBrush}"
-                    HotKey="Ctrl+S"
-                    Command="{CompiledBinding SaveCommand}"
-                    Margin="5, 10, 5, 10"
-                    Width="100"
-                    HorizontalAlignment="Right"
-                    Content="Save">
-                    <Button.ContextFlyout>
-                        <Flyout>
-                            <TextBlock 
-                                Text="Write changes to settings file. No restart"/>
-                        </Flyout>
-                    </Button.ContextFlyout>
-                </Button>
-            </WrapPanel>
-            
-            <Border
-                Margin="5,5, 20, 5"
-                Padding="10"
-                CornerRadius="5"
-                Background="Transparent"
-                Grid.Column="1">
-                <StackPanel>
-                    <TextBlock
-                        IsVisible="{CompiledBinding FirstCacheCleared}"
-                        Foreground="#ff009b76"
-                        Text="{CompiledBinding Message, FallbackValue='ты че блять.'}"/>
+        <Border
+            Padding="10"
+            BorderThickness="2"
+            CornerRadius="10"
+            BorderBrush="{DynamicResource DockTabHoverBrush}"
+            Background="{DynamicResource RegionBrush}"
+            Margin="20,10">
+            <Grid
+                ColumnDefinitions="3*, *">
+                <StackPanel
+                    Grid.Column="0">
+                    <Button
+                        Margin="0, 0"
+                        Width="100"
+                        Background="{DynamicResource BorderBrush}"
+                        Command="{CompiledBinding DeleteCacheCommand}"
+                        Content="Clear Cache"
+                        HotKey="Delete">
+                        <Button.ContextFlyout>
+                            <Flyout>
+                                <TextBlock 
+                                    Text="Delete project temp files"/>
+                            </Flyout>
+                        </Button.ContextFlyout>
+                    </Button>
+                    <Button
+                        Background="{DynamicResource BorderBrush}"
+                        HotKey="Ctrl+S"
+                        Command="{CompiledBinding SaveCommand}"
+                        Margin="5, 10, 5, 10"
+                        Width="100"
+                        HorizontalAlignment="Right"
+                        Content="Save">
+                        <Button.ContextFlyout>
+                            <Flyout>
+                                <TextBlock 
+                                    Text="Write changes to settings file. No restart"/>
+                            </Flyout>
+                        </Button.ContextFlyout>
+                    </Button>
                 </StackPanel>
-            </Border>
-        </Grid>
-    </StackPanel>
+            
+                <Border
+                    Grid.Column="1">
+                    <StackPanel>
+                        <TextBlock
+                            IsVisible="{CompiledBinding FirstCacheCleared}"
+                            Foreground="#ff009b76"
+                            Text="{CompiledBinding Message, FallbackValue='ты че блять.'}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </WrapPanel>
 </UserControl>

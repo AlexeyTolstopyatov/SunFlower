@@ -21,7 +21,7 @@ public enum ContentSubType
 {
     Unknown,
     Markdown,
-    Assembly,
+    Text,
     PlainText,
     Binary,
     Image
@@ -147,14 +147,14 @@ public static class ContentTypeDetector
     private static ContentSubType GetTextSubType(string ext) => ext switch
     {
         ".md" or ".markdown" => ContentSubType.Markdown,
-        ".asm" or ".s" or ".inc" => ContentSubType.Assembly,
+        ".asm" or ".s" or ".inc" => ContentSubType.Text,
         _ => ContentSubType.PlainText
     };
 
     private static string GetTextDescription(string ext) => ext switch
     {
         ".md" or ".markdown" => "Markdown",
-        ".asm" or ".s" or ".inc" => "Assembly",
+        ".asm" or ".s" or ".inc" => "Text",
         _ => "Plain text"
     };
 

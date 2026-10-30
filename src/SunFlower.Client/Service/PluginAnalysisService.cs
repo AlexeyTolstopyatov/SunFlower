@@ -37,7 +37,7 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
     /// The result file is named after the file it was applied to,
     /// following the convention: <c>&lt;targetFileName&gt;_&lt;pluginName&gt;</c>
     /// (e.g. applying the plugin to "explorer.exe" gives "explorer_Sunflower.Pe.md").
-    /// Fix: clears stale results before Main() so Code-plugins don't
+    /// Fix: clears stale results before Main() so Text-plugins don't
     /// accumulate output from previous file runs.
     /// </summary>
     /// <param name="flowerData">The plugin to run</param>
@@ -54,7 +54,7 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
         var workingDir = project.WorkingDirectory;
         var pluginName = flowerData.Instance.Name;
         var kind = $"{flowerData.Kind}";
-        var ext = kind == "Code" ? ".asm" : ".md";
+        var ext = kind == "Text" ? ".asm" : ".md";
 
         var appliedPath = targetPath ?? project.OriginalBinaryPath ?? workspaceService.CurrentFilePath;
         if (string.IsNullOrEmpty(appliedPath))
@@ -98,14 +98,14 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
             Name = $"{targetBaseName}_{pluginName}",
             FileName = safeFileName,
             FilePath = filePath,
-            ContentType = kind == "Code" ? "Assembly" : "Markdown",
+            ContentType = kind == "Text" ? "Text" : "Markdown",
             Kind = kind,
             RawContent = content,
             HasError = error is not null,
             ErrorMessage = error?.Message, // null reference?
             IsBinary = false,
-            IsAssembly = kind == "Code",
-            IsMarkdown = kind != "Code",
+            IsAssembly = kind == "Text",
+            IsMarkdown = kind != "Text",
             FileSize = content.Length
         };
     }
@@ -144,10 +144,10 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
             FileName = fileName,
             FilePath = filePath,
             ContentType = detection.Description,
-            Kind = detection.SubType == ContentSubType.Assembly ? "Code" : "Data",
+            Kind = detection.SubType == ContentSubType.Text ? "Text" : "Data",
             RawContent = content,
             IsBinary = false,
-            IsAssembly = detection.SubType == ContentSubType.Assembly,
+            IsAssembly = detection.SubType == ContentSubType.Text,
             IsMarkdown = detection.SubType == ContentSubType.Markdown,
             FileSize = content.Length
         };

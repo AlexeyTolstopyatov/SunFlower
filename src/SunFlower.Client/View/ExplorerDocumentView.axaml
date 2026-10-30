@@ -1,0 +1,111 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             xmlns:kernel="clr-namespace:SunFlower.Kernel.Services;assembly=SunFlower.Kernel"
+             x:Name="Root" x:Class="SunFlower.Client.View.ExplorerDocumentView"
+             x:DataType="dock:ExplorerDocumentViewModel">
+    <!-- <Border  -->
+    <!--     Padding="10" -->
+    <!--     Background="{StaticResource CloudTileBrush}" -->
+    <!--     BorderThickness="3" -->
+    <!--     Margin="20" -->
+    <!--     BorderBrush="{DynamicResource DockAccentBrush}"> -->
+    <!--     <StackPanel> -->
+    <!--         <ListBox -->
+    <!--             x:Name="ProjectFileList" -->
+    <!--             Background="Transparent" -->
+    <!--             ItemsSource="{Binding ProjectFiles}" -->
+    <!--             SelectedItem="{Binding SelectedFile, Mode=TwoWay}" -->
+    <!--             BorderBrush="Transparent"> -->
+    <!--             <ListBox.ItemTemplate> -->
+    <!--                 <DataTemplate x:DataType="viewModel:ProjectFileViewModel"> -->
+    <!--                     <StackPanel Orientation="Horizontal" Spacing="8"> -->
+    <!--                         <TextBlock  -->
+    <!--                             Text="{Binding FileName}" /> -->
+    <!--                         <Interaction.Behaviors> -->
+    <!--                             <DoubleTappedGestureTrigger> -->
+    <!--                                 <InvokeCommandAction Command="{Binding ElementName=ProjectFileList, Path=((vm:ExplorerDocumentViewModel)DataContext).OpenSelectedFileCommand}" /> -->
+    <!--                             </DoubleTappedGestureTrigger> -->
+    <!--                         </Interaction.Behaviors> -->
+    <!--                     </StackPanel> -->
+    <!--                 </DataTemplate> -->
+    <!--             </ListBox.ItemTemplate> -->
+    <!--             <ListBox.ContextMenu> -->
+    <!--                 <ContextMenu> -->
+    <!--                     <MenuItem  -->
+    <!--                         Header="Open"  -->
+    <!--                         Command="{Binding OpenSelectedFileCommand}" /> -->
+    <!--                 </ContextMenu> -->
+    <!--             </ListBox.ContextMenu> -->
+    <!--         </ListBox> -->
+    <!--     </StackPanel> -->
+    <!-- </Border> -->
+    <Border
+        BorderBrush="{DynamicResource DockAccentBrush}"
+        BorderThickness="3"
+        Margin="20"
+        Background="{StaticResource CloudTileBrush}"
+        Padding="10">
+        <Grid
+            RowDefinitions="Auto,*">
+            <ProgressBar 
+                Grid.Row="0"
+                Height="3"
+                IsIndeterminate="True"
+                IsVisible="{Binding IsBusy}" />
+
+            <ListBox 
+                Background="Transparent"
+                Grid.Row="1"
+                x:Name="ProjectFilesList"
+                ItemsSource="{Binding ProjectFiles}"
+                SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Header="Open"
+                            Command="{Binding $parent[ListBox].((dock:ExplorerDocumentViewModel)DataContext).OpenSelectedFileCommand}" />
+
+                        <Separator />
+
+                        <MenuItem
+                            Header="Run plugin"
+                            ItemsSource="{Binding $parent[ListBox].((dock:ExplorerDocumentViewModel)DataContext).AvailableFlowers}">
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate x:DataType="kernel:FlowerData">
+                                    <TextBlock Text="{Binding Instance.Name}" />
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                            <MenuItem.ItemContainerTheme>
+                                <ControlTheme 
+                                    TargetType="MenuItem"
+                                    BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Command"
+                                            Value="{Binding $parent[ListBox].((dock:ExplorerDocumentViewModel)DataContext).RunPluginCommand}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </ControlTheme>
+                            </MenuItem.ItemContainerTheme>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate 
+                        x:DataType="vm:ProjectFileViewModel">
+                        <ItemsControl>
+                            <TextBlock
+                                Text="{Binding FileName}"/>
+                            <Interaction.Behaviors>
+                                <EventTrigger EventName="DoubleTapped">
+                                    <InvokeCommandAction
+                                        Command="{Binding $parent[ListBox].((dock:ExplorerDocumentViewModel)DataContext).OpenSelectedFileCommand}" />
+                                </EventTrigger>
+                            </Interaction.Behaviors>
+                        </ItemsControl>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Border>
+</UserControl>

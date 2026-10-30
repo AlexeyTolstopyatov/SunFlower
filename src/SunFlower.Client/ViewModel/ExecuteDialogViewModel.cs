@@ -86,7 +86,10 @@ public partial class ExecuteDialogViewModel : DialogViewModel
             }
         }
 
-        SelectedCommand = _filtered.Count > 0 ? _filtered[0] : null;
+        SelectedCommand = _filtered.Count > 0 
+            ? _filtered[0] 
+            : null;
+        
         HasResults = _filtered.Count > 0;
     }
 

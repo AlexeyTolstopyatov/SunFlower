@@ -9,19 +9,18 @@
         d:DesignHeight="768"
         x:Class="SunFlower.Client.View.WorkspaceWindow"
         Icon="/Assets/app48.png"
-        KeyDown="DialogContainerKeyHandled"
         Background="{StaticResource RegionBrush}"
-        Title="{Binding FileName, FallbackValue=Workspace}"
-        x:DataType="{x:Type vm:WorkspaceViewModel}"
+        Title="Workspace"
+        x:DataType="{x:Type vm:DockWorkspaceViewModel}"
         Closing="OnClosing">
-    <Window.KeyBindings>
-        <KeyBinding 
-            Gesture="Ctrl+Shift+P" 
-            Command="{Binding ShowCommandPaletteCommand}"/>
-    </Window.KeyBindings>
     <Grid>
-        <view:WorkspaceView 
-            x:Name="WorkspaceView" 
+        <Grid.KeyBindings>
+            <KeyBinding
+                Gesture="Ctrl+Shift+P"
+                Command="{CompiledBinding ShowCommandPaletteCommand}"/>
+        </Grid.KeyBindings>
+        <view:DockWorkspaceView 
+            x:Name="DockingWorkspace" 
             DataContext="{Binding}" />
         
         <Border 
@@ -53,7 +52,7 @@
                     IsIndeterminate="True" />
                 <TextBlock
                     HorizontalAlignment="Center"
-                    Foreground="{StaticResource SecondaryTextBrush}"
+                    Foreground="{DynamicResource SecondaryTextBrush}"
                     Text="{Binding BusyText}" />
             </StackPanel>
         </Border>

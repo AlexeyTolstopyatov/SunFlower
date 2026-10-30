@@ -24,7 +24,7 @@ public class ThemeService
     /// <summary>
     /// Reacts when editor scheme changes
     /// </summary>
-    public event Action<ThemeName>? EditorChanged;
+    public event Action<object?, ThemeName>? EditorChanged;
 
     /// <summary>
     /// Current editor theme
@@ -53,6 +53,6 @@ public class ThemeService
     public void SetEditor(ThemeName theme)
     {
         _currentEditorVariant = theme;
-        EditorChanged?.Invoke(theme);
+        EditorChanged?.Invoke(null, theme); // TODO: sender is undefined
     }
 }

@@ -102,14 +102,12 @@
             </Menu>
         </Grid>
 
-        <!-- Page area — uses ViewLocator to auto-resolve View for ViewModel -->
         <Grid Grid.Column="1">
             <ContentControl
                 Name="PageArea"
                 Content="{Binding CurrentPage}"
                 ContentTemplate="{StaticResource ViewLocator}" />
 
-            <!-- Startup loading overlay: shown while plugins/recent files initialize -->
             <Border
                 Name="LoadingOverlay"
                 IsVisible="{Binding IsBusy}"

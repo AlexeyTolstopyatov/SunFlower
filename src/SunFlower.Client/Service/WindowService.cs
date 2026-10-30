@@ -5,37 +5,23 @@
 // ViewModel calls OpenWorkspaceWindow(), WindowService creates the Window.
 //
 
-using System;
-using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using AvaloniaEdit.TextMate;
 using SunFlower.Client.View;
 using SunFlower.Client.ViewModel;
-using TextMateSharp.Grammars;
 
 namespace SunFlower.Client.Service;
 
 public class WindowService
 {
     /// <summary>
-    /// Open the WorkspaceView in a separate window.
+    /// Open the DockWorkspaceView in a separate window.
     /// </summary>
-    public void OpenWorkspaceWindow(WorkspaceViewModel vm)
+    public void OpenWorkspaceWindow(DockWorkspaceViewModel vm)
     {
-        // Workspace control stores inside the window -> define the user control in it
         var window = new WorkspaceWindow
         {
             DataContext = vm
-        };
-
-        var inst = window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(App.ThemeService.TextEditorVariant));
-        var grammar = Path.Combine(AppContext.BaseDirectory, "Grammar", "intel.json");
-        inst.SetGrammarFile(grammar);
-
-        App.ThemeService.EditorChanged += variant =>
-        {
-            window.WorkspaceView.Editor.InstallTextMate(new RegistryOptions(variant));
         };
 
         // Pass both Window and DialogService references to the ViewModel
@@ -49,15 +35,15 @@ public class WindowService
     /// </summary>
     public void CloseAllWorkspaceWindows()
     {
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) 
+            return;
+        
+        var windows = desktop.Windows;
+        for (var i = windows.Count - 1; i >= 0; i--)
         {
-            var windows = desktop.Windows;
-            for (int i = windows.Count - 1; i >= 0; i--)
+            if (windows[i] is WorkspaceWindow)
             {
-                if (windows[i] is WorkspaceWindow)
-                {
-                    windows[i].Close();
-                }
+                windows[i].Close();
             }
         }
     }

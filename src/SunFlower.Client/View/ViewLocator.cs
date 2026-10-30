@@ -14,21 +14,27 @@ namespace SunFlower.Client.View;
 
 public class ViewLocator : IDataTemplate
 {
-    public Control Build(object data)
+    public Control Build(object? data)
     {
-        var view = data.GetType().FullName!.Replace("ViewModel", "View");
-        var type = Type.GetType(view);
+        if (data is null)
+            return new TextBlock { Text = "<null>" };
+        
+        var type = data.GetType();
+        
+        var viewType = type.Namespace?.Replace("ViewModel", "View") + "." +
+                       type.Name.Replace("ViewModel", "View");
+        var typeOfView = Type.GetType(viewType);
 
-        if (type == null)
-            return new TextBlock { Text = $"The {view} not found" };
+        if (typeOfView == null)
+            return new TextBlock { Text = $"The {viewType} not found" };
 
-        if (!type.IsSubclassOf(typeof(Window)))
-            return (Control)Activator.CreateInstance(type)!;
+        if (!typeOfView.IsSubclassOf(typeof(Window)))
+            return (Control)Activator.CreateInstance(typeOfView)!;
 
-        return new TextBlock { Text = $"The {view} initialized" };
+        return new TextBlock { Text = $"The {viewType} initialized" };
     }
 
-    public bool Match(object data)
+    public bool Match(object? data)
     {
         return data is ObservableObject;
     }

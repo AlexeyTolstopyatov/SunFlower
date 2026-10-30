@@ -5,11 +5,9 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using SunFlower.Client.ViewModel;
 
 namespace SunFlower.Client.View;

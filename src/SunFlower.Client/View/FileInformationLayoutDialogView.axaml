@@ -24,9 +24,6 @@
                 <StackPanel>
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="File Location"/>
-                    <TextBlock
-                        Foreground="{DynamicResource SecondaryTextBrush}"
                         Text="File Size"/>
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
@@ -37,10 +34,6 @@
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
-                    <SelectableTextBlock
-                        FontSize="14"
-                        FontFamily="Sans Serif"
-                        Text="{CompiledBinding FlowerFileInfo.Path, FallbackValue='?'}"/>
                     <SelectableTextBlock
                         FontSize="14"
                         FontFamily="Sans Serif"

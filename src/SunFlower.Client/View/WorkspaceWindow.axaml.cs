@@ -6,7 +6,6 @@
 using System;
 using Avalonia.Animation;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Styling;
 using SunFlower.Client.Service;
@@ -78,7 +77,7 @@ public partial class WorkspaceWindow : Window
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
         // Clean up project when window is closed
-        if (DataContext is WorkspaceViewModel vm)
+        if (DataContext is DockWorkspaceViewModel)
         {
             // The ViewModel shouldn't know about Window closing,
             // -> handle cleanup here via the service.
@@ -91,14 +90,26 @@ public partial class WorkspaceWindow : Window
         _dialogCloseAnimation.RunAsync(DialogPresenter);
         DialogLayer.IsVisible = false;
     }
-
-    private void DialogContainerKeyHandled(object? sender, KeyEventArgs e)
-    {
-        if (e.Key != Key.Escape)
-            return;
-
-        DialogContainer.IsOpen = false;
-    }
+    //
+    // private void DialogContainerKeyHandled(object? sender, KeyEventArgs e)
+    // {
+    //     if (e.Key == Key.Escape)
+    //     {
+    //         DialogContainer.IsOpen = false;
+    //         return;
+    //     }
+    //
+    //     // Ctrl+Shift+P — Command Palette (вызов плагинов для выбранного файла)
+    //     if (e.Key == Key.P &&
+    //         e.KeyModifiers == (Avalonia.Input.KeyModifiers.Control | Avalonia.Input.KeyModifiers.Shift))
+    //     {
+    //         e.Handled = true;
+    //         if (DataContext is DockWorkspaceViewModel vm)
+    //         {
+    //             vm.ShowCommandPaletteCommand.Execute(null);
+    //         }
+    //     }
+    // }
 
     private void DialogContainerOpened(object? sender, EventArgs e)
     {

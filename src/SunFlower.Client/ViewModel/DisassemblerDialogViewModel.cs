@@ -37,7 +37,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
 
         // Store input bytes
         InputBytes = bytes;
-        StartOffset = startOffset ?? 0;
+        StartOffset = startOffset ?? 0; // <-- nullable context is necessary
 
         IsAllBytesMode = startOffset == null;
     }

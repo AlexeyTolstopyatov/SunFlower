@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using SunFlower.Abstractions;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -55,20 +56,34 @@ public sealed class WorkspaceHost : IWorkspaceHost
 
     public async Task ExecuteFlowerAsync(FlowerData flower, string filePath)
     {
-        var result = await _fe.ExecuteFlowerAsync(flower, filePath);
-
-        switch (result.Kind)
+        PluginContentView result;
+        try
         {
-            case "Text":
-                await OpenTextAsync(filePath);
-                break;
-            case "Markdown":
-                await OpenMarkdownAsync(filePath);
-                break;
-            default:
-                await OpenHexAsync(filePath); 
-                break;
+            result = await _fe.ExecuteFlowerAsync(flower, filePath);
         }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync(
+                $"[{nameof(ExecuteFlowerAsync)}] {flower.Instance.Name} failed: {ex}");
+            return;
+        }
+
+        if (result.HasError)
+        {
+            await Console.Error.WriteLineAsync(
+                $"[{nameof(ExecuteFlowerAsync)}] {flower.Instance.Name}: {result.ErrorMessage}");
+        }
+
+        // Open the *produced* result file (e.g. <target>_<plugin>.md),
+        // not the original target that was analyzed.
+        var resultPath = result.FilePath;
+
+        if (result.IsMarkdown)
+            await OpenMarkdownAsync(resultPath);
+        else if (result.IsAssembly)
+            await OpenTextAsync(resultPath);
+        else
+            await OpenMarkdownAsync(resultPath);
     }
     private Task OpenTextAsync(string filePath) =>
         GetOrCreateAsync<TextDocumentViewModel>(filePath, "Text", async doc =>
@@ -95,72 +110,6 @@ public sealed class WorkspaceHost : IWorkspaceHost
         {
             doc.Content = await File.ReadAllTextAsync(filePath);
         });
-    
-    // private async Task OpenTextAsync(string filePath)
-    // {
-    //     var doc = GetOrCreate<TextDocumentViewModel>(filePath, "Text");
-    //     var (family, size) = ReadFontConfig(_settings.Current.TextControl);
-    //     doc.TextFontFamily = new FontFamily(family);
-    //     doc.TextFontSize = size;
-    //
-    //     doc.TextDocument ??= new AvaloniaEdit.Document.TextDocument(
-    //         await File.ReadAllTextAsync(filePath));
-    //
-    //     doc.Context = doc;
-    //     
-    //     Activate(doc);
-    // }
-    //
-    // private async Task OpenHexAsync(string filePath)
-    // {
-    //     var doc = GetOrCreate<HexDocumentViewModel>(filePath, "Hex");
-    //     var (family, size) = ReadFontConfig(_settings.Current.HexControl);
-    //     doc.HexFontFamily = new FontFamily(family);
-    //     doc.HexFontSize = size;
-    //
-    //     if (doc.BinaryDocument is null)
-    //     {
-    //         var bytes = await File.ReadAllBytesAsync(filePath);
-    //         doc.BinaryDocument = new AvaloniaHex.Document.MemoryBinaryDocument(bytes);
-    //     }
-    //
-    //     doc.Context = doc;
-    //
-    //     Activate(doc);
-    // }
-    //
-    // private async Task OpenMarkdownAsync(string filePath)
-    // {
-    //     var doc = GetOrCreate<MarkdownDocumentViewModel>(filePath, "Page");
-    //     doc.Content = await File.ReadAllTextAsync(filePath);
-    //
-    //     doc.Context = doc;
-    //     
-    //     Activate(doc);
-    // }
-
-    private T GetOrCreate<T>(string filePath, string suffix) where T : FileDocument, new()
-    {
-        // The layout is the truth. Closed tabs are gone from VisibleDockables,
-        // so GetOrCreate recreates them -> no phantom entries possible.
-        var existing = _contentDock.VisibleDockables?
-            .OfType<T>()
-            .FirstOrDefault(d => string.Equals(d.FilePath, filePath, StringComparison.Ordinal));
-
-        if (existing is not null)
-            return existing;
-        // it sets Factory on the instance, which `new T()` does not.
-        // Without a factory, Dock silently fails to render/activate the tab.
-        var doc = new T(); //_factory.CreateDockable<T>(Guid.NewGuid().ToString());
-                           // member is missing but Dock.Avalonia decompilation told that
-                           // no special mechanics to create IDocument-like instance 
-        doc.Title = $"{Path.GetFileName(filePath)} [{suffix}]";
-        doc.FilePath = filePath;
-        doc.CanFloat = false;
-
-        _contentDock.AddDocument(doc);
-        return doc;
-    }
     
     private async Task<T> GetOrCreateAsync<T>(
         string filePath, string suffix, Func<T, Task> populate)

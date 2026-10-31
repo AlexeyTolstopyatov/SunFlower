@@ -17,7 +17,7 @@
         <Grid.KeyBindings>
             <KeyBinding
                 Gesture="Ctrl+Shift+P"
-                Command="{CompiledBinding ShowCommandPaletteCommand}"/>
+                Command="{CompiledBinding BuildCommandPaletteCommand}"/>
         </Grid.KeyBindings>
         <view:DockWorkspaceView 
             x:Name="DockingWorkspace" 

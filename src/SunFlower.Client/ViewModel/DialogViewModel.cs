@@ -16,5 +16,6 @@ namespace SunFlower.Client.ViewModel;
 
 public class DialogViewModel : ObservableObject
 {
+    // TODO: virtial AcceptCommand/CancelCommand
     public DialogService? DialogService { get; set; }
 }

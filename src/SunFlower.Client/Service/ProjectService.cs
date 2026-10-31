@@ -58,10 +58,6 @@ public class ProjectInfo
     /// Stored inside .flowerproj to avoid a punch-method discovery.
     /// </summary>
     public string? OriginalFileName { get; set; }
-    /// <summary>
-    /// Returns the file name of the original binary, or empty.
-    /// </summary>
-    public string OriginalBinaryName => Path.GetFileName(OriginalBinaryPath ?? string.Empty);
 }
 
 public class ProjectService
@@ -118,7 +114,7 @@ public class ProjectService
     /// <summary>
     /// Checks if path has .flowerproj extension.
     /// </summary>
-    public bool HasProjectExtension(string path) =>
+    public static bool HasProjectExtension(string path) =>
         Path.GetExtension(path).Equals(".flowerproj", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
@@ -126,7 +122,7 @@ public class ProjectService
     /// The original file name is preserved so it can be stored
     /// later in the .flowerproj header.
     /// </summary>
-    public ProjectInfo OpenRawBinary(string path)
+    public void OpenRawBinary(string path)
     {
         if (!File.Exists(path))
             throw new FileNotFoundException("File not found.", path);
@@ -152,8 +148,6 @@ public class ProjectService
             OriginalBinaryPath = binaryInWorkingDir,
             OriginalFileName = originalName
         };
-
-        return _currentProject;
     }
 
     /// <summary>
@@ -272,6 +266,47 @@ public class ProjectService
         var fullPath = Path.Combine(_currentProject.WorkingDirectory, fileName);
         await File.WriteAllBytesAsync(fullPath, content);
         _currentProject.IsDirty = true;
+    }
+
+    /// <summary>
+    /// Copies an external file into the project working directory.
+    /// Returns the full path of the copied file.
+    /// </summary>
+    public void AddProjectFile(string sourcePath, string destFileName)
+    {
+        if (_currentProject == null)
+            throw new InvalidOperationException("No project is open.");
+
+        if (!File.Exists(sourcePath))
+            throw new FileNotFoundException("Source file not found.", sourcePath);
+
+        if (string.IsNullOrWhiteSpace(destFileName))
+            throw new ArgumentException("Destination file name cannot be empty.", nameof(destFileName));
+
+        if (destFileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("Destination file name contains invalid characters.", nameof(destFileName));
+
+        var destPath = Path.Combine(_currentProject.WorkingDirectory, destFileName);
+        if (File.Exists(destPath))
+            throw new InvalidOperationException($"A file named '{destFileName}' already exists in the project.");
+
+        File.Copy(sourcePath, destPath, overwrite: false);
+        _currentProject.IsDirty = true;
+    }
+
+    /// <summary>
+    /// Copies a project file to an external destination path.
+    /// </summary>
+    public async Task ExportProjectFileAsync(string fileName, string destinationPath)
+    {
+        if (_currentProject == null)
+            throw new InvalidOperationException("No project is open.");
+
+        var sourcePath = Path.Combine(_currentProject.WorkingDirectory, fileName);
+        if (!File.Exists(sourcePath))
+            throw new FileNotFoundException($"File '{fileName}' not found in the project.", sourcePath);
+
+        await Task.Run(() => File.Copy(sourcePath, destinationPath, overwrite: true));
     }
 
     /// <summary>

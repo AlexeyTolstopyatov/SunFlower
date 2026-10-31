@@ -6,6 +6,7 @@
 // @creator: atolstopyatov2017@vk.com
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SunFlower.Kernel.Readers;
 
 namespace SunFlower.Client.ViewModel;
@@ -15,4 +16,10 @@ public partial class FileInformationLayoutDialogViewModel(string path) : DialogV
     // If "Undefined" -> mark as null
     [ObservableProperty]
     private FlowerFileInfo? _flowerFileInfo = FlowerBinarySeeker.Get(path);
+
+    [RelayCommand]
+    private void Exit()
+    {
+        DialogService?.CloseDialog();
+    }
 }

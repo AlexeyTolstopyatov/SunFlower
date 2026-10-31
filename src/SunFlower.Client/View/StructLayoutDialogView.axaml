@@ -1,0 +1,167 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             mc:Ignorable="d"
+             d:DesignWidth="640"
+             d:DesignHeight="480"
+             x:Class="SunFlower.Client.View.StructLayoutDialogView"
+             x:DataType="{x:Type vm:StructLayoutDialogViewModel}">
+    <!--
+        Struct Layout dialog.
+        Reinterprets selected bytes as a packed struct described by a JSONC template.
+        Left side -> template editor; right side -> field name/offset/type/size/value table.
+        Toolkit: FlowerReflection API / BinaryReaderExtension (SunFlower.Abstractions).
+    -->
+    <StackPanel
+        Margin="10">
+
+        <!-- template editor -->
+        <Border
+            Margin="0,0,4,0"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1"
+            Padding="8">
+            <StackPanel>
+                <Grid
+                    RowDefinitions="Auto,*,Auto,Auto">
+                    <TextBlock
+                        Grid.Row="0"
+                        Text="Template"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,5" />
+                    <!-- Inherit Text editor settings -->
+                    <TextBox
+                        Padding="10"
+                        VerticalContentAlignment="Top"
+                        Grid.Row="1" x:Name="TemplateTextBox"
+                        Text="{Binding TemplateText, Mode=TwoWay}"
+                        FontFamily="{CompiledBinding FontFamily}"
+                        FontSize="{CompiledBinding FontSize}"
+                        AcceptsReturn="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+                    <StackPanel
+                        Grid.Row="2"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="0,8,0,0">
+                        <Button
+                            MinWidth="110"
+                            Content="Browse"
+                            Command="{Binding FromCommand}" />
+                        <Button
+                            MinWidth="110"
+                            Content="Save Template"
+                            Command="{Binding SaveTemplateCommand}" />
+                    </StackPanel>
+                    <TextBlock
+                        Grid.Row="3"
+                        Text="{Binding BytesInfo}"
+                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Margin="0,8,0,0" TextWrapping="Wrap" />
+                </Grid>
+                <!-- Table -->
+                <Grid
+                    RowDefinitions="Auto,*,Auto">
+                    <TextBlock
+                        Grid.Row="0"
+                        Text="Caught Fields"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,6" />
+
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto">
+                        <Grid
+                            RowDefinitions="Auto,*">
+
+                            <!-- Header -->
+                            <Grid Grid.Row="0" ColumnDefinitions="150,80,80,60,*" Margin="0,0,0,4">
+                                <TextBlock Grid.Column="0" Text="Field" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="1" Text="Offset" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="2" Text="Type" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="3" Text="Size" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="4" Text="Value" FontWeight="SemiBold" />
+                            </Grid>
+
+                            <!-- Row Echelon of captured data cells -->
+                            <Border
+                                Grid.Row="1"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1">
+                                <ItemsControl
+                                    ItemsSource="{Binding Fields}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid
+                                                ColumnDefinitions="150,80,80,60,*"
+                                                Margin="0,2">
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Offset, StringFormat='0x{0:X4}'}" />
+                                                <TextBlock Grid.Column="2" Text="{Binding Type}" />
+                                                <TextBlock Grid.Column="3" Text="{Binding Size}" />
+                                                <TextBlock Grid.Column="4" Text="{Binding Value}" FontFamily="Consolas" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <StackPanel
+                        Grid.Row="2"
+                        Orientation="Horizontal" Spacing="8"
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Right">
+                        <Button
+                            MinWidth="120"
+                            Content="Save Layout"
+                            Command="{Binding SaveLayoutCommand}" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+        
+        <Border
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="0,8,0,0">
+            <Grid
+                ColumnDefinitions="*,Auto,Auto">
+                <TextBlock
+                    Grid.Column="0"
+                    Text="{Binding ErrorMessage}"
+                    Foreground="Red"
+                    IsVisible="{Binding HasError}"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    Grid.Column="1"
+                    MinWidth="90"
+                    Content="Accept"
+                    Command="{Binding AcceptCommand}" HotKey="Ctrl+Enter"
+                    HorizontalAlignment="Right" />
+
+                <Button
+                    Grid.Column="2"
+                    MinWidth="90"
+                    Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    HotKey="Escape"
+                    HorizontalAlignment="Right"
+                    Margin="8,0,0,0" />
+            </Grid>
+        </Border>
+    </StackPanel>
+</UserControl>

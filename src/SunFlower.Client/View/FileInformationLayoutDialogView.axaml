@@ -49,6 +49,10 @@
                         FontSize="14"
                         FontFamily="Sans Serif"
                         Text="{CompiledBinding FlowerFileInfo.Sign, FallbackValue='?'}"/>
+                    <Button
+                        Content="Exit"
+                        HotKey="Escape"
+                        Command="{CompiledBinding ExitCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -63,7 +63,7 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
         await pluginService.ActivateAsync();
 
         // Determine if it's a project or raw binary
-        if (projectService.IsProjectFile(path) || projectService.HasProjectExtension(path))
+        if (projectService.IsProjectFile(path) || ProjectService.HasProjectExtension(path))
         {
             OpenProject(path);
             return;

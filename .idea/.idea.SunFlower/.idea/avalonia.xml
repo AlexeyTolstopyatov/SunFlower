@@ -11,6 +11,7 @@
         <entry key="src/SunFlower.Client/Drawing/DockTheme.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/DockTheme.xaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/DockTheme2026.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/Drawing/DocumentTheme.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/FigmaTheme.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/MarkdownRenderStyles.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/Drawing/OfficeTheme.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />

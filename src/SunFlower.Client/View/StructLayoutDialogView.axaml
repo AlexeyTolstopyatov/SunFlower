@@ -131,7 +131,7 @@
                 </Grid>
             </StackPanel>
         </Border>
-        
+
         <Border
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0"

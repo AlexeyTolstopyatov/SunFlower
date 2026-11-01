@@ -17,13 +17,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SunFlower.Client.Service;
 
 namespace SunFlower.Client.ViewModel;
 
@@ -38,53 +36,28 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
             ["qword"] = (typeof(ulong), 8)
         };
 
-    public sealed class StructLayoutField
-    {
-        public string Name { get; init; } = string.Empty;
-        public int Offset { get; init; }
-        public string Type { get; init; } = string.Empty;
-        public int Size { get; init; }
-        public string Value { get; init; } = string.Empty;
-    }
-
-    private sealed class TemplateEntry(string name, string type)
-    {
-        public string Name { get; } = name;
-        public string Type { get; } = type;
-    }
-
     private readonly byte[] _bytes;
     private readonly Window? _ownerWindow;
 
-    [ObservableProperty]
-    private string _title = "Struct Layout";
+    [ObservableProperty] private string _bytesInfo = string.Empty;
 
-    [ObservableProperty]
-    private string _bytesInfo = string.Empty;
+    [ObservableProperty] private string? _errorMessage;
 
-    [ObservableProperty]
-    private string _templateText;
+    [ObservableProperty] private FontFamily _fontFamily;
 
-    [ObservableProperty]
-    private string? _errorMessage;
+    [ObservableProperty] private double _fontSize;
 
-    [ObservableProperty]
-    private bool _hasError;
+    [ObservableProperty] private bool _hasError;
 
-    [ObservableProperty]
-    private bool _isParsed;
+    [ObservableProperty] private bool _isParsed;
 
-    [ObservableProperty]
-    private FontFamily _fontFamily;
-    
-    [ObservableProperty]
-    private double _fontSize;
-    
-    public ObservableCollection<StructLayoutField> Fields { get; } = [];
+    [ObservableProperty] private string _templateText;
+
+    [ObservableProperty] private string _title = "Struct Layout";
 
     public StructLayoutDialogViewModel(
         FontFamily? fontFamily,
-        double? fontSize, 
+        double? fontSize,
         string? templateText = null,
         Window? ownerWindow = null,
         byte[]? selectedBytes = null
@@ -92,7 +65,7 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
     {
         _fontFamily = fontFamily ?? new FontFamily("Consolas");
         _fontSize = fontSize ?? 13.0;
-        
+
         _ownerWindow = ownerWindow;
         _bytes = selectedBytes ?? [];
         _templateText = templateText ?? DefaultTemplate;
@@ -101,15 +74,17 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
         Parse();
     }
 
+    public ObservableCollection<StructLayoutField> Fields { get; } = [];
+
     private static string DefaultTemplate => """
-        [
-          // This code is an example how the 32-bit integer might be packed
-          { "name": "bCaught", "type": "BYTE" },
-          { "name": "bCaught", "type": "BYTE" },
-          { "name": "wCaught", "type": "WORD" },
-          { "name": "dwCaught","type": "DWORD" }
-        ]
-        """;
+                                             [
+                                               // This code is an example how the 32-bit integer might be packed
+                                               { "name": "bCaught", "type": "BYTE" },
+                                               { "name": "bCaught", "type": "BYTE" },
+                                               { "name": "wCaught", "type": "WORD" },
+                                               { "name": "dwCaught","type": "DWORD" }
+                                             ]
+                                             """;
 
     private void UpdateBytesInfo()
     {
@@ -117,6 +92,7 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
             ? "No bytes selected"
             : $"Selected bytes: {_bytes.Length} (0x0 .. 0x{_bytes.Length - 1:X})";
     }
+
     partial void OnTemplateTextChanged(string value)
     {
         Parse();
@@ -146,7 +122,7 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
 
         using var stream = new MemoryStream(_bytes);
         using var reader = new BinaryReader(stream);
-        int offset = 0;
+        var offset = 0;
 
         foreach (var entry in template)
         {
@@ -176,10 +152,10 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
             {
                 value = clrType switch
                 {
-                    _ when clrType == typeof(byte)   => reader.ReadByte(),
+                    _ when clrType == typeof(byte) => reader.ReadByte(),
                     _ when clrType == typeof(ushort) => reader.ReadUInt16(),
-                    _ when clrType == typeof(uint)   => reader.ReadUInt32(),
-                    _ when clrType == typeof(ulong)  => reader.ReadUInt64(),
+                    _ when clrType == typeof(uint) => reader.ReadUInt32(),
+                    _ when clrType == typeof(ulong) => reader.ReadUInt64(),
                     _ => throw new NotSupportedException(clrType.FullName ?? clrType.Name)
                 };
             }
@@ -206,17 +182,21 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
         IsParsed = true;
     }
 
-    private static string FormatValue(object value, int size) => value switch
+    private static string FormatValue(object value, int size)
     {
-        byte b => $"0x{b:X2}",
-        ushort w => $"0x{w:X4}",
-        uint d => $"0x{d:X8}",
-        ulong q => $"0x{q:X16}",
-        _ => value.ToString() ?? string.Empty
-    };
+        return value switch
+        {
+            byte b => $"0x{b:X2}",
+            ushort w => $"0x{w:X4}",
+            uint d => $"0x{d:X8}",
+            ulong q => $"0x{q:X16}",
+            _ => value.ToString() ?? string.Empty
+        };
+    }
+
     private TemplateEntry[]? ParseTemplate(string text)
     {
-        // JSONC: drop whole-line "//" comments, then parse allowing trailing commas.
+        // jsonc drop whole-line [//] comments, then parse allowing trailing commas.
         var cleaned = new StringBuilder();
         foreach (var line in text.Split('\n'))
         {
@@ -251,14 +231,14 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    ErrorMessage = "Each template entry must have a non-empty 'name'.";
+                    ErrorMessage = "Entry must have a non-empty \"name\".";
                     HasError = true;
                     return null;
                 }
 
                 if (string.IsNullOrWhiteSpace(type))
                 {
-                    ErrorMessage = $"Field '{name}' is missing a 'type'.";
+                    ErrorMessage = $"\"{name}\" is missing a \"type\".";
                     HasError = true;
                     return null;
                 }
@@ -278,8 +258,8 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
 
     private static IStorageProvider? GetStorageProvider(Window? owner)
     {
-        return owner == null 
-            ? null 
+        return owner == null
+            ? null
             : TopLevel.GetTopLevel(owner)?.StorageProvider;
     }
 
@@ -297,7 +277,8 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
         return files.Count > 0 ? files[0] : null;
     }
 
-    private static async Task<IStorageFile?> PickSaveFileAsync(Window? owner, string title, string defaultExtension, string[] patterns)
+    private static async Task<IStorageFile?> PickSaveFileAsync(Window? owner, string title, string defaultExtension,
+        string[] patterns)
     {
         var storage = GetStorageProvider(owner);
         if (storage == null)
@@ -315,7 +296,8 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
     private async Task From()
     {
         // Import a template (*.jsonc / *.json / *.txt) from disk.
-        var file = await PickOpenFileAsync(_ownerWindow, "Import struct layout template", ["*.jsonc", "*.json", "*.txt"]);
+        var file = await PickOpenFileAsync(_ownerWindow, "Import struct layout template",
+            ["*.jsonc", "*.json", "*.txt"]);
         if (file == null)
             return;
 
@@ -367,12 +349,12 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
         }
 
         var file = await PickSaveFileAsync(
-            _ownerWindow, 
+            _ownerWindow,
             "Save struct layout",
             ".json",
             ["*.json", "*.jsonc"]
         );
-        
+
         if (file == null)
             return;
 
@@ -401,8 +383,29 @@ public sealed partial class StructLayoutDialogViewModel : DialogViewModel
     }
 
     [RelayCommand]
-    private void Accept() => DialogService?.CloseDialog(true);
+    private void Accept()
+    {
+        DialogService?.CloseDialog(true);
+    }
 
     [RelayCommand]
-    private void Cancel() => DialogService?.CloseDialog(false);
+    private void Cancel()
+    {
+        DialogService?.CloseDialog(false);
+    }
+
+    public sealed class StructLayoutField
+    {
+        public string Name { get; init; } = string.Empty;
+        public int Offset { get; init; }
+        public string Type { get; init; } = string.Empty;
+        public int Size { get; init; }
+        public string Value { get; init; } = string.Empty;
+    }
+
+    private sealed class TemplateEntry(string name, string type)
+    {
+        public string Name { get; } = name;
+        public string Type { get; } = type;
+    }
 }

@@ -7,6 +7,7 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 //
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,25 +21,22 @@ namespace SunFlower.Client.ViewModel;
 public partial class ExecuteDialogViewModel : DialogViewModel
 {
     private readonly List<CommandPaletteItem> _all;
-    private readonly ObservableCollection<CommandPaletteItem> _filtered = [];
+
+    [ObservableProperty] private bool _hasResults;
+
+    [ObservableProperty] private string _searchText = string.Empty;
+
+    [ObservableProperty] private CommandPaletteItem? _selectedCommand;
+
     private int _selectedIndex = -1;
-
-    [ObservableProperty]
-    private string _searchText = string.Empty;
-
-    [ObservableProperty]
-    private CommandPaletteItem? _selectedCommand;
-
-    [ObservableProperty]
-    private bool _hasResults;
-
-    public ObservableCollection<CommandPaletteItem> FilteredCommands => _filtered;
 
     public ExecuteDialogViewModel(IEnumerable<CommandPaletteItem>? commands = null)
     {
         _all = commands?.ToList() ?? [];
         Filter(string.Empty);
     }
+
+    public ObservableCollection<CommandPaletteItem> FilteredCommands { get; } = [];
 
     partial void OnSearchTextChanged(string value)
     {
@@ -48,75 +46,73 @@ public partial class ExecuteDialogViewModel : DialogViewModel
 
     partial void OnSelectedCommandChanged(CommandPaletteItem? value)
     {
-        _selectedIndex = value is null 
-            ? -1 
-            : _filtered.IndexOf(value);
+        _selectedIndex = value is null
+            ? -1
+            : FilteredCommands.IndexOf(value);
     }
 
     /// <summary>
-    /// Call once the view is loaded: clears the search and selects the first entry.
+    ///     Call once the view is loaded: clears the search and selects the first entry.
     /// </summary>
     public void Prepare()
     {
         SearchText = string.Empty;
-        SelectedCommand = _filtered.Count > 0 ? _filtered[0] : null;
+        SelectedCommand = FilteredCommands.Count > 0 ? FilteredCommands[0] : null;
     }
 
     private void Filter(string? query)
     {
-        _filtered.Clear();
+        FilteredCommands.Clear();
 
         if (string.IsNullOrWhiteSpace(query))
         {
             foreach (var item in _all)
-                _filtered.Add(item);
+                FilteredCommands.Add(item);
         }
         else
         {
             var q = query;
             foreach (var item in _all
                          .Where(c => c.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
-                                  || (c.Description != null
-                                      && c.Description.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                                     || (c.Description != null
+                                         && c.Description.Contains(q, StringComparison.OrdinalIgnoreCase)))
                          .OrderBy(c => c.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0 ? 0 : 1)
                          .ThenBy(c => c.Name.Length)
                          .ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase))
-            {
-                _filtered.Add(item);
-            }
+                FilteredCommands.Add(item);
         }
 
-        SelectedCommand = _filtered.Count > 0 
-            ? _filtered[0] 
+        SelectedCommand = FilteredCommands.Count > 0
+            ? FilteredCommands[0]
             : null;
-        
-        HasResults = _filtered.Count > 0;
+
+        HasResults = FilteredCommands.Count > 0;
     }
 
     [RelayCommand]
     private void NavigateUp()
     {
-        if (_filtered.Count == 0)
+        if (FilteredCommands.Count == 0)
             return;
 
-        _selectedIndex = (_selectedIndex - 1 + _filtered.Count) % _filtered.Count;
-        SelectedCommand = _filtered[_selectedIndex];
+        _selectedIndex = (_selectedIndex - 1 + FilteredCommands.Count) % FilteredCommands.Count;
+        SelectedCommand = FilteredCommands[_selectedIndex];
     }
 
     [RelayCommand]
     private void NavigateDown()
     {
-        if (_filtered.Count == 0)
+        if (FilteredCommands.Count == 0)
             return;
 
-        _selectedIndex = (_selectedIndex + 1) % _filtered.Count;
-        SelectedCommand = _filtered[_selectedIndex];
+        _selectedIndex = (_selectedIndex + 1) % FilteredCommands.Count;
+        SelectedCommand = FilteredCommands[_selectedIndex];
     }
 
     /// <summary>
-    /// Closes the palette first (so the UI stays snappy) and then runs the
-    /// selected entry's action. The action itself decides whether it needs
-    /// the UI thread (file pickers) or the thread pool (CPU-heavy plugins).
+    ///     Closes the palette first (so the UI stays snappy) and then runs the
+    ///     selected entry's action. The action itself decides whether it needs
+    ///     the UI thread (file pickers) or the thread pool (CPU-heavy plugins).
     /// </summary>
     [RelayCommand]
     private void ExecuteSelected()
@@ -124,12 +120,12 @@ public partial class ExecuteDialogViewModel : DialogViewModel
         var item = SelectedCommand;
         DialogService?.CloseDialog();
 
-        if (item?.Action is { } action)
-        {
-            _ = action();
-        }
+        if (item?.Action is { } action) _ = action();
     }
 
     [RelayCommand]
-    private void Close() => DialogService?.CloseDialog();
+    private void Close()
+    {
+        DialogService?.CloseDialog();
+    }
 }

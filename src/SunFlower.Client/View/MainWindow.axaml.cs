@@ -24,9 +24,6 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (DataContext is MainWindowViewModel vm)
-        {
-            _ = vm.OnApplicationExitAsync();
-        }
+        if (DataContext is MainWindowViewModel vm) _ = vm.OnApplicationExitAsync();
     }
 }

@@ -20,16 +20,16 @@
             Background="{StaticResource RegionBrush}"
             RowDefinitions="Auto,Auto,*">
             <!-- Logo -->
-            <Grid 
-                Margin="10" 
+            <Grid
+                Margin="10"
                 ColumnDefinitions="64,*">
-                <Image 
+                <Image
                     HorizontalAlignment="Left"
                     Source="/Assets/sunflower256.png"
                     Width="64" />
                 <StackPanel Margin="10,30" Grid.Column="1">
                     <TextBlock Text="SunFlower" />
-                    <TextBlock 
+                    <TextBlock
                         Foreground="{StaticResource SecondaryTextBrush}"
                         Text="{Binding Version, FallbackValue='0.0.0'}" />
                 </StackPanel>
@@ -42,52 +42,52 @@
                         <StackPanel />
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
-                
-                <MenuItem 
-                    Header="Recent" 
+
+                <MenuItem
+                    Header="Recent"
                     Command="{Binding NavigateHomeCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/dir48.png" />
                     </MenuItem.Icon>
                     <MenuItem.ContextFlyout>
                         <Flyout>
-                            <TextBlock Text="Recent files section"/>
+                            <TextBlock Text="Recent files section" />
                         </Flyout>
                     </MenuItem.ContextFlyout>
                 </MenuItem>
 
-                <MenuItem 
-                    Header="Import" 
+                <MenuItem
+                    Header="Import"
                     Command="{Binding ImportFileCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/app48.png" />
                     </MenuItem.Icon>
                     <MenuItem.ContextFlyout>
                         <Flyout>
-                            <TextBlock Text="Read any file and remember it (write to 'Recent')"/>
+                            <TextBlock Text="Read any file and remember it (write to 'Recent')" />
                         </Flyout>
                     </MenuItem.ContextFlyout>
                 </MenuItem>
-                <MenuItem 
-                    Header="Restore" 
+                <MenuItem
+                    Header="Restore"
                     Command="{Binding RestoreProjectCommand}">
                     <MenuItem.Icon>
                         <Image Source="/Assets/open48.png" />
                     </MenuItem.Icon>
                     <MenuItem.ContextFlyout>
                         <Flyout>
-                            <TextBlock Text="Load data from sunflower project file"/>
+                            <TextBlock Text="Load data from sunflower project file" />
                         </Flyout>
                     </MenuItem.ContextFlyout>
                 </MenuItem>
-                <MenuItem 
+                <MenuItem
                     Command="{CompiledBinding NavigateSettingsCommand}"
                     Header="Settings">
                     <MenuItem.Icon>
                         <Image Source="/Assets/paper48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem 
+                <MenuItem
                     Command="{CompiledBinding NavigateDiagnosticsCommand}"
                     Header="Flowers">
                     <MenuItem.Icon>
@@ -95,7 +95,7 @@
                     </MenuItem.Icon>
                     <MenuItem.ContextFlyout>
                         <Flyout>
-                            <TextBlock Text="Connected plugin assemblies section"/>
+                            <TextBlock Text="Connected plugin assemblies section" />
                         </Flyout>
                     </MenuItem.ContextFlyout>
                 </MenuItem>

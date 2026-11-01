@@ -5,6 +5,7 @@
 // Manages navigation between "pages" (Recent, Workspace).
 // Injects all services that live for the lifetime of the app.
 //
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -19,35 +20,18 @@ namespace SunFlower.Client.ViewModel;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    public PluginService PluginService { get; }
-    private RecentFilesService RecentFilesService { get; }
-    private WorkspaceService WorkspaceService { get; }
-    private ProjectService ProjectService { get; }
-    private WindowService WindowService { get; }
-    public Version Version { get; init; }
-    public SettingsService SettingsService { get; init; }
-    public ThemeService ThemeService { get; init; }
+    /// <summary>
+    ///     Caption shown below the loading indicator.
+    /// </summary>
+    [ObservableProperty] private string _busyText = "Waiting for a sun";
 
-    [ObservableProperty]
-    private ObservableObject? _currentPage;
+    [ObservableProperty] private ObservableObject? _currentPage;
 
     /// <summary>
-    /// True while background initialization (plugins, recent files) is running.
-    /// Drives the loading overlay in the application shell.
+    ///     True while background initialization (plugins, recent files) is running.
+    ///     Drives the loading overlay in the application shell.
     /// </summary>
-    [ObservableProperty]
-    private bool _isBusy;
-
-    /// <summary>
-    /// Caption shown below the loading indicator.
-    /// </summary>
-    [ObservableProperty]
-    private string _busyText = "Waiting for a sun";
-
-    /// <summary>
-    /// Reference to the main window for dialogs. Set by View.
-    /// </summary>
-    public Window? MainWindow { get; set; }
+    [ObservableProperty] private bool _isBusy;
 
     public MainWindowViewModel(PluginService pluginService,
         RecentFilesService recentFilesService,
@@ -71,8 +55,22 @@ public partial class MainWindowViewModel : ObservableObject
         CurrentPage = new RecentFilesViewModel(recentFilesService, this);
     }
 
+    public PluginService PluginService { get; }
+    private RecentFilesService RecentFilesService { get; }
+    private WorkspaceService WorkspaceService { get; }
+    private ProjectService ProjectService { get; }
+    private WindowService WindowService { get; }
+    public Version Version { get; init; }
+    public SettingsService SettingsService { get; init; }
+    public ThemeService ThemeService { get; init; }
+
     /// <summary>
-    /// Called once after the constructor. Initializes plugins and loads recent files.
+    ///     Reference to the main window for dialogs. Set by View.
+    /// </summary>
+    public Window? MainWindow { get; set; }
+
+    /// <summary>
+    ///     Called once after the constructor. Initializes plugins and loads recent files.
     /// </summary>
     public async Task InitializeAsync()
     {
@@ -101,11 +99,13 @@ public partial class MainWindowViewModel : ObservableObject
     {
         CurrentPage = new RecentFilesViewModel(RecentFilesService, this);
     }
+
     [RelayCommand]
     private void NavigateDiagnostics()
     {
         CurrentPage = new PluginViewModel(PluginService);
     }
+
     [RelayCommand]
     private void NavigateSettings()
     {
@@ -121,7 +121,7 @@ public partial class MainWindowViewModel : ObservableObject
             new PluginAnalysisService(WorkspaceService),
             SettingsService);
     }
-    
+
     [RelayCommand]
     private async Task ImportFileAsync()
     {
@@ -144,19 +144,20 @@ public partial class MainWindowViewModel : ObservableObject
                 },
                 new FilePickerFileType("Windows-DOS-OS/2 Modules")
                 {
-                    Patterns = [
-                        "*.exe", 
-                        "*.dll", 
-                        "*.sys", 
-                        "*.bin", 
-                        "*.rom", 
-                        "*.com", 
-                        "*.drv", 
-                        "*.scr", 
-                        "*.386", 
+                    Patterns =
+                    [
+                        "*.exe",
+                        "*.dll",
+                        "*.sys",
+                        "*.bin",
+                        "*.rom",
+                        "*.com",
+                        "*.drv",
+                        "*.scr",
+                        "*.386",
                         "*.vxd",
-                        "*.ocx", 
-                        "*.vst", 
+                        "*.ocx",
+                        "*.vst",
                         "*.lib"
                     ]
                 },
@@ -171,15 +172,9 @@ public partial class MainWindowViewModel : ObservableObject
             return;
 
         var path = files[0].TryGetLocalPath();
-        if (!string.IsNullOrEmpty(path))
-        {
-            await OpenFileAsync(path);
-        }
+        if (!string.IsNullOrEmpty(path)) await OpenFileAsync(path);
 
-        if (CurrentPage is RecentFilesViewModel recent)
-        {
-            recent.RefreshList();
-        }
+        if (CurrentPage is RecentFilesViewModel recent) recent.RefreshList();
     }
 
     [RelayCommand]
@@ -221,13 +216,9 @@ public partial class MainWindowViewModel : ObservableObject
             return;
 
         if (WorkspaceService.IsProject)
-        {
             await WorkspaceService.SaveProjectAsync();
-        }
         else
-        {
             await SaveProjectAsAsync();
-        }
     }
 
     [RelayCommand]
@@ -257,10 +248,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
 
         var path = file.TryGetLocalPath();
-        if (!string.IsNullOrEmpty(path))
-        {
-            await WorkspaceService.SaveProjectAsync(path);
-        }
+        if (!string.IsNullOrEmpty(path)) await WorkspaceService.SaveProjectAsync(path);
     }
 
     [RelayCommand]
@@ -285,10 +273,7 @@ public partial class MainWindowViewModel : ObservableObject
 
             await WorkspaceService.OpenFile(path);
             var fileInfo = WorkspaceService.CurrentFileInfo;
-            if (fileInfo != null)
-            {
-                await RecentFilesService.AddAsync(fileInfo);
-            }
+            if (fileInfo != null) await RecentFilesService.AddAsync(fileInfo);
 
             var analysisService = new PluginAnalysisService(WorkspaceService);
             App.ThemeService.SetEditor((ThemeName)SettingsService.Current.TextControlTheme);
@@ -297,7 +282,6 @@ public partial class MainWindowViewModel : ObservableObject
                 WorkspaceService, PluginService, analysisService, SettingsService);
 
             WindowService.OpenWorkspaceWindow(workspaceVm);
-            
         }
         catch (Exception ex)
         {
@@ -310,14 +294,16 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Public method for opening a file path from other ViewModels.
+    ///     Public method for opening a file path from other ViewModels.
     /// </summary>
-    public async Task OpenFileAsync(string path) => await OpenExternalFile(path);
+    public async Task OpenFileAsync(string path)
+    {
+        await OpenExternalFile(path);
+    }
 
     public async Task OnApplicationExitAsync()
     {
         if (ProjectService.CurrentProject?.IsDirty == true)
-        {
             try
             {
                 await SaveProjectAsync();
@@ -326,7 +312,6 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 // Ignore send errors on exit
             }
-        }
 
         ProjectService.Dispose();
     }

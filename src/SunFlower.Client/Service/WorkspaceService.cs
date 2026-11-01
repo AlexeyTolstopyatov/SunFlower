@@ -15,42 +15,38 @@ namespace SunFlower.Client.Service;
 
 public class WorkspaceService(PluginService pluginService, ProjectService projectService)
 {
-    private string? _currentFilePath;
-    private FlowerFileInfo? _currentFileInfo;
-    private bool _isProject;
-
     /// <summary>
-    /// Path to the currently opened file, or null if none.
+    ///     Path to the currently opened file, or null if none.
     /// </summary>
-    public string? CurrentFilePath => _currentFilePath;
+    public string? CurrentFilePath { get; private set; }
 
     /// <summary>
-    /// File info for the current workspace.
+    ///     File info for the current workspace.
     /// </summary>
-    public FlowerFileInfo? CurrentFileInfo => _currentFileInfo;
+    public FlowerFileInfo? CurrentFileInfo { get; private set; }
 
     /// <summary>
-    /// Whether the current workspace is a .flowerproj project file.
+    ///     Whether the current workspace is a .flowerproj project file.
     /// </summary>
-    public bool IsProject => _isProject;
+    public bool IsProject { get; private set; }
 
     /// <summary>
-    /// Provides access to the underlying ProjectService for file management.
+    ///     Provides access to the underlying ProjectService for file management.
     /// </summary>
     public ProjectService ProjectService => projectService;
 
     /// <summary>
-    /// Current project info from ProjectService.
+    ///     Current project info from ProjectService.
     /// </summary>
     public ProjectInfo? CurrentProject => projectService.CurrentProject;
 
     /// <summary>
-    /// Fires when analysis results are updated.
+    ///     Fires when analysis results are updated.
     /// </summary>
     public event Action? ResultsUpdated;
 
     /// <summary>
-    /// Open a file - automatically detects whether it's a raw binary or project.
+    ///     Open a file - automatically detects whether it's a raw binary or project.
     /// </summary>
     public async Task OpenFile(string path)
     {
@@ -73,48 +69,48 @@ public class WorkspaceService(PluginService pluginService, ProjectService projec
     }
 
     /// <summary>
-    /// Open a raw binary and create a temp project for it.
-    /// When <paramref name="flowerName"/> is provided, only that plugin is run;
-    /// otherwise plugin analysis is deferred to the project file context menu.
+    ///     Open a raw binary and create a temp project for it.
+    ///     When <paramref name="flowerName" /> is provided, only that plugin is run;
+    ///     otherwise plugin analysis is deferred to the project file context menu.
     /// </summary>
     private async Task OpenRawBinary(string path, [Optional] string? flowerName)
     {
         projectService.OpenRawBinary(path);
-        _isProject = false;
-        _currentFilePath = Path.GetFullPath(path);
-        _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
+        IsProject = false;
+        CurrentFilePath = Path.GetFullPath(path);
+        CurrentFileInfo = FlowerBinarySeeker.Get(CurrentFilePath);
 
         // Run a single requested flower; full analysis is deferred to the context menu.
         if (flowerName is not null)
-            await pluginService.AnalyzeAsync(_currentFilePath, flowerName);
+            await pluginService.AnalyzeAsync(CurrentFilePath, flowerName);
 
         ResultsUpdated?.Invoke();
     }
 
     /// <summary>
-    /// Open a .flowerproj project file.
-    /// Plugin analysis is deferred to the project file context menu.
+    ///     Open a .flowerproj project file.
+    ///     Plugin analysis is deferred to the project file context menu.
     /// </summary>
     private void OpenProject(string path)
     {
         var project = projectService.OpenProject(path);
-        _isProject = true;
+        IsProject = true;
 
         var originalBinary = project.OriginalBinaryPath;
-        _currentFilePath = originalBinary ?? path;
-        _currentFileInfo = FlowerBinarySeeker.Get(_currentFilePath);
+        CurrentFilePath = originalBinary ?? path;
+        CurrentFileInfo = FlowerBinarySeeker.Get(CurrentFilePath);
 
         ResultsUpdated?.Invoke();
     }
 
     /// <summary>
-    /// Free project pointers and close project 
+    ///     Free project pointers and close project
     /// </summary>
     public void CloseFile()
     {
-        _currentFilePath = null;
-        _currentFileInfo = null;
-        _isProject = false;
+        CurrentFilePath = null;
+        CurrentFileInfo = null;
+        IsProject = false;
 
         projectService.CloseProject();
     }

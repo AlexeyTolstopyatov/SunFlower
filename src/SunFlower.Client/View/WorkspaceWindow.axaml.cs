@@ -3,6 +3,7 @@
 // WorkspaceWindow container for the workspace view.
 // ViewModel opens it via a service, not by creating a Window directly.
 //
+
 using System;
 using Avalonia.Animation;
 using Avalonia.Controls;
@@ -15,10 +16,8 @@ namespace SunFlower.Client.View;
 
 public partial class WorkspaceWindow : Window
 {
-    private readonly Animation _dialogOpenAnimation;
     private readonly Animation _dialogCloseAnimation;
-
-    public DialogService DialogService { get; }
+    private readonly Animation _dialogOpenAnimation;
 
     public WorkspaceWindow()
     {
@@ -34,7 +33,7 @@ public partial class WorkspaceWindow : Window
                     Setters =
                     {
                         new Setter(ScaleTransform.ScaleXProperty, 0.0),
-                        new Setter(ScaleTransform.ScaleYProperty, 0.0),
+                        new Setter(ScaleTransform.ScaleYProperty, 0.0)
                     },
                     KeyTime = TimeSpan.FromSeconds(0)
                 },
@@ -43,7 +42,7 @@ public partial class WorkspaceWindow : Window
                     Setters =
                     {
                         new Setter(ScaleTransform.ScaleXProperty, 1.0),
-                        new Setter(ScaleTransform.ScaleYProperty, 1.0),
+                        new Setter(ScaleTransform.ScaleYProperty, 1.0)
                     },
                     KeyTime = TimeSpan.FromSeconds(0.1)
                 }
@@ -59,20 +58,22 @@ public partial class WorkspaceWindow : Window
                     Setters =
                     {
                         new Setter(ScaleTransform.ScaleYProperty, 1.0),
-                        new Setter(ScaleTransform.ScaleXProperty, 1.0),
-                    },
+                        new Setter(ScaleTransform.ScaleXProperty, 1.0)
+                    }
                 },
                 new KeyFrame
                 {
                     Setters =
                     {
                         new Setter(ScaleTransform.ScaleYProperty, 0.0),
-                        new Setter(ScaleTransform.ScaleXProperty, 0.0),
+                        new Setter(ScaleTransform.ScaleXProperty, 0.0)
                     }
                 }
             }
         };
     }
+
+    public DialogService DialogService { get; }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {

@@ -6,12 +6,12 @@
 // @creator: atolstopyatov2017@vk.com
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Model;
-using System.Linq;
-using Avalonia.Media;
 using SunFlower.Client.Service;
 using TextMateSharp.Grammars;
 
@@ -21,6 +21,18 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settingsService;
     private readonly ThemeService _themeService;
+
+    [ObservableProperty] private bool _firstCacheCleared;
+
+    [ObservableProperty] private FontFamily[] _installedFonts;
+
+    [ObservableProperty] private string? _message;
+
+    [ObservableProperty] private SettingsModel _settings;
+
+    [ObservableProperty] private bool _settingsSaved;
+
+    [ObservableProperty] private Array _textEditorThemes = Enum.GetValues(typeof(ThemeName));
 
     public SettingsViewModel(SettingsService settingsService, ThemeService themeService)
     {
@@ -34,24 +46,6 @@ public partial class SettingsViewModel : ObservableObject
             .ToArray();
     }
 
-    [ObservableProperty]
-    private SettingsModel _settings;
-
-    [ObservableProperty]
-    private FontFamily[] _installedFonts;
-
-    [ObservableProperty]
-    private Array _textEditorThemes = Enum.GetValues(typeof(ThemeName));
-
-    [ObservableProperty]
-    private bool _firstCacheCleared;
-
-    [ObservableProperty]
-    private bool _settingsSaved;
-
-    [ObservableProperty]
-    private string? _message;
-
     [RelayCommand]
     private void ChangeTheme(object? index)
     {
@@ -60,6 +54,7 @@ public partial class SettingsViewModel : ObservableObject
 
         _themeService.SetTheme((Theme)index);
     }
+
     [RelayCommand]
     private void ChangeEditorTheme(object? index)
     {

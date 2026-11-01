@@ -14,17 +14,15 @@ using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.ViewModel;
 
-
 public partial class PluginViewModel : ObservableObject
 {
+    [ObservableProperty] private IReadOnlyList<FlowerVersionInfo> _assemblies;
+
     public PluginViewModel(PluginService? pluginService)
     {
         var info = pluginService?.GetVersionInfo() ??
-                     throw new NullReferenceException("Plugins service can't be not null!");
+                   throw new NullReferenceException("Plugins service can't be not null!");
 
         Assemblies = info;
     }
-
-    [ObservableProperty]
-    private IReadOnlyList<FlowerVersionInfo> _assemblies;
 }

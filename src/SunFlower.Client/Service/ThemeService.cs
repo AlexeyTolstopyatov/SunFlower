@@ -16,23 +16,24 @@ namespace SunFlower.Client.Service;
 public class ThemeService
 {
     private ThemeVariant _currentVariant = ThemeVariant.Default;
-    private ThemeName _currentEditorVariant;
+
     /// <summary>
-    /// Fires when theme changes.
+    ///     Current editor theme
+    /// </summary>
+    public ThemeName TextEditorVariant { get; private set; }
+
+    /// <summary>
+    ///     Fires when theme changes.
     /// </summary>
     public event Action<ThemeVariant>? ThemeChanged;
+
     /// <summary>
-    /// Reacts when editor scheme changes
+    ///     Reacts when editor scheme changes
     /// </summary>
     public event Action<object?, ThemeName>? EditorChanged;
 
     /// <summary>
-    /// Current editor theme
-    /// </summary>
-    public ThemeName TextEditorVariant => _currentEditorVariant;
-
-    /// <summary>
-    /// Cast enum into ThemeVariant and apply changes 
+    ///     Cast enum into ThemeVariant and apply changes
     /// </summary>
     public void SetTheme(Theme theme)
     {
@@ -52,7 +53,7 @@ public class ThemeService
 
     public void SetEditor(ThemeName theme)
     {
-        _currentEditorVariant = theme;
+        TextEditorVariant = theme;
         EditorChanged?.Invoke(null, theme); // TODO: sender is undefined
     }
 }

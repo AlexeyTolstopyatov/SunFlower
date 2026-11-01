@@ -10,7 +10,7 @@ using SunFlower.Client.ViewModel;
 
 namespace SunFlower.Client;
 
-public partial class App : Application
+public class App : Application
 {
     public static PluginService PluginService { get; } = new();
     private static RecentFilesService RecentFilesService { get; } = new();
@@ -30,17 +30,15 @@ public partial class App : Application
     {
         if (IsFileSystemSecured(out var s))
         {
-            Console.WriteLine($"File {s} is read-only or doesn't exists. Make it with read-write permissions or create new.");
+            Console.WriteLine(
+                $"File {s} is read-only or doesn't exists. Make it with read-write permissions or create new.");
             Environment.Exit(-1);
             return;
         }
 
         // All children (windows in the App collection) must change theme by request
         ThemeService = new ThemeService();
-        ThemeService.ThemeChanged += variant =>
-        {
-            RequestedThemeVariant = variant;
-        };
+        ThemeService.ThemeChanged += variant => { RequestedThemeVariant = variant; };
 
         var mainViewModel = new MainWindowViewModel(
             PluginService,
@@ -63,19 +61,16 @@ public partial class App : Application
                 DataContext = mainViewModel
             };
 
-            desktop.Exit += async (_, _) =>
-            {
-                await mainViewModel.OnApplicationExitAsync();
-            };
+            desktop.Exit += async (_, _) => { await mainViewModel.OnApplicationExitAsync(); };
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
     /// <summary>
-    /// Runs startup initialization in the background. The window is already visible,
-    /// and heavy plugin activation is offloaded to the thread pool by PluginService,
-    /// so this never blocks the UI thread. Exceptions are caught instead of being lost.
+    ///     Runs startup initialization in the background. The window is already visible,
+    ///     and heavy plugin activation is offloaded to the thread pool by PluginService,
+    ///     so this never blocks the UI thread. Exceptions are caught instead of being lost.
     /// </summary>
     private static async Task InitializeWhenReadyAsync(MainWindowViewModel mainViewModel)
     {
@@ -88,9 +83,10 @@ public partial class App : Application
             Console.WriteLine($"Window init failed: {ex}");
         }
     }
+
     /// <summary>
-    /// Necessary files which stores in the root already is recent files collection
-    /// This is a little but important file
+    ///     Necessary files which stores in the root already is recent files collection
+    ///     This is a little but important file
     /// </summary>
     /// <returns></returns>
     private static bool IsFileSystemSecured(out string reason)

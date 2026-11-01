@@ -1,33 +1,31 @@
 ﻿// CoffeeLake (C) 2026-*
 // 
-// The DisassemblerDialogViewModel.cs represents <what?>
-// 
-// @local_machine: atvlg
-// @creator: atolstopyatov2017@vk.com
-
-using SunFlower.Client.Service;
-
-
-// CoffeeLake (C) 2026-*
-// 
 // DisassemblerDialogViewModel - ViewModel for disassembly dialog window.
 // Handles disassembly of bytes with different architectures.
 // 
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
-
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
+using SunFlower.Client.Service;
 namespace SunFlower.Client.ViewModel;
 
 public partial class DisassemblerDialogViewModel : DialogViewModel
 {
     private readonly DisassemblingService _disassemblingService;
 
-    public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService, DecoderArchitecture? initialArchitecture = null)
+    [ObservableProperty] private string _disassemblyResult = string.Empty;
+
+    [ObservableProperty] private bool _isAllBytesMode;
+
+    [ObservableProperty] private bool _isDisassemblyInProgress;
+
+    [ObservableProperty] private DecoderArchitecture _selectedArchitecture;
+
+    public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService,
+        DecoderArchitecture? initialArchitecture = null)
     {
         _disassemblingService = disassemblingService;
 
@@ -42,19 +40,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
         IsAllBytesMode = startOffset == null;
     }
 
-    [ObservableProperty]
-    private DecoderArchitecture _selectedArchitecture;
-
     public Array AvailableArchitectures { get; }
-
-    [ObservableProperty]
-    private string _disassemblyResult = string.Empty;
-
-    [ObservableProperty]
-    private bool _isDisassemblyInProgress;
-
-    [ObservableProperty]
-    private bool _isAllBytesMode;
 
     public byte[]? InputBytes { get; }
 

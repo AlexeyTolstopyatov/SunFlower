@@ -16,24 +16,24 @@
         <DockControl
             Layout="{CompiledBinding Layout}">
             <DockControl.DataTemplates>
-                <DataTemplate 
+                <DataTemplate
                     x:DataType="{x:Type wm:ExplorerDocumentViewModel}">
-                    <view:ExplorerDocumentView/>
+                    <view:ExplorerDocumentView />
                 </DataTemplate>
                 <DataTemplate x:DataType="{x:Type wm:HexDocumentViewModel}">
                     <view:HexDocumentView
                         FontFamily="{CompiledBinding HexFontFamily}"
-                        FontSize="{CompiledBinding HexFontSize}"/>
+                        FontSize="{CompiledBinding HexFontSize}" />
                 </DataTemplate>
                 <DataTemplate x:DataType="{x:Type wm:TextDocumentViewModel}">
                     <view:TextDocumentView
                         FontFamily="{CompiledBinding TextFontFamily}"
-                        FontSize="{CompiledBinding TextFontSize}"/>
+                        FontSize="{CompiledBinding TextFontSize}" />
                 </DataTemplate>
-                <DataTemplate 
+                <DataTemplate
                     x:DataType="{x:Type wm:MarkdownDocumentViewModel}">
-                    <mdxaml:MarkdownScrollViewer 
-                        Margin="10" 
+                    <mdxaml:MarkdownScrollViewer
+                        Margin="10"
                         Markdown="{Binding Content}">
                         <avalonia:MarkdownScrollViewer.Styles>
                             <StyleInclude Source="/Drawing/DocumentTheme.axaml" />

@@ -6,7 +6,6 @@
 // @creator: atolstopyatov2017@vk.com
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using SunFlower.Client.ViewModel.Dock;
 
 namespace SunFlower.Client.ViewModel;
 

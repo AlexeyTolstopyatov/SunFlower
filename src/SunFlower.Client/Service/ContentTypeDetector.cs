@@ -30,9 +30,10 @@ public enum ContentSubType
 public static class ContentTypeDetector
 {
     /// <summary>
-    /// Maximum slice to the check 
+    ///     Maximum slice to the check
     /// </summary>
     private const int ProbeSize = 8192;
+
     private const double BinaryThreshold = 0.05;
 
     public static ContentDetectionResult Detect(string filePath)
@@ -77,7 +78,7 @@ public static class ContentTypeDetector
         {
             // ASCII
             var printableCount = probeBuffer
-                .Count(b => b >= 32 && b <= 126 || b == '\n' || b == '\r' || b == '\t');
+                .Count(b => (b >= 32 && b <= 126) || b == '\n' || b == '\r' || b == '\t');
 
             var printableRatio = (double)printableCount / probeBuffer.Length;
             if (printableRatio > 0.8)
@@ -130,40 +131,53 @@ public static class ContentTypeDetector
         return null;
     }
 
-    private static bool IsTextExtension(string ext) => ext switch
+    private static bool IsTextExtension(string ext)
     {
-        ".md" or ".markdown" => true,
-        ".asm" or ".s" or ".inc" => true,
-        ".txt" or ".text" or ".log" => true,
-        ".xml" or ".json" or ".yaml" or ".yml" => true,
-        ".html" or ".htm" or ".xhtml" => true,
-        ".csv" or ".tsv" => true,
-        ".cfg" or ".conf" or ".ini" => true,
-        ".cs" or ".fs" or ".vb" or ".rs" or ".py" or ".js" or ".ts" or ".c" or ".h" or ".cpp" or ".hpp" or "zig" => true,
-        ".md" or ".rst" or ".adoc" => true,
-        _ => false
-    };
+        return ext switch
+        {
+            ".md" or ".markdown" => true,
+            ".asm" or ".s" or ".inc" => true,
+            ".txt" or ".text" or ".log" => true,
+            ".xml" or ".json" or ".yaml" or ".yml" => true,
+            ".html" or ".htm" or ".xhtml" => true,
+            ".csv" or ".tsv" => true,
+            ".cfg" or ".conf" or ".ini" => true,
+            ".cs" or ".fs" or ".vb" or ".rs" or ".py" or ".js" or ".ts" or ".c" or ".h" or ".cpp" or ".hpp"
+                or "zig" => true,
+            ".md" or ".rst" or ".adoc" => true,
+            _ => false
+        };
+    }
 
-    private static ContentSubType GetTextSubType(string ext) => ext switch
+    private static ContentSubType GetTextSubType(string ext)
     {
-        ".md" or ".markdown" => ContentSubType.Markdown,
-        ".asm" or ".s" or ".inc" => ContentSubType.Text,
-        _ => ContentSubType.PlainText
-    };
+        return ext switch
+        {
+            ".md" or ".markdown" => ContentSubType.Markdown,
+            ".asm" or ".s" or ".inc" => ContentSubType.Text,
+            _ => ContentSubType.PlainText
+        };
+    }
 
-    private static string GetTextDescription(string ext) => ext switch
+    private static string GetTextDescription(string ext)
     {
-        ".md" or ".markdown" => "Markdown",
-        ".asm" or ".s" or ".inc" => "Text",
-        _ => "Plain text"
-    };
+        return ext switch
+        {
+            ".md" or ".markdown" => "Markdown",
+            ".asm" or ".s" or ".inc" => "Text",
+            _ => "Plain text"
+        };
+    }
 
-    private static string GetTextMimeType(string ext) => ext switch
+    private static string GetTextMimeType(string ext)
     {
-        ".md" => "text/markdown",
-        ".asm" => "text/x-asm",
-        ".html" => "text/html",
-        ".json" => "application/json",
-        _ => "text/plain"
-    };
+        return ext switch
+        {
+            ".md" => "text/markdown",
+            ".asm" => "text/x-asm",
+            ".html" => "text/html",
+            ".json" => "application/json",
+            _ => "text/plain"
+        };
+    }
 }

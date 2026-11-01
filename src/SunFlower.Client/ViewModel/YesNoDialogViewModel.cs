@@ -5,6 +5,7 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 // 
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -12,6 +13,14 @@ namespace SunFlower.Client.ViewModel;
 
 public partial class YesNoDialogViewModel : DialogViewModel
 {
+    [ObservableProperty] private string _cancelButtonText = "No";
+
+    [ObservableProperty] private string _confirmButtonText = "Yes";
+
+    [ObservableProperty] private string _message = "Are you sure?";
+
+    [ObservableProperty] private string _title = "Confirmation";
+
     public YesNoDialogViewModel(string title, string text)
     {
         Title = title;
@@ -19,18 +28,6 @@ public partial class YesNoDialogViewModel : DialogViewModel
         ConfirmButtonText = "Yes";
         CancelButtonText = "No";
     }
-
-    [ObservableProperty]
-    private string _title = "Confirmation";
-
-    [ObservableProperty]
-    private string _message = "Are you sure?";
-
-    [ObservableProperty]
-    private string _confirmButtonText = "Yes";
-
-    [ObservableProperty]
-    private string _cancelButtonText = "No";
 
     [RelayCommand]
     private void Confirm()

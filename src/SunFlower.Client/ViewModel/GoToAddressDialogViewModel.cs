@@ -21,17 +21,13 @@ public enum OffsetBase
 
 public partial class GoToAddressDialogViewModel(ulong maxAddress) : DialogViewModel
 {
-    [ObservableProperty]
-    private string _addressInput = string.Empty;
+    [ObservableProperty] private string _addressInput = string.Empty;
 
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
+    [ObservableProperty] private string _errorMessage = string.Empty;
 
-    [ObservableProperty]
-    private OffsetBase _offsetBase;
+    [ObservableProperty] private bool _isRelativeOffset;
 
-    [ObservableProperty]
-    private bool _isRelativeOffset;
+    [ObservableProperty] private OffsetBase _offsetBase;
 
     public ulong MaxAddress { get; } = maxAddress;
 

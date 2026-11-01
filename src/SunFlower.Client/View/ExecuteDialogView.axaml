@@ -9,14 +9,14 @@
              x:Class="SunFlower.Client.View.ExecuteDialogView"
              x:DataType="{x:Type vm:ExecuteDialogViewModel}">
     <UserControl.Resources>
-        <SolidColorBrush 
+        <SolidColorBrush
             x:Key="PaletteAccent" Color="#0078D7" />
     </UserControl.Resources>
 
-    <DockPanel 
+    <DockPanel
         LastChildFill="True">
         <!-- Footer hint -->
-        <TextBlock 
+        <TextBlock
             DockPanel.Dock="Bottom"
             Text="↑↓ navigate  |  [Enter/Return]=Execute  |  [Esc]=Close"
             Foreground="{StaticResource SecondaryTextBrush}"
@@ -28,9 +28,9 @@
         <Border
             DockPanel.Dock="Top"
             Padding="14,14,14,8">
-            <DockPanel 
+            <DockPanel
                 LastChildFill="True">
-                <TextBlock 
+                <TextBlock
                     DockPanel.Dock="Left"
                     Text="$&gt;"
                     FontFamily="Consolas"
@@ -38,7 +38,7 @@
                     Foreground="{StaticResource PaletteAccent}"
                     VerticalAlignment="Center"
                     Margin="0,0,8,0" />
-                <TextBox 
+                <TextBox
                     x:Name="SearchBox"
                     Text="{CompiledBinding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Watermark="Execute a command"
@@ -48,7 +48,7 @@
         </Border>
 
         <!-- Commands list -->
-        <ListBox 
+        <ListBox
             x:Name="CommandsList"
             ItemsSource="{CompiledBinding FilteredCommands}"
             SelectedItem="{CompiledBinding SelectedCommand, Mode=TwoWay}"
@@ -57,28 +57,27 @@
             Margin="14,0,14,14"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
-                <DataTemplate 
+                <DataTemplate
                     DataType="{x:Type m:CommandPaletteItem}">
                     <Grid
                         ColumnDefinitions="*,Auto"
                         Margin="0,2">
                         <StackPanel
                             Grid.Column="0">
-                            <TextBlock 
+                            <TextBlock
                                 Text="{CompiledBinding Name}"
                                 FontSize="13"
                                 VerticalAlignment="Center"
                                 Margin="0,1"
-                                TextTrimming="CharacterEllipsis" 
-                                />
-                            <TextBlock 
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
                                 Text="{CompiledBinding Description}"
                                 Foreground="{StaticResource SecondaryTextBrush}"
                                 FontSize="11"
                                 VerticalAlignment="Top"
                                 TextTrimming="CharacterEllipsis" /> <!--0,16,0,0-->
                         </StackPanel>
-                        <TextBlock 
+                        <TextBlock
                             Grid.Column="1"
                             Text="{CompiledBinding Hotkey}"
                             FontFamily="Consolas"

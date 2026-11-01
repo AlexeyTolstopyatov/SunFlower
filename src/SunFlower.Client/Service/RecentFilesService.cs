@@ -14,28 +14,25 @@ namespace SunFlower.Client.Service;
 
 public class RecentFilesService
 {
-    private readonly JsonService<FlowerFileInfo> _jsonService = new();
     private const string RecentFileName = "recent";
+    private readonly JsonService<FlowerFileInfo> _jsonService = new();
 
     /// <summary>
-    /// The current recent files list.
+    ///     The current recent files list.
     /// </summary>
     public IReadOnlyList<FlowerFileInfo> Files => _jsonService.Data.AsReadOnly();
 
     /// <summary>
-    /// Load recent files from disk. Call once at startup.
+    ///     Load recent files from disk. Call once at startup.
     /// </summary>
     public async Task LoadAsync()
     {
         var path = GetRegistryPath();
-        if (File.Exists(path))
-        {
-            await _jsonService.ReadAsync(path);
-        }
+        if (File.Exists(path)) await _jsonService.ReadAsync(path);
     }
 
     /// <summary>
-    /// Add a file to the top of the recent list and persist.
+    ///     Add a file to the top of the recent list and persist.
     /// </summary>
     public async Task AddAsync(FlowerFileInfo info)
     {
@@ -54,8 +51,9 @@ public class RecentFilesService
         _jsonService.Data.RemoveAll(f => f.Path == info.Path);
         await _jsonService.WriteAsync(RecentFileName);
     }
+
     /// <summary>
-    /// Clear the recent files list.
+    ///     Clear the recent files list.
     /// </summary>
     public async Task ClearAsync()
     {

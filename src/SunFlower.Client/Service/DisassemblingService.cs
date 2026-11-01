@@ -12,7 +12,7 @@ using Sunflower.Dasm;
 namespace SunFlower.Client.Service;
 
 /// <summary>
-/// Target CPU architecture for disassembly.
+///     Target CPU architecture for disassembly.
 /// </summary>
 public enum DecoderArchitecture
 {
@@ -27,7 +27,7 @@ public class DisassemblingService(WorkspaceService workspaceService)
     private readonly WorkspaceService _workspaceService = workspaceService;
 
     /// <summary>
-    /// Disassemble a byte range, starting at the given offset.
+    ///     Disassemble a byte range, starting at the given offset.
     /// </summary>
     public string DisassembleRange(byte[] bytes, int startOffset,
         DecoderArchitecture arch = DecoderArchitecture.I80286)
@@ -53,7 +53,7 @@ public class DisassemblingService(WorkspaceService workspaceService)
     }
 
     /// <summary>
-    /// Resolve path to the DOS interrupt table descriptor.
+    ///     Resolve path to the DOS interrupt table descriptor.
     /// </summary>
     private static string ResolveInterruptsPath()
     {

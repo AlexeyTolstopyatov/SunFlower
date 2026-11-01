@@ -12,8 +12,8 @@
             FontWeight="Bold"
             FontSize="21"
             TextWrapping="WrapWithOverflow"
-            Text="{Binding FlowerFileInfo.Name, FallbackValue='File'}"/>
-        
+            Text="{Binding FlowerFileInfo.Name, FallbackValue='File'}" />
+
         <Border
             Margin="10"
             CornerRadius="6"
@@ -24,13 +24,13 @@
                 <StackPanel>
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="File Size"/>
+                        Text="File Size" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="Defined Type"/>
+                        Text="Defined Type" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="Binary (hex) definition"/>
+                        Text="Binary (hex) definition" />
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
@@ -40,22 +40,22 @@
                         Text="{CompiledBinding 
                         FlowerFileInfo.Size, 
                         FallbackValue='?',
-                        StringFormat={}{0} KiB }"/>
+                        StringFormat={}{0} KiB }" />
                     <SelectableTextBlock
                         FontSize="14"
                         FontFamily="Sans Serif"
-                        Text="{CompiledBinding FlowerFileInfo.Type, FallbackValue='?'}"/>
+                        Text="{CompiledBinding FlowerFileInfo.Type, FallbackValue='?'}" />
                     <SelectableTextBlock
                         FontSize="14"
                         FontFamily="Sans Serif"
-                        Text="{CompiledBinding FlowerFileInfo.Sign, FallbackValue='?'}"/>
+                        Text="{CompiledBinding FlowerFileInfo.Sign, FallbackValue='?'}" />
                     <Button
                         Content="Exit"
                         HotKey="Escape"
-                        Command="{CompiledBinding ExitCommand}"/>
+                        Command="{CompiledBinding ExitCommand}" />
                 </StackPanel>
             </Grid>
         </Border>
-        <Separator/>
+        <Separator />
     </StackPanel>
 </UserControl>

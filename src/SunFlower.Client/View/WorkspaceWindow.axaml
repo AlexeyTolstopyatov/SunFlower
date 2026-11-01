@@ -4,8 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
         xmlns:view="clr-namespace:SunFlower.Client.View"
-        mc:Ignorable="d" 
-        d:DesignWidth="1024" 
+        mc:Ignorable="d"
+        d:DesignWidth="1024"
         d:DesignHeight="768"
         x:Class="SunFlower.Client.View.WorkspaceWindow"
         Icon="/Assets/app48.png"
@@ -17,19 +17,18 @@
         <Grid.KeyBindings>
             <KeyBinding
                 Gesture="Ctrl+Shift+P"
-                Command="{CompiledBinding BuildCommandPaletteCommand}"/>
+                Command="{CompiledBinding BuildCommandPaletteCommand}" />
         </Grid.KeyBindings>
-        <view:DockWorkspaceView 
-            x:Name="DockingWorkspace" 
+        <view:DockWorkspaceView
+            x:Name="DockingWorkspace"
             DataContext="{Binding}" />
-        
-        <Border 
+
+        <Border
             x:Name="DialogLayer"
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             Background="#80000000"
-            IsVisible="False">
-        </Border>
+            IsVisible="False" />
 
         <!-- Long-running routine overlay -->
         <!--
@@ -41,8 +40,7 @@
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
             Background="#80000000"
-            IsVisible="{Binding Path=IsBusy}"
-            >
+            IsVisible="{Binding Path=IsBusy}">
             <StackPanel
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -57,7 +55,7 @@
             </StackPanel>
         </Border>
 
-        <Popup 
+        <Popup
             x:Name="DialogContainer"
             IsOpen="False"
             PlacementTarget="{Binding ElementName=DialogLayer}"
@@ -66,12 +64,11 @@
             Closed="DialogContainerClosed"
             Opened="DialogContainerOpened">
             <FlyoutPresenter
-                MaxHeight="1024"
-                MaxWidth="768"
+                MaxHeight="1200"
+                MaxWidth="1024"
                 Padding="20"
                 SizeChanged="DialogPresenterSizeChanged"
-                x:Name="DialogPresenter">
-            </FlyoutPresenter>
+                x:Name="DialogPresenter" />
         </Popup>
     </Grid>
 </Window>

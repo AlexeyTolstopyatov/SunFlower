@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             mc:Ignorable="d" 
-             d:DesignWidth="800" 
+             mc:Ignorable="d"
+             d:DesignWidth="800"
              d:DesignHeight="450"
              x:Class="SunFlower.Client.View.SettingsView"
              x:DataType="{x:Type vm:SettingsViewModel}">
@@ -22,15 +22,15 @@
                     <!--Icon/Region behaviour-->
                     <Image
                         VerticalAlignment="Center"
-                        Source="/Assets/app48.png"/>
+                        Source="/Assets/app48.png" />
                     <TextBlock
                         VerticalAlignment="Center"
                         Grid.Column="1">
-                        <Run Text="Globals"/>
-                        <LineBreak/>
+                        <Run Text="Globals" />
+                        <LineBreak />
                         <Run
                             Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Children windows setup"/>
+                            Text="Children windows setup" />
                     </TextBlock>
                 </Grid>
                 <Grid
@@ -39,7 +39,7 @@
                         Grid.Column="0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="Theme variant"/>
+                        Text="Theme variant" />
                     <ComboBox
                         Grid.Column="1"
                         Name="ThemeBox"
@@ -47,22 +47,22 @@
                         SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
                         <Interaction.Behaviors>
                             <EventTriggerBehavior EventName="SelectionChanged">
-                                <InvokeCommandAction 
+                                <InvokeCommandAction
                                     CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
                                     Command="{CompiledBinding ChangeThemeCommand}" />
                             </EventTriggerBehavior>
                         </Interaction.Behaviors>
                         <ComboBoxItem
-                            Content="System"/>
+                            Content="System" />
                         <ComboBoxItem
-                            Content="Light"/>
+                            Content="Light" />
                         <ComboBoxItem
-                            Content="Dark"/>
+                            Content="Dark" />
                     </ComboBox>
                 </Grid>
             </StackPanel>
         </Border>
-       
+
         <Border
             Margin="10"
             Padding="10"
@@ -76,17 +76,17 @@
                     <!--Icon/Region behaviour-->
                     <Image
                         VerticalAlignment="Center"
-                        Source="/Assets/fbin48.png"/>
+                        Source="/Assets/fbin48.png" />
                     <TextBlock
                         VerticalAlignment="Center"
                         Grid.Column="1">
-                        <Run Text="Hexadecimal Layout"/>
-                        <LineBreak/>
+                        <Run Text="Hexadecimal Layout" />
+                        <LineBreak />
                         <Run
                             Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Setup of hex editor control"/>
+                            Text="Setup of hex editor control" />
                         <Run
-                            Text="restart is required"/>
+                            Text="restart is required" />
                     </TextBlock>
                 </Grid>
                 <Grid
@@ -94,22 +94,22 @@
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="Font params"/>
+                        Text="Font params" />
                     <AutoCompleteBox
                         Grid.Column="1"
                         Background="{StaticResource RegionBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         ItemsSource="{CompiledBinding InstalledFonts}"
                         Text="{CompiledBinding Settings.HexControl.Family, FallbackValue='Family', Mode=TwoWay}"
-                        Width="150"/>
+                        Width="150" />
                     <TextBox
                         Grid.Column="2"
                         Text="{CompiledBinding Settings.HexControl.Size, FallbackValue='Size', Mode=TwoWay}"
-                        Width="50"/>
+                        Width="50" />
                 </Grid>
             </StackPanel>
         </Border>
-        
+
         <Border
             Margin="10"
             Padding="10"
@@ -124,17 +124,17 @@
                     <!--Icon/Region behaviour-->
                     <Image
                         VerticalAlignment="Center"
-                        Source="/Assets/fdoc48.png"/>
+                        Source="/Assets/fdoc48.png" />
                     <TextBlock
                         VerticalAlignment="Center"
                         Grid.Column="1">
-                        <Run Text="Text Layout"/>
-                        <LineBreak/>
+                        <Run Text="Text Layout" />
+                        <LineBreak />
                         <Run
                             Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Text Editor parameters setup"/>
+                            Text="Text Editor parameters setup" />
                         <Run
-                            Text="restart is required"/>
+                            Text="restart is required" />
                     </TextBlock>
                 </Grid>
                 <Grid
@@ -143,18 +143,18 @@
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="Font params"/>
+                        Text="Font params" />
                     <AutoCompleteBox
                         Background="{StaticResource RegionBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         Grid.Column="1"
                         Text="{CompiledBinding Settings.TextControl.Family, FallbackValue='Family', Mode=TwoWay}"
                         Width="150"
-                        ItemsSource="{CompiledBinding InstalledFonts}"/>
+                        ItemsSource="{CompiledBinding InstalledFonts}" />
                     <TextBox
                         Grid.Column="2"
                         Text="{CompiledBinding Settings.TextControl.Size, FallbackValue='Size', Mode=TwoWay}"
-                        Width="50"/>
+                        Width="50" />
                 </Grid>
                 <Grid
                     HorizontalAlignment="Left"
@@ -162,7 +162,7 @@
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="Syntax Theme"/>
+                        Text="Syntax Theme" />
                     <ComboBox
                         Grid.Column="1"
                         Width="150"
@@ -174,7 +174,7 @@
                                 EventName="SelectionChanged">
                                 <InvokeCommandAction
                                     Command="{CompiledBinding ChangeEditorThemeCommand}"
-                                    CommandParameter="{CompiledBinding ElementName=EditorBox, Path=SelectedIndex}"/>
+                                    CommandParameter="{CompiledBinding ElementName=EditorBox, Path=SelectedIndex}" />
                             </EventTrigger>
                         </Interaction.Behaviors>
                     </ComboBox>
@@ -201,8 +201,8 @@
                         HotKey="Delete">
                         <Button.ContextFlyout>
                             <Flyout>
-                                <TextBlock 
-                                    Text="Delete project temp files"/>
+                                <TextBlock
+                                    Text="Delete project temp files" />
                             </Flyout>
                         </Button.ContextFlyout>
                     </Button>
@@ -216,20 +216,20 @@
                         Content="Save">
                         <Button.ContextFlyout>
                             <Flyout>
-                                <TextBlock 
-                                    Text="Write changes to settings file. No restart"/>
+                                <TextBlock
+                                    Text="Write changes to settings file. No restart" />
                             </Flyout>
                         </Button.ContextFlyout>
                     </Button>
                 </StackPanel>
-            
+
                 <Border
                     Grid.Column="1">
                     <StackPanel>
                         <TextBlock
                             IsVisible="{CompiledBinding FirstCacheCleared}"
                             Foreground="#ff009b76"
-                            Text="{CompiledBinding Message, FallbackValue='ты че блять.'}"/>
+                            Text="{CompiledBinding Message, FallbackValue='ты че блять.'}" />
                     </StackPanel>
                 </Border>
             </Grid>

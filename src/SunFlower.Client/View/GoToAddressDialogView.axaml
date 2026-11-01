@@ -3,25 +3,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignWidth="400" d:DesignHeight="150"
              x:Class="SunFlower.Client.View.GoToAddressDialogView"
              x:DataType="{x:Type vm:GoToAddressDialogViewModel}">
     <UserControl.KeyBindings>
         <KeyBinding
             Gesture="Ctrl+Enter"
-            Command="{CompiledBinding SwitchOffsetModeCommand}"/>
+            Command="{CompiledBinding SwitchOffsetModeCommand}" />
     </UserControl.KeyBindings>
     <StackPanel
         Spacing="10">
         <TextBlock
-            Text="Set Cursor at" 
-            FontSize="16"/>
-        
+            Text="Set Cursor at"
+            FontSize="16" />
+
         <TextBlock
             Text="{Binding MaxAddress, StringFormat='File {0} bytes', FallbackValue='File 0 bytes'}"
-            Foreground="{DynamicResource SecondaryTextBrush}"/>
-        
+            Foreground="{DynamicResource SecondaryTextBrush}" />
+
         <Grid
             HorizontalAlignment="Stretch"
             ColumnDefinitions="*,6*">
@@ -29,11 +29,11 @@
                 TabIndex="0"
                 SelectedIndex="{CompiledBinding OffsetBase}">
                 <ComboBoxItem
-                    Content="0x"/>
+                    Content="0x" />
                 <ComboBoxItem
-                    Content="0d"/>
+                    Content="0d" />
                 <ComboBoxItem
-                    Content="0o"/>
+                    Content="0o" />
             </ComboBox>
             <TextBox
                 Grid.Column="1"
@@ -46,30 +46,30 @@
                     <KeyTrigger
                         Key="Enter">
                         <InvokeCommandAction
-                            Command="{CompiledBinding AcceptCommand}"/>
+                            Command="{CompiledBinding AcceptCommand}" />
                     </KeyTrigger>
                 </Interaction.Behaviors>
             </TextBox>
         </Grid>
-        <TextBlock 
+        <TextBlock
             Text="{Binding ErrorMessage}"
-            Foreground="Red"/>
-        
+            Foreground="Red" />
+
         <StackPanel
-            Orientation="Horizontal" 
-            HorizontalAlignment="Right" 
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
             Spacing="10">
             <TextBlock
                 IsVisible="{CompiledBinding IsRelativeOffset}"
                 Text="From current location"
-                FontWeight="DemiBold"/>
-            <Button 
+                FontWeight="DemiBold" />
+            <Button
                 HotKey="Enter"
                 MinWidth="80"
                 Command="{CompiledBinding AcceptCommand}">
                 OK
             </Button>
-            <Button 
+            <Button
                 HotKey="Escape"
                 MinWidth="80"
                 Command="{CompiledBinding CancelCommand}">

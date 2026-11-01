@@ -5,28 +5,28 @@
 // @local_machine: atvlg
 // @creator: atolstopyatov2017@vk.com
 
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Media;
+using AvaloniaEdit.Document;
+using AvaloniaHex.Document;
 using Dock.Model.Controls;
 using SunFlower.Client.Model;
 using SunFlower.Client.Service;
 using SunFlower.Client.ViewModel.Dock;
 using SunFlower.Kernel.Services;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Media;
-using SunFlower.Abstractions;
 
 namespace SunFlower.Client.ViewModel;
 
 public sealed class WorkspaceHost : IWorkspaceHost
 {
-    private readonly WorkspaceLayoutFactory _factory;
     private readonly IDocumentDock _contentDock;
+    private readonly WorkspaceLayoutFactory _factory;
     private readonly IFlowerExecutable _fe;
     private readonly SettingsService _settings;
-
-    public event EventHandler? OpenedDocumentsChanged;
 
     public WorkspaceHost(
         WorkspaceLayoutFactory factory,
@@ -43,14 +43,16 @@ public sealed class WorkspaceHost : IWorkspaceHost
         _factory.DockableClosed += (_, _) => OpenedDocumentsChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public Task OpenAsync(string filePath)
+    public event EventHandler? OpenedDocumentsChanged;
+
+    public Task OpenAsync(string filePath, bool isPermanent)
     {
         var detection = ContentTypeDetector.Detect(filePath);
         return detection.SubType switch
         {
-            ContentSubType.Markdown => OpenMarkdownAsync(filePath),
-            ContentSubType.Text or ContentSubType.PlainText => OpenTextAsync(filePath),
-            _ => OpenHexAsync(filePath),
+            ContentSubType.Markdown => OpenMarkdownAsync(filePath, isPermanent),
+            ContentSubType.Text or ContentSubType.PlainText => OpenTextAsync(filePath, isPermanent),
+            _ => OpenHexAsync(filePath, isPermanent)
         };
     }
 
@@ -69,10 +71,8 @@ public sealed class WorkspaceHost : IWorkspaceHost
         }
 
         if (result.HasError)
-        {
             await Console.Error.WriteLineAsync(
                 $"[{nameof(ExecuteFlowerAsync)}] {flower.Instance.Name}: {result.ErrorMessage}");
-        }
 
         // Open the *produced* result file (e.g. <target>_<plugin>.md),
         // not the original target that was analyzed.
@@ -85,32 +85,58 @@ public sealed class WorkspaceHost : IWorkspaceHost
         else
             await OpenMarkdownAsync(resultPath);
     }
-    private Task OpenTextAsync(string filePath) =>
-        GetOrCreateAsync<TextDocumentViewModel>(filePath, "Text", async doc =>
+
+    /// <summary> Opens a TextEditor tab in the document dock </summary>
+    /// <param name="filePath">opens for a given file </param>
+    /// <param name="isPermanent"></param>
+    /// <returns></returns>
+    private Task OpenTextAsync(string filePath, bool isPermanent = false)
+    {
+        return GetOrCreateAsync<TextDocumentViewModel>(filePath, "Text", async doc =>
         {
-            var (family, size) = ReadFontConfig(_settings.Current.TextControl);
+            var (family, size) = ReadFontConfigurationBlock(_settings.Current.TextControl);
             doc.TextFontFamily = new FontFamily(family);
             doc.TextFontSize = size;
-            doc.TextDocument = new AvaloniaEdit.Document.TextDocument(
+            
+            doc.CanDrag = !isPermanent;
+            doc.CanClose = !isPermanent;
+            
+            doc.TextDocument = new TextDocument(
                 await File.ReadAllTextAsync(filePath));
         });
-
-    private Task OpenHexAsync(string filePath) =>
-        GetOrCreateAsync<HexDocumentViewModel>(filePath, "Hex", async doc =>
+    }
+    /// <summary> Opens hex tab </summary>
+    /// <param name="filePath"></param>
+    /// <param name="isPermanent">Can tab miss a move and close permissions</param>
+    /// <returns></returns>
+    private Task OpenHexAsync(string filePath, bool isPermanent = false)
+    {
+        return GetOrCreateAsync<HexDocumentViewModel>(filePath, "Hex", async doc =>
         {
-            var (family, size) = ReadFontConfig(_settings.Current.HexControl);
+            var (family, size) = ReadFontConfigurationBlock(_settings.Current.HexControl);
             doc.HexFontFamily = new FontFamily(family);
             doc.HexFontSize = size;
+            
+            doc.CanClose = !isPermanent;
+            doc.CanDrag = !isPermanent;
+            
             var bytes = await File.ReadAllBytesAsync(filePath);
-            doc.BinaryDocument = new AvaloniaHex.Document.MemoryBinaryDocument(bytes);
+            doc.BinaryDocument = new MemoryBinaryDocument(bytes);
         });
+    }
 
-    private Task OpenMarkdownAsync(string filePath) =>
-        GetOrCreateAsync<MarkdownDocumentViewModel>(filePath, "Page", async doc =>
-        {
-            doc.Content = await File.ReadAllTextAsync(filePath);
-        });
-    
+    private Task OpenMarkdownAsync(string filePath, bool isPermanent = false)
+    {
+        return GetOrCreateAsync<MarkdownDocumentViewModel>(filePath, "Page",
+            async doc =>
+            {
+                doc.CanDrag = !isPermanent;
+                doc.CanClose = !isPermanent;
+
+                doc.Content = await File.ReadAllTextAsync(filePath);
+            });
+    }
+
     private async Task<T> GetOrCreateAsync<T>(
         string filePath, string suffix, Func<T, Task> populate)
         where T : FileDocument, new()
@@ -123,25 +149,28 @@ public sealed class WorkspaceHost : IWorkspaceHost
             return existing;
 
         _factory.CreateDocument();
-        var doc = new T // Exactly the same with decompiled IFactory::CreateDocument()
-                        // Returns the new Document() instance adopted for workspace host 
+        // Exactly the same with decompiled IFactory::CreateDocument()
+        // Returns the new Document() instance adopted for workspace host 
+        var doc = new T
         {
             Id = Guid.NewGuid().ToString(),
             FilePath = filePath,
             CanFloat = false,
             Title = $"{Path.GetFileName(filePath)} [{suffix}]"
         };
-        
+
         doc.FilePath = filePath;
         doc.Context = doc;
         doc.CanFloat = false;
 
         await populate(doc);
-        
+
         _contentDock.AddDocument(doc);
         return doc;
     }
 
-    private static (string Family, double Size) ReadFontConfig(Font? cfg) =>
-        (cfg?.Family ?? "Consolas", cfg?.Size > 0 ? cfg.Size : 13.0);
+    public static (string Family, double Size) ReadFontConfigurationBlock(Font? cfg)
+    {
+        return (cfg?.Family ?? "Consolas", cfg?.Size > 0 ? cfg.Size : 13.0);
+    }
 }

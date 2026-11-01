@@ -20,28 +20,42 @@ public class PluginService
     private readonly FlowerManager _manager;
 
     /// <summary>
-    /// FlowerCollection that were loaded at initialization (metadata + interfaces).
+    ///     FlowerCollection that were loaded at initialization (metadata + interfaces).
     /// </summary>
     private List<FlowerData>? _loaded;
-
-    private bool _initialized;
 
     public PluginService()
     {
         _manager = FlowerManager.CreateInstance();
         _loaded = null;
-        _initialized = false;
+        IsInitialized = false;
     }
 
     /// <summary>
-    /// ActivateAsync all plugins. Call once at application startup.
-    /// Plugin activation (Text.LoadFrom, reflection, Activator.CreateInstance) is CPU-bound
-    /// and F#'s <c>task {}</c> builder runs its synchronous body on the calling thread,
-    /// so the whole pipeline must be offloaded to the thread pool to keep the UI responsive.
+    ///     Get all loaded flowers metadata.
+    /// </summary>
+    public IReadOnlyList<FlowerData> FlowerCollection =>
+        _loaded ?? throw new InvalidOperationException(
+            "PluginService not initialized. Call ActivateAsync() first.");
+
+    /// <summary>
+    ///     Whether all plugins have been loaded. Until this is <c>true</c>,
+    ///     <see cref="FlowerCollection" /> is not available and throws.
+    ///     Use this to guard access during startup (see RecentFilesViewModel).
+    /// </summary>
+    public bool IsInitialized { get; private set; }
+
+    public string[] KernelMessages => _manager.Messages.ToArray();
+
+    /// <summary>
+    ///     ActivateAsync all plugins. Call once at application startup.
+    ///     Plugin activation (Text.LoadFrom, reflection, Activator.CreateInstance) is CPU-bound
+    ///     and F#'s <c>task {}</c> builder runs its synchronous body on the calling thread,
+    ///     so the whole pipeline must be offloaded to the thread pool to keep the UI responsive.
     /// </summary>
     public async Task ActivateAsync()
     {
-        if (_initialized)
+        if (IsInitialized)
             return;
 
         var pluginsDirectory = Path.Combine(AppContext.BaseDirectory, "Plugins");
@@ -49,7 +63,7 @@ public class PluginService
         if (!Directory.Exists(pluginsDirectory))
         {
             _loaded = [];
-            _initialized = true;
+            IsInitialized = true;
             return;
         }
 
@@ -57,27 +71,11 @@ public class PluginService
 
         _loaded = _manager.LoadedFlowers.ToList();
 
-        _initialized = true;
+        IsInitialized = true;
     }
 
     /// <summary>
-    /// Get all loaded flowers metadata.
-    /// </summary>
-    public IReadOnlyList<FlowerData> FlowerCollection =>
-        _loaded ?? throw new InvalidOperationException(
-            "PluginService not initialized. Call ActivateAsync() first.");
-
-    /// <summary>
-    /// Whether all plugins have been loaded. Until this is <c>true</c>,
-    /// <see cref="FlowerCollection"/> is not available and throws.
-    /// Use this to guard access during startup (see RecentFilesViewModel).
-    /// </summary>
-    public bool IsInitialized => _initialized;
-
-    public string[] KernelMessages => _manager.Messages.ToArray();
-
-    /// <summary>
-    /// Clears all kernel messages (e.g. when opening a new project/file).
+    ///     Clears all kernel messages (e.g. when opening a new project/file).
     /// </summary>
     public void ClearKernelMessages()
     {
@@ -85,14 +83,13 @@ public class PluginService
     }
 
     /// <summary>
-    /// AnalyzeAsync a file with all loaded plugins. Returns results.
-    /// Does NOT reinitialize plugins — uses cached instances.
-    ///
-    /// For unknown flower - recalls all flowers in collection
+    ///     AnalyzeAsync a file with all loaded plugins. Returns results.
+    ///     Does NOT reinitialize plugins — uses cached instances.
+    ///     For unknown flower - recalls all flowers in collection
     /// </summary>
     public async Task AnalyzeAsync(string filePath, [Optional] string? flowerName)
     {
-        if (!_initialized)
+        if (!IsInitialized)
             throw new InvalidOperationException("PluginService not initialized.");
 
         if (!File.Exists(filePath))
@@ -106,7 +103,7 @@ public class PluginService
     }
 
     /// <summary>
-    /// Get compatibility info for all installed plugins.
+    ///     Get compatibility info for all installed plugins.
     /// </summary>
     public IReadOnlyList<FlowerVersionInfo> GetVersionInfo()
     {

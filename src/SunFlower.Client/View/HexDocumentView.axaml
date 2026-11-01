@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:hex="clr-namespace:AvaloniaHex;assembly=AvaloniaHex"
              xmlns:hexr="clr-namespace:AvaloniaHex.Rendering;assembly=AvaloniaHex"
-             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
              xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
              mc:Ignorable="d"
              d:DesignWidth="400"

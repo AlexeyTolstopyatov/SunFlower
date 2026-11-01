@@ -33,17 +33,17 @@ public class PluginContentView
 public class PluginAnalysisService(WorkspaceService workspaceService)
 {
     /// <summary>
-    /// Run a specific plugin on a given project file, write the result to the project dir.
-    /// The result file is named after the file it was applied to,
-    /// following the convention: <c>&lt;targetFileName&gt;_&lt;pluginName&gt;</c>
-    /// (e.g. applying the plugin to "explorer.exe" gives "explorer_Sunflower.Pe.md").
-    /// Fix: clears stale results before Main() so Text-plugins don't
-    /// accumulate output from previous file runs.
+    ///     Run a specific plugin on a given project file, write the result to the project dir.
+    ///     The result file is named after the file it was applied to,
+    ///     following the convention: <c>&lt;targetFileName&gt;_&lt;pluginName&gt;</c>
+    ///     (e.g. applying the plugin to "explorer.exe" gives "explorer_Sunflower.Pe.md").
+    ///     Fix: clears stale results before Main() so Text-plugins don't
+    ///     accumulate output from previous file runs.
     /// </summary>
     /// <param name="flowerData">The plugin to run</param>
     /// <param name="targetPath">
-    /// Path of the project file the plugin is applied to. When null, falls back
-    /// to the original binary of the current project (or the opened file).
+    ///     Path of the project file the plugin is applied to. When null, falls back
+    ///     to the original binary of the current project (or the opened file).
     /// </param>
     public async Task<PluginContentView> AnalyzeAndSaveAsync(FlowerData flowerData, string? targetPath)
     {

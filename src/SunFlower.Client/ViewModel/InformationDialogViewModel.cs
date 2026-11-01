@@ -10,5 +10,4 @@ namespace SunFlower.Client.ViewModel;
 
 public class InformationDialogViewModel : DialogViewModel
 {
-
 }

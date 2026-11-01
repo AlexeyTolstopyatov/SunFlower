@@ -13,12 +13,9 @@ namespace SunFlower.Client.ViewModel.Dock;
 
 public partial class TextDocumentViewModel : FileDocument
 {
-    [ObservableProperty] 
-    private FontFamily? _textFontFamily;
+    [ObservableProperty] private TextDocument? _textDocument;
 
-    [ObservableProperty] 
-    private double _textFontSize;
+    [ObservableProperty] private FontFamily? _textFontFamily;
 
-    [ObservableProperty] 
-    private TextDocument? _textDocument;
+    [ObservableProperty] private double _textFontSize;
 }

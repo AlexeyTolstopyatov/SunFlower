@@ -2,9 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:view="clr-namespace:SunFlower.Client.View"
              xmlns:client="clr-namespace:SunFlower.Client"
-             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
-             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
              x:DataType="{x:Type client:App}"
              x:Class="SunFlower.Client.App">
     <Application.Resources>
@@ -17,13 +14,13 @@
     </Application.Resources>
 
     <Application.Styles>
-        <StyleInclude Source="avares://AvaloniaHex/Themes/Fluent/AvaloniaHex.axaml"/>
+        <StyleInclude Source="avares://AvaloniaHex/Themes/Fluent/AvaloniaHex.axaml" />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
         <StyleInclude Source="/Drawing/DocumentTheme.axaml" />
-        <FluentTheme/>
-        <DockFluentTheme/>
-        <StyleInclude Source="/Drawing/DockTheme.axaml"/>
-        <StyleInclude Source="avares://HandyControl/Themes/Theme.axaml"/>
+        <FluentTheme />
+        <DockFluentTheme />
+        <StyleInclude Source="/Drawing/DockTheme.axaml" />
+        <StyleInclude Source="avares://HandyControl/Themes/Theme.axaml" />
     </Application.Styles>
 
     <Application.DataTemplates>
@@ -58,6 +55,6 @@
         <!--     <view:ExecuteDialogView /> -->
         <!-- </DataTemplate> -->
         <!-- -->
-        <view:ViewLocator/>
+        <view:ViewLocator />
     </Application.DataTemplates>
 </Application>

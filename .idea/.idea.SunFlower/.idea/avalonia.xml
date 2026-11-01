@@ -38,6 +38,7 @@
         <entry key="src/SunFlower.Client/View/PluginsView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/RecentFilesView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/SettingsView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/StructLayoutDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/TextDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/WorkspaceView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/WorkspaceWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />

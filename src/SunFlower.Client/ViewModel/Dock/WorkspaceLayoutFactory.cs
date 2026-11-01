@@ -22,15 +22,16 @@ public class WorkspaceLayoutFactory : Factory
 
     public override IRootDock CreateLayout()
     {
-        var leftTool = new DocumentDock()
+        var leftTool = new DocumentDock
         {
             Id = LeftToolId,
             Proportion = 0.25,
             CanDrag = true,
             CanDrop = true,
             VisibleDockables = CreateList<IDockable>(
-                new Document() { 
-                    Id = "SolutionExplorer", 
+                new Document
+                {
+                    Id = "SolutionExplorer",
                     Title = "Solution Explorer",
                     CanDrag = true,
                     CanDrop = true,
@@ -47,17 +48,10 @@ public class WorkspaceLayoutFactory : Factory
             CanDrag = true,
             CanDrop = true,
             VisibleDockables = CreateList<IDockable>(
-                // new Document { 
-                //     Id = "Welcome", 
-                //     Title = "Welcome Page",
-                //     CanDrag = true,
-                //     CanDrop = true,
-                //     CanDockAsDocument = true,
-                //     CanFloat = false
-                // }
+            
             )
         };
-        var mainLayout = new ProportionalDock()
+        var mainLayout = new ProportionalDock
         {
             Id = "MainLayout",
             VisibleDockables = CreateList<IDockable>(
@@ -69,14 +63,14 @@ public class WorkspaceLayoutFactory : Factory
             CanDrag = true,
             CanDockAsDocument = true,
             CanFloat = false,
-            AllowedDockOperations = 
-                DockOperationMask.Bottom 
-                | DockOperationMask.Fill 
-                | DockOperationMask.Left 
-                | DockOperationMask.Right 
+            AllowedDockOperations =
+                DockOperationMask.Bottom
+                | DockOperationMask.Fill
+                | DockOperationMask.Left
+                | DockOperationMask.Right
                 | DockOperationMask.Top,
-            AllowedDropOperations =  DockOperationMask.All,
-            DockingState = DockingWindowState.Document,
+            AllowedDropOperations = DockOperationMask.All,
+            DockingState = DockingWindowState.Document
         };
 
         var root = new RootDock
@@ -85,11 +79,11 @@ public class WorkspaceLayoutFactory : Factory
             CanClose = false,
             VisibleDockables = CreateList<IDockable>(mainLayout),
             ActiveDockable = mainLayout,
-            AllowedDockOperations = 
-                DockOperationMask.Bottom 
-                | DockOperationMask.Fill 
-                | DockOperationMask.Left 
-                | DockOperationMask.Right 
+            AllowedDockOperations =
+                DockOperationMask.Bottom
+                | DockOperationMask.Fill
+                | DockOperationMask.Left
+                | DockOperationMask.Right
                 | DockOperationMask.Top
         };
 

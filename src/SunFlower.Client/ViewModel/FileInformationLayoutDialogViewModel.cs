@@ -14,8 +14,7 @@ namespace SunFlower.Client.ViewModel;
 public partial class FileInformationLayoutDialogViewModel(string path) : DialogViewModel
 {
     // If "Undefined" -> mark as null
-    [ObservableProperty]
-    private FlowerFileInfo? _flowerFileInfo = FlowerBinarySeeker.Get(path);
+    [ObservableProperty] private FlowerFileInfo? _flowerFileInfo = FlowerBinarySeeker.Get(path);
 
     [RelayCommand]
     private void Exit()

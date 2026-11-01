@@ -12,10 +12,10 @@
             ItemsSource="{CompiledBinding Assemblies}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel/>
+                    <WrapPanel />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            
+
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <!-- Assembly Card template -->
@@ -32,21 +32,21 @@
                                 ColumnDefinitions="32, Auto">
                                 <Image
                                     VerticalAlignment="Top"
-                                    Source="/Assets/field.png"/>
+                                    Source="/Assets/field.png" />
                                 <TextBlock
                                     VerticalAlignment="Top"
                                     Grid.Column="1"
                                     TextWrapping="Wrap">
-                                    <Run 
-                                        Text="{Binding Name}"/>
-                                    <LineBreak/>
+                                    <Run
+                                        Text="{Binding Name}" />
+                                    <LineBreak />
                                     <Run
                                         Foreground="{StaticResource SecondaryTextBrush}"
-                                        Text="{CompiledBinding Version}"/>
-                                    <LineBreak/>
+                                        Text="{CompiledBinding Version}" />
+                                    <LineBreak />
                                 </TextBlock>
                             </Grid>
-                            
+
                             <ListBox
                                 ItemsSource="{CompiledBinding Contracts}"
                                 SelectionMode="Toggle"
@@ -56,17 +56,18 @@
                                     <DataTemplate>
                                         <Grid
                                             ColumnDefinitions="24,*">
-                                            <Image Source="/Assets/sunflower256.png"/>
+                                            <Image Source="/Assets/sunflower256.png" />
                                             <StackPanel
                                                 Margin="5"
                                                 VerticalAlignment="Center"
                                                 Grid.Column="1">
-                                                <TextBlock 
-                                                    Text="{Binding Item1}"/>
+                                                <TextBlock
+                                                    Text="{Binding Item1}" />
                                                 <TextBlock
                                                     Foreground="{StaticResource SecondaryTextBrush}">
-                                                    <Run Text="{CompiledBinding Item2}"/>
-                                                    <Run Text="{CompiledBinding Item2, StringFormat={}, Converter={x:Static c:UiConverters.IsCompatConverter}}"/>
+                                                    <Run Text="{CompiledBinding Item2}" />
+                                                    <Run
+                                                        Text="{CompiledBinding Item2, StringFormat={}, Converter={x:Static c:UiConverters.IsCompatConverter}}" />
                                                 </TextBlock>
                                             </StackPanel>
                                         </Grid>

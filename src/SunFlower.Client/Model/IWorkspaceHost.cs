@@ -14,18 +14,18 @@ namespace SunFlower.Client.Model;
 public interface IWorkspaceHost
 {
     /// <summary>
-    /// Opens file in the most matching view
+    ///     Opens file in the most matching view
     /// </summary>
     /// <param name="filePath">file path</param>
-    Task OpenAsync(string filePath);
+    /// <param name="isPermanent">Have tab missed close/drag rights</param>
+    Task OpenAsync(string filePath, bool isPermanent = false);
 
     /// <summary>
-    /// Executes flower plugin for a target file
+    ///     Executes flower plugin for a target file
     /// </summary>
     Task ExecuteFlowerAsync(FlowerData flower, string filePath);
 
-    /// <summary>
-    /// Notifies that working set is changed
+    /// <summaies that working set is changed
     /// </summary>
     event EventHandler? OpenedDocumentsChanged;
 }

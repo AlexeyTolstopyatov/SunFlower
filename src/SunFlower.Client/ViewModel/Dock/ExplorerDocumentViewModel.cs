@@ -1,4 +1,5 @@
 // SunFlower.Client.ViewModel.Dock/ProjectExplorerViewModel.cs
+
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,16 +16,13 @@ namespace SunFlower.Client.ViewModel.Dock;
 public partial class ExplorerDocumentViewModel : FileDocument
 {
     private readonly IWorkspaceHost? _host;
-    private readonly ProjectService? _projectService;
     private readonly PluginService? _pluginService;
+    private readonly ProjectService? _projectService;
 
     private bool _initialOpenPending = true;
-
-    public ObservableCollection<ProjectFileViewModel> ProjectFiles { get; } = [];
-    public ObservableCollection<FlowerData> AvailableFlowers { get; } = [];
+    [ObservableProperty] private bool _isBusy;
 
     [ObservableProperty] private ProjectFileViewModel? _selectedFile;
-    [ObservableProperty] private bool _isBusy;
 
     public ExplorerDocumentViewModel(
         IWorkspaceHost? host,
@@ -43,6 +41,9 @@ public partial class ExplorerDocumentViewModel : FileDocument
         _ = InitializeAsync();
     }
 
+    public ObservableCollection<ProjectFileViewModel> ProjectFiles { get; } = [];
+    public ObservableCollection<FlowerData> AvailableFlowers { get; } = [];
+
     private async Task InitializeAsync()
     {
         try
@@ -59,7 +60,10 @@ public partial class ExplorerDocumentViewModel : FileDocument
     private void LoadPlugins()
     {
         AvailableFlowers.Clear();
-        if (_pluginService is null || !_pluginService.IsInitialized) return;
+        
+        if (_pluginService is null || !_pluginService.IsInitialized) 
+            return;
+        
         foreach (var flower in _pluginService.FlowerCollection)
             AvailableFlowers.Add(flower);
     }
@@ -90,35 +94,34 @@ public partial class ExplorerDocumentViewModel : FileDocument
 
         ProjectFiles.Clear();
         foreach (var path in files)
-        {
             ProjectFiles.Add(new ProjectFileViewModel
             {
                 FileName = Path.GetFileName(path),
                 FullPath = path
             });
-        }
-        // Preserve selection by path — a plugin run may have added a file above the selection.
+        
         SelectedFile = previousPath is null
             ? null
             : ProjectFiles.FirstOrDefault(f => f == previousPath);
 
-        // One-shot: open the first file of the freshly opened project.
+        // Init: open the first file of the freshly opened project.
         if (_initialOpenPending && SelectedFile is null && ProjectFiles.Count > 0)
         {
             SelectedFile = ProjectFiles[0];
-            await OpenSelectedFileAsync();
+            
+            await OpenSelectedFileAsync(true);
         }
 
         _initialOpenPending = false;
     }
 
     [RelayCommand]
-    private async Task OpenSelectedFileAsync()
+    private async Task OpenSelectedFileAsync(bool permanent = false)
     {
         if (SelectedFile is null || _host is null) return;
         try
         {
-            await _host.OpenAsync(SelectedFile.FullPath);
+            await _host.OpenAsync(SelectedFile.FullPath, permanent);
         }
         catch (Exception ex)
         {
@@ -136,8 +139,7 @@ public partial class ExplorerDocumentViewModel : FileDocument
             IsBusy = true;
             await _host.ExecuteFlowerAsync(flower, SelectedFile.FullPath);
 
-            // The plugin may have written a result file — refresh the tree.
-            // Note: the host opened the result already; we only refresh the list.
+            // The plugin may have written a result file - refresh the tree.
             await RefreshAsync();
         }
         catch (Exception ex)
@@ -150,4 +152,3 @@ public partial class ExplorerDocumentViewModel : FileDocument
         }
     }
 }
-

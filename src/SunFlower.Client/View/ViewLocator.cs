@@ -18,9 +18,9 @@ public class ViewLocator : IDataTemplate
     {
         if (data is null)
             return new TextBlock { Text = "<null>" };
-        
+
         var type = data.GetType();
-        
+
         var viewType = type.Namespace?.Replace("ViewModel", "View") + "." +
                        type.Name.Replace("ViewModel", "View");
         var typeOfView = Type.GetType(viewType);

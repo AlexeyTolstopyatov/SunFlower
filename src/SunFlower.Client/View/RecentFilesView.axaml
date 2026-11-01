@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             mc:Ignorable="d" 
-             d:DesignWidth="800" 
+             mc:Ignorable="d"
+             d:DesignWidth="800"
              d:DesignHeight="450"
              Background="Transparent"
              x:Class="SunFlower.Client.View.RecentFilesView"
@@ -19,7 +19,7 @@
         ItemsSource="{Binding RecentFiles, UpdateSourceTrigger=PropertyChanged}">
         <Interaction.Behaviors>
             <EventTriggerBehavior EventName="DoubleTapped">
-                <InvokeCommandAction 
+                <InvokeCommandAction
                     CommandParameter="{Binding ElementName=RecentList, Path=SelectedItem}"
                     Command="{Binding OpenSelectedFileCommand}" />
             </EventTriggerBehavior>

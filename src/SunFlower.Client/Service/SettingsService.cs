@@ -38,23 +38,20 @@ namespace SunFlower.Client.Service;
 
 public class SettingsService
 {
-    private readonly string _settingsPath;
-    private SettingsModel _settings;
-
-    private int CacheSubdirectories { get; }
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
+    private readonly string _settingsPath;
+
     public SettingsService()
     {
         var registryDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Registry");
         Directory.CreateDirectory(registryDir);
         _settingsPath = Path.Combine(registryDir, "settings.json");
-        _settings = new SettingsModel();
+        Current = new SettingsModel();
 
         CacheSubdirectories =
             Directory.EnumerateDirectories(AppContext.BaseDirectory, "CacheV1").Count() +
@@ -66,20 +63,22 @@ public class SettingsService
         //_ = LoadAsync();
     }
 
-    /// <summary>
-    /// Current settings. Read-only access from outside.
-    /// Use UpdateAsync to modify.
-    /// </summary>
-    public SettingsModel Current => _settings;
+    private int CacheSubdirectories { get; }
 
     /// <summary>
-    /// Load settings from disk. Creates defaults if file doesn't exist.
+    ///     Current settings. Read-only access from outside.
+    ///     Use UpdateAsync to modify.
+    /// </summary>
+    public SettingsModel Current { get; private set; }
+
+    /// <summary>
+    ///     Load settings from disk. Creates defaults if file doesn't exist.
     /// </summary>
     private async Task LoadAsync()
     {
         if (!File.Exists(_settingsPath))
         {
-            _settings = new SettingsModel();
+            Current = new SettingsModel();
 
             await Console.Out.WriteLineAsync("Settings file not found. Making something new");
             await SaveAsync();
@@ -90,23 +89,22 @@ public class SettingsService
         try
         {
             var json = await File.ReadAllTextAsync(_settingsPath);
-            _settings = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ??
-                        new SettingsModel();
-            
+            Current = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ??
+                      new SettingsModel();
         }
         catch (Exception e)
         {
             await Console.Out.WriteLineAsync(e.Message);
-            _settings = new SettingsModel();
+            Current = new SettingsModel();
         }
     }
 
     /// <summary>
-    /// Save current settings to disk.
+    ///     Save current settings to disk.
     /// </summary>
     public async Task SaveAsync()
     {
-        var json = JsonSerializer.Serialize(_settings, JsonOptions);
+        var json = JsonSerializer.Serialize(Current, JsonOptions);
         await File.WriteAllTextAsync(_settingsPath, json);
     }
 
@@ -116,7 +114,6 @@ public class SettingsService
             return;
 
         foreach (var directory in Directory.EnumerateDirectories(path))
-        {
             try
             {
                 Directory.Delete(directory, true);
@@ -125,7 +122,6 @@ public class SettingsService
             {
                 Console.WriteLine(exn);
             }
-        }
     }
 
     public Task DeleteCache()

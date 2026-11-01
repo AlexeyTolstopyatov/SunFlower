@@ -5,65 +5,65 @@
              x:DataType="{x:Type vm:DisassemblerDialogViewModel}">
     <StackPanel Spacing="10">
         <!-- Title -->
-        <TextBlock 
-            Text="Disassemble Original File Fragment" 
-            FontSize="16"/>
-        
+        <TextBlock
+            Text="Disassemble Original File Fragment"
+            FontSize="16" />
+
         <!-- Info about input -->
-        <TextBlock 
+        <TextBlock
             Text="{Binding SourceInfo}"
-            Foreground="{StaticResource SecondaryTextBrush}"/>
-        
+            Foreground="{StaticResource SecondaryTextBrush}" />
+
         <!-- Architecture selection -->
         <Grid ColumnDefinitions="Auto,*">
-            <TextBlock 
+            <TextBlock
                 VerticalAlignment="Center"
-                Text="Architecture:"/>
-            <ComboBox 
+                Text="Architecture:" />
+            <ComboBox
                 Grid.Column="1"
                 HorizontalAlignment="Right"
                 Width="150"
                 ItemsSource="{Binding AvailableArchitectures}"
-                SelectedItem="{Binding SelectedArchitecture, Mode=TwoWay}"/>
+                SelectedItem="{Binding SelectedArchitecture, Mode=TwoWay}" />
         </Grid>
-        
+
         <!-- Disassembly result -->
-        <TextBlock 
-            Text="Preview" 
-            FontWeight="SemiBold"/>
-        <Border 
+        <TextBlock
+            Text="Preview"
+            FontWeight="SemiBold" />
+        <Border
             Background="{StaticResource PanelBrush}"
             BorderBrush="{StaticResource BorderBrush}"
             BorderThickness="1"
             Padding="5">
-            <ScrollViewer 
+            <ScrollViewer
                 MaxHeight="300"
                 HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Auto">
-                <TextBlock 
+                <TextBlock
                     Text="{Binding DisassemblyResult}"
-                    FontFamily="Consolas"/>
+                    FontFamily="Consolas" />
             </ScrollViewer>
         </Border>
-        
+
         <!-- Buttons -->
-        <StackPanel 
-            Orientation="Horizontal" 
-            HorizontalAlignment="Right" 
+        <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
             Spacing="10">
-            <Button 
+            <Button
                 HotKey="Enter"
                 MinWidth="80"
                 Command="{Binding DisassembleCommand}">
                 Disassemble
             </Button>
-            <Button 
+            <Button
                 HotKey="Ctrl+Enter"
                 MinWidth="80"
                 Command="{Binding AcceptCommand}">
                 Accept
             </Button>
-            <Button 
+            <Button
                 HotKey="Escape"
                 MinWidth="80"
                 Command="{Binding CancelCommand}">

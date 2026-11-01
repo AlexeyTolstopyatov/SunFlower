@@ -12,25 +12,20 @@ using AvaloniaHex;
 using AvaloniaHex.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-
 namespace SunFlower.Client.ViewModel.Dock;
-
 
 public partial class HexDocumentViewModel : FileDocument
 {
-    [ObservableProperty] 
-    private IBinaryDocument? _binaryDocument;
-    
-    [ObservableProperty]
-    private double _hexFontSize;
-    
-    [ObservableProperty]
-    private FontFamily? _hexFontFamily;
+    [ObservableProperty] private IBinaryDocument? _binaryDocument;
+
+    [ObservableProperty] private FontFamily? _hexFontFamily;
+
+    [ObservableProperty] private double _hexFontSize;
 
     public HexEditor? Editor { get; set; }
 
     /// <summary>
-    /// Jumps the caret to the given byte offset in the HexEditor and brings it into view.
+    ///     Jumps the caret to the given byte offset in the HexEditor and brings it into view.
     /// </summary>
     public void JumpToOffset(ulong offset, bool isRelative)
     {
@@ -39,16 +34,16 @@ public partial class HexDocumentViewModel : FileDocument
 
         if (offset >= BinaryDocument.Length || offset > long.MaxValue)
             return;
-        
+
         if (!isRelative)
             Editor.Caret.GoToStartOfDocument();
-        
+
         Editor.Caret.GoForward(offset);
         Editor.BringIntoView();
     }
 
     /// <summary>
-    /// Returns the currently selected bytes in the HexEditor, or null when nothing is selected.
+    ///     Returns the currently selected bytes in the HexEditor, or null when nothing is selected.
     /// </summary>
     public byte[]? GetSelectedBytes()
     {
@@ -59,7 +54,7 @@ public partial class HexDocumentViewModel : FileDocument
             return null;
 
         var start = Math.Min(
-            Editor.Selection.Range.Start.ByteIndex, 
+            Editor.Selection.Range.Start.ByteIndex,
             Editor.Selection.Range.End.ByteIndex
         );
         var end = Math.Max(Editor.Selection.Range.Start.ByteIndex, Editor.Selection.Range.End.ByteIndex);
@@ -69,7 +64,7 @@ public partial class HexDocumentViewModel : FileDocument
             return null;
 
         var buffer = new byte[length];
-        
+
         BinaryDocument.ReadBytes(start, buffer); // <-- it should be worked
         return buffer;
     }

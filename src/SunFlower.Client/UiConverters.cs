@@ -20,12 +20,13 @@ public static class UiConverters
         .Contracts[0].Item2; // Kernel API metadata
 
     /// <summary>
-    /// Executes condition of nullity of view model. Returns true if model is null
+    ///     Executes condition of nullity of view model. Returns true if model is null
     /// </summary>
     public static readonly FuncValueConverter<ObservableObject?, bool> ViewModelMissingConverter = new(v => v is null);
+
     /// <summary>
-    /// Checks how flower version compares with current client app.
-    /// If major version differs - returns "incompatible!" message
+    ///     Checks how flower version compares with current client app.
+    ///     If major version differs - returns "incompatible!" message
     /// </summary>
     public static readonly FuncValueConverter<Version, string> IsCompatConverter = new(v =>
     {

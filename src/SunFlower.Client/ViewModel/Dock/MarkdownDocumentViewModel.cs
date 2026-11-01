@@ -11,6 +11,5 @@ namespace SunFlower.Client.ViewModel.Dock;
 
 public partial class MarkdownDocumentViewModel : FileDocument
 {
-    [ObservableProperty]
-    private string? _content;
+    [ObservableProperty] private string? _content;
 }

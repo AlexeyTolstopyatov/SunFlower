@@ -15,7 +15,7 @@ namespace SunFlower.Client.Service;
 public class WindowService
 {
     /// <summary>
-    /// Open the DockWorkspaceView in a separate window.
+    ///     Open the DockWorkspaceView in a separate window.
     /// </summary>
     public void OpenWorkspaceWindow(DockWorkspaceViewModel vm)
     {
@@ -31,20 +31,16 @@ public class WindowService
     }
 
     /// <summary>
-    /// Close all workspace windows.
+    ///     Close all workspace windows.
     /// </summary>
     public void CloseAllWorkspaceWindows()
     {
-        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) 
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
-        
+
         var windows = desktop.Windows;
         for (var i = windows.Count - 1; i >= 0; i--)
-        {
             if (windows[i] is WorkspaceWindow)
-            {
                 windows[i].Close();
-            }
-        }
     }
 }

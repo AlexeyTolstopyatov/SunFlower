@@ -25,61 +25,66 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SunFlower.Kernel.Services;
 
 namespace SunFlower.Client.Service;
 
 /// <summary>
-/// Represents an opened project state.
+///     Represents an opened project state.
 /// </summary>
 public class ProjectInfo
 {
     /// <summary>
-    /// Raw binary path if opened from a binary file, or project file path.
+    ///     Raw binary path if opened from a binary file, or project file path.
     /// </summary>
     public string FilePath { get; set; } = string.Empty;
+
     /// <summary>
-    /// True if this is a .flowerproj project file (not raw binary).
+    ///     True if this is a .flowerproj project file (not raw binary).
     /// </summary>
     public bool IsProject { get; set; }
+
     /// <summary>
-    /// Path to the temp working directory for this project.
+    ///     Path to the temp working directory for this project.
     /// </summary>
     public string WorkingDirectory { get; set; } = string.Empty;
+
     /// <summary>
-    /// Whether the project has unsaved changes.
+    ///     Whether the project has unsaved changes.
     /// </summary>
     public bool IsDirty { get; set; }
+
     /// <summary>
-    /// Original binary file path (for projects only).
+    ///     Original binary file path (for projects only).
     /// </summary>
     public string? OriginalBinaryPath { get; set; }
+
     /// <summary>
-    /// Original binary file name (without directory).
-    /// Stored inside .flowerproj to avoid a punch-method discovery.
+    ///     Original binary file name (without directory).
+    ///     Stored inside .flowerproj to avoid a punch-method discovery.
     /// </summary>
     public string? OriginalFileName { get; set; }
 }
 
 public class ProjectService
 {
-    private static readonly byte[] MagicBytes = "FLOWERED"u8.ToArray();
-
     /// <summary>
-    /// Matches FlowerObjectHeader layout
+    ///     Matches FlowerObjectHeader layout
     /// </summary>
     private const int HeaderSize = 40;
 
-    private ProjectInfo? _currentProject;
+    private static readonly byte[] MagicBytes = "FLOWERED"u8.ToArray();
+
     private bool _disposed;
 
     /// <summary>
-    /// Current project info, or null if no project is open.
+    ///     Current project info, or null if no project is open.
     /// </summary>
-    public ProjectInfo? CurrentProject => _currentProject;
+    public ProjectInfo? CurrentProject { get; private set; }
 
     /// <summary>
-    /// Checks if a file is a SunFlower project.
-    /// Reads first 8 bytes and checks magic.
+    ///     Checks if a file is a SunFlower project.
+    ///     Reads first 8 bytes and checks magic.
     /// </summary>
     public bool IsProjectFile(string path)
     {
@@ -104,7 +109,7 @@ public class ProjectService
     }
 
     /// <summary>
-    /// Checks if a file is a raw binary (not a project file).
+    ///     Checks if a file is a raw binary (not a project file).
     /// </summary>
     public bool IsRawBinary(string path)
     {
@@ -112,15 +117,17 @@ public class ProjectService
     }
 
     /// <summary>
-    /// Checks if path has .flowerproj extension.
+    ///     Checks if path has .flowerproj extension.
     /// </summary>
-    public static bool HasProjectExtension(string path) =>
-        Path.GetExtension(path).Equals(".flowerproj", StringComparison.OrdinalIgnoreCase);
+    public static bool HasProjectExtension(string path)
+    {
+        return Path.GetExtension(path).Equals(".flowerproj", StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>
-    /// Opens a raw binary file: create a temp project for it.
-    /// The original file name is preserved so it can be stored
-    /// later in the .flowerproj header.
+    ///     Opens a raw binary file: create a temp project for it.
+    ///     The original file name is preserved so it can be stored
+    ///     later in the .flowerproj header.
     /// </summary>
     public void OpenRawBinary(string path)
     {
@@ -137,9 +144,9 @@ public class ProjectService
         // preserving its original file name
         var originalName = Path.GetFileName(path);
         var binaryInWorkingDir = Path.Combine(tempDir, originalName);
-        File.Copy(path, binaryInWorkingDir, overwrite: true);
+        File.Copy(path, binaryInWorkingDir, true);
 
-        _currentProject = new ProjectInfo
+        CurrentProject = new ProjectInfo
         {
             FilePath = path,
             IsProject = false,
@@ -151,10 +158,10 @@ public class ProjectService
     }
 
     /// <summary>
-    /// Opens a [.flowerproj] project file: extract to temp directory.
-    /// Reads the original file name from the header, then finds it
-    /// in the extracted files by exact name match.
-    /// Falls back to heuristic (largest file > 1 KB) for legacy projects.
+    ///     Opens a [.flowerproj] project file: extract to temp directory.
+    ///     Reads the original file name from the header, then finds it
+    ///     in the extracted files by exact name match.
+    ///     Falls back to heuristic (largest file > 1 KB) for legacy projects.
     /// </summary>
     public ProjectInfo OpenProject(string path)
     {
@@ -193,7 +200,7 @@ public class ProjectService
             fileStream.CopyTo(zipStream);
         }
 
-        ZipFile.ExtractToDirectory(zipPath, tempDirectory, overwriteFiles: true);
+        ZipFile.ExtractToDirectory(zipPath, tempDirectory, true);
         File.Delete(zipPath);
 
         // Locate the original binary by exact file name from header
@@ -202,10 +209,7 @@ public class ProjectService
         if (originalFileName != null)
         {
             var exactPath = Path.Combine(tempDirectory, originalFileName);
-            if (File.Exists(exactPath))
-            {
-                originalBinary = exactPath;
-            }
+            if (File.Exists(exactPath)) originalBinary = exactPath;
         }
 
         // Fallback for legacy projects (no file name stored):
@@ -228,7 +232,7 @@ public class ProjectService
             originalBinary ??= Directory.GetFiles(tempDirectory).FirstOrDefault();
         }
 
-        _currentProject = new ProjectInfo
+        CurrentProject = new ProjectInfo
         {
             FilePath = path,
             IsProject = true,
@@ -238,43 +242,43 @@ public class ProjectService
             OriginalFileName = originalFileName ?? Path.GetFileName(originalBinary)
         };
 
-        return _currentProject;
+        return CurrentProject;
     }
 
     /// <summary>
-    /// Writes a text file into the project working directory.
+    ///     Writes a text file into the project working directory.
     /// </summary>
     public async Task WriteTextAsync(string fileName, string content)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
-        var fullPath = Path.Combine(_currentProject.WorkingDirectory, fileName);
+        var fullPath = Path.Combine(CurrentProject.WorkingDirectory, fileName);
         await File.WriteAllTextAsync(fullPath, content);
-        _currentProject.IsDirty = true;
+        CurrentProject.IsDirty = true;
     }
     // public async Task WriteBinaryAsAsync(Window windowHost)
 
     /// <summary>
-    /// Writes binary data into the project working directory.
+    ///     Writes binary data into the project working directory.
     /// </summary>
     public async Task WriteBinaryAsync(string fileName, byte[] content)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
-        var fullPath = Path.Combine(_currentProject.WorkingDirectory, fileName);
+        var fullPath = Path.Combine(CurrentProject.WorkingDirectory, fileName);
         await File.WriteAllBytesAsync(fullPath, content);
-        _currentProject.IsDirty = true;
+        CurrentProject.IsDirty = true;
     }
 
     /// <summary>
-    /// Copies an external file into the project working directory.
-    /// Returns the full path of the copied file.
+    ///     Copies an external file into the project working directory.
+    ///     Returns the full path of the copied file.
     /// </summary>
     public void AddProjectFile(string sourcePath, string destFileName)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
         if (!File.Exists(sourcePath))
@@ -286,49 +290,49 @@ public class ProjectService
         if (destFileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             throw new ArgumentException("Destination file name contains invalid characters.", nameof(destFileName));
 
-        var destPath = Path.Combine(_currentProject.WorkingDirectory, destFileName);
+        var destPath = Path.Combine(CurrentProject.WorkingDirectory, destFileName);
         if (File.Exists(destPath))
             throw new InvalidOperationException($"A file named '{destFileName}' already exists in the project.");
 
-        File.Copy(sourcePath, destPath, overwrite: false);
-        _currentProject.IsDirty = true;
+        File.Copy(sourcePath, destPath, false);
+        CurrentProject.IsDirty = true;
     }
 
     /// <summary>
-    /// Copies a project file to an external destination path.
+    ///     Copies a project file to an external destination path.
     /// </summary>
     public async Task ExportProjectFileAsync(string fileName, string destinationPath)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
-        var sourcePath = Path.Combine(_currentProject.WorkingDirectory, fileName);
+        var sourcePath = Path.Combine(CurrentProject.WorkingDirectory, fileName);
         if (!File.Exists(sourcePath))
             throw new FileNotFoundException($"File '{fileName}' not found in the project.", sourcePath);
 
-        await Task.Run(() => File.Copy(sourcePath, destinationPath, overwrite: true));
+        await Task.Run(() => File.Copy(sourcePath, destinationPath, true));
     }
 
     /// <summary>
-    /// Returns true if the given file name (relative to working directory)
-    /// is the original binary.
+    ///     Returns true if the given file name (relative to working directory)
+    ///     is the original binary.
     /// </summary>
     public bool IsOriginalBinaryFile(string fileName)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             return false;
 
-        var currentName = Path.GetFileName(_currentProject.OriginalBinaryPath);
+        var currentName = Path.GetFileName(CurrentProject.OriginalBinaryPath);
         return string.Equals(currentName, fileName, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
-    /// Deletes a file from the project working directory.
-    /// Throws if attempting to delete the original binary.
+    ///     Deletes a file from the project working directory.
+    ///     Throws if attempting to delete the original binary.
     /// </summary>
     public void DeleteProjectFile(string fileName)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
         if (IsOriginalBinaryFile(fileName))
@@ -336,24 +340,24 @@ public class ProjectService
                 $"Cannot delete the original binary file '{fileName}'. " +
                 "This file is the primary analysis target.");
 
-        var fullPath = Path.Combine(_currentProject.WorkingDirectory, fileName);
+        var fullPath = Path.Combine(CurrentProject.WorkingDirectory, fileName);
 
         if (!File.Exists(fullPath))
             throw new FileNotFoundException($"File '{fileName}' not found in the project.");
 
         File.Delete(fullPath);
-        _currentProject.IsDirty = true;
+        CurrentProject.IsDirty = true;
     }
 
     /// <summary>
-    /// Renames a file in the project working directory.
-    /// If the file is the original binary, updates OriginalFileName
-    /// and OriginalBinaryPath accordingly.
-    /// Returns the new full path of the renamed file.
+    ///     Renames a file in the project working directory.
+    ///     If the file is the original binary, updates OriginalFileName
+    ///     and OriginalBinaryPath accordingly.
+    ///     Returns the new full path of the renamed file.
     /// </summary>
     public string RenameProjectFile(string oldFileName, string newFileName)
     {
-        if (_currentProject == null)
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
         if (string.IsNullOrWhiteSpace(newFileName))
@@ -362,8 +366,8 @@ public class ProjectService
         if (newFileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             throw new ArgumentException("New file name contains invalid characters.");
 
-        var oldPath = Path.Combine(_currentProject.WorkingDirectory, oldFileName);
-        var newPath = Path.Combine(_currentProject.WorkingDirectory, newFileName);
+        var oldPath = Path.Combine(CurrentProject.WorkingDirectory, oldFileName);
+        var newPath = Path.Combine(CurrentProject.WorkingDirectory, newFileName);
 
         if (!File.Exists(oldPath))
             throw new FileNotFoundException($"File '{oldFileName}' not found in the project.");
@@ -376,51 +380,48 @@ public class ProjectService
         // If the renamed file is the original binary, update the reference
         if (IsOriginalBinaryFile(oldFileName))
         {
-            _currentProject.OriginalBinaryPath = newPath;
-            _currentProject.OriginalFileName = newFileName;
+            CurrentProject.OriginalBinaryPath = newPath;
+            CurrentProject.OriginalFileName = newFileName;
         }
 
-        _currentProject.IsDirty = true;
+        CurrentProject.IsDirty = true;
         return newPath;
     }
 
     /// <summary>
-    /// Closes the current project and clean up cache.
+    ///     Closes the current project and clean up cache.
     /// </summary>
     public void CloseProject()
     {
-        if (_currentProject?.WorkingDirectory != null && Directory.Exists(_currentProject.WorkingDirectory))
-        {
+        if (CurrentProject?.WorkingDirectory != null && Directory.Exists(CurrentProject.WorkingDirectory))
             try
             {
-                Directory.Delete(_currentProject.WorkingDirectory, recursive: true);
+                Directory.Delete(CurrentProject.WorkingDirectory, true);
             }
             catch
             {
                 // Temp files cleanup is best-effort
             }
-        }
 
-        _currentProject = null;
+        CurrentProject = null;
     }
 
     /// <summary>
-    /// Saves the project to a .flowerproj file. If path is null,
-    /// overwrite the original project file.
-    ///
-    /// The temporary ZIP file is created in the system temp folder
-    /// (outside the working directory) to avoid file-locking conflicts
-    /// between ZipFile.CreateFromDirectory iterating over working directory
-    /// files and simultaneously writing the ZIP archive into the same folder.
+    ///     Saves the project to a .flowerproj file. If path is null,
+    ///     overwrite the original project file.
+    ///     The temporary ZIP file is created in the system temp folder
+    ///     (outside the working directory) to avoid file-locking conflicts
+    ///     between ZipFile.CreateFromDirectory iterating over working directory
+    ///     files and simultaneously writing the ZIP archive into the same folder.
     /// </summary>
     public async Task SaveProjectAsync(string? savePath = null)
     {
         // TODO: File format might be simplified to zip or completely secured (AES/RSA?)
-        
-        if (_currentProject == null)
+
+        if (CurrentProject == null)
             throw new InvalidOperationException("No project is open.");
 
-        var outputPath = savePath ?? _currentProject.FilePath;
+        var outputPath = savePath ?? CurrentProject.FilePath;
 
         // Create ZIP in the system temp folder, NOT inside WorkingDirectory.
         var tempZipDir = Path.Combine(Path.GetTempPath(), "SunFlower", "SaveTemp");
@@ -429,7 +430,7 @@ public class ProjectService
 
         try
         {
-            ZipFile.CreateFromDirectory(_currentProject.WorkingDirectory, zipPath);
+            ZipFile.CreateFromDirectory(CurrentProject.WorkingDirectory, zipPath);
 
             var zipBytes = await File.ReadAllBytesAsync(zipPath);
 
@@ -441,36 +442,33 @@ public class ProjectService
             var now = DateTime.UtcNow;
             var epoch = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var timestamp = (ulong)(now - epoch).TotalSeconds;
-            var fmtVer = Kernel.Services.FlowerCompatibility.GetForAllList()[0].Version;
+            var fmtVer = FlowerCompatibility.GetForAllList()[0].Version;
 
-            writer.Write(fmtVer.Major);           // 4 bytes -> version
-            writer.Write(fmtVer.Minor);           // 4 bytes -> revision
-            writer.Write(timestamp);              // 8 bytes -> created
-            writer.Write(timestamp);              // 8 bytes -> modified
+            writer.Write(fmtVer.Major); // 4 bytes -> version
+            writer.Write(fmtVer.Minor); // 4 bytes -> revision
+            writer.Write(timestamp); // 8 bytes -> created
+            writer.Write(timestamp); // 8 bytes -> modified
             writer.Write((ulong)zipBytes.Length); // 8 bytes -> containerSize
 
-            var fileName = _currentProject.OriginalFileName ?? string.Empty;
+            var fileName = CurrentProject.OriginalFileName ?? string.Empty;
             var fileNameBytes = Encoding.UTF8.GetBytes(fileName);
             writer.Write((ushort)fileNameBytes.Length); // 2 bytes
-            writer.Write(fileNameBytes);                // bytes...
+            writer.Write(fileNameBytes); // bytes...
 
             writer.Write(zipBytes);
 
-            _currentProject.IsDirty = false;
-            _currentProject.FilePath = outputPath;
-            _currentProject.IsProject = true;
+            CurrentProject.IsDirty = false;
+            CurrentProject.FilePath = outputPath;
+            CurrentProject.IsProject = true;
 
             if (string.IsNullOrEmpty(Path.GetExtension(outputPath)) ||
                 !Path.GetExtension(outputPath).Equals(".flowerproj", StringComparison.OrdinalIgnoreCase))
-            {
-                _currentProject.FilePath = outputPath;
-            }
+                CurrentProject.FilePath = outputPath;
         }
         finally
         {
             // Always clean up the temporary ZIP file
             if (File.Exists(zipPath))
-            {
                 try
                 {
                     File.Delete(zipPath);
@@ -479,7 +477,6 @@ public class ProjectService
                 {
                     // Best-effort cleanup
                 }
-            }
         }
     }
 
@@ -496,8 +493,8 @@ public class ProjectService
 internal static class StreamExtensions
 {
     /// <summary>
-    /// Reads exactly count bytes from the stream and returns them as a byte array.
-    /// Throws if the stream ends prematurely.
+    ///     Reads exactly count bytes from the stream and returns them as a byte array.
+    ///     Throws if the stream ends prematurely.
     /// </summary>
     public static byte[] ReadExactBytes(this Stream stream, int count)
     {
@@ -507,9 +504,11 @@ internal static class StreamExtensions
         {
             var read = stream.Read(buffer, offset, count - offset);
             if (read == 0)
-                throw new EndOfStreamException($"Unexpected end of stream @0x{stream.Position} (read {count - offset}/{count})");
+                throw new EndOfStreamException(
+                    $"Unexpected end of stream @0x{stream.Position} (read {count - offset}/{count})");
             offset += read;
         }
+
         return buffer;
     }
 }

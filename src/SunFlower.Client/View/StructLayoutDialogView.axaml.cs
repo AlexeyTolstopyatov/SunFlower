@@ -8,7 +8,6 @@
 // @creator: atolstopyatov2017@vk.com
 
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace SunFlower.Client.View;
 

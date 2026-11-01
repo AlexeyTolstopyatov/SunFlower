@@ -31,10 +31,7 @@ public class DialogService(Window mainWindow)
         dialogContent.DataContext = viewModel;
 
         // Inject DialogService into the ViewModel if it has the property
-        if (viewModel is DialogViewModel { DialogService: null } dialogVm)
-        {
-            dialogVm.DialogService = this;
-        }
+        if (viewModel is DialogViewModel { DialogService: null } dialogVm) dialogVm.DialogService = this;
 
         var popup = mainWindow.FindControl<Popup>("DialogContainer");
         var dialogLayer = mainWindow.FindControl<Border>("DialogLayer");
@@ -57,10 +54,7 @@ public class DialogService(Window mainWindow)
         dialogLayer.IsVisible = false;
 
         // Clear the reference to avoid memory leaks
-        if (viewModel is DialogViewModel dialog)
-        {
-            dialog.DialogService = null;
-        }
+        if (viewModel is DialogViewModel dialog) dialog.DialogService = null;
 
         return result is TResult typedResult
             ? typedResult
@@ -68,7 +62,7 @@ public class DialogService(Window mainWindow)
     }
 
     /// <summary>
-    /// Called by the ViewModel to close the dialog with a result.
+    ///     Called by the ViewModel to close the dialog with a result.
     /// </summary>
     public void CloseDialog(object? result = null)
     {

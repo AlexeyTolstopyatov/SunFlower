@@ -17,12 +17,12 @@ namespace SunFlower.Client.Service;
 
 public class JsonService<T>
 {
-    public List<T> Data { get; private set; } = [];
-
     private readonly JsonSerializerOptions _options = new()
     {
         WriteIndented = true
     };
+
+    public List<T> Data { get; private set; } = [];
 
     public async Task ReadAsync(string path)
     {

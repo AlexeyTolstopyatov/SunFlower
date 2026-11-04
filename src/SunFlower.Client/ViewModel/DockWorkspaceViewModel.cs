@@ -69,10 +69,9 @@ public partial class DockWorkspaceViewModel : ObservableObject
         leftTool.VisibleDockables!.Clear();
         
         leftTool.AddDocument(Explorer);
-        
         leftTool.ActiveDockable = Explorer;
-        
-        Explorer.OpenSelectedFileCommand.NotifyCanExecuteChanged(); // UPDATE M*THERF**R
+
+        Explorer.OpenSelectedFileCommand.NotifyCanExecuteChanged();
     }
 
     public IWorkspaceHost Host { get; }

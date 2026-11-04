@@ -16,10 +16,17 @@
         FontFamily="{Binding HexFontFamily}"
         FontSize="{Binding HexFontSize}"
         Document="{Binding BinaryDocument}">
+        
         <hex:HexEditor.Columns>
-            <hexr:OffsetColumn />
-            <hexr:HexColumn UseDynamicHeader="True" />
-            <hexr:AsciiColumn />
+            <hexr:OffsetColumn
+                IsVisible="{CompiledBinding ShowOffsetColumn}"/>
+            <hexr:HexColumn
+                IsVisible="{CompiledBinding ShowHexColumn}"
+                UseDynamicHeader="True" />
+            <hexr:BinaryColumn
+                IsVisible="{CompiledBinding ShowBinaryColumn}"/>
+            <hexr:AsciiColumn 
+                IsVisible="{CompiledBinding ShowAsciiColumn}"/>
         </hex:HexEditor.Columns>
     </hex:HexEditor>
 </UserControl>

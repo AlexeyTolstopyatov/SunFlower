@@ -14,28 +14,6 @@ using SunFlower.Client.Model;
 
 namespace SunFlower.Client.Service;
 
-// /// <summary>
-// /// Application settings model.
-// /// </summary>
-// public class AppSettings
-// {
-//     public string Language { get; set; } = "en";
-
-//     public bool ShowHexViewByDefault { get; set; } = false;
-//     public bool ShowLineNumbers { get; set; } = true;
-//     public bool WordWrap { get; set; } = false;
-//     public string FontFamily { get; set; } = "Consolas";
-//     public double FontSize { get; set; } = 13.0;
-//     public string Theme { get; set; } = "Dark"; // "Dark" | "Light" | "System"
-
-//     public bool AutoSaveOnExit { get; set; } = true;
-//     public bool ConfirmExit { get; set; } = true;
-//     public bool AutoReAnalyze { get; set; } = false;
-
-//     public int BinaryProbeSize { get; set; } = 8192;
-//     public double BinaryThreshold { get; set; } = 0.05;
-// }
-
 public class SettingsService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -72,6 +50,18 @@ public class SettingsService
     public SettingsModel Current { get; private set; }
 
     /// <summary>
+    ///     Fired whenever settings are changed (live) or saved, so open editors can
+    ///     re-apply fonts, column visibility and bytes-per-line on the fly.
+    /// </summary>
+    public event Action? SettingsChanged;
+
+    /// <summary>
+    ///     Notifies subscribers that settings have changed and open editors should
+    ///     re-apply the new values immediately.
+    /// </summary>
+    public void NotifySettingsChanged() => SettingsChanged?.Invoke();
+
+    /// <summary>
     ///     Load settings from disk. Creates defaults if file doesn't exist.
     /// </summary>
     private async Task LoadAsync()
@@ -91,6 +81,10 @@ public class SettingsService
             var json = await File.ReadAllTextAsync(_settingsPath);
             Current = JsonSerializer.Deserialize<SettingsModel>(json, JsonOptions) ??
                       new SettingsModel();
+
+            // Ensure font blocks always have defaults so the UI never binds to null.
+            Current.HexControl ??= new Font("Consolas", 16);
+            Current.TextControl ??= new Font("Droid Sans Mono", 13);
         }
         catch (Exception e)
         {
@@ -106,6 +100,7 @@ public class SettingsService
     {
         var json = JsonSerializer.Serialize(Current, JsonOptions);
         await File.WriteAllTextAsync(_settingsPath, json);
+        SettingsChanged?.Invoke();
     }
 
     private void DeleteCache(string path)

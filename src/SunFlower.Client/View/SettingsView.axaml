@@ -85,12 +85,10 @@
                         <Run
                             Foreground="{DynamicResource SecondaryTextBrush}"
                             Text="Setup of hex editor control" />
-                        <Run
-                            Text="restart is required" />
                     </TextBlock>
                 </Grid>
                 <Grid
-                    ColumnDefinitions="90, 160, Auto">
+                    ColumnDefinitions="90, 160, 60, 60">
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
@@ -100,12 +98,50 @@
                         Background="{StaticResource RegionBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         ItemsSource="{CompiledBinding InstalledFonts}"
-                        Text="{CompiledBinding Settings.HexControl.Family, FallbackValue='Family', Mode=TwoWay}"
+                        Text="{CompiledBinding HexFontFamily, FallbackValue='Family', Mode=TwoWay}"
                         Width="150" />
                     <TextBox
                         Grid.Column="2"
-                        Text="{CompiledBinding Settings.HexControl.Size, FallbackValue='Size', Mode=TwoWay}"
+                        Text="{CompiledBinding HexFontSizeText, FallbackValue='Size', Mode=TwoWay}"
                         Width="50" />
+                </Grid>
+                <Grid
+                    ColumnDefinitions="90, 160">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="Column Count"/>
+                    <TextBox
+                        Margin="5"
+                        Grid.Column="1"
+                        Text="{CompiledBinding HexBytesPerLineText, FallbackValue='Bytes/line', Mode=TwoWay}"
+                        Width="150"
+                        />
+                </Grid>
+                <Grid
+                    ColumnDefinitions="90, 160">
+                    <TextBlock
+                        Margin="0,5"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="Show" />
+                    <StackPanel
+                        Margin="5,5"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <CheckBox
+                            Content="Offset"
+                            IsChecked="{CompiledBinding HexShowOffsetColumn, Mode=TwoWay}" />
+                        <CheckBox
+                            Content="Hex"
+                            IsChecked="{CompiledBinding HexShowHexColumn, Mode=TwoWay}" />
+                        <CheckBox
+                            Content="Binary"
+                            IsChecked="{CompiledBinding HexShowBinaryColumn, Mode=TwoWay}" />
+                        <CheckBox
+                            Content="ASCII"
+                            IsChecked="{CompiledBinding HexShowAsciiColumn, Mode=TwoWay}" />
+                    </StackPanel>
                 </Grid>
             </StackPanel>
         </Border>
@@ -133,13 +169,11 @@
                         <Run
                             Foreground="{DynamicResource SecondaryTextBrush}"
                             Text="Text Editor parameters setup" />
-                        <Run
-                            Text="restart is required" />
                     </TextBlock>
                 </Grid>
                 <Grid
                     HorizontalAlignment="Left"
-                    ColumnDefinitions="90, 160, Auto">
+                    ColumnDefinitions="90, 160, 50">
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
@@ -148,12 +182,12 @@
                         Background="{StaticResource RegionBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         Grid.Column="1"
-                        Text="{CompiledBinding Settings.TextControl.Family, FallbackValue='Family', Mode=TwoWay}"
+                        Text="{CompiledBinding TextFontFamily, FallbackValue='Family', Mode=TwoWay}"
                         Width="150"
                         ItemsSource="{CompiledBinding InstalledFonts}" />
                     <TextBox
                         Grid.Column="2"
-                        Text="{CompiledBinding Settings.TextControl.Size, FallbackValue='Size', Mode=TwoWay}"
+                        Text="{CompiledBinding TextFontSizeText, FallbackValue='Size', Mode=TwoWay}"
                         Width="50" />
                 </Grid>
                 <Grid
@@ -188,8 +222,7 @@
             BorderBrush="{DynamicResource DockTabHoverBrush}"
             Background="{DynamicResource RegionBrush}"
             Margin="20,10">
-            <Grid
-                ColumnDefinitions="3*, *">
+            <Grid>
                 <StackPanel
                     Grid.Column="0">
                     <Button
@@ -221,17 +254,11 @@
                             </Flyout>
                         </Button.ContextFlyout>
                     </Button>
+                    <TextBlock
+                        IsVisible="{CompiledBinding FirstCacheCleared}"
+                        Foreground="#ff009b76"
+                        Text="{CompiledBinding Message, FallbackValue='All your codebase belongs to us'}" />
                 </StackPanel>
-
-                <Border
-                    Grid.Column="1">
-                    <StackPanel>
-                        <TextBlock
-                            IsVisible="{CompiledBinding FirstCacheCleared}"
-                            Foreground="#ff009b76"
-                            Text="{CompiledBinding Message, FallbackValue='ты че блять.'}" />
-                    </StackPanel>
-                </Border>
             </Grid>
         </Border>
     </WrapPanel>

@@ -41,6 +41,10 @@ public sealed class WorkspaceHost : IWorkspaceHost
 
         _factory.DockableAdded += (_, _) => OpenedDocumentsChanged?.Invoke(this, EventArgs.Empty);
         _factory.DockableClosed += (_, _) => OpenedDocumentsChanged?.Invoke(this, EventArgs.Empty);
+
+        // Re-apply fonts, column visibility and bytes-per-line to all open editors
+        // whenever settings change live (font/size, columns, bytes-per-line).
+        _settings.SettingsChanged += OnSettingsChanged;
     }
 
     public event EventHandler? OpenedDocumentsChanged;
@@ -114,10 +118,16 @@ public sealed class WorkspaceHost : IWorkspaceHost
             var (family, size) = ReadFontConfigurationBlock(_settings.Current.HexControl);
             doc.HexFontFamily = new FontFamily(family);
             doc.HexFontSize = size;
-            
+
+            doc.ShowOffsetColumn = _settings.Current.HexShowOffsetColumn;
+            doc.ShowHexColumn = _settings.Current.HexShowHexColumn;
+            doc.ShowBinaryColumn = _settings.Current.HexShowBinaryColumn;
+            doc.ShowAsciiColumn = _settings.Current.HexShowAsciiColumn;
+            doc.BytesPerLine = _settings.Current.HexBytesPerLine; // null => dynamic
+
             doc.CanClose = !isPermanent;
             doc.CanDrag = !isPermanent;
-            
+
             var bytes = await File.ReadAllBytesAsync(filePath);
             doc.BinaryDocument = new MemoryBinaryDocument(bytes);
         });
@@ -167,5 +177,34 @@ public sealed class WorkspaceHost : IWorkspaceHost
     public static (string Family, double Size) ReadFontConfigurationBlock(Font? cfg)
     {
         return (cfg?.Family ?? "Consolas", cfg?.Size > 0 ? cfg.Size : 13.0);
+    }
+
+    private void OnSettingsChanged()
+    {
+        var docs = _contentDock.VisibleDockables;
+        if (docs is null)
+            return;
+
+        var current = _settings.Current;
+
+        foreach (var doc in docs.OfType<HexDocumentViewModel>())
+        {
+            var hex = current.HexControl;
+            doc.HexFontFamily = new FontFamily(hex?.Family ?? "Consolas");
+            doc.HexFontSize = hex?.Size > 0 ? hex.Size : 16;
+
+            doc.ShowOffsetColumn = current.HexShowOffsetColumn;
+            doc.ShowHexColumn = current.HexShowHexColumn;
+            doc.ShowBinaryColumn = current.HexShowBinaryColumn;
+            doc.ShowAsciiColumn = current.HexShowAsciiColumn;
+            doc.BytesPerLine = current.HexBytesPerLine; // null => dynamic
+        }
+
+        foreach (var doc in docs.OfType<TextDocumentViewModel>())
+        {
+            var text = current.TextControl;
+            doc.TextFontFamily = new FontFamily(text?.Family ?? "Droid Sans Mono");
+            doc.TextFontSize = text?.Size > 0 ? text.Size : 13;
+        }
     }
 }

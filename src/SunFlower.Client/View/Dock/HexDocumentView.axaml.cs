@@ -16,6 +16,11 @@ public partial class HexDocumentView : UserControl
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is HexDocumentViewModel vm)
+        {
             vm.Editor = Editor;
+
+            // Apply pending bytes-per-line (fixed or dynamic) now that the editor exists.
+            Editor.HexView.BytesPerLine = vm.BytesPerLine;
+        }
     }
 }

@@ -22,7 +22,29 @@ public partial class HexDocumentViewModel : FileDocument
 
     [ObservableProperty] private double _hexFontSize;
 
+    /// <summary>
+    ///     Visibility of the individual hex editor columns. Bound from the view.
+    /// </summary>
+    [ObservableProperty] private bool _showOffsetColumn = true;
+
+    [ObservableProperty] private bool _showHexColumn = true;
+
+    [ObservableProperty] private bool _showBinaryColumn = true;
+
+    [ObservableProperty] private bool _showAsciiColumn;
+
+    /// <summary>
+    ///     Fixed number of bytes per line, or null for dynamic/automatic layout.
+    /// </summary>
+    [ObservableProperty] private int? _bytesPerLine;
+
     public HexEditor? Editor { get; set; }
+
+    partial void OnBytesPerLineChanged(int? value)
+    {
+        if (Editor is not null)
+            Editor.HexView.BytesPerLine = value;
+    }
 
     /// <summary>
     ///     Jumps the caret to the given byte offset in the HexEditor and brings it into view.
@@ -65,7 +87,7 @@ public partial class HexDocumentViewModel : FileDocument
 
         var buffer = new byte[length];
 
-        BinaryDocument.ReadBytes(start, buffer); // <-- it should be worked
+        BinaryDocument.ReadBytes(start, buffer);
         return buffer;
     }
 }

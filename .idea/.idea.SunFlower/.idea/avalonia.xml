@@ -19,6 +19,10 @@
         <entry key="src/SunFlower.Client/View/BytesDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DisassemblerDialog.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DisassemblerDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/Dock/ExplorerDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/Dock/HexDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/Dock/MarkdownDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/Dock/TextDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DockExplorerDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DockExplorerView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/DockTemplates/ExplorerView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
@@ -34,6 +38,7 @@
         <entry key="src/SunFlower.Client/View/GoToAddressDialogView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/HexDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/MainWindow.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
+        <entry key="src/SunFlower.Client/View/MarkdownDocumentView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/PluginView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/PluginsView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />
         <entry key="src/SunFlower.Client/View/RecentFilesView.axaml" value="src/SunFlower.Client/SunFlower.Client.csproj" />

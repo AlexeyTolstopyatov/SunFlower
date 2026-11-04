@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="300"
-             x:Class="SunFlower.Client.View.TextDocumentView"
+             x:Class="SunFlower.Client.View.Dock.TextDocumentView"
              x:DataType="{x:Type dock:TextDocumentViewModel}">
     <edit:TextEditor
         x:Name="Editor"

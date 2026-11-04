@@ -2,10 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:view="clr-namespace:SunFlower.Client.View"
              xmlns:client="clr-namespace:SunFlower.Client"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
              x:DataType="{x:Type client:App}"
              x:Class="SunFlower.Client.App">
     <Application.Resources>
         <ResourceDictionary>
+            <!-- Application metadata -->
+            <system:String x:Key="AppVersion">5.0.0-rc</system:String>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Drawing/CloudsBrush.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -24,25 +30,24 @@
     </Application.Styles>
 
     <Application.DataTemplates>
-        <!-- View model -> view resolution for docking content -->
-        <!-- <DataTemplate  -->
+        <!-- <DataTemplate -->
         <!--     DataType="{x:Type dock:MarkdownDocumentViewModel}"> -->
-        <!--     <md:MarkdownScrollViewer  -->
-        <!--         Margin="10"  -->
+        <!--     <mdxaml:MarkdownScrollViewer -->
+        <!--         Margin="10" -->
         <!--         Markdown="{Binding Content}"> -->
-        <!--         <md:MarkdownScrollViewer.Styles> -->
+        <!--         <mdxaml:MarkdownScrollViewer.Styles> -->
         <!--             <StyleInclude Source="/Drawing/DocumentTheme.axaml" /> -->
-        <!--         </md:MarkdownScrollViewer.Styles> -->
-        <!--     </md:MarkdownScrollViewer> -->
+        <!--         </mdxaml:MarkdownScrollViewer.Styles> -->
+        <!--     </mdxaml:MarkdownScrollViewer> -->
         <!-- </DataTemplate> -->
-        <!-- <DataTemplate  -->
+        <!-- <DataTemplate -->
         <!--     DataType="{x:Type dock:HexDocumentViewModel}"> -->
-        <!--     <view:HexDocumentView  -->
+        <!--     <view:HexDocumentView -->
         <!--         FontFamily="{CompiledBinding HexFontFamily}" -->
         <!--         FontSize="{CompiledBinding HexFontSize}"/> -->
         <!-- </DataTemplate> -->
         <!-- <DataTemplate DataType="{x:Type dock:TextDocumentViewModel}"> -->
-        <!--     <view:TextDocumentView  -->
+        <!--     <view:TextDocumentView -->
         <!--         FontFamily="{CompiledBinding TextFontFamily}" -->
         <!--         FontSize="{CompiledBinding TextFontSize}"/> -->
         <!-- </DataTemplate> -->
@@ -54,7 +59,7 @@
         <!-- <DataTemplate DataType="{x:Type vm:ExecuteDialogViewModel}"> -->
         <!--     <view:ExecuteDialogView /> -->
         <!-- </DataTemplate> -->
-        <!-- -->
-        <view:ViewLocator />
+        
+        <view:ViewLocator/>
     </Application.DataTemplates>
 </Application>

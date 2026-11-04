@@ -76,8 +76,8 @@ public sealed class WorkspaceHost : IWorkspaceHost
 
         // Open the *produced* result file (e.g. <target>_<plugin>.md),
         // not the original target that was analyzed.
-        var resultPath = result.FilePath;
 
+        var resultPath = result.FilePath;
         if (result.IsMarkdown)
             await OpenMarkdownAsync(resultPath);
         else if (result.IsAssembly)
@@ -90,9 +90,8 @@ public sealed class WorkspaceHost : IWorkspaceHost
     /// <param name="filePath">opens for a given file </param>
     /// <param name="isPermanent"></param>
     /// <returns></returns>
-    private Task OpenTextAsync(string filePath, bool isPermanent = false)
-    {
-        return GetOrCreateAsync<TextDocumentViewModel>(filePath, "Text", async doc =>
+    private Task OpenTextAsync(string filePath, bool isPermanent = false) =>
+        GetOrCreateAsync<TextDocumentViewModel>(filePath, "Text", async doc =>
         {
             var (family, size) = ReadFontConfigurationBlock(_settings.Current.TextControl);
             doc.TextFontFamily = new FontFamily(family);
@@ -104,14 +103,13 @@ public sealed class WorkspaceHost : IWorkspaceHost
             doc.TextDocument = new TextDocument(
                 await File.ReadAllTextAsync(filePath));
         });
-    }
+
     /// <summary> Opens hex tab </summary>
     /// <param name="filePath"></param>
     /// <param name="isPermanent">Can tab miss a move and close permissions</param>
     /// <returns></returns>
-    private Task OpenHexAsync(string filePath, bool isPermanent = false)
-    {
-        return GetOrCreateAsync<HexDocumentViewModel>(filePath, "Hex", async doc =>
+    private Task OpenHexAsync(string filePath, bool isPermanent = false) =>
+        GetOrCreateAsync<HexDocumentViewModel>(filePath, "Hex", async doc =>
         {
             var (family, size) = ReadFontConfigurationBlock(_settings.Current.HexControl);
             doc.HexFontFamily = new FontFamily(family);
@@ -123,11 +121,9 @@ public sealed class WorkspaceHost : IWorkspaceHost
             var bytes = await File.ReadAllBytesAsync(filePath);
             doc.BinaryDocument = new MemoryBinaryDocument(bytes);
         });
-    }
 
-    private Task OpenMarkdownAsync(string filePath, bool isPermanent = false)
-    {
-        return GetOrCreateAsync<MarkdownDocumentViewModel>(filePath, "Page",
+    private Task OpenMarkdownAsync(string filePath, bool isPermanent = false) =>
+        GetOrCreateAsync<MarkdownDocumentViewModel>(filePath, "Page",
             async doc =>
             {
                 doc.CanDrag = !isPermanent;
@@ -135,7 +131,6 @@ public sealed class WorkspaceHost : IWorkspaceHost
 
                 doc.Content = await File.ReadAllTextAsync(filePath);
             });
-    }
 
     private async Task<T> GetOrCreateAsync<T>(
         string filePath, string suffix, Func<T, Task> populate)
@@ -160,7 +155,7 @@ public sealed class WorkspaceHost : IWorkspaceHost
         };
 
         doc.FilePath = filePath;
-        doc.Context = doc;
+        //doc.Context = doc;
         doc.CanFloat = false;
 
         await populate(doc);

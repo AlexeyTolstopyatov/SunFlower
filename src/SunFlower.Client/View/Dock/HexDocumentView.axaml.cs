@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SunFlower.Client.ViewModel.Dock;
 
-namespace SunFlower.Client.View;
+namespace SunFlower.Client.View.Dock;
 
 public partial class HexDocumentView : UserControl
 {

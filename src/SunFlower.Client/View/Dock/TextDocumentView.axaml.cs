@@ -6,7 +6,7 @@ using Avalonia.Interactivity;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
 
-namespace SunFlower.Client.View;
+namespace SunFlower.Client.View.Dock;
 
 public partial class TextDocumentView : UserControl
 {

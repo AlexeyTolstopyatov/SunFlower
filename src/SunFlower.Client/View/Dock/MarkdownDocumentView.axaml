@@ -1,0 +1,17 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SunFlower.Client.View.Dock.MarkdownDocumentView"
+             x:DataType="{x:Type dock:MarkdownDocumentViewModel}">
+    <mdxaml:MarkdownScrollViewer
+        Margin="10"
+        Markdown="{Binding Content}">
+        <mdxaml:MarkdownScrollViewer.Styles>
+            <StyleInclude Source="/Drawing/DocumentTheme.axaml" />
+        </mdxaml:MarkdownScrollViewer.Styles>
+    </mdxaml:MarkdownScrollViewer>
+</UserControl>

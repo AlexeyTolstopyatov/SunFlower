@@ -7,7 +7,7 @@
 
 using Avalonia.Controls;
 
-namespace SunFlower.Client.View;
+namespace SunFlower.Client.View.Dock;
 
 public partial class ExplorerDocumentView : UserControl
 {

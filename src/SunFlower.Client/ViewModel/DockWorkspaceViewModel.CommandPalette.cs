@@ -90,7 +90,7 @@ public partial class DockWorkspaceViewModel
             await Explorer.RefreshAsync();
 
             var newPath = Path.Combine(_workspaceService.CurrentProject.WorkingDirectory, destFileName);
-            await Host.OpenAsync(newPath, false);
+            await Host.OpenAsync(newPath);
         }
         catch (Exception ex)
         {

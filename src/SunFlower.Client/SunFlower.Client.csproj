@@ -46,10 +46,6 @@
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Update="View\ExplorerDocumentView.axaml.cs">
-            <DependentUpon>DockExplorerView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="View\MainWindow.axaml.cs">
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
@@ -65,6 +61,22 @@
         <Compile Update="View\DockWorkspaceView.axaml.cs">
             <DependentUpon>DockingWorkspaceView.axaml</DependentUpon>
             <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="View\Dock\MarkdownDocumentView.axaml.cs">
+          <DependentUpon>MarkdownDocumentView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="View\Dock\HexDocumentView.axaml.cs">
+          <DependentUpon>HexDocumentView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="View\Dock\TextDocumentView.axaml.cs">
+          <DependentUpon>TextDocumentView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="View\Dock\ExplorerDocumentView.axaml.cs">
+          <DependentUpon>ExplorerDocumentView.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
     <ItemGroup>

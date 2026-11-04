@@ -1,4 +1,3 @@
-// SunFlower.Client.ViewModel.Dock/ProjectExplorerViewModel.cs
 
 using System;
 using System.Collections.ObjectModel;
@@ -20,8 +19,8 @@ public partial class ExplorerDocumentViewModel : FileDocument
     private readonly ProjectService? _projectService;
 
     private bool _initialOpenPending = true;
+    
     [ObservableProperty] private bool _isBusy;
-
     [ObservableProperty] private ProjectFileViewModel? _selectedFile;
 
     public ExplorerDocumentViewModel(
@@ -42,32 +41,22 @@ public partial class ExplorerDocumentViewModel : FileDocument
     }
 
     public ObservableCollection<ProjectFileViewModel> ProjectFiles { get; } = [];
-    public ObservableCollection<FlowerData> AvailableFlowers { get; } = [];
-
+    
     private async Task InitializeAsync()
     {
         try
         {
-            LoadPlugins();
             await RefreshAsync();
+
+            OpenSelectedFileCommand.CanExecute(true);
+            OpenSelectedFileCommand.NotifyCanExecuteChanged();
         }
         catch (Exception ex)
         {
             await Console.Error.WriteLineAsync($"[Explorer] init failed: {ex}");
         }
     }
-
-    private void LoadPlugins()
-    {
-        AvailableFlowers.Clear();
-        
-        if (_pluginService is null || !_pluginService.IsInitialized) 
-            return;
-        
-        foreach (var flower in _pluginService.FlowerCollection)
-            AvailableFlowers.Add(flower);
-    }
-
+    
     [RelayCommand]
     public async Task RefreshAsync()
     {
@@ -107,48 +96,31 @@ public partial class ExplorerDocumentViewModel : FileDocument
         // Init: open the first file of the freshly opened project.
         if (_initialOpenPending && SelectedFile is null && ProjectFiles.Count > 0)
         {
-            SelectedFile = ProjectFiles[0];
-            
-            await OpenSelectedFileAsync(true);
+            SelectedFile = ProjectFiles.First();
+            await OpenSelectedFilePermanentAsync(true);
         }
 
         _initialOpenPending = false;
     }
 
+    /// <summary>
+    ///     OpenSelectedFilePermanentAsync uses optional bool argument
+    /// </summary>
     [RelayCommand]
-    private async Task OpenSelectedFileAsync(bool permanent = false)
+    private async Task OpenSelectedFileAsync() => await OpenSelectedFilePermanentAsync();
+
+    private async Task OpenSelectedFilePermanentAsync(bool permanent = false)
     {
-        if (SelectedFile is null || _host is null) return;
+        if (SelectedFile is null) 
+            return;
+        
         try
         {
-            await _host.OpenAsync(SelectedFile.FullPath, permanent);
+            await _host!.OpenAsync(SelectedFile.FullPath, permanent);
         }
         catch (Exception ex)
         {
-            await Console.Error.WriteLineAsync($"[Explorer] open '{SelectedFile}' failed: {ex}");
-        }
-    }
-
-    [RelayCommand]
-    private async Task RunPluginAsync(FlowerData? flower)
-    {
-        if (flower is null || SelectedFile is null || _host is null) return;
-
-        try
-        {
-            IsBusy = true;
-            await _host.ExecuteFlowerAsync(flower, SelectedFile.FullPath);
-
-            // The plugin may have written a result file - refresh the tree.
-            await RefreshAsync();
-        }
-        catch (Exception ex)
-        {
-            await Console.Error.WriteLineAsync($"[Explorer] plugin run failed: {ex}");
-        }
-        finally
-        {
-            IsBusy = false;
+            await Console.Error.WriteLineAsync($"[Explorer] open \"{SelectedFile}\" failed: {ex}");
         }
     }
 }

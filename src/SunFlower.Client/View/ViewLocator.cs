@@ -8,6 +8,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SunFlower.Client.View;
@@ -17,21 +18,20 @@ public class ViewLocator : IDataTemplate
     public Control Build(object? data)
     {
         if (data is null)
-            return new TextBlock { Text = "<null>" };
+        {
+            return new TextBlock { Text = "ViewModel dereference is <null>", Foreground = SolidColorBrush.Parse("#FFFF0000") };
+        }
 
-        var type = data.GetType();
+        var name = data.GetType().FullName!.Replace("ViewModel", "View");
+        var type = Type.GetType(name);
 
-        var viewType = type.Namespace?.Replace("ViewModel", "View") + "." +
-                       type.Name.Replace("ViewModel", "View");
-        var typeOfView = Type.GetType(viewType);
-
-        if (typeOfView == null)
-            return new TextBlock { Text = $"The {viewType} not found" };
-
-        if (!typeOfView.IsSubclassOf(typeof(Window)))
-            return (Control)Activator.CreateInstance(typeOfView)!;
-
-        return new TextBlock { Text = $"The {viewType} initialized" };
+        if (type == null) 
+            return new TextBlock { Text = "Not Found: " + name };
+        
+        var control = (Control)Activator.CreateInstance(type)!;
+    
+        control.DataContext = data; 
+        return control;
     }
 
     public bool Match(object? data)

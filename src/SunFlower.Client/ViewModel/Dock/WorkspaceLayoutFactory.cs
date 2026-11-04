@@ -29,16 +29,16 @@ public class WorkspaceLayoutFactory : Factory
             CanDrag = true,
             CanDrop = true,
             VisibleDockables = CreateList<IDockable>(
-                new Document
-                {
-                    Id = "SolutionExplorer",
-                    Title = "Solution Explorer",
-                    CanDrag = true,
-                    CanDrop = true,
-                    CanFloat = false,
-                    CanDockAsDocument = true,
-                    CanPin = true
-                }
+                // new Document
+                // {
+                //     Id = "SolutionExplorer",
+                //     Title = "Solution Explorer",
+                //     CanDrag = true,
+                //     CanDrop = true,
+                //     CanFloat = false,
+                //     CanDockAsDocument = true,
+                //     CanPin = true
+                // }
             )
         };
 
@@ -47,9 +47,7 @@ public class WorkspaceLayoutFactory : Factory
             Id = DocumentsId,
             CanDrag = true,
             CanDrop = true,
-            VisibleDockables = CreateList<IDockable>(
-            
-            )
+            VisibleDockables = CreateList<IDockable>()
         };
         var mainLayout = new ProportionalDock
         {

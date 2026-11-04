@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -14,6 +15,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
 using Dock.Model.Core;
+using Dock.Model.Mvvm.Controls;
 using SunFlower.Client.Model;
 using SunFlower.Client.Service;
 using SunFlower.Client.ViewModel.Dock;
@@ -48,26 +50,29 @@ public partial class DockWorkspaceViewModel : ObservableObject
         Layout = _factory.CreateLayout();
         _factory.InitLayout(Layout);
 
-        var contentDock = FindDock<IDocumentDock>(Layout, WorkspaceLayoutFactory.DocumentsId) ??
+        var contentDock = FindDock<DocumentDock>(Layout, WorkspaceLayoutFactory.DocumentsId) ??
                           throw new InvalidOperationException("ContentDock missing from layout");
 
         var fe = new FlowerExecutable(analysisService);
         Host = new WorkspaceHost(_factory, contentDock, fe, settingsService);
-
-
-        // Compose explorer, host it in the left dock
+        
         Explorer = new ExplorerDocumentViewModel(
             Host,
             workspaceService.ProjectService,
             _pluginService
         );
 
-        var leftTool = FindDock<IDock>(Layout, WorkspaceLayoutFactory.LeftToolId) ??
-                       throw new InvalidOperationException("LeftTool missing from layout");
-
+        var leftTool = 
+            FindDock<DocumentDock>(Layout, WorkspaceLayoutFactory.LeftToolId) ??
+            throw new InvalidOperationException("LeftTool missing from layout");
+        
         leftTool.VisibleDockables!.Clear();
-        leftTool.VisibleDockables.Add(Explorer);
+        
+        leftTool.AddDocument(Explorer);
+        
         leftTool.ActiveDockable = Explorer;
+        
+        Explorer.OpenSelectedFileCommand.NotifyCanExecuteChanged(); // UPDATE M*THERF**R
     }
 
     public IWorkspaceHost Host { get; }
@@ -99,7 +104,6 @@ public partial class DockWorkspaceViewModel : ObservableObject
         var items = new List<CommandPaletteItem>();
 
         var hasProject = _workspaceService.CurrentProject is not null;
-
         if (hasProject)
         {
             items.Add(new CommandPaletteItem

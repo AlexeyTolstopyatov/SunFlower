@@ -25,7 +25,6 @@ public interface IWorkspaceHost
     /// </summary>
     Task ExecuteFlowerAsync(FlowerData flower, string filePath);
 
-    /// <summaies that working set is changed
-    /// </summary>
+    /// <summary> that working set is changed </summary>
     event EventHandler? OpenedDocumentsChanged;
 }

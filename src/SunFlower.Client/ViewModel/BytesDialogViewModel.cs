@@ -38,11 +38,11 @@ public sealed partial class BytesDialogViewModel : DialogViewModel
 
     [ObservableProperty] private string _title = "Bytes Converter";
 
-    public BytesDialogViewModel(FontFamily? font, double? size, byte[]? selectedBytes = null)
+    public BytesDialogViewModel(FontFamily font, double size, byte[]? selectedBytes = null)
     {
         _bytes = selectedBytes ?? [];
-        _font = font ?? new FontFamily("Consolas");
-        _size = size ?? 13.0;
+        _font = font;
+        _size = size;
 
         UpdateBytesInfo();
         HexDump = BuildHexDump(_bytes);

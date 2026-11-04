@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
+             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
+             x:Name="Root" x:Class="SunFlower.Client.View.Dock.ExplorerDocumentView"
+             x:DataType="dock:ExplorerDocumentViewModel">
+    <Border
+        BorderBrush="{DynamicResource DockAccentBrush}"
+        BorderThickness="3"
+        Margin="20"
+        Background="{StaticResource CloudTileBrush}"
+        Padding="10">
+        <Grid
+            RowDefinitions="Auto,*">
+            <ProgressBar
+                Grid.Row="0"
+                Height="3"
+                IsIndeterminate="True"
+                IsVisible="{Binding IsBusy}" />
+
+            <ListBox
+                BorderBrush="Transparent"
+                Background="Transparent"
+                Grid.Row="1"
+                x:Name="ProjectFilesList"
+                ItemsSource="{Binding ProjectFiles}"
+                SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate
+                        x:DataType="vm:ProjectFileViewModel">
+                        <Grid 
+                            Background="Transparent">
+                            <TextBlock 
+                                Text="{Binding FileName}" />
+                            <Interaction.Behaviors>
+                                <EventTrigger
+                                    EventName="DoubleTapped">
+                                    <InvokeCommandAction
+                                        Command="{Binding #Root.((dock:ExplorerDocumentViewModel)DataContext).OpenSelectedFileCommand}" />
+                                </EventTrigger>
+                            </Interaction.Behaviors>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Border>
+</UserControl>

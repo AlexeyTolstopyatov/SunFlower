@@ -31,7 +31,7 @@
                     <TextBlock Text="SunFlower" />
                     <TextBlock
                         Foreground="{StaticResource SecondaryTextBrush}"
-                        Text="{Binding Version, FallbackValue='0.0.0'}" />
+                        Text="{StaticResource AppVersion}" />
                 </StackPanel>
             </Grid>
 

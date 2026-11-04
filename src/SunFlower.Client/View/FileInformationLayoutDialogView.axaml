@@ -8,39 +8,61 @@
              x:DataType="{x:Type vm:FileInformationLayoutDialogViewModel}">
     <StackPanel
         Spacing="5">
+        <Interaction.Behaviors>
+            <KeyTrigger
+                Key="Escape">
+                <InvokeCommandAction
+                    Command="{CompiledBinding ExitCommand}"/>
+            </KeyTrigger>
+        </Interaction.Behaviors>
         <TextBlock
             FontWeight="Bold"
             FontSize="21"
             TextWrapping="WrapWithOverflow"
             Text="{Binding FlowerFileInfo.Name, FallbackValue='File'}" />
-
+        <Border
+            Margin="10"
+            CornerRadius="6"
+            BorderBrush="{DynamicResource BorderBrush}">
+            <StackPanel>
+                <ProgressBar 
+                    IsIndeterminate="True" 
+                    IsVisible="{Binding IsFileSystemBusy}" />
+                <ItemsControl 
+                    ItemsSource="{Binding FileSystemRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid 
+                                ColumnDefinitions="160,*">
+                                <TextBlock 
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Text="{Binding Key}"/>
+                                <SelectableTextBlock 
+                                    Grid.Column="1" 
+                                    Text="{Binding Value}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+        <Separator/>
         <Border
             Margin="10"
             CornerRadius="6"
             BorderBrush="{DynamicResource BorderBrush}">
             <Grid
-                ColumnSpacing="10"
-                ColumnDefinitions="Auto,Auto">
+                ColumnDefinitions="160,Auto">
                 <StackPanel>
-                    <TextBlock
-                        Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="File Size" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
                         Text="Defined Type" />
                     <TextBlock
                         Foreground="{DynamicResource SecondaryTextBrush}"
-                        Text="Binary (hex) definition" />
+                        Text="Binary Definition" />
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1">
-                    <SelectableTextBlock
-                        FontSize="14"
-                        FontFamily="Sans Serif"
-                        Text="{CompiledBinding 
-                        FlowerFileInfo.Size, 
-                        FallbackValue='?',
-                        StringFormat={}{0} KiB }" />
                     <SelectableTextBlock
                         FontSize="14"
                         FontFamily="Sans Serif"
@@ -49,13 +71,35 @@
                         FontSize="14"
                         FontFamily="Sans Serif"
                         Text="{CompiledBinding FlowerFileInfo.Sign, FallbackValue='?'}" />
-                    <Button
-                        Content="Exit"
-                        HotKey="Escape"
-                        Command="{CompiledBinding ExitCommand}" />
                 </StackPanel>
             </Grid>
         </Border>
         <Separator />
+        <Border
+            Margin="10"
+            CornerRadius="6"
+            BorderBrush="{DynamicResource BorderBrush}">
+            <StackPanel>
+                <ProgressBar 
+                    IsIndeterminate="True" 
+                    IsVisible="{Binding IsStringsBusy}" />
+                <ItemsControl 
+                    ItemsSource="{Binding StringsRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid 
+                                ColumnDefinitions="160,*">
+                                <TextBlock 
+                                    Foreground="{DynamicResource SecondaryTextBrush}"
+                                    Text="{Binding Key}"/>
+                                <SelectableTextBlock 
+                                    Grid.Column="1" 
+                                    Text="{Binding Value}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
     </StackPanel>
 </UserControl>

@@ -1,6 +1,6 @@
 ﻿{
   "theme": 0,
-  "text_control_theme": 0,
+  "text_control_theme": 12,
   "text_control": {
     "family": "Droid Sans Mono",
     "size": 13
@@ -8,5 +8,10 @@
   "hex_control": {
     "family": "Consolas",
     "size": 16
-  }
+  },
+  "hex_bytes_per_line": 16,
+  "hex_show_offset_column": true,
+  "hex_show_hex_column": true,
+  "hex_show_binary_column": false,
+  "hex_show_ascii_column": true
 }

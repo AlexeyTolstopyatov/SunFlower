@@ -147,6 +147,8 @@ public partial class DockWorkspaceViewModel
         try
         {
             var vm = new FileInformationLayoutDialogViewModel(path);
+            await vm.LoadAsync();
+            
             await _dialogService.ShowDialogAsync<FileInformationLayoutDialogViewModel, object?>(vm);
         }
         catch (Exception ex)

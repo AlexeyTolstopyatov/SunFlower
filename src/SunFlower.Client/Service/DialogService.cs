@@ -43,7 +43,8 @@ public class DialogService(Window mainWindow)
         // Set content to the FlyoutPresenter
         flyoutPresenter.Content = dialogContent;
 
-        // Show the dialog
+        // Show the dialog – the window itself decides whether to animate (see
+        // WorkspaceWindow.DialogContainerOpened / DialogContainerClosed).
         dialogLayer.IsVisible = true;
         popup.IsOpen = true;
 
@@ -52,6 +53,7 @@ public class DialogService(Window mainWindow)
         // Clean up
         flyoutPresenter.Content = null;
         dialogLayer.IsVisible = false;
+        popup.IsOpen = false;
 
         // Clear the reference to avoid memory leaks
         if (viewModel is DialogViewModel dialog) dialog.DialogService = null;

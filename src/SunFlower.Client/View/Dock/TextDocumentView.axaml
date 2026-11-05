@@ -12,6 +12,7 @@
     <edit:TextEditor
         x:Name="Editor"
         Margin="10"
+        ShowLineNumbers="{CompiledBinding TextShowLineNumbers}"
         FontFamily="{Binding TextFontFamily}"
         FontSize="{Binding TextFontSize}"
         Document="{Binding TextDocument}" />

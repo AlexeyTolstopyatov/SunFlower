@@ -36,7 +36,7 @@ public partial class SettingsViewModel : ObservableObject
         _themeService = themeService;
 
         Settings = settingsService.Current;
-        _installedFonts = FontManager
+        InstalledFonts = FontManager
             .Current
             .SystemFonts
             .ToArray();
@@ -44,13 +44,13 @@ public partial class SettingsViewModel : ObservableObject
 
     public string? HexFontFamily
     {
-        get => _settings.HexControl?.Family;
+        get => Settings.HexControl?.Family;
         set
         {
-            if (_settings.HexControl is null)
-                _settings.HexControl = new Font(value ?? "Consolas", _settings.HexControl?.Size ?? 16);
+            if (Settings.HexControl is null)
+                Settings.HexControl = new Font(value ?? "Consolas", Settings.HexControl?.Size ?? 16);
             else
-                _settings.HexControl.Family = value;
+                Settings.HexControl.Family = value;
 
             OnPropertyChanged();
             _settingsService.NotifySettingsChanged();
@@ -59,16 +59,16 @@ public partial class SettingsViewModel : ObservableObject
 
     public string? HexFontSizeText
     {
-        get => _settings.HexControl?.Size.ToString(CultureInfo.InvariantCulture) ?? 
+        get => Settings.HexControl?.Size.ToString(CultureInfo.InvariantCulture) ?? 
                string.Empty;
         set
         {
             if (double.TryParse(value, out var size) && size > 0)
             {
-                if (_settings.HexControl is null)
-                    _settings.HexControl = new Font("Consolas", size);
+                if (Settings.HexControl is null)
+                    Settings.HexControl = new Font("Consolas", size);
                 else
-                    _settings.HexControl.Size = size;
+                    Settings.HexControl.Size = size;
             }
 
             OnPropertyChanged();
@@ -78,13 +78,13 @@ public partial class SettingsViewModel : ObservableObject
 
     public string? TextFontFamily
     {
-        get => _settings.TextControl?.Family;
+        get => Settings.TextControl?.Family;
         set
         {
-            if (_settings.TextControl is null)
-                _settings.TextControl = new Font(value ?? "Droid Sans Mono", _settings.TextControl?.Size ?? 13);
+            if (Settings.TextControl is null)
+                Settings.TextControl = new Font(value ?? "Droid Sans Mono", Settings.TextControl?.Size ?? 13);
             else
-                _settings.TextControl.Family = value;
+                Settings.TextControl.Family = value;
 
             OnPropertyChanged();
             _settingsService.NotifySettingsChanged();
@@ -93,16 +93,16 @@ public partial class SettingsViewModel : ObservableObject
 
     public string? TextFontSizeText
     {
-        get => _settings.TextControl?.Size.ToString(CultureInfo.InvariantCulture) ?? 
+        get => Settings.TextControl?.Size.ToString(CultureInfo.InvariantCulture) ?? 
                string.Empty;
         set
         {
             if (double.TryParse(value, out var size) && size > 0)
             {
-                if (_settings.TextControl is null)
-                    _settings.TextControl = new Font("Droid Sans Mono", size);
+                if (Settings.TextControl is null)
+                    Settings.TextControl = new Font("Droid Sans Mono", size);
                 else
-                    _settings.TextControl.Size = size;
+                    Settings.TextControl.Size = size;
             }
 
             OnPropertyChanged();
@@ -112,14 +112,14 @@ public partial class SettingsViewModel : ObservableObject
 
     public string? HexBytesPerLineText
     {
-        get => _settings.HexBytesPerLine?.ToString() ?? string.Empty;
+        get => Settings.HexBytesPerLine?.ToString() ?? string.Empty;
         set
         {
             var text = value?.Trim();
             if (string.IsNullOrEmpty(text))
-                _settings.HexBytesPerLine = null; // dynamic / automatic
+                Settings.HexBytesPerLine = null; // dynamic / automatic
             else if (int.TryParse(text, out var n) && n > 0)
-                _settings.HexBytesPerLine = n;
+                Settings.HexBytesPerLine = n;
 
             OnPropertyChanged();
             _settingsService.NotifySettingsChanged();
@@ -128,26 +128,44 @@ public partial class SettingsViewModel : ObservableObject
 
     public bool HexShowOffsetColumn
     {
-        get => _settings.HexShowOffsetColumn;
-        set { _settings.HexShowOffsetColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+        get => Settings.HexShowOffsetColumn;
+        set { Settings.HexShowOffsetColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
     }
 
     public bool HexShowHexColumn
     {
-        get => _settings.HexShowHexColumn;
-        set { _settings.HexShowHexColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+        get => Settings.HexShowHexColumn;
+        set { Settings.HexShowHexColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
     }
 
     public bool HexShowBinaryColumn
     {
-        get => _settings.HexShowBinaryColumn;
-        set { _settings.HexShowBinaryColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+        get => Settings.HexShowBinaryColumn;
+        set { Settings.HexShowBinaryColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
     }
 
     public bool HexShowAsciiColumn
     {
-        get => _settings.HexShowAsciiColumn;
-        set { _settings.HexShowAsciiColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+        get => Settings.HexShowAsciiColumn;
+        set { Settings.HexShowAsciiColumn = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+    }
+
+    public bool DialogAnimationEnabled
+    {
+        get => Settings.DialogAnimationEnabled;
+        set { Settings.DialogAnimationEnabled = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+    }
+
+    public string CommandPaletteHotkey
+    {
+        get => Settings.CommandPaletteHotkey;
+        set { Settings.CommandPaletteHotkey = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
+    }
+
+    public bool TextShowLineNumbers
+    {
+        get => Settings.ShowLineNumbers;
+        set { Settings.ShowLineNumbers = value; OnPropertyChanged(); _settingsService.NotifySettingsChanged(); }
     }
 
     [RelayCommand]

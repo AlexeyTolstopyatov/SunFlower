@@ -100,6 +100,7 @@ public sealed class WorkspaceHost : IWorkspaceHost
             var (family, size) = ReadFontConfigurationBlock(_settings.Current.TextControl);
             doc.TextFontFamily = new FontFamily(family);
             doc.TextFontSize = size;
+            doc.TextShowLineNumbers = _settings.Current.ShowLineNumbers;
             
             doc.CanDrag = !isPermanent;
             doc.CanClose = !isPermanent;
@@ -205,6 +206,7 @@ public sealed class WorkspaceHost : IWorkspaceHost
             var text = current.TextControl;
             doc.TextFontFamily = new FontFamily(text?.Family ?? "Droid Sans Mono");
             doc.TextFontSize = text?.Size > 0 ? text.Size : 13;
+            doc.TextShowLineNumbers = current.ShowLineNumbers;
         }
     }
 }

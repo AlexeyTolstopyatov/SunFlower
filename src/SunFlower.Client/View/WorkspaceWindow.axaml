@@ -10,15 +10,10 @@
         x:Class="SunFlower.Client.View.WorkspaceWindow"
         Icon="/Assets/app48.png"
         Background="{StaticResource RegionBrush}"
-        Title="Workspace"
+        Title="Sunflower Workspace"
         x:DataType="{x:Type vm:DockWorkspaceViewModel}"
         Closing="OnClosing">
-    <Grid>
-        <Grid.KeyBindings>
-            <KeyBinding
-                Gesture="Ctrl+Shift+P"
-                Command="{CompiledBinding BuildCommandPaletteCommand}" />
-        </Grid.KeyBindings>
+    <Grid x:Name="RootGrid">
         <view:DockWorkspaceView
             x:Name="DockingWorkspace"
             DataContext="{Binding}" />

@@ -12,14 +12,16 @@ using SunFlower.Client.ViewModel;
 
 namespace SunFlower.Client.Service;
 
-public class WindowService
+public class WindowService(SettingsService settingsService)
 {
+    private readonly SettingsService _settingsService = settingsService;
+
     /// <summary>
     ///     Open the DockWorkspaceView in a separate window.
     /// </summary>
     public void OpenWorkspaceWindow(DockWorkspaceViewModel vm)
     {
-        var window = new WorkspaceWindow
+        var window = new WorkspaceWindow(_settingsService)
         {
             DataContext = vm
         };

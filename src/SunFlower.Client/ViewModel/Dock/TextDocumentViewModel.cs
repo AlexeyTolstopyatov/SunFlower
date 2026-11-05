@@ -18,4 +18,6 @@ public partial class TextDocumentViewModel : FileDocument
     [ObservableProperty] private FontFamily? _textFontFamily;
 
     [ObservableProperty] private double _textFontSize;
+
+    [ObservableProperty] private bool _textShowLineNumbers;
 }

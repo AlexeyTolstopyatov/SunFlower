@@ -8,258 +8,302 @@
              d:DesignHeight="450"
              x:Class="SunFlower.Client.View.SettingsView"
              x:DataType="{x:Type vm:SettingsViewModel}">
-    <WrapPanel>
-        <Border
-            Margin="10"
-            Padding="10"
-            BorderThickness="2"
-            CornerRadius="10"
-            BorderBrush="{DynamicResource DockTabHoverBrush}"
-            Background="{DynamicResource RegionBrush}">
-            <StackPanel>
-                <Grid
-                    ColumnDefinitions="48, *">
-                    <!--Icon/Region behaviour-->
-                    <Image
-                        VerticalAlignment="Center"
-                        Source="/Assets/app48.png" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Grid.Column="1">
-                        <Run Text="Globals" />
-                        <LineBreak />
-                        <Run
-                            Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Children windows setup" />
-                    </TextBlock>
-                </Grid>
-                <Grid
-                    ColumnDefinitions="90, 160">
-                    <TextBlock
-                        Grid.Column="0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="Theme variant" />
-                    <ComboBox
-                        Grid.Column="1"
-                        Name="ThemeBox"
-                        Width="150"
-                        SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
-                        <Interaction.Behaviors>
-                            <EventTriggerBehavior EventName="SelectionChanged">
-                                <InvokeCommandAction
-                                    CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
-                                    Command="{CompiledBinding ChangeThemeCommand}" />
-                            </EventTriggerBehavior>
-                        </Interaction.Behaviors>
-                        <ComboBoxItem
-                            Content="System" />
-                        <ComboBoxItem
-                            Content="Light" />
-                        <ComboBoxItem
-                            Content="Dark" />
-                    </ComboBox>
-                </Grid>
-            </StackPanel>
-        </Border>
+    <ScrollViewer>
+        <StackPanel
+            HorizontalAlignment="Left">
+            <Border
+                Width="350"
+                Margin="10"
+                Padding="10"
+                BorderThickness="2"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource DockTabHoverBrush}"
+                Background="{DynamicResource RegionBrush}">
+                <StackPanel>
+                    <Grid
+                        ColumnDefinitions="48, *">
+                        <!--Icon/Region behaviour-->
+                        <Image
+                            VerticalAlignment="Center"
+                            Source="/Assets/app48.png" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Grid.Column="1">
+                            <Run Text="Globals" />
+                            <LineBreak />
+                            <Run
+                                Foreground="{DynamicResource SecondaryTextBrush}"
+                                Text="Children windows setup" />
+                        </TextBlock>
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Text="Theme variant" />
+                        <ComboBox
+                            Grid.Column="1"
+                            Name="ThemeBox"
+                            Margin="5"
+                            Width="150"
+                            SelectedIndex="{Binding Settings.Theme, Mode=TwoWay}">
+                            <Interaction.Behaviors>
+                                <EventTriggerBehavior EventName="SelectionChanged">
+                                    <InvokeCommandAction
+                                        CommandParameter="{CompiledBinding ElementName=ThemeBox, Path=SelectedIndex}"
+                                        Command="{CompiledBinding ChangeThemeCommand}" />
+                                </EventTriggerBehavior>
+                            </Interaction.Behaviors>
+                            <ComboBoxItem
+                                Content="System" />
+                            <ComboBoxItem
+                                Content="Light" />
+                            <ComboBoxItem
+                                Content="Dark" />
+                        </ComboBox>
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Text="Dialogs" />
+                        <CheckBox
+                            Margin="5"
+                            Grid.Column="1"
+                            Content="Animated"
+                            IsChecked="{CompiledBinding DialogAnimationEnabled, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Text="Palette Hotkey" />
+                        <TextBox
+                            Margin="5"
+                            Grid.Column="1"
+                            Text="{CompiledBinding CommandPaletteHotkey, Mode=TwoWay}"
+                            ToolTip.Tip="e.g. Ctrl+Shift+P" />
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-        <Border
-            Margin="10"
-            Padding="10"
-            BorderThickness="2"
-            CornerRadius="10"
-            BorderBrush="{DynamicResource DockTabHoverBrush}"
-            Background="{DynamicResource RegionBrush}">
-            <StackPanel>
-                <Grid
-                    ColumnDefinitions="48, *">
-                    <!--Icon/Region behaviour-->
-                    <Image
-                        VerticalAlignment="Center"
-                        Source="/Assets/fbin48.png" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Grid.Column="1">
-                        <Run Text="Hexadecimal Layout" />
-                        <LineBreak />
-                        <Run
-                            Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Setup of hex editor control" />
-                    </TextBlock>
-                </Grid>
-                <Grid
-                    ColumnDefinitions="90, 160, 60, 60">
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="Font params" />
-                    <AutoCompleteBox
-                        Grid.Column="1"
-                        Background="{StaticResource RegionBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        ItemsSource="{CompiledBinding InstalledFonts}"
-                        Text="{CompiledBinding HexFontFamily, FallbackValue='Family', Mode=TwoWay}"
-                        Width="150" />
-                    <TextBox
-                        Grid.Column="2"
-                        Text="{CompiledBinding HexFontSizeText, FallbackValue='Size', Mode=TwoWay}"
-                        Width="50" />
-                </Grid>
-                <Grid
-                    ColumnDefinitions="90, 160">
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Text="Column Count"/>
-                    <TextBox
-                        Margin="5"
-                        Grid.Column="1"
-                        Text="{CompiledBinding HexBytesPerLineText, FallbackValue='Bytes/line', Mode=TwoWay}"
-                        Width="150"
-                        />
-                </Grid>
-                <Grid
-                    ColumnDefinitions="90, 160">
-                    <TextBlock
-                        Margin="0,5"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="Show" />
+            <Border
+                Width="350"
+                Margin="10"
+                Padding="10"
+                BorderThickness="2"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource DockTabHoverBrush}"
+                Background="{DynamicResource RegionBrush}">
+                <StackPanel>
+                    <Grid
+                        ColumnDefinitions="48, *">
+                        <!--Icon/Region behaviour-->
+                        <Image
+                            VerticalAlignment="Center"
+                            Source="/Assets/fbin48.png" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Grid.Column="1">
+                            <Run Text="Hexadecimal Layout" />
+                            <LineBreak />
+                            <Run
+                                Foreground="{DynamicResource SecondaryTextBrush}"
+                                Text="Setup of hex editor control" />
+                        </TextBlock>
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160, 60, 60">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="Font params" />
+                        <AutoCompleteBox
+                            Grid.Column="1"
+                            Background="{StaticResource RegionBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            ItemsSource="{CompiledBinding InstalledFonts}"
+                            Text="{CompiledBinding HexFontFamily, FallbackValue='Family', Mode=TwoWay}"
+                            Width="150" />
+                        <TextBox
+                            Grid.Column="2"
+                            Text="{CompiledBinding HexFontSizeText, FallbackValue='Size', Mode=TwoWay}"
+                            Width="50" />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Text="Column Count" />
+                        <TextBox
+                            Margin="5"
+                            Grid.Column="1"
+                            Text="{CompiledBinding HexBytesPerLineText, FallbackValue='Bytes/line', Mode=TwoWay}"
+                            Width="150" />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Margin="0,5"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="Show" />
+                        <StackPanel
+                            Margin="5,5"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <CheckBox
+                                Content="Offset"
+                                IsChecked="{CompiledBinding HexShowOffsetColumn, Mode=TwoWay}" />
+                            <CheckBox
+                                Content="Hex"
+                                IsChecked="{CompiledBinding HexShowHexColumn, Mode=TwoWay}" />
+                            <CheckBox
+                                Content="Binary"
+                                IsChecked="{CompiledBinding HexShowBinaryColumn, Mode=TwoWay}" />
+                            <CheckBox
+                                Content="ASCII"
+                                IsChecked="{CompiledBinding HexShowAsciiColumn, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border
+                Width="350"
+                Margin="10"
+                Padding="10"
+                BorderThickness="2"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource DockTabHoverBrush}"
+                Background="{DynamicResource RegionBrush}">
+                <StackPanel
+                    Spacing="10">
+                    <Grid
+                        ColumnDefinitions="48, *">
+                        <!--Icon/Region behaviour-->
+                        <Image
+                            VerticalAlignment="Center"
+                            Source="/Assets/fdoc48.png" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Grid.Column="1">
+                            <Run Text="Text Layout" />
+                            <LineBreak />
+                            <Run
+                                Foreground="{DynamicResource SecondaryTextBrush}"
+                                Text="Text Editor parameters setup" />
+                        </TextBlock>
+                    </Grid>
+                    <Grid
+                        HorizontalAlignment="Left"
+                        ColumnDefinitions="90, 160, 50">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="Font params" />
+                        <AutoCompleteBox
+                            Background="{StaticResource RegionBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            Grid.Column="1"
+                            Text="{CompiledBinding TextFontFamily, FallbackValue='Family', Mode=TwoWay}"
+                            Width="150"
+                            ItemsSource="{CompiledBinding InstalledFonts}" />
+                        <TextBox
+                            Grid.Column="2"
+                            Text="{CompiledBinding TextFontSizeText, FallbackValue='Size', Mode=TwoWay}"
+                            Width="50" />
+
+                    </Grid>
+                    <Grid
+                        HorizontalAlignment="Left"
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="Syntax Theme" />
+                        <ComboBox
+                            Grid.Column="1"
+                            Width="150"
+                            x:Name="EditorBox"
+                            SelectedIndex="{CompiledBinding Settings.TextControlTheme}"
+                            ItemsSource="{CompiledBinding TextEditorThemes}">
+                            <Interaction.Behaviors>
+                                <EventTrigger
+                                    EventName="SelectionChanged">
+                                    <InvokeCommandAction
+                                        Command="{CompiledBinding ChangeEditorThemeCommand}"
+                                        CommandParameter="{CompiledBinding ElementName=EditorBox, Path=SelectedIndex}" />
+                                </EventTrigger>
+                            </Interaction.Behaviors>
+                        </ComboBox>
+                    </Grid>
+                    <Grid
+                        HorizontalAlignment="Left"
+                        ColumnDefinitions="90, 160">
+                        <TextBlock
+                            Text="Show" />
+                        <CheckBox
+                            Grid.Column="1"
+                            Margin="5"
+                            IsChecked="{CompiledBinding TextShowLineNumbers}"
+                            Content="Line Numbers" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+            <Border
+                Padding="10"
+                BorderThickness="2"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource DockTabHoverBrush}"
+                Background="{DynamicResource RegionBrush}"
+                Margin="20,10">
+                <Grid>
                     <StackPanel
-                        Margin="5,5"
-                        Grid.Column="1"
-                        Orientation="Horizontal"
-                        Spacing="8">
-                        <CheckBox
-                            Content="Offset"
-                            IsChecked="{CompiledBinding HexShowOffsetColumn, Mode=TwoWay}" />
-                        <CheckBox
-                            Content="Hex"
-                            IsChecked="{CompiledBinding HexShowHexColumn, Mode=TwoWay}" />
-                        <CheckBox
-                            Content="Binary"
-                            IsChecked="{CompiledBinding HexShowBinaryColumn, Mode=TwoWay}" />
-                        <CheckBox
-                            Content="ASCII"
-                            IsChecked="{CompiledBinding HexShowAsciiColumn, Mode=TwoWay}" />
+                        Grid.Column="0">
+                        <Button
+                            Margin="0, 0"
+                            Width="100"
+                            Background="{DynamicResource BorderBrush}"
+                            Command="{CompiledBinding DeleteCacheCommand}"
+                            Content="Clear Cache"
+                            HotKey="Delete">
+                            <Button.ContextFlyout>
+                                <Flyout>
+                                    <TextBlock
+                                        Text="Delete project temp files" />
+                                </Flyout>
+                            </Button.ContextFlyout>
+                        </Button>
+                        <Button
+                            Background="{DynamicResource BorderBrush}"
+                            HotKey="Ctrl+S"
+                            Command="{CompiledBinding SaveCommand}"
+                            Margin="5, 10, 5, 10"
+                            Width="100"
+                            HorizontalAlignment="Right"
+                            Content="Save">
+                            <Button.ContextFlyout>
+                                <Flyout>
+                                    <TextBlock
+                                        Text="Write changes to settings file. No restart" />
+                                </Flyout>
+                            </Button.ContextFlyout>
+                        </Button>
+                        <TextBlock
+                            IsVisible="{CompiledBinding FirstCacheCleared}"
+                            Foreground="#ff009b76"
+                            Text="{CompiledBinding Message, FallbackValue='All your codebase belongs to us'}" />
                     </StackPanel>
                 </Grid>
-            </StackPanel>
-        </Border>
-
-        <Border
-            Margin="10"
-            Padding="10"
-            BorderThickness="2"
-            CornerRadius="10"
-            BorderBrush="{DynamicResource DockTabHoverBrush}"
-            Background="{DynamicResource RegionBrush}">
-            <StackPanel
-                Spacing="10">
-                <Grid
-                    ColumnDefinitions="48, *">
-                    <!--Icon/Region behaviour-->
-                    <Image
-                        VerticalAlignment="Center"
-                        Source="/Assets/fdoc48.png" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Grid.Column="1">
-                        <Run Text="Text Layout" />
-                        <LineBreak />
-                        <Run
-                            Foreground="{DynamicResource SecondaryTextBrush}"
-                            Text="Text Editor parameters setup" />
-                    </TextBlock>
-                </Grid>
-                <Grid
-                    HorizontalAlignment="Left"
-                    ColumnDefinitions="90, 160, 50">
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="Font params" />
-                    <AutoCompleteBox
-                        Background="{StaticResource RegionBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        Grid.Column="1"
-                        Text="{CompiledBinding TextFontFamily, FallbackValue='Family', Mode=TwoWay}"
-                        Width="150"
-                        ItemsSource="{CompiledBinding InstalledFonts}" />
-                    <TextBox
-                        Grid.Column="2"
-                        Text="{CompiledBinding TextFontSizeText, FallbackValue='Size', Mode=TwoWay}"
-                        Width="50" />
-                </Grid>
-                <Grid
-                    HorizontalAlignment="Left"
-                    ColumnDefinitions="90, 160">
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="Syntax Theme" />
-                    <ComboBox
-                        Grid.Column="1"
-                        Width="150"
-                        x:Name="EditorBox"
-                        SelectedIndex="{CompiledBinding Settings.TextControlTheme}"
-                        ItemsSource="{CompiledBinding TextEditorThemes}">
-                        <Interaction.Behaviors>
-                            <EventTrigger
-                                EventName="SelectionChanged">
-                                <InvokeCommandAction
-                                    Command="{CompiledBinding ChangeEditorThemeCommand}"
-                                    CommandParameter="{CompiledBinding ElementName=EditorBox, Path=SelectedIndex}" />
-                            </EventTrigger>
-                        </Interaction.Behaviors>
-                    </ComboBox>
-                </Grid>
-            </StackPanel>
-        </Border>
-        <Border
-            Padding="10"
-            BorderThickness="2"
-            CornerRadius="10"
-            BorderBrush="{DynamicResource DockTabHoverBrush}"
-            Background="{DynamicResource RegionBrush}"
-            Margin="20,10">
-            <Grid>
-                <StackPanel
-                    Grid.Column="0">
-                    <Button
-                        Margin="0, 0"
-                        Width="100"
-                        Background="{DynamicResource BorderBrush}"
-                        Command="{CompiledBinding DeleteCacheCommand}"
-                        Content="Clear Cache"
-                        HotKey="Delete">
-                        <Button.ContextFlyout>
-                            <Flyout>
-                                <TextBlock
-                                    Text="Delete project temp files" />
-                            </Flyout>
-                        </Button.ContextFlyout>
-                    </Button>
-                    <Button
-                        Background="{DynamicResource BorderBrush}"
-                        HotKey="Ctrl+S"
-                        Command="{CompiledBinding SaveCommand}"
-                        Margin="5, 10, 5, 10"
-                        Width="100"
-                        HorizontalAlignment="Right"
-                        Content="Save">
-                        <Button.ContextFlyout>
-                            <Flyout>
-                                <TextBlock
-                                    Text="Write changes to settings file. No restart" />
-                            </Flyout>
-                        </Button.ContextFlyout>
-                    </Button>
-                    <TextBlock
-                        IsVisible="{CompiledBinding FirstCacheCleared}"
-                        Foreground="#ff009b76"
-                        Text="{CompiledBinding Message, FallbackValue='All your codebase belongs to us'}" />
-                </StackPanel>
-            </Grid>
-        </Border>
-    </WrapPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

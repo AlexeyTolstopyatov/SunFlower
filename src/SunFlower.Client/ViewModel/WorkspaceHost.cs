@@ -78,16 +78,13 @@ public sealed class WorkspaceHost : IWorkspaceHost
             await Console.Error.WriteLineAsync(
                 $"[{nameof(ExecuteFlowerAsync)}] {flower.Instance.Name}: {result.ErrorMessage}");
 
-        // Open the *produced* result file (e.g. <target>_<plugin>.md),
+        // Open the *produced* result file (e.g. <target>_<plugin>.asm),
         // not the original target that was analyzed.
+        // The view is chosen automatically by file extension/content type,
+        // exactly like opening a file from Explorer.
 
         var resultPath = result.FilePath;
-        if (result.IsMarkdown)
-            await OpenMarkdownAsync(resultPath);
-        else if (result.IsAssembly)
-            await OpenTextAsync(resultPath);
-        else
-            await OpenMarkdownAsync(resultPath);
+        await OpenAsync(resultPath, isPermanent: false);
     }
 
     /// <summary> Opens a TextEditor tab in the document dock </summary>

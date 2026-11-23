@@ -5,6 +5,7 @@
     "family": "Droid Sans Mono",
     "size": 13
   },
+  "command_palette_hotkey": "Ctrl+Shift+P",
   "hex_control": {
     "family": "Consolas",
     "size": 16

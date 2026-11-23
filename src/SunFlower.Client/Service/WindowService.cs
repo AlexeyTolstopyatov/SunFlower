@@ -14,14 +14,12 @@ namespace SunFlower.Client.Service;
 
 public class WindowService(SettingsService settingsService)
 {
-    private readonly SettingsService _settingsService = settingsService;
-
     /// <summary>
     ///     Open the DockWorkspaceView in a separate window.
     /// </summary>
     public void OpenWorkspaceWindow(DockWorkspaceViewModel vm)
     {
-        var window = new WorkspaceWindow(_settingsService)
+        var window = new WorkspaceWindow(settingsService)
         {
             DataContext = vm
         };

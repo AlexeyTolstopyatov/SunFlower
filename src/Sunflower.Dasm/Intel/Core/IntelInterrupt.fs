@@ -2,11 +2,12 @@
 
 open System.Text.Json.Serialization
 
-type IntelInterruptArg =
-    { [<JsonPropertyName("byte")>] ArgByte: string
+type InterruptArg =
+    { [<JsonPropertyName("size")>] Size: int
+      [<JsonPropertyName("byte")>] ArgByte: string
       [<JsonPropertyName("return_flow")>] ReturnFlow: bool
       [<JsonPropertyName("comment")>] Comment: string }
 
 type IntelInterrupt =
     { [<JsonPropertyName("int")>] Code: string
-      [<JsonPropertyName("args")>] Args: IntelInterruptArg array }
+      [<JsonPropertyName("args")>] Args: InterruptArg[] }

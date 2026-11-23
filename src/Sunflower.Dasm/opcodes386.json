@@ -401,7 +401,7 @@
     "Reg": null,
     "Mnemonic": "AND",
     "Operands": [
-      "rAx",
+      "rAX",
       "Iz"
     ],
     "ModRM": false,
@@ -844,7 +844,7 @@
     "Operands": [
       "rAX/r8"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -854,7 +854,7 @@
     "Operands": [
       "rCX/r9"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -864,7 +864,7 @@
     "Operands": [
       "rDX/r10"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -874,7 +874,7 @@
     "Operands": [
       "rBX/r11"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -884,7 +884,7 @@
     "Operands": [
       "rSP/r12"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -894,7 +894,7 @@
     "Operands": [
       "rBP/r13"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -904,7 +904,7 @@
     "Operands": [
       "rSI/r14"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -914,7 +914,7 @@
     "Operands": [
       "rDI/r15"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -924,7 +924,7 @@
     "Operands": [
       "rAX/r8"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -934,7 +934,7 @@
     "Operands": [
       "rCX/r9"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -944,7 +944,7 @@
     "Operands": [
       "rDX/r10"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -954,7 +954,7 @@
     "Operands": [
       "rBX/r11"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -964,7 +964,7 @@
     "Operands": [
       "rSP/r12"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -974,7 +974,7 @@
     "Operands": [
       "rBP/r13"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -984,7 +984,7 @@
     "Operands": [
       "rSI/r14"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -994,13 +994,47 @@
     "Operands": [
       "rDI/r15"
     ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "60",
+    "Reg": null,
+    "Mnemonic": "PUSHA",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "61",
+    "Reg": null,
+    "Mnemonic": "POPA",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "62",
+    "Reg": null,
+    "Mnemonic": "BOUND",
+    "Operands": [
+      "Gv",
+      "Ma"
+    ],
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "60", "Reg": null, "Mnemonic": "PUSHA", "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "61", "Reg": null, "Mnemonic": "POPA",  "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "62", "Reg": null, "Mnemonic": "BOUND", "Operands": ["Gv","Ma"], "ModRM": true,  "IsPrefix": false },
-  { "Opcode": "63", "Reg": null, "Mnemonic": "ARPL", "Operands": ["Ew", "Gw"], "ModRM": true, "IsPrefix": false },
+  {
+    "Opcode": "63",
+    "Reg": null,
+    "Mnemonic": "ARPL",
+    "Operands": [
+      "Ew",
+      "Gw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "64",
     "Reg": null,
@@ -1021,7 +1055,14 @@
     "ModRM": false,
     "IsPrefix": true
   },
-  { "Opcode": "66", "Reg": null, "Mnemonic": "OPSIZE", "Operands": [], "ModRM": false, "IsPrefix": true },
+  {
+    "Opcode": "66",
+    "Reg": null,
+    "Mnemonic": "OPSIZE",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": true
+  },
   {
     "Opcode": "67",
     "Reg": null,
@@ -1057,7 +1098,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "Ib"
+      "Ibs"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -1069,15 +1110,43 @@
     "Operands": [
       "Gv",
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "6C", "Reg": null, "Mnemonic": "INSB",  "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "6D", "Reg": null, "Mnemonic": "INSW",  "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "6E", "Reg": null, "Mnemonic": "OUTSB", "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "6F", "Reg": null, "Mnemonic": "OUTSW", "Operands": [], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "6C",
+    "Reg": null,
+    "Mnemonic": "INSB",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "6D",
+    "Reg": null,
+    "Mnemonic": "INSW",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "6E",
+    "Reg": null,
+    "Mnemonic": "OUTSB",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "6F",
+    "Reg": null,
+    "Mnemonic": "OUTSW",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "70",
     "Reg": null,
@@ -1430,7 +1499,17 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "82", "Reg": null, "Mnemonic": "ADD", "Operands": ["Eb", "Ib"], "ModRM": true, "IsPrefix": false },
+  {
+    "Opcode": "82",
+    "Reg": null,
+    "Mnemonic": "ADD",
+    "Operands": [
+      "Eb",
+      "Ib"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "83",
     "Reg": null,
@@ -1445,7 +1524,7 @@
     "Mnemonic": "ADD",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1456,7 +1535,7 @@
     "Mnemonic": "OR",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1467,7 +1546,7 @@
     "Mnemonic": "ADC",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1478,7 +1557,7 @@
     "Mnemonic": "SBB",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1489,7 +1568,7 @@
     "Mnemonic": "AND",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1500,7 +1579,7 @@
     "Mnemonic": "SUB",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1511,7 +1590,7 @@
     "Mnemonic": "XOR",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1522,7 +1601,7 @@
     "Mnemonic": "CMP",
     "Operands": [
       "Ev",
-      "Ib"
+      "Ibs"
     ],
     "ModRM": true,
     "IsPrefix": false
@@ -1648,9 +1727,24 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  
-  { "Opcode": "8F", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "8F/0", "Reg": 0, "Mnemonic": "POP", "Operands": ["Ev"], "ModRM": true, "IsPrefix": false },
+  {
+    "Opcode": "8F",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "8F/0",
+    "Reg": 0,
+    "Mnemonic": "POP",
+    "Operands": [
+      "Ev"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "90",
     "Reg": null,
@@ -1664,10 +1758,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rCX/r9",
+      "rCX",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1675,10 +1769,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rDX/r10",
+      "rDX",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1686,10 +1780,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rBX/r11",
+      "rBX",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1697,10 +1791,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rSP/r12",
+      "rSP",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1708,10 +1802,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rBP/r13",
+      "rBP",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1719,10 +1813,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rSI/r14",
+      "rSI",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -1730,10 +1824,10 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rDI/r15",
+      "rDI",
       "rAX"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2075,10 +2169,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rAX/r8",
+      "rAX",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2086,10 +2180,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rCX/r9",
+      "rCX",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2097,10 +2191,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rDX/r10",
+      "rDX",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2108,10 +2202,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rBX/r11",
+      "rBX",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2119,10 +2213,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rSP/r12",
+      "rSP",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2130,10 +2224,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rBP/r13",
+      "rBP",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2141,10 +2235,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rSI/r14",
+      "rSI",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2152,10 +2246,10 @@
     "Reg": null,
     "Mnemonic": "MOV",
     "Operands": [
-      "rDI/r15",
+      "rDI",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2389,15 +2483,23 @@
     ],
     "ModRM": true,
     "IsPrefix": false
-  }, 
-  { "Opcode": "C6", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
+  },
+  {
+    "Opcode": "C6",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "C6/0",
     "Reg": 0,
     "Mnemonic": "MOV",
     "ModRM": true,
     "Operands": [
-      "Eb", "Ib"
+      "Eb",
+      "Ib"
     ],
     "IsPrefix": false
   },
@@ -2408,16 +2510,18 @@
     "IsPrefix": false,
     "ModRM": true,
     "Operands": [
-      "Ib", "000", "11B"
+      "Ib",
+      "000",
+      "11B"
     ]
   },
-  { 
-    "Opcode": "C7", 
-    "Reg": null, 
-    "Mnemonic": "", 
-    "Operands": [], 
-    "ModRM": true, 
-    "IsPrefix": false 
+  {
+    "Opcode": "C7",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
   },
   {
     "Opcode": "C7/0",
@@ -2425,7 +2529,8 @@
     "Mnemonic": "MOV",
     "ModRM": true,
     "Operands": [
-      "Ev", "Iz"
+      "Ev",
+      "Iz"
     ],
     "IsPrefix": false
   },
@@ -2436,18 +2541,53 @@
     "IsPrefix": false,
     "ModRM": true,
     "Operands": [
-      "Jz", "000", "11B"
+      "Jz",
+      "000",
+      "11B"
     ]
   },
-  { "Opcode": "C8", "Reg": null, "Mnemonic": "ENTER", "Operands": ["Iw","Ib"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "C9", "Reg": null, "Mnemonic": "LEAVE", "Operands": [], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "CA", "Reg": null, "Mnemonic": "RETF", "Operands": ["Iw"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "CB", "Reg": null, "Mnemonic": "RETF", "Operands": [], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "C8",
+    "Reg": null,
+    "Mnemonic": "ENTER",
+    "Operands": [
+      "Iw",
+      "Ib"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "C9",
+    "Reg": null,
+    "Mnemonic": "LEAVE",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "CA",
+    "Reg": null,
+    "Mnemonic": "RETF",
+    "Operands": [
+      "Iw"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "CB",
+    "Reg": null,
+    "Mnemonic": "RETF",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "CC",
     "Reg": null,
     "Mnemonic": "INT3",
-    "Operands": [ ],
+    "Operands": [],
     "ModRM": false,
     "IsPrefix": false
   },
@@ -2552,6 +2692,17 @@
     "IsPrefix": false
   },
   {
+    "Opcode": "D0/6",
+    "Reg": 6,
+    "Mnemonic": "SHL",
+    "Operands": [
+      "Eb",
+      "1"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
     "Opcode": "D1",
     "Reg": null,
     "Mnemonic": "",
@@ -2629,6 +2780,17 @@
     "Opcode": "D1/5",
     "Reg": 5,
     "Mnemonic": "SHR",
+    "Operands": [
+      "Ev",
+      "1"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D1/6",
+    "Reg": 6,
+    "Mnemonic": "SHL",
     "Operands": [
       "Ev",
       "1"
@@ -2722,6 +2884,17 @@
     "IsPrefix": false
   },
   {
+    "Opcode": "D2/6",
+    "Reg": 6,
+    "Mnemonic": "SHL",
+    "Operands": [
+      "Eb",
+      "CL"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
     "Opcode": "D2/7",
     "Reg": 7,
     "Mnemonic": "SAR",
@@ -2807,6 +2980,17 @@
     "IsPrefix": false
   },
   {
+    "Opcode": "D3/6",
+    "Reg": 6,
+    "Mnemonic": "SHL",
+    "Operands": [
+      "Ev",
+      "CL"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
     "Opcode": "D3/7",
     "Reg": 7,
     "Mnemonic": "SAR",
@@ -2853,119 +3037,1148 @@
     "ModRM": false,
     "IsPrefix": false
   },
-  { "Opcode": "D8", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/0", "Reg": null, "Mnemonic": "FADD", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/1", "Reg": null, "Mnemonic": "FMUL", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/2", "Reg": null, "Mnemonic": "FCOM", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/3", "Reg": null, "Mnemonic": "FCOMP", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/4", "Reg": null, "Mnemonic": "FSUB", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/5", "Reg": null, "Mnemonic": "FSUBR", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/6", "Reg": null, "Mnemonic": "FDIV", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/7", "Reg": null, "Mnemonic": "FDIVR", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+0p", "Reg": null, "Mnemonic": "FADD", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+1p", "Reg": null, "Mnemonic": "FMUL", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+2p", "Reg": null, "Mnemonic": "FCOM", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+3p", "Reg": null, "Mnemonic": "FCOMP", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+4p", "Reg": null, "Mnemonic": "FSUB", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+5p", "Reg": null, "Mnemonic": "FSUBR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+6p", "Reg": null, "Mnemonic": "FDIV", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D8/+7p", "Reg": null, "Mnemonic": "FDIVR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/0", "Reg": null, "Mnemonic": "FLD", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/2", "Reg": null, "Mnemonic": "FST", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/3", "Reg": null, "Mnemonic": "FSTP", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/4", "Reg": null, "Mnemonic": "FLDENV", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/5", "Reg": null, "Mnemonic": "FLDCW", "Operands": ["MW"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/6", "Reg": null, "Mnemonic": "FNSTENV", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/7", "Reg": null, "Mnemonic": "FNSTCW", "Operands": ["MW"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/+0p", "Reg": null, "Mnemonic": "FLD", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/+2p", "Reg": null, "Mnemonic": "FST", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/+3p", "Reg": null, "Mnemonic": "FSTP", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "D9/+1p", "Reg": null, "Mnemonic": "FXCH", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/0", "Reg": null, "Mnemonic": "FIADD", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/1", "Reg": null, "Mnemonic": "FIMUL", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/2", "Reg": null, "Mnemonic": "FICOM", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/3", "Reg": null, "Mnemonic": "FICOMP", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/4", "Reg": null, "Mnemonic": "FISUB", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/5", "Reg": null, "Mnemonic": "FISUBR", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/6", "Reg": null, "Mnemonic": "FIDIV", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/7", "Reg": null, "Mnemonic": "FIDIVR", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+0p", "Reg": null, "Mnemonic": "FIADD", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+1p", "Reg": null, "Mnemonic": "FIMUL", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+2p", "Reg": null, "Mnemonic": "FICOM", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+3p", "Reg": null, "Mnemonic": "FICOMP", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+4p", "Reg": null, "Mnemonic": "FISUB", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+5p", "Reg": null, "Mnemonic": "FISUBR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+6p", "Reg": null, "Mnemonic": "FIDIV", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/+7p", "Reg": null, "Mnemonic": "FIDIVR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DA/x1p", "Reg": null, "Mnemonic": "FUCOMPP", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/0", "Reg": null, "Mnemonic": "FILD", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/2", "Reg": null, "Mnemonic": "FIST", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/3", "Reg": null, "Mnemonic": "FISTP", "Operands": ["Md"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/5", "Reg": null, "Mnemonic": "FLD", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/7", "Reg": null, "Mnemonic": "FSTP", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/x0p", "Reg": null, "Mnemonic": "FILD", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/x2p", "Reg": null, "Mnemonic": "FIST", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/x3p", "Reg": null, "Mnemonic": "FISTP", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DB/x5p", "Reg": null, "Mnemonic": "FLD", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/0", "Reg": null, "Mnemonic": "FADD", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/1", "Reg": null, "Mnemonic": "FMUL", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/2", "Reg": null, "Mnemonic": "FCOM", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/3", "Reg": null, "Mnemonic": "FCOMP", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/4", "Reg": null, "Mnemonic": "FSUB", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/5", "Reg": null, "Mnemonic": "FSUBR", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/6", "Reg": null, "Mnemonic": "FDIV", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/7", "Reg": null, "Mnemonic": "FDIVR", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+0p", "Reg": null, "Mnemonic": "FADD", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+1p", "Reg": null, "Mnemonic": "FMUL", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+2p", "Reg": null, "Mnemonic": "FCOM", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+3p", "Reg": null, "Mnemonic": "FCOMP", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+4p", "Reg": null, "Mnemonic": "FSUB", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+5p", "Reg": null, "Mnemonic": "FSUBR", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+6p", "Reg": null, "Mnemonic": "FDIV", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DC/+7p", "Reg": null, "Mnemonic": "FDIVR", "Operands": ["STi", "ST0"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/0", "Reg": null, "Mnemonic": "FLD", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/2", "Reg": null, "Mnemonic": "FST", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/3", "Reg": null, "Mnemonic": "FSTP", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/4", "Reg": null, "Mnemonic": "FRSTOR", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/6", "Reg": null, "Mnemonic": "FNSAVE", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/7", "Reg": null, "Mnemonic": "FNSTSW", "Operands": ["MW"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/+0p", "Reg": null, "Mnemonic": "FLD", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/+2p", "Reg": null, "Mnemonic": "FST", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DD/+3p", "Reg": null, "Mnemonic": "FSTP", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/0", "Reg": null, "Mnemonic": "FIADD", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/1", "Reg": null, "Mnemonic": "FIMUL", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/2", "Reg": null, "Mnemonic": "FICOM", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/3", "Reg": null, "Mnemonic": "FICOMP", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/4", "Reg": null, "Mnemonic": "FISUB", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/5", "Reg": null, "Mnemonic": "FISUBR", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/6", "Reg": null, "Mnemonic": "FIDIV", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/7", "Reg": null, "Mnemonic": "FIDIVR", "Operands": ["Mw"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+0p", "Reg": null, "Mnemonic": "FIADD", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+1p", "Reg": null, "Mnemonic": "FIMUL", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+2p", "Reg": null, "Mnemonic": "FICOM", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+3p", "Reg": null, "Mnemonic": "FICOMP", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+4p", "Reg": null, "Mnemonic": "FISUB", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+5p", "Reg": null, "Mnemonic": "FISUBR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+6p", "Reg": null, "Mnemonic": "FIDIV", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/+7p", "Reg": null, "Mnemonic": "FIDIVR", "Operands": ["ST0", "STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DE/x1p", "Reg": null, "Mnemonic": "FUCOMPP", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/0", "Reg": null, "Mnemonic": "FILD", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/2", "Reg": null, "Mnemonic": "FIST", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/3", "Reg": null, "Mnemonic": "FISTP", "Operands": ["Mq"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/4", "Reg": null, "Mnemonic": "FBLD", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/5", "Reg": null, "Mnemonic": "FILD", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/6", "Reg": null, "Mnemonic": "FBSTP", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/7", "Reg": null, "Mnemonic": "FISTP", "Operands": ["M"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/x0p", "Reg": null, "Mnemonic": "FILD", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/x2p", "Reg": null, "Mnemonic": "FIST", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "DF/x3p", "Reg": null, "Mnemonic": "FISTP", "Operands": ["STi"], "ModRM": true, "IsPrefix": false },
+  {
+    "Opcode": "D8",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/0",
+    "Reg": null,
+    "Mnemonic": "FADD",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/1",
+    "Reg": null,
+    "Mnemonic": "FMUL",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/2",
+    "Reg": null,
+    "Mnemonic": "FCOM",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/3",
+    "Reg": null,
+    "Mnemonic": "FCOMP",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/4",
+    "Reg": null,
+    "Mnemonic": "FSUB",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/5",
+    "Reg": null,
+    "Mnemonic": "FSUBR",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/6",
+    "Reg": null,
+    "Mnemonic": "FDIV",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/7",
+    "Reg": null,
+    "Mnemonic": "FDIVR",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+0p",
+    "Reg": null,
+    "Mnemonic": "FADD",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+1p",
+    "Reg": null,
+    "Mnemonic": "FMUL",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+2p",
+    "Reg": null,
+    "Mnemonic": "FCOM",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+3p",
+    "Reg": null,
+    "Mnemonic": "FCOMP",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+4p",
+    "Reg": null,
+    "Mnemonic": "FSUB",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+5p",
+    "Reg": null,
+    "Mnemonic": "FSUBR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+6p",
+    "Reg": null,
+    "Mnemonic": "FDIV",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D8/+7p",
+    "Reg": null,
+    "Mnemonic": "FDIVR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/0",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/2",
+    "Reg": null,
+    "Mnemonic": "FST",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/3",
+    "Reg": null,
+    "Mnemonic": "FSTP",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/4",
+    "Reg": null,
+    "Mnemonic": "FLDENV",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/5",
+    "Reg": null,
+    "Mnemonic": "FLDCW",
+    "Operands": [
+      "MW"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/6",
+    "Reg": null,
+    "Mnemonic": "FNSTENV",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/7",
+    "Reg": null,
+    "Mnemonic": "FNSTCW",
+    "Operands": [
+      "MW"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/+0p",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/+2p",
+    "Reg": null,
+    "Mnemonic": "FST",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/+3p",
+    "Reg": null,
+    "Mnemonic": "FSTP",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "D9/+1p",
+    "Reg": null,
+    "Mnemonic": "FXCH",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/0",
+    "Reg": null,
+    "Mnemonic": "FIADD",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/1",
+    "Reg": null,
+    "Mnemonic": "FIMUL",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/2",
+    "Reg": null,
+    "Mnemonic": "FICOM",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/3",
+    "Reg": null,
+    "Mnemonic": "FICOMP",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/4",
+    "Reg": null,
+    "Mnemonic": "FISUB",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/5",
+    "Reg": null,
+    "Mnemonic": "FISUBR",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/6",
+    "Reg": null,
+    "Mnemonic": "FIDIV",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/7",
+    "Reg": null,
+    "Mnemonic": "FIDIVR",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+0p",
+    "Reg": null,
+    "Mnemonic": "FIADD",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+1p",
+    "Reg": null,
+    "Mnemonic": "FIMUL",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+2p",
+    "Reg": null,
+    "Mnemonic": "FICOM",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+3p",
+    "Reg": null,
+    "Mnemonic": "FICOMP",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+4p",
+    "Reg": null,
+    "Mnemonic": "FISUB",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+5p",
+    "Reg": null,
+    "Mnemonic": "FISUBR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+6p",
+    "Reg": null,
+    "Mnemonic": "FIDIV",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/+7p",
+    "Reg": null,
+    "Mnemonic": "FIDIVR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DA/x1p",
+    "Reg": null,
+    "Mnemonic": "FUCOMPP",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/0",
+    "Reg": null,
+    "Mnemonic": "FILD",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/2",
+    "Reg": null,
+    "Mnemonic": "FIST",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/3",
+    "Reg": null,
+    "Mnemonic": "FISTP",
+    "Operands": [
+      "Md"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/5",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/7",
+    "Reg": null,
+    "Mnemonic": "FSTP",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/x0p",
+    "Reg": null,
+    "Mnemonic": "FILD",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/x2p",
+    "Reg": null,
+    "Mnemonic": "FIST",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/x3p",
+    "Reg": null,
+    "Mnemonic": "FISTP",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DB/x5p",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/0",
+    "Reg": null,
+    "Mnemonic": "FADD",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/1",
+    "Reg": null,
+    "Mnemonic": "FMUL",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/2",
+    "Reg": null,
+    "Mnemonic": "FCOM",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/3",
+    "Reg": null,
+    "Mnemonic": "FCOMP",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/4",
+    "Reg": null,
+    "Mnemonic": "FSUB",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/5",
+    "Reg": null,
+    "Mnemonic": "FSUBR",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/6",
+    "Reg": null,
+    "Mnemonic": "FDIV",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/7",
+    "Reg": null,
+    "Mnemonic": "FDIVR",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+0p",
+    "Reg": null,
+    "Mnemonic": "FADD",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+1p",
+    "Reg": null,
+    "Mnemonic": "FMUL",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+2p",
+    "Reg": null,
+    "Mnemonic": "FCOM",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+3p",
+    "Reg": null,
+    "Mnemonic": "FCOMP",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+4p",
+    "Reg": null,
+    "Mnemonic": "FSUB",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+5p",
+    "Reg": null,
+    "Mnemonic": "FSUBR",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+6p",
+    "Reg": null,
+    "Mnemonic": "FDIV",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DC/+7p",
+    "Reg": null,
+    "Mnemonic": "FDIVR",
+    "Operands": [
+      "STi",
+      "ST0"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/0",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/2",
+    "Reg": null,
+    "Mnemonic": "FST",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/3",
+    "Reg": null,
+    "Mnemonic": "FSTP",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/4",
+    "Reg": null,
+    "Mnemonic": "FRSTOR",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/6",
+    "Reg": null,
+    "Mnemonic": "FNSAVE",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/7",
+    "Reg": null,
+    "Mnemonic": "FNSTSW",
+    "Operands": [
+      "MW"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/+0p",
+    "Reg": null,
+    "Mnemonic": "FLD",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/+2p",
+    "Reg": null,
+    "Mnemonic": "FST",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DD/+3p",
+    "Reg": null,
+    "Mnemonic": "FSTP",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/0",
+    "Reg": null,
+    "Mnemonic": "FIADD",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/1",
+    "Reg": null,
+    "Mnemonic": "FIMUL",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/2",
+    "Reg": null,
+    "Mnemonic": "FICOM",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/3",
+    "Reg": null,
+    "Mnemonic": "FICOMP",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/4",
+    "Reg": null,
+    "Mnemonic": "FISUB",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/5",
+    "Reg": null,
+    "Mnemonic": "FISUBR",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/6",
+    "Reg": null,
+    "Mnemonic": "FIDIV",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/7",
+    "Reg": null,
+    "Mnemonic": "FIDIVR",
+    "Operands": [
+      "Mw"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+0p",
+    "Reg": null,
+    "Mnemonic": "FIADD",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+1p",
+    "Reg": null,
+    "Mnemonic": "FIMUL",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+2p",
+    "Reg": null,
+    "Mnemonic": "FICOM",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+3p",
+    "Reg": null,
+    "Mnemonic": "FICOMP",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+4p",
+    "Reg": null,
+    "Mnemonic": "FISUB",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+5p",
+    "Reg": null,
+    "Mnemonic": "FISUBR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+6p",
+    "Reg": null,
+    "Mnemonic": "FIDIV",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/+7p",
+    "Reg": null,
+    "Mnemonic": "FIDIVR",
+    "Operands": [
+      "ST0",
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DE/x1p",
+    "Reg": null,
+    "Mnemonic": "FUCOMPP",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/0",
+    "Reg": null,
+    "Mnemonic": "FILD",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/2",
+    "Reg": null,
+    "Mnemonic": "FIST",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/3",
+    "Reg": null,
+    "Mnemonic": "FISTP",
+    "Operands": [
+      "Mq"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/4",
+    "Reg": null,
+    "Mnemonic": "FBLD",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/5",
+    "Reg": null,
+    "Mnemonic": "FILD",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/6",
+    "Reg": null,
+    "Mnemonic": "FBSTP",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/7",
+    "Reg": null,
+    "Mnemonic": "FISTP",
+    "Operands": [
+      "M"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/x0p",
+    "Reg": null,
+    "Mnemonic": "FILD",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/x2p",
+    "Reg": null,
+    "Mnemonic": "FIST",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "DF/x3p",
+    "Reg": null,
+    "Mnemonic": "FISTP",
+    "Operands": [
+      "STi"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "E0",
     "Reg": null,
@@ -3145,6 +4358,14 @@
     "Operands": [],
     "ModRM": false,
     "IsPrefix": true
+  },
+  {
+    "Opcode": "F1",
+    "Reg": null,
+    "Mnemonic": "INT1",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
   },
   {
     "Opcode": "F2",
@@ -3712,11 +4933,58 @@
     "ModRM": false,
     "IsPrefix": false
   },
-  { "Opcode": "0F20", "Reg": null, "Mnemonic": "MOV", "Operands": ["Rd", "Cd"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "0F21", "Reg": null, "Mnemonic": "MOV", "Operands": ["Rd", "Dd"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "0F22", "Reg": null, "Mnemonic": "MOV", "Operands": ["Cd", "Rd"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "0F23", "Reg": null, "Mnemonic": "MOV", "Operands": ["Dd", "Rd"], "ModRM": true, "IsPrefix": false },
-  { "Opcode": "0F30", "Reg": null, "Mnemonic": "WRMSR", "Operands": [], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "0F20",
+    "Reg": null,
+    "Mnemonic": "MOV",
+    "Operands": [
+      "Rd",
+      "Cd"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F21",
+    "Reg": null,
+    "Mnemonic": "MOV",
+    "Operands": [
+      "Rd",
+      "Dd"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F22",
+    "Reg": null,
+    "Mnemonic": "MOV",
+    "Operands": [
+      "Cd",
+      "Rd"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F23",
+    "Reg": null,
+    "Mnemonic": "MOV",
+    "Operands": [
+      "Dd",
+      "Rd"
+    ],
+    "ModRM": true,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F30",
+    "Reg": null,
+    "Mnemonic": "WRMSR",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "0F31",
     "Reg": null,
@@ -3765,8 +5033,26 @@
     "ModRM": false,
     "IsPrefix": false
   },
-  { "Opcode": "0FA0", "Reg": null, "Mnemonic": "PUSH", "Operands": ["FS"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0FA1", "Reg": null, "Mnemonic": "POP", "Operands": ["FS"], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "0FA0",
+    "Reg": null,
+    "Mnemonic": "PUSH",
+    "Operands": [
+      "FS"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0FA1",
+    "Reg": null,
+    "Mnemonic": "POP",
+    "Operands": [
+      "FS"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "0FA2",
     "Reg": null,
@@ -3775,8 +5061,26 @@
     "ModRM": false,
     "IsPrefix": false
   },
-  { "Opcode": "0FA8", "Reg": null, "Mnemonic": "PUSH", "Operands": ["GS"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0FA9", "Reg": null, "Mnemonic": "POP", "Operands": ["GS"], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "0FA8",
+    "Reg": null,
+    "Mnemonic": "PUSH",
+    "Operands": [
+      "GS"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0FA9",
+    "Reg": null,
+    "Mnemonic": "POP",
+    "Operands": [
+      "GS"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "0FAA",
     "Reg": null,
@@ -3898,7 +5202,14 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "0FBA", "Reg": null, "Mnemonic": "", "Operands": [], "ModRM": true, "IsPrefix": false },
+  {
+    "Opcode": "0FBA",
+    "Reg": null,
+    "Mnemonic": "",
+    "Operands": [],
+    "ModRM": true,
+    "IsPrefix": false
+  },
   {
     "Opcode": "0FBB",
     "Reg": null,
@@ -4101,22 +5412,166 @@
     "ModRM": true,
     "IsPrefix": false
   },
-  { "Opcode": "0F80", "Reg": null, "Mnemonic": "JO", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F81", "Reg": null, "Mnemonic": "JNO", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F82", "Reg": null, "Mnemonic": "JB", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F83", "Reg": null, "Mnemonic": "JAE", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F84", "Reg": null, "Mnemonic": "JZ", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F85", "Reg": null, "Mnemonic": "JNE", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F86", "Reg": null, "Mnemonic": "JBE", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F87", "Reg": null, "Mnemonic": "JA", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F88", "Reg": null, "Mnemonic": "JS", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F89", "Reg": null, "Mnemonic": "JNS", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8A", "Reg": null, "Mnemonic": "JP", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8B", "Reg": null, "Mnemonic": "JNP", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8C", "Reg": null, "Mnemonic": "JL", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8D", "Reg": null, "Mnemonic": "JNL", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8E", "Reg": null, "Mnemonic": "JLE", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
-  { "Opcode": "0F8F", "Reg": null, "Mnemonic": "JNLE", "Operands": ["Jz"], "ModRM": false, "IsPrefix": false },
+  {
+    "Opcode": "0F80",
+    "Reg": null,
+    "Mnemonic": "JO",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F81",
+    "Reg": null,
+    "Mnemonic": "JNO",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F82",
+    "Reg": null,
+    "Mnemonic": "JB",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F83",
+    "Reg": null,
+    "Mnemonic": "JAE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F84",
+    "Reg": null,
+    "Mnemonic": "JZ",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F85",
+    "Reg": null,
+    "Mnemonic": "JNE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F86",
+    "Reg": null,
+    "Mnemonic": "JBE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F87",
+    "Reg": null,
+    "Mnemonic": "JA",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F88",
+    "Reg": null,
+    "Mnemonic": "JS",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F89",
+    "Reg": null,
+    "Mnemonic": "JNS",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8A",
+    "Reg": null,
+    "Mnemonic": "JP",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8B",
+    "Reg": null,
+    "Mnemonic": "JNP",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8C",
+    "Reg": null,
+    "Mnemonic": "JL",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8D",
+    "Reg": null,
+    "Mnemonic": "JNL",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8E",
+    "Reg": null,
+    "Mnemonic": "JLE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8F",
+    "Reg": null,
+    "Mnemonic": "JNLE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
   {
     "Opcode": "0F90",
     "Reg": null,

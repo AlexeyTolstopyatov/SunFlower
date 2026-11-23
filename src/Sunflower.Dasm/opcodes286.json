@@ -834,7 +834,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rAX/r8"
+      "rAX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -844,7 +844,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rCX/r9"
+      "rCX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -854,7 +854,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rDX/r10"
+      "rDX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -864,7 +864,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rBX/r11"
+      "rBX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -874,7 +874,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rSP/r12"
+      "rSP"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -884,7 +884,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rBP/r13"
+      "rBP"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -894,7 +894,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rSI/r14"
+      "rSI"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -904,7 +904,7 @@
     "Reg": null,
     "Mnemonic": "PUSH",
     "Operands": [
-      "rDI/r15"
+      "rDI"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -914,7 +914,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rAX/r8"
+      "rAX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -924,7 +924,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rCX/r9"
+      "rCX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -934,7 +934,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rDX/r10"
+      "rDX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -944,7 +944,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rBX/r11"
+      "rBX"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -954,7 +954,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rSP/r12"
+      "rSP"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -964,7 +964,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rBP/r13"
+      "rBP"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -974,7 +974,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rSI/r14"
+      "rSI"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -984,7 +984,7 @@
     "Reg": null,
     "Mnemonic": "POP",
     "Operands": [
-      "rDI/r15"
+      "rDI"
     ],
     "ModRM": false,
     "IsPrefix": false
@@ -1668,7 +1668,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rCX/r9",
+      "rCX",
       "rAX"
     ],
     "ModRM": false,
@@ -1679,7 +1679,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rDX/r10",
+      "rDX",
       "rAX"
     ],
     "ModRM": false,
@@ -1690,7 +1690,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rBX/r11",
+      "rBX",
       "rAX"
     ],
     "ModRM": false,
@@ -1701,7 +1701,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rSP/r12",
+      "rSP",
       "rAX"
     ],
     "ModRM": false,
@@ -1712,7 +1712,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rBP/r13",
+      "rBP",
       "rAX"
     ],
     "ModRM": false,
@@ -1723,7 +1723,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rSI/r14",
+      "rSI",
       "rAX"
     ],
     "ModRM": false,
@@ -1734,7 +1734,7 @@
     "Reg": null,
     "Mnemonic": "XCHG",
     "Operands": [
-      "rDI/r15",
+      "rDI",
       "rAX"
     ],
     "ModRM": false,
@@ -2082,7 +2082,7 @@
       "rAX/r8",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2093,7 +2093,7 @@
       "rCX/r9",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2104,7 +2104,7 @@
       "rDX/r10",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2115,7 +2115,7 @@
       "rBX/r11",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2137,7 +2137,7 @@
       "rBP/r13",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2148,7 +2148,7 @@
       "rSI/r14",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -2159,7 +2159,7 @@
       "rDI/r15",
       "Iv"
     ],
-    "ModRM": true,
+    "ModRM": false,
     "IsPrefix": false
   },
   {
@@ -3119,6 +3119,14 @@
     "IsPrefix": true
   },
   {
+    "Opcode": "F1",
+    "Reg": null,
+    "Mnemonic": "INT1",
+    "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
     "Opcode": "F2",
     "Reg": null,
     "Mnemonic": "REPNE",
@@ -3729,6 +3737,166 @@
     "Reg": null,
     "Mnemonic": "EMMS",
     "Operands": [],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F80",
+    "Reg": null,
+    "Mnemonic": "JO",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F81",
+    "Reg": null,
+    "Mnemonic": "JNO",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F82",
+    "Reg": null,
+    "Mnemonic": "JB",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F83",
+    "Reg": null,
+    "Mnemonic": "JAE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F84",
+    "Reg": null,
+    "Mnemonic": "JZ",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F85",
+    "Reg": null,
+    "Mnemonic": "JNE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F86",
+    "Reg": null,
+    "Mnemonic": "JBE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F87",
+    "Reg": null,
+    "Mnemonic": "JA",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F88",
+    "Reg": null,
+    "Mnemonic": "JS",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F89",
+    "Reg": null,
+    "Mnemonic": "JNS",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8A",
+    "Reg": null,
+    "Mnemonic": "JP",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8B",
+    "Reg": null,
+    "Mnemonic": "JNP",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8C",
+    "Reg": null,
+    "Mnemonic": "JL",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8D",
+    "Reg": null,
+    "Mnemonic": "JNL",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8E",
+    "Reg": null,
+    "Mnemonic": "JLE",
+    "Operands": [
+      "Jz"
+    ],
+    "ModRM": false,
+    "IsPrefix": false
+  },
+  {
+    "Opcode": "0F8F",
+    "Reg": null,
+    "Mnemonic": "JNLE",
+    "Operands": [
+      "Jz"
+    ],
     "ModRM": false,
     "IsPrefix": false
   },

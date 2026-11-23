@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using Sunflower.Dasm;
+using Sunflower.Dasm.Intel.Core;
 
 namespace SunFlower.Client.Service;
 
@@ -47,7 +48,7 @@ public class DisassemblingService(WorkspaceService workspaceService)
             DecoderArchitecture.I80286 =>
                 I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
             DecoderArchitecture.I80386 =>
-                I80386Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
+                I80386Decoder.decodeRecursive(interruptsPath, bytes, entryPoints, ProcessorMode.I386),
             _ => I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints)
         };
     }

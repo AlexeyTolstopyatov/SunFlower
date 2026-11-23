@@ -25,11 +25,13 @@ type public FlowerData =
     { instance: IFlower
       kind: FlowerTarget
       version: Version
+      extension: string
       onRenderError: string -> unit }
 
     member public me.Instance = me.instance
     member public me.Kind = me.kind
     member public me.Version = me.version
+    member public me.Extension = me.extension
 
     /// <summary>
     /// Enumerate all properties/fields of [Flower] object which have a [Seed] metadata
@@ -297,6 +299,7 @@ type FlowerManager() =
                                 { instance = instance
                                   kind = kindAttr.Target
                                   version = version
+                                  extension = kindAttr.Extension
                                   onRenderError = send }
                         with ex ->
                             send $"Activation Error: {t.Name}: {ex.Message}"

@@ -1,6 +1,7 @@
 ﻿namespace SunFlower.Abstractions
 
 open System
+open System.Runtime.InteropServices
 //
 // CoffeeLake (C) 2026
 // This part licensed under MIT
@@ -29,7 +30,10 @@ type FlowerTarget =
 /// </summary>
 [<Sealed>]
 [<AttributeUsage(AttributeTargets.Class)>]
-type FlowerAttribute(target: FlowerTarget) =
+type FlowerAttribute(target: FlowerTarget, [<Optional>] extension: string) =
     inherit Attribute()
     let mutable _target: FlowerTarget = target
+    let mutable _extension: string =
+        if String.IsNullOrEmpty extension then String.Empty else extension
     member val Target: FlowerTarget = _target with get, set
+    member val Extension: string = _extension with get, set

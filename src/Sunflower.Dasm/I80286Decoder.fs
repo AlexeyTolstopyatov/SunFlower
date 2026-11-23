@@ -9,20 +9,17 @@ module public I80286Decoder =
         let opcodesPath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "opcodes286.json")
         let safePath = if File.Exists(interruptsPath) then Some(interruptsPath) else None 
-        Decoder.create opcodesPath safePath false
+        Decoder.create opcodesPath safePath ProcessorMode.I286
 
-    let touchOperation (state: DecoderState) (bytes: byte[]) =
-        Decoder.touchOperation state bytes
-        
     let decode (bytes: byte[]) =
         let state = get("")
-        Decoder.decode state bytes
+        Decoder.runLinear state bytes
                     |> Decoder.format
         
     let decodeWith (state: DecoderState) (bytes: byte []) =
-        Decoder.decode state bytes
+        Decoder.runLinear state bytes
     
     let decodeRecursive (interruptsPath: string, bytes: byte array, offsets: int array)=
         let decoder = get(interruptsPath)
-        let instructions, status, entrySet = Decoder.disassembleRecursive decoder bytes offsets
+        let instructions, status, entrySet = Decoder.runRecursive decoder bytes offsets
         Decoder.formatWithLabels instructions bytes status entrySet

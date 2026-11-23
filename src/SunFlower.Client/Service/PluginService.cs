@@ -67,7 +67,7 @@ public class PluginService
             return;
         }
 
-        await Task.Run(_manager.ActivateAllAsync);
+        await _manager.ActivateAllAsync();
 
         _loaded = _manager.LoadedFlowers.ToList();
 

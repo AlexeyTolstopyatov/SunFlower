@@ -265,43 +265,42 @@
                 BorderBrush="{DynamicResource DockTabHoverBrush}"
                 Background="{DynamicResource RegionBrush}"
                 Margin="20,10">
-                <Grid>
-                    <StackPanel
-                        Grid.Column="0">
-                        <Button
-                            Margin="0, 0"
-                            Width="100"
-                            Background="{DynamicResource BorderBrush}"
-                            Command="{CompiledBinding DeleteCacheCommand}"
-                            Content="Clear Cache"
-                            HotKey="Delete">
-                            <Button.ContextFlyout>
-                                <Flyout>
-                                    <TextBlock
-                                        Text="Delete project temp files" />
-                                </Flyout>
-                            </Button.ContextFlyout>
-                        </Button>
-                        <Button
-                            Background="{DynamicResource BorderBrush}"
-                            HotKey="Ctrl+S"
-                            Command="{CompiledBinding SaveCommand}"
-                            Margin="5, 10, 5, 10"
-                            Width="100"
-                            HorizontalAlignment="Right"
-                            Content="Save">
-                            <Button.ContextFlyout>
-                                <Flyout>
-                                    <TextBlock
-                                        Text="Write changes to settings file. No restart" />
-                                </Flyout>
-                            </Button.ContextFlyout>
-                        </Button>
-                        <TextBlock
-                            IsVisible="{CompiledBinding FirstCacheCleared}"
-                            Foreground="#ff009b76"
-                            Text="{CompiledBinding Message, FallbackValue='All your codebase belongs to us'}" />
-                    </StackPanel>
+                <Grid
+                    RowDefinitions="*,Auto">
+                    <Button
+                        Margin="0, 0"
+                        Width="100"
+                        Background="{DynamicResource BorderBrush}"
+                        Command="{CompiledBinding DeleteCacheCommand}"
+                        Content="Clear Cache"
+                        HotKey="Delete">
+                        <Button.ContextFlyout>
+                            <Flyout>
+                                <TextBlock
+                                    Text="Delete project temp files" />
+                            </Flyout>
+                        </Button.ContextFlyout>
+                    </Button>
+                    <Button
+                        Background="{DynamicResource BorderBrush}"
+                        HotKey="Ctrl+S"
+                        Command="{CompiledBinding SaveCommand}"
+                        Margin="5, 10, 5, 10"
+                        Width="100"
+                        HorizontalAlignment="Right"
+                        Content="Save">
+                        <Button.ContextFlyout>
+                            <Flyout>
+                                <TextBlock
+                                    Text="Write changes to settings file. No restart" />
+                            </Flyout>
+                        </Button.ContextFlyout>
+                    </Button>
+                    <TextBlock
+                        Grid.Row="1"
+                        IsVisible="{CompiledBinding FirstCacheCleared}"
+                        Foreground="#ff009b76"
+                        Text="{CompiledBinding Message, FallbackValue='All your codebase belongs to us'}" />
                 </Grid>
             </Border>
         </StackPanel>

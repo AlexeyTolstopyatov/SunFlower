@@ -194,7 +194,7 @@ public partial class SettingsViewModel : ObservableObject
         FirstCacheCleared = true;
         Message = "Settings saved!";
 
-        await Task.Delay(200);
+        await Task.Delay(500);
 
         Message = string.Empty;
     }
@@ -207,7 +207,7 @@ public partial class SettingsViewModel : ObservableObject
         FirstCacheCleared = true;
 
         Message = "Cache is removed!";
-        await Task.Delay(200);
+        await Task.Delay(500);
         
         Message = string.Empty;
     }

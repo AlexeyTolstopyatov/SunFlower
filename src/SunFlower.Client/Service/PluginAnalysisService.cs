@@ -54,7 +54,9 @@ public class PluginAnalysisService(WorkspaceService workspaceService)
         var workingDir = project.WorkingDirectory;
         var pluginName = flowerData.Instance.Name;
         var kind = $"{flowerData.Kind}";
-        var ext = kind == "Text" ? ".asm" : ".md";
+        var ext = string.IsNullOrEmpty(flowerData.Extension)
+            ? ".md"
+            : $".{flowerData.Extension.TrimStart('.')}";
 
         var appliedPath = targetPath ?? project.OriginalBinaryPath ?? workspaceService.CurrentFilePath;
         if (string.IsNullOrEmpty(appliedPath))

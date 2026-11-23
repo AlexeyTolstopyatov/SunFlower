@@ -40,6 +40,8 @@ public partial class SettingsViewModel : ObservableObject
             .Current
             .SystemFonts
             .ToArray();
+
+        
     }
 
     public string? HexFontFamily

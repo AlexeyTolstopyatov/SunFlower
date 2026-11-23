@@ -82,12 +82,7 @@ public partial class WorkspaceWindow : Window
         // Re-apply when the user changes the hotkey in settings.
         _settingsService.SettingsChanged += UpdateCommandPaletteHotkey;
     }
-
-    // Parameterless ctor so the XAML loader can instantiate the class via x:Class.
-    public WorkspaceWindow() : this(new SettingsService())
-    {
-    }
-
+    
     public DialogService DialogService { get; }
 
     private bool IsDialogAnimationEnabled => _settingsService.Current.DialogAnimationEnabled;
@@ -95,33 +90,31 @@ public partial class WorkspaceWindow : Window
     /// <summary>
     ///     Parses the command palette hotkey from settings and applies it as a KeyBinding.
     /// </summary>
+    private KeyBinding? _paletteKeyBinding;
+
     private void UpdateCommandPaletteHotkey()
     {
+        if (_paletteKeyBinding is not null)
+        {
+            RootGrid.KeyBindings.Remove(_paletteKeyBinding);
+            _paletteKeyBinding = null;
+        }
+
         var hotkey = _settingsService.Current.CommandPaletteHotkey;
-
-        // Remove any existing palette key bindings to avoid duplicates.
-        var existing = RootGrid.KeyBindings
-            .OfType<KeyBinding>()
-            .Where(kb => kb.Command.ToString()?.Contains("BuildCommandPalette") == true)
-            .ToList();
-        
-        foreach (var kb in existing)
-            RootGrid.KeyBindings.Remove(kb);
-
         var gesture = ParseKeyGesture(hotkey);
         if (gesture is null)
             return;
 
-        var vm = DataContext as DockWorkspaceViewModel;
-        var command = vm?.BuildCommandPaletteCommand;
-        if (command is null)
+        if (DataContext is not DockWorkspaceViewModel vm /* || vm.BuildCommandPaletteCommand is null*/)
             return;
 
-        RootGrid.KeyBindings.Add(new KeyBinding
+        _paletteKeyBinding = new KeyBinding
         {
             Gesture = gesture,
-            Command = command
-        });
+            Command = vm.BuildCommandPaletteCommand
+        };
+
+        RootGrid.KeyBindings.Add(_paletteKeyBinding);
     }
 
     private static KeyGesture? ParseKeyGesture(string hotkey)
@@ -155,7 +148,7 @@ public partial class WorkspaceWindow : Window
             ? null 
             : new KeyGesture(key, modifiers);
     }
-
+    
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
         // Clean up project when window is closed
@@ -165,6 +158,8 @@ public partial class WorkspaceWindow : Window
             // -> handle cleanup here via the service.
             // MainWindow handles the send dialog on app exit.
         }
+        
+        _settingsService.SettingsChanged -= UpdateCommandPaletteHotkey;
     }
 
     private void DialogContainerClosed(object? sender, EventArgs e)
@@ -186,5 +181,11 @@ public partial class WorkspaceWindow : Window
     private void DialogPresenterSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         // _dialogOpenAnimation.RunAsync(DialogPresenter);
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        UpdateCommandPaletteHotkey();
     }
 }

@@ -16,7 +16,6 @@ public class App : Application
     private static RecentFilesService RecentFilesService { get; } = new();
     private static ProjectService ProjectService { get; } = new();
     private static WorkspaceService WorkspaceService { get; } = new(PluginService, ProjectService);
-    public static DisassemblingService DisassemblingService { get; } = new(WorkspaceService);
     private static SettingsService SettingsService { get; } = new();
     private static WindowService WindowService { get; } = new(SettingsService);
     public static ThemeService ThemeService { get; private set; } = new();

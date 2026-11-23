@@ -120,14 +120,14 @@ module CpuMode =
     [<CompiledName "Has66Prefix">]
     let has66Prefix (mode: CpuMode) =
         match mode with
-        | Protected32 | Long64 -> true
+        | Protected16 | Protected32 | Long64 -> true
         | _ -> false
 
     /// True when 0x67 toggles address size (Protected32+).
     [<CompiledName "Has67Prefix">]
     let has67Prefix (mode: CpuMode) =
         match mode with
-        | Protected32 | Long64 -> true
+        | Protected16 | Protected32 | Long64 -> true
         | _ -> false
 
     /// Default operand size in bytes (without OPSIZE/REX.W overrides).

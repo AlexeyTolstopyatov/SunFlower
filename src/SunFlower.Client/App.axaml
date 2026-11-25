@@ -3,9 +3,6 @@
              xmlns:view="clr-namespace:SunFlower.Client.View"
              xmlns:client="clr-namespace:SunFlower.Client"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
-             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
-             xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
              x:DataType="{x:Type client:App}"
              x:Class="SunFlower.Client.App">
     <Application.Resources>
@@ -30,36 +27,6 @@
     </Application.Styles>
 
     <Application.DataTemplates>
-        <!-- <DataTemplate -->
-        <!--     DataType="{x:Type dock:MarkdownDocumentViewModel}"> -->
-        <!--     <mdxaml:MarkdownScrollViewer -->
-        <!--         Margin="10" -->
-        <!--         Markdown="{Binding Content}"> -->
-        <!--         <mdxaml:MarkdownScrollViewer.Styles> -->
-        <!--             <StyleInclude Source="/Drawing/DocumentTheme.axaml" /> -->
-        <!--         </mdxaml:MarkdownScrollViewer.Styles> -->
-        <!--     </mdxaml:MarkdownScrollViewer> -->
-        <!-- </DataTemplate> -->
-        <!-- <DataTemplate -->
-        <!--     DataType="{x:Type dock:HexDocumentViewModel}"> -->
-        <!--     <view:HexDocumentView -->
-        <!--         FontFamily="{CompiledBinding HexFontFamily}" -->
-        <!--         FontSize="{CompiledBinding HexFontSize}"/> -->
-        <!-- </DataTemplate> -->
-        <!-- <DataTemplate DataType="{x:Type dock:TextDocumentViewModel}"> -->
-        <!--     <view:TextDocumentView -->
-        <!--         FontFamily="{CompiledBinding TextFontFamily}" -->
-        <!--         FontSize="{CompiledBinding TextFontSize}"/> -->
-        <!-- </DataTemplate> -->
-        <!-- -->
-        <!-- <DataTemplate DataType="{x:Type dock:ExplorerDocumentViewModel}"> -->
-        <!--     <view:ExplorerDocumentView /> -->
-        <!-- </DataTemplate> -->
-        <!-- -->
-        <!-- <DataTemplate DataType="{x:Type vm:ExecuteDialogViewModel}"> -->
-        <!--     <view:ExecuteDialogView /> -->
-        <!-- </DataTemplate> -->
-        
         <view:ViewLocator/>
     </Application.DataTemplates>
 </Application>

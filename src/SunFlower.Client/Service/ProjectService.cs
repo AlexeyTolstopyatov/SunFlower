@@ -3,7 +3,7 @@
 // 
 // ProjectService manages SunFlower project files.
 // Projects are ZIP archives with a 40-byte binary header
-// (matching SunFlower.Kernel.Database.FlowerObjectHeader),
+// (matching Sunflower.Kernel.Database.FlowerObjectHeader),
 // followed by a variable-length UTF-8 encoded original file name,
 // followed by the ZIP archive body.
 //

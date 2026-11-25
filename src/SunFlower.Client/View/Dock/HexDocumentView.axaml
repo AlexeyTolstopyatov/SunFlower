@@ -16,7 +16,6 @@
         FontFamily="{Binding HexFontFamily}"
         FontSize="{Binding HexFontSize}"
         Document="{Binding BinaryDocument}">
-        
         <hex:HexEditor.Columns>
             <hexr:OffsetColumn
                 IsVisible="{CompiledBinding ShowOffsetColumn}"/>

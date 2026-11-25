@@ -12,16 +12,6 @@ using Sunflower.Dasm.Intel.Core;
 
 namespace SunFlower.Client.Service;
 
-/// <summary>
-///     Target CPU architecture for disassembly.
-/// </summary>
-public enum DecoderArchitecture
-{
-    I8086,
-    I80186,
-    I80286,
-    I80386
-}
 
 public class DisassemblingService(WorkspaceService workspaceService)
 {
@@ -31,7 +21,7 @@ public class DisassemblingService(WorkspaceService workspaceService)
     ///     Disassemble a byte range, starting at the given offset.
     /// </summary>
     public string DisassembleRange(byte[] bytes, int startOffset,
-        DecoderArchitecture arch = DecoderArchitecture.I80286)
+        CpuModeType arch = CpuModeType.I286)
     {
         if (bytes.Length == 0)
             return "; (empty range)";
@@ -39,18 +29,7 @@ public class DisassemblingService(WorkspaceService workspaceService)
         int[] entryPoints = [startOffset & 0xFFFF];
         var interruptsPath = ResolveInterruptsPath();
 
-        return arch switch
-        {
-            DecoderArchitecture.I8086 =>
-                I8086Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DecoderArchitecture.I80186 =>
-                I80186Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DecoderArchitecture.I80286 =>
-                I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints),
-            DecoderArchitecture.I80386 =>
-                I80386Decoder.decodeRecursive(interruptsPath, bytes, entryPoints, ProcessorMode.I386),
-            _ => I80286Decoder.decodeRecursive(interruptsPath, bytes, entryPoints)
-        };
+        return "Under Construction";
     }
 
     /// <summary>
@@ -64,16 +43,10 @@ public class DisassemblingService(WorkspaceService workspaceService)
 
         if (File.Exists(fromBase))
             return fromBase;
-
-        var dasmDir = Path.GetDirectoryName(
-            typeof(I8086Decoder).Assembly.Location);
-        if (dasmDir != null)
-        {
-            var fromDasm = Path.Combine(dasmDir, relative);
-            if (File.Exists(fromDasm))
-                return fromDasm;
-        }
-
-        return string.Empty;
+        
+        var fromDasm = Path.Combine(baseDir, relative);
+        return File.Exists(fromDasm) 
+            ? fromDasm 
+            : string.Empty;
     }
 }

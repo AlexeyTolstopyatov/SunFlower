@@ -2,12 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dock="clr-namespace:SunFlower.Client.ViewModel.Dock"
              xmlns:vm="clr-namespace:SunFlower.Client.ViewModel"
-             x:Name="Root" x:Class="SunFlower.Client.View.Dock.ExplorerDocumentView"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="500"
+             d:DesignWidth="200"
+             x:Name="Root" 
+             x:Class="SunFlower.Client.View.Dock.ExplorerDocumentView"
              x:DataType="dock:ExplorerDocumentViewModel">
     <Border
-        BorderBrush="{DynamicResource DockAccentBrush}"
-        BorderThickness="3"
-        Margin="20"
+        BorderBrush="{DynamicResource DockTabHoverBrush}"
+        BorderThickness="2"
+        Margin="5"
+        CornerRadius="10"
         Background="{StaticResource CloudTileBrush}"
         Padding="10">
         <Grid

@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SunFlower.Client.Service;
+using Sunflower.Dasm;
+using Sunflower.Dasm.Intel.Core;
+
 namespace SunFlower.Client.ViewModel;
 
 public partial class DisassemblerDialogViewModel : DialogViewModel
@@ -22,16 +25,16 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
 
     [ObservableProperty] private bool _isDisassemblyInProgress;
 
-    [ObservableProperty] private DecoderArchitecture _selectedArchitecture;
+    [ObservableProperty] private CpuModeType _selectedArchitecture;
 
     public DisassemblerDialogViewModel(byte[]? bytes, int? startOffset, DisassemblingService disassemblingService,
-        DecoderArchitecture? initialArchitecture = null)
+        CpuModeType? initialArchitecture = null)
     {
         _disassemblingService = disassemblingService;
 
         // ActivateAsync properties
-        AvailableArchitectures = Enum.GetValues(typeof(DecoderArchitecture));
-        SelectedArchitecture = initialArchitecture ?? DecoderArchitecture.I8086;
+        AvailableArchitectures = Enum.GetValues(typeof(CpuModeType));
+        SelectedArchitecture = initialArchitecture ?? CpuModeType.Amd64;
 
         // Store input bytes
         InputBytes = bytes;
@@ -61,7 +64,7 @@ public partial class DisassemblerDialogViewModel : DialogViewModel
 
         try
         {
-            var result = await Task.Run(() =>
+            var result = await Task.Run(string () =>
                 _disassemblingService.DisassembleRange(InputBytes, StartOffset, SelectedArchitecture));
 
             DisassemblyResult = result;

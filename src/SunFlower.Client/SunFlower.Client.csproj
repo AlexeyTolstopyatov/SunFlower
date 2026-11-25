@@ -33,9 +33,9 @@
         <PackageReference Include="Xaml.Behaviors" Version="11.3.9.6"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj"/>
+        <ProjectReference Include="..\Sunflower.Abstractions\Sunflower.Abstractions.fsproj" />
         <ProjectReference Include="..\Sunflower.Dasm\Sunflower.Dasm.fsproj"/>
-        <ProjectReference Include="..\SunFlower.Kernel\SunFlower.Kernel.fsproj"/>
+        <ProjectReference Include="..\Sunflower.Kernel\Sunflower.Kernel.fsproj" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="HandyControl">

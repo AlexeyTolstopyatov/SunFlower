@@ -4,9 +4,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4F203762-8AF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C3E234E3-2EED-41C7-9CA3-67FE550690C4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Abstractions", "src\SunFlower.Abstractions\SunFlower.Abstractions.fsproj", "{533AEE8E-0D88-48E1-8FAA-8856F743B104}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Sunflower.Abstractions", "src\Sunflower.Abstractions\Sunflower.Abstractions.fsproj", "{533AEE8E-0D88-48E1-8FAA-8856F743B104}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SunFlower.Kernel", "src\SunFlower.Kernel\SunFlower.Kernel.fsproj", "{CD4E162D-926A-42F1-906F-F135B7871BF2}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Sunflower.Kernel", "src\Sunflower.Kernel\Sunflower.Kernel.fsproj", "{CD4E162D-926A-42F1-906F-F135B7871BF2}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Sunflower.Dasm", "src\Sunflower.Dasm\Sunflower.Dasm.fsproj", "{B2FC414B-D213-4975-8E01-5510156DA8C1}"
 EndProject

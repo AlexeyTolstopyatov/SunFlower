@@ -10,7 +10,7 @@
     <Compile Include="ReDefinitions.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SunFlower.Abstractions\SunFlower.Abstractions.fsproj" />
+    <ProjectReference Include="..\Sunflower.Abstractions\Sunflower.Abstractions.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\FlowerObjectHeader.fs" />

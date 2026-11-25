@@ -16,7 +16,7 @@ namespace SunFlower.Client;
 public static class UiConverters
 {
     public static readonly Version? KernelApiVersion = App.PluginService
-        .GetVersionInfo()[0] // SunFlower.Kernel.dll metadata
+        .GetVersionInfo()[0] // Sunflower.Kernel.dll metadata
         .Contracts[0].Item2; // Kernel API metadata
 
     /// <summary>

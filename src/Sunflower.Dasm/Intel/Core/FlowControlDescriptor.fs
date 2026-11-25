@@ -8,6 +8,6 @@ type InterruptArg =
       [<JsonPropertyName("return_flow")>] ReturnFlow: bool
       [<JsonPropertyName("comment")>] Comment: string }
 
-type IntelInterrupt =
+type FlowControlDescriptor =
     { [<JsonPropertyName("int")>] Code: string
       [<JsonPropertyName("args")>] Args: InterruptArg[] }

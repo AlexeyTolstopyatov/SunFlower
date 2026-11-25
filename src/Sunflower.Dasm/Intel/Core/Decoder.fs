@@ -5,7 +5,7 @@
 //
 // In example: It accepts 2 arguments to map instruction bytes:
 //      -> Instruction database to concrete architecture mapping;
-//      -> ProcessorMode to trim register/memory analysis.
+//      -> CpuArchitectureType to trim register/memory analysis.
 // without any string/sp analysis. If this database file is missing,
 // next following instructions are be aborted. (raises failure)
 //
@@ -18,149 +18,6 @@ open System
 open System.IO
 open System.Text
 open System.Text.Json
-
-type ProcessorMode =
-    | I8086
-    | I186
-    | I286
-    | I386
-    | I486
-    | IPentium
-    | AMD64
-
-module ProcessorMode =
-    /// True for 32-bit flat addressing
-    /// (i386+ excluding extended architecture modification).
-    [<CompiledName "Use32">]
-    let use32 mode =
-        match mode with
-        | I386
-        | I486
-        | IPentium -> true
-        | _ -> false
-
-    /// True for 64-bit long mode.
-    [<CompiledName "Use64">]
-    let use64 mode =
-        match mode with
-        | AMD64 -> true
-        | _ -> false
-
-    /// True when the byte 0x0F is a two-byte opcode prefix (i286+).
-    /// On i8086/i186 0x0F is a valid one-byte POP CS.
-    [<CompiledName "UseWordPrefix">]
-    let useWordPrefix mode =
-        match mode with
-        | I286
-        | I386
-        | I486
-        | IPentium
-        | AMD64 -> true
-        | _ -> false
-
-    /// True when 0x66 toggles operand size (i386+).
-    [<CompiledName "Has66Prefix">]
-    let has66Prefix mode =
-        match mode with
-        | I386
-        | I486
-        | IPentium
-        | AMD64 -> true
-        | _ -> false
-
-    /// True when 0x67 toggles address size (i386+).
-    [<CompiledName "Has67Prefix">]
-    let has67Prefix mode =
-        match mode with
-        | I386
-        | I486
-        | IPentium
-        | AMD64 -> true
-        | _ -> false
-
-    /// Instruction-pointer mask used for branch target arithmetic.
-    [<CompiledName "GetInstructionPtrMask">]
-    let getInstructionPtrMask mode =
-        if use64 mode then 0xFFFFFFFFFFFFFFFFL
-        elif use32 mode then 0xFFFFFFFFL
-        else 0xFFFFL
-
-type CpuMode =
-    | Real16           // 8086..286 real mode
-    | Protected16      // 286/386 protected, 16-bit
-    | Protected32      // 386+ protected, 32-bit
-    | Long64           // x86-64 long mode
-
-module CpuMode =
-    /// True for 32-bit default operand size.
-    [<CompiledName "Use32">]
-    let use32 (mode: CpuMode) =
-        match mode with
-        | Protected32 -> true
-        | _ -> false
-
-    /// True for 64-bit long mode.
-    [<CompiledName "Use64">]
-    let use64 (mode: CpuMode) =
-        match mode with
-        | Long64 -> true
-        | _ -> false
-
-    /// True when 0x0F is a two-byte opcode prefix (Protected16+).
-    [<CompiledName "UseWordPrefix">]
-    let useWordPrefix (mode: CpuMode) =
-        match mode with
-        | Protected16 | Protected32 | Long64 -> true
-        | _ -> false
-
-    /// True when 0x66 toggles operand size (Protected32+).
-    ///
-    /// Protected16 models i286 (no 66/67 prefixes);
-    /// i386 in 16-bit protected mode is not separately supported.
-    [<CompiledName "Has66Prefix">]
-    let has66Prefix (mode: CpuMode) =
-        match mode with
-        | Protected16 | Protected32 | Long64 -> true
-        | _ -> false
-
-    /// True when 0x67 toggles address size (Protected32+).
-    [<CompiledName "Has67Prefix">]
-    let has67Prefix (mode: CpuMode) =
-        match mode with
-        | Protected16 | Protected32 | Long64 -> true
-        | _ -> false
-
-    /// Default operand size in bytes (without OPSIZE/REX.W overrides).
-    [<CompiledName "DefaultOperandSize">]
-    let defaultOperandSize (mode: CpuMode) : int =
-        match mode with
-        | Real16 | Protected16 -> 2
-        | Protected32 -> 4
-        | Long64 -> 4 // REX.W lifts to 8 in individual instructions
-
-    /// Default address size in bits (without ADSIZE override).
-    [<CompiledName "DefaultAddressSize">]
-    let defaultAddressSize (mode: CpuMode) : int =
-        match mode with
-        | Real16 | Protected16 -> 2
-        | Protected32 -> 4
-        | Long64 -> 8
-
-    /// Instruction-pointer mask used for branch target arithmetic.
-    [<CompiledName "GetInstructionPtrMask">]
-    let getInstructionPtrMask (mode: CpuMode) : int64 =
-        match mode with
-        | Long64 -> 0xFFFFFFFFFFFFFFFFL
-        | Protected32 -> 0xFFFFFFFFL
-        | _ -> 0xFFFFL
-
-    /// Map legacy ProcessorMode → CpuMode.
-    let fromProcessorMode (mode: ProcessorMode) : CpuMode =
-        match mode with
-        | I8086 | I186 -> Real16
-        | I286 -> Protected16
-        | I386 | I486 | IPentium -> Protected32
-        | AMD64 -> Long64
 
 type RepPrefix =
     | Repne   // F2
@@ -175,7 +32,11 @@ type SegmentPrefix =
     | Fs  // 0x64
     | Gs  // 0x65
 
-type RexState = { W: bool; R: bool; X: bool; B: bool }
+type RexState =
+    { W: bool
+      R: bool
+      X: bool
+      B: bool }
 
 type PrefixState = {
     Opsize: bool      // 0x66
@@ -187,14 +48,13 @@ type PrefixState = {
 }
 
 module PrefixHelpers =
-    let emptyPrefixState : PrefixState = {
-        Opsize = false
-        Adsize = false
-        Lock = false
-        Rep = None
-        Segment = None
-        Rex = None
-    }
+    let emptyPrefixState : PrefixState =
+        { Opsize = false
+          Adsize = false
+          Lock = false
+          Rep = None
+          Segment = None
+          Rex = None }
 
     // Legacy prefix bytes (same for all modes).
     let legacyPrefixBytes =
@@ -240,9 +100,9 @@ module PrefixHelpers =
 type DecoderState =
     { opcodesMap: Map<string, Operation>
       prefixSet: Set<byte>
-      interrupts: Map<byte, IntelInterrupt>
+      interrupts: Map<byte, FlowControlDescriptor>
       path: string
-      mode: ProcessorMode
+      mode: CpuArchitectureType
       cpuMode: CpuMode }
 
     member this.Is64Bit = CpuMode.use64 this.cpuMode
@@ -1013,12 +873,12 @@ module public Decoder =
                 | Some parts -> Some(idx, effectiveOperation.mnemonic, parts)
                 | None -> None
 
-    let private loadInterruptVectors jsonPath : Map<byte, IntelInterrupt> =
+    let private loadInterruptVectors jsonPath : Map<byte, FlowControlDescriptor> =
         if not (File.Exists jsonPath) then Map.empty
         else
             jsonPath
             |> File.ReadAllText
-            |> JsonSerializer.Deserialize<IntelInterrupt[]>
+            |> JsonSerializer.Deserialize<FlowControlDescriptor[]>
             |> Array.choose (fun i ->
                 match Byte.TryParse(i.Code, Globalization.NumberStyles.HexNumber, null) with
                 | true, b -> Some(b, i)
@@ -1040,7 +900,7 @@ module public Decoder =
               prefix = d.IsPrefix })
         |> Array.fold (fun acc op -> Map.add op.code op acc) Map.empty
 
-    let create (opcodesPath: string) (interruptsPath: string option) (mode: ProcessorMode) : DecoderState =
+    let create (opcodesPath: string) (interruptsPath: string option) (mode: CpuArchitectureType) : DecoderState =
         if not (File.Exists opcodesPath) then
             failwith "Can't find Intel opcodes map"
 
@@ -1058,7 +918,7 @@ module public Decoder =
             | Some p -> loadInterruptVectors p
             | None -> Map.empty
 
-        let cpuMode = CpuMode.fromProcessorMode mode
+        let cpuMode = CpuMode.fromCpuArchitectureType mode
         { opcodesMap = allOps
           prefixSet = prefixes
           interrupts = intTable
@@ -1214,14 +1074,14 @@ module public Decoder =
             else
                 let opcodeByte = bytes[startIdx]
 
-                if opcodeByte = 0x0Fuy && ProcessorMode.useWordPrefix state.mode && startIdx + 1 < bytes.Length then
+                if opcodeByte = 0x0Fuy && CpuArchitectureType.useWordPrefix state.mode && startIdx + 1 < bytes.Length then
                     let hex = $"0F%02X{bytes[startIdx + 1]}"
                     match Map.tryFind hex state.opcodesMap with
                     | Some op -> processOp state op prefix rex (startIdx + 2) hex bytes
                     | None ->
                         // 0F is an escape; it cannot fall back to POP CS in
                         // Protected/Long modes. Only Real16 has a real 0F opcode.
-                        if ProcessorMode.useWordPrefix state.mode then None
+                        if CpuArchitectureType.useWordPrefix state.mode then None
                         else
                             match Map.tryFind "0F" state.opcodesMap with
                             | Some op -> processOp state op prefix rex (startIdx + 1) "0F" bytes
@@ -1232,8 +1092,8 @@ module public Decoder =
                     | Some op -> processOp state op prefix rex (startIdx + 1) hex bytes
                     | None -> None
 
-    let formatOperandPart (mode: ProcessorMode) (instrOffset: int) (part: OperandPart) : string =
-        let ipMask = ProcessorMode.getInstructionPtrMask mode
+    let formatOperandPart (mode: CpuArchitectureType) (instrOffset: int) (part: OperandPart) : string =
+        let ipMask = CpuArchitectureType.getInstructionPtrMask mode
 
         match part with
         | Reg s -> s
@@ -1244,21 +1104,21 @@ module public Decoder =
             else formatImmValue (uint64 v) sz
         | Rel(target, _) ->
             let abs = (int64 instrOffset + int64 target) &&& ipMask
-            if ProcessorMode.use64 mode then $"0x%016X{int abs}"
-            elif ProcessorMode.use32 mode then $"0x%08X{int abs}"
+            if CpuArchitectureType.use64 mode then $"0x%016X{int abs}"
+            elif CpuArchitectureType.use32 mode then $"0x%08X{int abs}"
             else $"0x%04X{int abs}"
         | Abs(v, sz) -> $"[%s{formatImmValue v sz}]"
         | Mem s -> s
         | Far(seg, off) ->
-            if ProcessorMode.use64 mode then $"0x%04X{seg}%016X{off}"
-            elif ProcessorMode.use32 mode then $"0x%04X{seg}%04X{off}" // %08X 
+            if CpuArchitectureType.use64 mode then $"0x%04X{seg}%016X{off}"
+            elif CpuArchitectureType.use32 mode then $"0x%04X{seg}%04X{off}" // %08X 
             else $"0x%04X{seg}%04X{off &&& 0xFFFFUL}"
         | Raw s -> s
 
-    let formatDecodedOperand (mode: ProcessorMode) (instrOffset: int) (op: DecodedOperand) : string =
+    let formatDecodedOperand (mode: CpuArchitectureType) (instrOffset: int) (op: DecodedOperand) : string =
         formatOperandPart mode instrOffset op.Part
 
-    let formatDecodedPart (mode: ProcessorMode) (instrOffset: int) (part: DecodedPart) : string =
+    let formatDecodedPart (mode: CpuArchitectureType) (instrOffset: int) (part: DecodedPart) : string =
         let ops =
             part.Operands
             |> List.map (formatDecodedOperand mode instrOffset)
@@ -1490,7 +1350,7 @@ module public Decoder =
         (state: DecoderState) (offset: int) (length: int) (bytes: byte[]) (blockHistory: DecodedInstruction list)
         : FlowControl * int list * string option =
 
-        let ipMask = ProcessorMode.getInstructionPtrMask state.mode
+        let ipMask = CpuArchitectureType.getInstructionPtrMask state.mode
         let _, opcodeOffset = scanPrefixes state bytes offset
 
         if opcodeOffset >= bytes.Length then FallThrough, [], None
@@ -1524,7 +1384,7 @@ module public Decoder =
                     let opSize = operandSize state.cpuMode rexW has66
                     if opSize = 4 then readRel32 () else readRel16 ()
 
-            if opcode = 0x0Fuy && ProcessorMode.useWordPrefix state.mode then
+            if opcode = 0x0Fuy && CpuArchitectureType.useWordPrefix state.mode then
                 let b2Offset = opcodeOffset + 1
                 if b2Offset >= bytes.Length then FallThrough, [], None
                 else
